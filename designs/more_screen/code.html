@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>More Menu - The Nocturnal Gourmet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800;900&amp;family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#0062f2",
+                    "on-error": "#690005",
+                    "on-tertiary-container": "#eceeff",
+                    "surface-container-high": "#2a2a2a",
+                    "on-tertiary-fixed-variant": "#003fa3",
+                    "primary": "#ffb4a9",
+                    "inverse-on-surface": "#313030",
+                    "surface-dim": "#131313",
+                    "primary-fixed-dim": "#ffb4a9",
+                    "inverse-surface": "#e5e2e1",
+                    "on-primary-container": "#ffebe8",
+                    "tertiary-fixed-dim": "#b2c5ff",
+                    "on-tertiary": "#002b74",
+                    "on-surface": "#e5e2e1",
+                    "surface-container": "#201f1f",
+                    "on-secondary-fixed": "#251a00",
+                    "primary-container": "#db0007",
+                    "on-background": "#e5e2e1",
+                    "surface-variant": "#353534",
+                    "secondary-fixed": "#ffdf99",
+                    "on-surface-variant": "#e8bcb6",
+                    "surface-container-highest": "#353534",
+                    "on-primary-fixed-variant": "#930003",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-lowest": "#0e0e0e",
+                    "secondary": "#ffc72c",
+                    "surface-container-low": "#1c1b1b",
+                    "surface": "#131313",
+                    "secondary-fixed-dim": "#f6bf22",
+                    "outline": "#af8781",
+                    "on-primary-fixed": "#410000",
+                    "error": "#ffb4ab",
+                    "background": "#131313",
+                    "surface-bright": "#393939",
+                    "primary-fixed": "#ffdad5",
+                    "on-secondary": "#3f2e00",
+                    "tertiary": "#b2c5ff",
+                    "on-secondary-container": "#584200",
+                    "on-tertiary-fixed": "#001848",
+                    "on-secondary-fixed-variant": "#5a4300",
+                    "outline-variant": "#5e3f3a",
+                    "surface-tint": "#ffb4a9",
+                    "error-container": "#93000a",
+                    "secondary-container": "#e0ac00",
+                    "inverse-primary": "#c00005",
+                    "tertiary-fixed": "#dae2ff",
+                    "on-primary": "#690001"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Epilogue"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+            font-family: 'Manrope', sans-serif;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen pb-32">
+<!-- TopAppBar Mapping -->
+<main class="px-6 max-w-2xl mx-auto space-y-10 pt-6">
+<!-- User Profile Section -->
+<section class="flex items-center justify-between p-6 bg-surface-container-low rounded-xl">
+<div class="flex items-center gap-5">
+<div class="relative">
+<img alt="Alex Grayson Profile" class="w-16 h-16 rounded-full object-cover border-2 border-secondary/20" data-alt="Close-up portrait of a stylish man with short hair in a dark studio setting with cinematic rim lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFVaei4-VUjNq0l_ZGz6rArkAkp-dfveXXlPEl_pcZxRm8PiBdB1Ou7OAx2lEYYD9sPqyC0Rw34pGxWZ_0NWGUvTRio8O5wqu0oobfn5TWDTglgEvOWyPDn6rtcYPzMO5PK6I5IvCQfhWru2-mYEE8s45hGeUZIAQd7mvcCjvhIV9c4vrSetu5K1hBrZmIUQu2TND-knQQzGfp7U_8aQ0JPl_FgLwTXM47MsuJKCkkhDodQ_0vCMZbkh6SRx_s4Qmwlk14O8d1sgQ"/>
+</div>
+<div>
+<h2 class="font-headline text-2xl font-bold tracking-tight text-on-surface">Alex Grayson</h2>
+<p class="font-body text-sm text-on-surface-variant/80">Gold Member • 1,240 pts</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary">chevron_right</span>
+</section>
+<!-- Menu List - Tonal Shift Separation -->
+<nav class="space-y-1">
+<div class="group flex items-center justify-between p-5 bg-surface rounded-xl hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">history</span>
+<span class="font-body font-semibold">Recents</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary transition-colors">arrow_forward_ios</span>
+</div>
+<div class="group flex items-center justify-between p-5 bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">location_on</span>
+<span class="font-body font-semibold">Locations</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary transition-colors">arrow_forward_ios</span>
+</div>
+<div class="group flex items-center justify-between p-5 bg-surface rounded-xl hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">nutrition</span>
+<span class="font-body font-semibold">Nutrition</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary transition-colors">arrow_forward_ios</span>
+</div>
+<div class="group flex items-center justify-between p-5 bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">help</span>
+<span class="font-body font-semibold">Help</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary transition-colors">arrow_forward_ios</span>
+</div>
+<div class="group flex items-center justify-between p-5 bg-surface rounded-xl hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">work</span>
+<span class="font-body font-semibold">Careers</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary transition-colors">arrow_forward_ios</span>
+</div>
+</nav>
+<!-- Join the Team Banner - Bento Style Asymmetry -->
+<section class="relative overflow-hidden rounded-xl bg-surface-container-highest group">
+<div class="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/40 to-transparent z-10"></div>
+<img alt="Kitchen Staff" class="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" data-alt="Professional chefs working in a dimly lit high-end modern kitchen with focused warm lighting on culinary preparation" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtoKS4itUpfiQzJW9FGblMq9_3wzFqLR5CaS2eM929pYK-KWYvYqQiXcGfWz8ZVUlPcU1hmo0qseeHENBB_sP17bYCskdZ9VPfrIdYy7P63B5tGH6kgBQmn_i0RAanG3-y3r2F2U9G7IdqC5pgPPtd0CVRV-7jjEKtk7VGHqiwH40htvVQRSEZSqoJZ0hnlFw0FvqVNCM5k7pn_eI5N9zunkr86XGaaEl2qddd7Zld_sJOFnulnp_tJ8eqVDNAqvGdId-JcKf1t2s"/>
+<div class="relative z-20 p-8 flex flex-col items-start gap-4 max-w-[70%]">
+<h3 class="font-headline text-3xl font-black text-neutral-100 leading-tight">Join the Team</h3>
+<p class="font-body text-sm text-neutral-300">Craft the future of late-night dining with us. We're looking for culinary masters.</p>
+<button class="mt-2 px-6 py-3 bg-gradient-to-r from-primary-container to-[#930003] rounded-md font-body font-bold text-sm text-white active:scale-95 transition-transform">
+                    View Openings
+                </button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar Mapping -->
+<!-- Applying style_bg_color, style_component_shape, style_shell_layout, style_shadows_and_elevation -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-neutral-950/60 backdrop-blur-md flex justify-around items-center px-4 pb-6 pt-3 shadow-none">
+<!-- Home -->
+<div class="flex flex-col items-center justify-center text-neutral-500 hover:text-neutral-200 transition-all active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined">home</span>
+<span class="font-manrope text-[10px] font-bold uppercase tracking-widest mt-1">Home</span>
+</div>
+<!-- Order -->
+<div class="flex flex-col items-center justify-center text-neutral-500 hover:text-neutral-200 transition-all active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined">restaurant</span>
+<span class="font-manrope text-[10px] font-bold uppercase tracking-widest mt-1">Order</span>
+</div>
+<!-- Rewards -->
+<div class="flex flex-col items-center justify-center text-neutral-500 hover:text-neutral-200 transition-all active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined">military_tech</span>
+<span class="font-manrope text-[10px] font-bold uppercase tracking-widest mt-1">Rewards</span>
+</div>
+<!-- Scan -->
+<div class="flex flex-col items-center justify-center text-neutral-500 hover:text-neutral-200 transition-all active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+<span class="font-manrope text-[10px] font-bold uppercase tracking-widest mt-1">Scan</span>
+</div>
+<!-- More (ACTIVE) -->
+<!-- Applying style_active_navigation -->
+<div class="flex flex-col items-center justify-center text-amber-400 drop-shadow-[0_0_8px_rgba(255,199,44,0.4)] active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">more_horiz</span>
+<span class="font-manrope text-[10px] font-bold uppercase tracking-widest mt-1">More</span>
+</div>
+</nav>
+</body></html>

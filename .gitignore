@@ -1,0 +1,39 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.fleet/
+
+# Kotlin
+*.class
+*.log
+*.tmp
+
+# Android
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# iOS
+Pods/
+.build/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+xcuserdata/
+DerivedData/
+*.xcuserstate
+*.xcworkspacedata
+
+# Claude Code
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Nocturnal Gourmet - Order Screen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;800;900&amp;family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#0062f2",
+                        "on-error": "#690005",
+                        "on-tertiary-container": "#eceeff",
+                        "surface-container-high": "#2a2a2a",
+                        "on-tertiary-fixed-variant": "#003fa3",
+                        "primary": "#ffb4a9",
+                        "inverse-on-surface": "#313030",
+                        "surface-dim": "#131313",
+                        "primary-fixed-dim": "#ffb4a9",
+                        "inverse-surface": "#e5e2e1",
+                        "on-primary-container": "#ffebe8",
+                        "tertiary-fixed-dim": "#b2c5ff",
+                        "on-tertiary": "#002b74",
+                        "on-surface": "#e5e2e1",
+                        "surface-container": "#201f1f",
+                        "on-secondary-fixed": "#251a00",
+                        "primary-container": "#db0007",
+                        "on-background": "#e5e2e1",
+                        "surface-variant": "#353534",
+                        "secondary-fixed": "#ffdf99",
+                        "on-surface-variant": "#e8bcb6",
+                        "surface-container-highest": "#353534",
+                        "on-primary-fixed-variant": "#930003",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-lowest": "#0e0e0e",
+                        "secondary": "#ffc72c",
+                        "surface-container-low": "#1c1b1b",
+                        "surface": "#131313",
+                        "secondary-fixed-dim": "#f6bf22",
+                        "outline": "#af8781",
+                        "on-primary-fixed": "#410000",
+                        "error": "#ffb4ab",
+                        "background": "#131313",
+                        "surface-bright": "#393939",
+                        "primary-fixed": "#ffdad5",
+                        "on-secondary": "#3f2e00",
+                        "tertiary": "#b2c5ff",
+                        "on-secondary-container": "#584200",
+                        "on-tertiary-fixed": "#001848",
+                        "on-secondary-fixed-variant": "#5a4300",
+                        "outline-variant": "#5e3f3a",
+                        "surface-tint": "#ffb4a9",
+                        "error-container": "#93000a",
+                        "secondary-container": "#e0ac00",
+                        "inverse-primary": "#c00005",
+                        "tertiary-fixed": "#dae2ff",
+                        "on-primary": "#690001"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Epilogue"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3 { font-family: 'Epilogue', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen pb-48">
+<!-- TopAppBar -->
+<main class="px-6 pt-12">
+<!-- Categories Chips (Tonal Layering) -->
+<div class="flex gap-3 overflow-x-auto pb-8 no-scrollbar">
+<button class="px-6 py-2 rounded-full bg-primary-container text-on-primary-container font-bold text-sm whitespace-nowrap">Burgers</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface font-bold text-sm whitespace-nowrap">Fries</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface font-bold text-sm whitespace-nowrap">Drinks</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface font-bold text-sm whitespace-nowrap">Desserts</button>
+</div>
+<!-- Featured Items (Asymmetric Layout) -->
+<div class="space-y-12">
+<!-- Midnight Truffle -->
+<section class="relative group">
+<div class="flex flex-col md:flex-row gap-6 items-end">
+<div class="w-full md:w-3/5 aspect-[4/3] rounded-xl overflow-hidden bg-surface-container-low relative">
+<img alt="Gourmet black burger" class="w-full h-full object-cover" data-alt="Close-up of a gourmet burger with a black charcoal bun, melting cheese, and black truffle slices, dramatic studio lighting on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIgoaLEiJ_bs2e8Me_lZ4aFmkrX6vIJZNq8pxZvTHgTWm1Tf3owVjnv0TB10EdFBml3pZnGq5zSKGEA7e-jieP5DA8Z6TPrl-bZubc97xrDi06vNYqb2tQQ4lyimnkB7D0ea0DQWBUuDI399M7wip6bz1Sx03HyAqp4FKPE8QDJezB45YFf3lOWquJQm0PordZaY7vResoMshyeZI6C2VR-oryDi51W3sAThDRaUZdHSPcZOxs_DxnsPssQmc8SzuMxeh3BbD_iDQ"/>
+<div class="absolute top-4 right-4 px-3 py-1 bg-secondary/20 backdrop-blur-md rounded-full border border-secondary/30 shadow-[0_0_15px_rgba(255,199,44,0.3)]">
+<span class="text-secondary text-xs font-bold tracking-widest uppercase">Signature</span>
+</div>
+</div>
+<div class="w-full md:w-2/5 pb-4">
+<div class="flex justify-between items-baseline mb-2">
+<h2 class="text-4xl font-black leading-tight tracking-tighter">Midnight Truffle</h2>
+<span class="text-secondary font-headline text-2xl">$24</span>
+</div>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6">Double wagyu beef, black truffle aioli, aged gruyère, and caramelized balsamic onions on a charcoal brioche bun.</p>
+<button class="w-full py-4 rounded-md bg-gradient-to-r from-primary-container to-[#930003] text-on-primary font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                            ADD TO ORDER
+                        </button>
+</div>
+</div>
+</section>
+<!-- Saffron Fries -->
+<section class="relative group">
+<div class="flex flex-col md:flex-row-reverse gap-6 items-end">
+<div class="w-full md:w-3/5 aspect-[4/3] rounded-xl overflow-hidden bg-surface-container-low relative">
+<img alt="Crispy fries with yellow seasoning" class="w-full h-full object-cover" data-alt="Crispy golden french fries dusted with vibrant yellow saffron powder and herbs in a minimalist black ceramic bowl, atmospheric lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANtMk8nUlKAA2ReyocZY_KslUkl91nRJwy1_LJJXjCWfbl8XW6LpFS4Ho6KvqoTJEpVs7O0Bp0W7VBmi16AOTa73CdSIi4EjuqgG3X1_nE-JOy1KeQwEk1CpHrpPA5cz5u2JvkOQrhHnc8CGSwWgaSXmNn3bSXD0KdBca78UZzHk1p9PAWGuOfzJALFy8yKPj3JvcBz9CCMPcZgmTWVtipd8bRea_17N4VetRnVtPjz5Nx13eA2qweBqYtgQqzgRVnSrx-1r24gMM"/>
+<div class="absolute top-4 left-4">
+<div class="flex items-center gap-1 px-3 py-1 bg-surface-bright/60 backdrop-blur-md rounded-full">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="local_fire_department">local_fire_department</span>
+<span class="text-on-surface text-[10px] font-bold uppercase tracking-widest">Trending</span>
+</div>
+</div>
+</div>
+<div class="w-full md:w-2/5 pb-4">
+<div class="flex justify-between items-baseline mb-2">
+<h2 class="text-4xl font-black leading-tight tracking-tighter">Saffron Fries</h2>
+<span class="text-secondary font-headline text-2xl">$12</span>
+</div>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6">Triple-cooked hand-cut batons dusted with Kashmiri saffron and served with a roasted garlic confit dip.</p>
+<button class="w-full py-4 rounded-md bg-surface-container-highest text-secondary font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                            ADD TO ORDER
+                        </button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Floating Cart Bar (Task Specific) -->
+<div class="fixed bottom-24 left-6 right-6 z-40">
+<div class="bg-primary-container text-on-primary-container px-6 py-4 rounded-xl flex justify-between items-center shadow-[0_20px_40px_rgba(219,0,7,0.3)]">
+<div class="flex items-center gap-3">
+<div class="bg-on-primary/20 w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs">2</div>
+<span class="font-bold tracking-widest text-sm">2 ITEMS</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-black text-lg">$36.00</span>
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- BottomNavBar (Shared Component Integration) -->
+<nav class="fixed bottom-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-neutral-950/60 backdrop-blur-md rounded-t-xl z-50">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-neutral-500 hover:text-neutral-200 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-manrope text-[10px] font-bold uppercase tracking-widest mt-1">Home</span>
+</a>
+<!-- Order (Active State Logic) -->
+<a class="flex flex-col items-center justify-center text-amber-400 drop-shadow-[0_0_8px_rgba(255,199,44,0.4)] active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="restaurant" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+<span class="font-manrope text-[10px] font-bold uppercase tracking-widest mt-1">Order</span>
+</a>
+<!-- Rewards -->
+<a class="flex flex-col items-center justify-center text-neutral-500 hover:text-neutral-200 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="military_tech">military_tech</span>
+<span class="font-manrope text-[10px] font-bold uppercase tracking-widest mt-1">Rewards</span>
+</a>
+<!-- Scan -->
+<a class="flex flex-col items-center justify-center text-neutral-500 hover:text-neutral-200 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="qr_code_scanner">qr_code_scanner</span>
+<span class="font-manrope text-[10px] font-bold uppercase tracking-widest mt-1">Scan</span>
+</a>
+<!-- More -->
+<a class="flex flex-col items-center justify-center text-neutral-500 hover:text-neutral-200 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+<span class="font-manrope text-[10px] font-bold uppercase tracking-widest mt-1">More</span>
+</a>
+</nav>
+</body></html>
