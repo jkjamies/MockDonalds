@@ -1,5 +1,3 @@
-import dev.zacsweers.metro.gradle.ExperimentalMetroGradleApi
-
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
@@ -10,14 +8,12 @@ plugins {
     alias(libs.plugins.kmp.nativecoroutines)
 }
 
-@OptIn(ExperimentalMetroGradleApi::class)
-metro {
-    enableCircuitCodegen.set(true)
-    generateContributionHints.set(true)
+ksp {
+    arg("circuit.codegen.mode", "metro")
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.mockdonalds.app.composeapp"
         compileSdk = 36
         minSdk = 26
@@ -33,7 +29,7 @@ kotlin {
         iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "Shared"
+            baseName = "ComposeApp"
             isStatic = true
 
             // Export feature APIs for iOS consumption
@@ -42,18 +38,21 @@ kotlin {
             export(project(":features:rewards:api"))
             export(project(":features:scan:api"))
             export(project(":features:more:api"))
-            export(project(":features:splash:api"))
             export(project(":core:common"))
         }
     }
 
     sourceSets {
+        commonMain {
+            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+        }
         commonMain.dependencies {
             // Compose
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
+            implementation(compose.components.resources)
 
             // Feature APIs
             api(project(":features:home:api"))
@@ -61,7 +60,6 @@ kotlin {
             api(project(":features:rewards:api"))
             api(project(":features:scan:api"))
             api(project(":features:more:api"))
-            api(project(":features:splash:api"))
 
             // Feature implementations
             implementation(project(":features:home:data"))
@@ -79,9 +77,6 @@ kotlin {
             implementation(project(":features:more:data"))
             implementation(project(":features:more:domain"))
             implementation(project(":features:more:presentation"))
-            implementation(project(":features:splash:data"))
-            implementation(project(":features:splash:domain"))
-            implementation(project(":features:splash:presentation"))
 
             // Core
             api(project(":core:common"))
@@ -108,5 +103,15 @@ kotlin {
             implementation(libs.molecule.runtime)
             implementation(libs.nativecoroutines.core)
         }
+    }
+}
+
+dependencies {
+    add("kspCommonMainMetadata", libs.circuit.codegen)
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
+    if (name != "kspCommonMainKotlinMetadata") {
+        dependsOn("kspCommonMainKotlinMetadata")
     }
 }

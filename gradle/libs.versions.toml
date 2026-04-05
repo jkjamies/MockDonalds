@@ -1,6 +1,7 @@
 [versions]
 agp = "9.1.0"
 kotlin = "2.3.20"
+coil = "3.1.0"
 compose-multiplatform = "1.10.3"
 circuit = "0.33.1"
 metro = "0.13.0"
@@ -12,6 +13,7 @@ ktor = "3.1.1"
 ksp = "2.3.6"
 androidx-activity = "1.10.1"
 androidx-lifecycle = "2.8.7"
+androidx-splashscreen = "1.0.1"
 
 [libraries]
 # Circuit
@@ -21,6 +23,7 @@ circuit-runtime-presenter = { group = "com.slack.circuit", name = "circuit-runti
 circuit-runtime-ui = { group = "com.slack.circuit", name = "circuit-runtime-ui", version.ref = "circuit" }
 circuit-retained = { group = "com.slack.circuit", name = "circuit-retained", version.ref = "circuit" }
 circuit-codegen-annotations = { group = "com.slack.circuit", name = "circuit-codegen-annotations", version.ref = "circuit" }
+circuit-codegen = { group = "com.slack.circuit", name = "circuit-codegen", version.ref = "circuit" }
 
 # Metro DI
 metro-runtime = { group = "dev.zacsweers.metro", name = "runtime", version.ref = "metro" }
@@ -43,9 +46,14 @@ ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.r
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
+# Coil
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-network-ktor = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coil" }
+
 # AndroidX
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }
 androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-splashscreen" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  McDonald's M (golden arches) splash screen icon.
+  432dp × 432dp canvas per SplashScreen API. The OS restricts visibility to the
+  inner 288dp circle (radius 144 from center 216,216).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="432dp"
+    android:height="432dp"
+    android:viewportWidth="432"
+    android:viewportHeight="432">
+
+    <!-- === LEFT ARCH === -->
+    <path android:name="left_arch_core" android:pathData="M136,286 C136,286 136,146 176,146 C216,146 216,226 216,226" android:strokeColor="#FFC72C" android:strokeWidth="16" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="@android:color/transparent" android:trimPathEnd="0" />
+
+    <!-- === RIGHT ARCH === -->
+    <path android:name="right_arch_core" android:pathData="M296,286 C296,286 296,146 256,146 C216,146 216,226 216,226" android:strokeColor="#FFC72C" android:strokeWidth="16" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="@android:color/transparent" android:trimPathEnd="0" />
+</vector>

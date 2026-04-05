@@ -7,8 +7,11 @@ struct MockDonaldsApp: App {
     var body: some Scene {
         WindowGroup {
             CircuitStack(circuit: delegate.circuit) {
-                CircuitContent(screen: delegate.splashScreen)
+                CircuitContent(screen: HomeScreenPlaceholder())
             }
         }
     }
 }
+
+/// Placeholder until CMP framework exports HomeScreen
+private struct HomeScreenPlaceholder: Hashable {}

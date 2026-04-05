@@ -4,7 +4,7 @@ plugins {
 
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.mockdonalds.app.features.scan.presentation"
     }
 
@@ -14,11 +14,6 @@ kotlin {
             implementation(project(":features:scan:domain"))
             implementation(project(":core:theme"))
             implementation(project(":core:common"))
-            implementation(libs.circuit.foundation)
-            implementation(libs.circuit.runtime.presenter)
-            implementation(libs.circuit.runtime.ui)
-            implementation(libs.circuit.retained)
-            implementation(libs.circuit.codegen.annotations)
         }
     }
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:drawable="@drawable/splash_logo">
+
+    <!-- === LEFT ARCH LAYERS === -->
+    <target android:name="left_arch_core"><aapt:attr name="android:animation"><objectAnimator android:propertyName="trimPathEnd" android:valueFrom="0" android:valueTo="1" android:valueType="floatType" android:duration="1000" android:interpolator="@android:interpolator/fast_out_slow_in" /></aapt:attr></target>
+
+    <!-- === RIGHT ARCH LAYERS === -->
+    <target android:name="right_arch_core"><aapt:attr name="android:animation"><objectAnimator android:propertyName="trimPathEnd" android:valueFrom="0" android:valueTo="1" android:valueType="floatType" android:duration="1000" android:interpolator="@android:interpolator/fast_out_slow_in" /></aapt:attr></target>
+</animated-vector>

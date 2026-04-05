@@ -2,8 +2,6 @@ package com.mockdonalds.app.core.theme
 
 import androidx.compose.foundation.background
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.BlurredEdgeTreatment
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -16,7 +14,6 @@ fun Modifier.glassEffect(
     blurRadius: Int = 20,
     overlayColor: Color = SurfaceContainer.copy(alpha = 0.6f),
 ): Modifier = this
-    .blur(radius = blurRadius.dp, edgeTreatment = BlurredEdgeTreatment.Unbounded)
     .background(overlayColor)
 
 /**

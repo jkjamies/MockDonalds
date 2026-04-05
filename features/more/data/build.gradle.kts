@@ -5,7 +5,7 @@ plugins {
 
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.mockdonalds.app.features.more.data"
     }
 

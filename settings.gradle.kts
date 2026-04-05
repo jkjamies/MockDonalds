@@ -51,8 +51,3 @@ include(":features:more:api")
 include(":features:more:data")
 include(":features:more:domain")
 include(":features:more:presentation")
-
-include(":features:splash:api")
-include(":features:splash:data")
-include(":features:splash:domain")
-include(":features:splash:presentation")

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  App Icon Foreground - McDonald's M (golden arches)
+  Clean logo (no glow) for the app icon, as requested, to avoid blurriness at small scales.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="432dp"
+    android:height="432dp"
+    android:viewportWidth="432"
+    android:viewportHeight="432">
+
+    <!-- === LEFT ARCH (Clean Core) === -->
+    <path
+        android:pathData="M136,286 C136,286 136,146 176,146 C216,146 216,226 216,226"
+        android:strokeColor="#FFC72C"
+        android:strokeWidth="24"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent" />
+
+    <!-- === RIGHT ARCH (Clean Core) === -->
+    <path
+        android:pathData="M296,286 C296,286 296,146 256,146 C216,146 216,226 216,226"
+        android:strokeColor="#FFC72C"
+        android:strokeWidth="24"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent" />
+
+</vector>

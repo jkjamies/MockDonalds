@@ -1,14 +1,10 @@
 import SwiftUI
-import Shared
+import ComposeApp
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
 
     lazy var circuit: CircuitConfiguration = {
         initializeCircuit()
-    }()
-
-    lazy var splashScreen: any Hashable = {
-        SplashScreen.shared
     }()
 
     func application(
