@@ -15,21 +15,22 @@ ksp {
 kotlin {
     sourceSets {
         commonMain {
-            // Make KSP-generated factories visible to all targets
-            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
-
             dependencies {
                 implementation(compose.runtime)
+
+                implementation(catalog.findLibrary("circuit-foundation").get())
+                api(catalog.findLibrary("circuit-runtime-presenter").get())
+                implementation(catalog.findLibrary("circuit-retained").get())
+                implementation(catalog.findLibrary("circuit-codegen-annotations").get())
+            }
+        }
+        androidMain {
+            dependencies {
                 implementation(compose.foundation)
                 implementation(compose.material3)
                 implementation(compose.ui)
-                
                 implementation(catalog.findLibrary("coil-compose").get())
-                implementation(catalog.findLibrary("circuit-foundation").get())
-                implementation(catalog.findLibrary("circuit-runtime-presenter").get())
                 implementation(catalog.findLibrary("circuit-runtime-ui").get())
-                implementation(catalog.findLibrary("circuit-retained").get())
-                implementation(catalog.findLibrary("circuit-codegen-annotations").get())
             }
         }
     }
@@ -37,13 +38,12 @@ kotlin {
 
 val circuitCodegen = catalog.findLibrary("circuit-codegen").get()
 
+// Per-target KSP: each target processes its own sources (commonMain + targetMain)
+// Android sees presenters (commonMain) + UIs (androidMain) → generates both factory types
+// iOS targets see presenters (commonMain) only → generates presenter factories only
 dependencies {
-    add("kspCommonMainMetadata", circuitCodegen)
-}
-
-// Ensure all compilations depend on the common KSP task
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
-    if (name != "kspCommonMainKotlinMetadata") {
-        dependsOn("kspCommonMainKotlinMetadata")
-    }
+    add("kspAndroid", circuitCodegen)
+    add("kspIosX64", circuitCodegen)
+    add("kspIosArm64", circuitCodegen)
+    add("kspIosSimulatorArm64", circuitCodegen)
 }

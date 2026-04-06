@@ -3,8 +3,18 @@ import ComposeApp
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
 
-    lazy var circuit: CircuitConfiguration = {
-        initializeCircuit()
+    lazy var circuit: CircuitIos = {
+        let iosApp = IosApp()
+        return CircuitIos(
+            iosApp: iosApp,
+            uiFactories: [
+                ScreenUiFactory<HomeScreen, HomeUiState> { HomeView(state: $0) },
+                ScreenUiFactory<OrderScreen, OrderUiState> { OrderView(state: $0) },
+                ScreenUiFactory<RewardsScreen, RewardsUiState> { RewardsView(state: $0) },
+                ScreenUiFactory<ScanScreen, ScanUiState> { ScanView(state: $0) },
+                ScreenUiFactory<MoreScreen, MoreUiState> { MoreView(state: $0) },
+            ]
+        )
     }()
 
     func application(
@@ -13,31 +23,4 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     ) -> Bool {
         return true
     }
-}
-
-private func initializeCircuit() -> CircuitConfiguration {
-    CircuitConfiguration(
-        presenterFactories: initializePresenterFactories(),
-        uiFactories: initializeUiFactories()
-    )
-}
-
-private func initializePresenterFactories() -> [PresenterFactory] {
-    // Presenter factories will be registered here as screens are implemented
-    return []
-}
-
-private func initializeUiFactories() -> [UiFactory] {
-    // UI factories will be registered here as screens are implemented
-    return []
-}
-
-/// Placeholder protocols — these will be replaced with actual Circuit Swift interop
-/// once the shared framework is compiled and exported.
-protocol PresenterFactory {}
-protocol UiFactory {}
-
-struct CircuitConfiguration {
-    let presenterFactories: [PresenterFactory]
-    let uiFactories: [UiFactory]
 }

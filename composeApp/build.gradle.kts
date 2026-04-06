@@ -39,6 +39,13 @@ kotlin {
             export(project(":features:scan:api"))
             export(project(":features:more:api"))
             export(project(":core:common"))
+
+            // Export presentation modules (UiState types + PresenterFactory for Swift)
+            export(project(":features:home:presentation"))
+            export(project(":features:order:presentation"))
+            export(project(":features:rewards:presentation"))
+            export(project(":features:scan:presentation"))
+            export(project(":features:more:presentation"))
         }
     }
 
@@ -64,19 +71,19 @@ kotlin {
             // Feature implementations
             implementation(project(":features:home:data"))
             implementation(project(":features:home:domain"))
-            implementation(project(":features:home:presentation"))
+            api(project(":features:home:presentation"))
             implementation(project(":features:order:data"))
             implementation(project(":features:order:domain"))
-            implementation(project(":features:order:presentation"))
+            api(project(":features:order:presentation"))
             implementation(project(":features:rewards:data"))
             implementation(project(":features:rewards:domain"))
-            implementation(project(":features:rewards:presentation"))
+            api(project(":features:rewards:presentation"))
             implementation(project(":features:scan:data"))
             implementation(project(":features:scan:domain"))
-            implementation(project(":features:scan:presentation"))
+            api(project(":features:scan:presentation"))
             implementation(project(":features:more:data"))
             implementation(project(":features:more:domain"))
-            implementation(project(":features:more:presentation"))
+            api(project(":features:more:presentation"))
 
             // Core
             api(project(":core:common"))

@@ -12,7 +12,16 @@
 		2A1B6A8E2B0A00010012345C /* CircuitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B6A8D2B0A00010012345C /* CircuitView.swift */; };
 		2A1B6A902B0A00010012345D /* CircuitContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B6A8F2B0A00010012345D /* CircuitContent.swift */; };
 		2A1B6A922B0A00010012345E /* CircuitStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B6A912B0A00010012345E /* CircuitStack.swift */; };
+		2D446A462F834E110014E455 /* KMPNativeCoroutinesAsync in Frameworks */ = {isa = PBXBuildFile; productRef = 2D446A452F834E110014E455 /* KMPNativeCoroutinesAsync */; };
+		2D446A482F834E110014E455 /* KMPNativeCoroutinesCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2D446A472F834E110014E455 /* KMPNativeCoroutinesCore */; };
 		2DAB47252F82D91200717705 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DAB47242F82D91200717705 /* Assets.xcassets */; };
+		3A1C7B012C0A000100100001 /* Circuit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B002C0A000100100001 /* Circuit.swift */; };
+		3A1C7B032C0A000100100002 /* MockDonaldsTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B022C0A000100100002 /* MockDonaldsTheme.swift */; };
+		3A1C7B052C0A000100100003 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B042C0A000100100003 /* HomeView.swift */; };
+		3A1C7B072C0A000100100004 /* OrderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B062C0A000100100004 /* OrderView.swift */; };
+		3A1C7B092C0A000100100005 /* RewardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B082C0A000100100005 /* RewardsView.swift */; };
+		3A1C7B0B2C0A000100100006 /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B0A2C0A000100100006 /* ScanView.swift */; };
+		3A1C7B0D2C0A000100100007 /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B0C2C0A000100100007 /* MoreView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +33,13 @@
 		2A1B6A912B0A00010012345E /* CircuitStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircuitStack.swift; sourceTree = "<group>"; };
 		2A1B6A932B0A00010012345F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2DAB47242F82D91200717705 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3A1C7B002C0A000100100001 /* Circuit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Circuit.swift; sourceTree = "<group>"; };
+		3A1C7B022C0A000100100002 /* MockDonaldsTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDonaldsTheme.swift; sourceTree = "<group>"; };
+		3A1C7B042C0A000100100003 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		3A1C7B062C0A000100100004 /* OrderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderView.swift; sourceTree = "<group>"; };
+		3A1C7B082C0A000100100005 /* RewardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardsView.swift; sourceTree = "<group>"; };
+		3A1C7B0A2C0A000100100006 /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
+		3A1C7B0C2C0A000100100007 /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,6 +47,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D446A482F834E110014E455 /* KMPNativeCoroutinesCore in Frameworks */,
+				2D446A462F834E110014E455 /* KMPNativeCoroutinesAsync in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,19 +78,82 @@
 				2A1B6A892B0A00010012345A /* MockDonaldsApp.swift */,
 				2A1B6A8B2B0A00010012345B /* AppDelegate.swift */,
 				2A1B6A932B0A00010012345F /* Info.plist */,
-				2A1B6A942B0A000100123464 /* Bridge */,
+				3A1C7B102C0A000100100010 /* Circuit */,
+				3A1C7B112C0A000100100011 /* Theme */,
+				3A1C7B122C0A000100100012 /* Features */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
 		};
-		2A1B6A942B0A000100123464 /* Bridge */ = {
+		3A1C7B102C0A000100100010 /* Circuit */ = {
 			isa = PBXGroup;
 			children = (
+				3A1C7B002C0A000100100001 /* Circuit.swift */,
 				2A1B6A8D2B0A00010012345C /* CircuitView.swift */,
 				2A1B6A8F2B0A00010012345D /* CircuitContent.swift */,
 				2A1B6A912B0A00010012345E /* CircuitStack.swift */,
 			);
-			path = Bridge;
+			path = Circuit;
+			sourceTree = "<group>";
+		};
+		3A1C7B112C0A000100100011 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				3A1C7B022C0A000100100002 /* MockDonaldsTheme.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		3A1C7B122C0A000100100012 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				3A1C7B132C0A000100100013 /* Home */,
+				3A1C7B142C0A000100100014 /* Order */,
+				3A1C7B152C0A000100100015 /* Rewards */,
+				3A1C7B162C0A000100100016 /* Scan */,
+				3A1C7B172C0A000100100017 /* More */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		3A1C7B132C0A000100100013 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				3A1C7B042C0A000100100003 /* HomeView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		3A1C7B142C0A000100100014 /* Order */ = {
+			isa = PBXGroup;
+			children = (
+				3A1C7B062C0A000100100004 /* OrderView.swift */,
+			);
+			path = Order;
+			sourceTree = "<group>";
+		};
+		3A1C7B152C0A000100100015 /* Rewards */ = {
+			isa = PBXGroup;
+			children = (
+				3A1C7B082C0A000100100005 /* RewardsView.swift */,
+			);
+			path = Rewards;
+			sourceTree = "<group>";
+		};
+		3A1C7B162C0A000100100016 /* Scan */ = {
+			isa = PBXGroup;
+			children = (
+				3A1C7B0A2C0A000100100006 /* ScanView.swift */,
+			);
+			path = Scan;
+			sourceTree = "<group>";
+		};
+		3A1C7B172C0A000100100017 /* More */ = {
+			isa = PBXGroup;
+			children = (
+				3A1C7B0C2C0A000100100007 /* MoreView.swift */,
+			);
+			path = More;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -92,6 +173,10 @@
 			dependencies = (
 			);
 			name = iosApp;
+			packageProductDependencies = (
+				2D446A452F834E110014E455 /* KMPNativeCoroutinesAsync */,
+				2D446A472F834E110014E455 /* KMPNativeCoroutinesCore */,
+			);
 			productName = iosApp;
 			productReference = 2A1B6A802B0A00010012345F /* iosApp.app */;
 			productType = "com.apple.product-type.application";
@@ -120,6 +205,9 @@
 				Base,
 			);
 			mainGroup = 2A1B6A772B0A000100123461;
+			packageReferences = (
+				2D446A442F834E110014E455 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
+			);
 			productRefGroup = 2A1B6A812B0A000100123463 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -168,9 +256,16 @@
 			files = (
 				2A1B6A8A2B0A00010012345A /* MockDonaldsApp.swift in Sources */,
 				2A1B6A8C2B0A00010012345B /* AppDelegate.swift in Sources */,
+				3A1C7B012C0A000100100001 /* Circuit.swift in Sources */,
 				2A1B6A8E2B0A00010012345C /* CircuitView.swift in Sources */,
 				2A1B6A902B0A00010012345D /* CircuitContent.swift in Sources */,
 				2A1B6A922B0A00010012345E /* CircuitStack.swift in Sources */,
+				3A1C7B032C0A000100100002 /* MockDonaldsTheme.swift in Sources */,
+				3A1C7B052C0A000100100003 /* HomeView.swift in Sources */,
+				3A1C7B072C0A000100100004 /* OrderView.swift in Sources */,
+				3A1C7B092C0A000100100005 /* RewardsView.swift in Sources */,
+				3A1C7B0B2C0A000100100006 /* ScanView.swift in Sources */,
+				3A1C7B0D2C0A000100100007 /* MoreView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -390,6 +485,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2D446A442F834E110014E455 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rickclephas/KMP-NativeCoroutines.git";
+			requirement = {
+				kind = exactVersion;
+				version = "1.0.2-spm-async";
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2D446A452F834E110014E455 /* KMPNativeCoroutinesAsync */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2D446A442F834E110014E455 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesAsync;
+		};
+		2D446A472F834E110014E455 /* KMPNativeCoroutinesCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2D446A442F834E110014E455 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2A1B6A782B0A000100123469 /* Project object */;
 }
