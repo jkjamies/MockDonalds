@@ -4,7 +4,7 @@ kotlin = "2.3.20"
 coil = "3.1.0"
 compose-multiplatform = "1.10.3"
 circuit = "0.33.1"
-metro = "0.13.0"
+metro = "0.13.2"
 molecule = "2.2.0"
 kmp-nativecoroutines = "1.0.2"
 kotlinx-coroutines = "1.10.1"
@@ -23,7 +23,6 @@ circuit-runtime-presenter = { group = "com.slack.circuit", name = "circuit-runti
 circuit-runtime-ui = { group = "com.slack.circuit", name = "circuit-runtime-ui", version.ref = "circuit" }
 circuit-retained = { group = "com.slack.circuit", name = "circuit-retained", version.ref = "circuit" }
 circuit-codegen-annotations = { group = "com.slack.circuit", name = "circuit-codegen-annotations", version.ref = "circuit" }
-circuit-codegen = { group = "com.slack.circuit", name = "circuit-codegen", version.ref = "circuit" }
 
 # Metro DI
 metro-runtime = { group = "dev.zacsweers.metro", name = "runtime", version.ref = "metro" }

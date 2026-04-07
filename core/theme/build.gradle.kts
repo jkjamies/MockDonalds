@@ -1,5 +1,5 @@
 plugins {
-    id("mockdonalds.kmp.compose")
+    id("mockdonalds.kmp.presentation")
 }
 
 kotlin {

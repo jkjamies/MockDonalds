@@ -1,8 +1,6 @@
 plugins {
-    id("mockdonalds.kmp.library")
-    alias(libs.plugins.kotlin.serialization)
+    id("mockdonalds.kmp.data")
 }
-
 
 kotlin {
     android {
@@ -11,7 +9,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":features:more:api"))
+            implementation(project(":features:more:domain"))
             implementation(project(":core:common"))
             implementation(project(":core:network"))
         }

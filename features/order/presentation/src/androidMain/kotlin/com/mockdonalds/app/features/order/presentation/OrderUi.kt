@@ -1,6 +1,7 @@
 package com.mockdonalds.app.features.order.presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -34,11 +34,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.mockdonalds.app.features.order.api.domain.FeaturedItem
 import com.mockdonalds.app.features.order.api.navigation.OrderScreen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Inject
 
 @CircuitInject(OrderScreen::class, AppScope::class)
+@Inject
 @Composable
 fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
@@ -48,7 +51,7 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(bottom = 128.dp) // padding for floating cart
+                .padding(bottom = 128.dp)
                 .statusBarsPadding(),
         ) {
 
@@ -58,23 +61,19 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.padding(bottom = 32.dp)
             ) {
-                val categories = listOf(
-                    "Burgers" to true,
-                    "Fries" to false,
-                    "Drinks" to false,
-                    "Desserts" to false
-                )
-                items(categories) { (name, isSelected) ->
+                items(state.categories) { category ->
+                    val isSelected = category.id == state.selectedCategoryId
                     Box(
                         modifier = Modifier
                             .background(
                                 if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh,
                                 CircleShape
                             )
+                            .clickable { state.eventSink(OrderEvent.CategorySelected(category.id)) }
                             .padding(horizontal = 24.dp, vertical = 8.dp)
                     ) {
                         Text(
-                            text = name,
+                            text = category.name,
                             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                             color = if (isSelected) Color(0xFFFFEBE8) else MaterialTheme.colorScheme.onSurface
                         )
@@ -87,77 +86,67 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(horizontal = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(48.dp)
             ) {
-                // Midnight Truffle
-                FeaturedItem(
-                    title = "Midnight Truffle",
-                    price = "$24",
-                    description = "Double wagyu beef, black truffle aioli, aged gruyère, and caramelized balsamic onions on a charcoal brioche bun.",
-                    imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuCIgoaLEiJ_bs2e8Me_lZ4aFmkrX6vIJZNq8pxZvTHgTWm1Tf3owVjnv0TB10EdFBml3pZnGq5zSKGEA7e-jieP5DA8Z6TPrl-bZubc97xrDi06vNYqb2tQQ4lyimnkB7D0ea0DQWBUuDI399M7wip6bz1Sx03HyAqp4FKPE8QDJezB45YFf3lOWquJQm0PordZaY7vResoMshyeZI6C2VR-oryDi51W3sAThDRaUZdHSPcZOxs_DxnsPssQmc8SzuMxeh3BbD_iDQ",
-                    tag = "SIGNATURE",
-                    isPrimary = true
-                )
-
-                // Saffron Fries
-                FeaturedItem(
-                    title = "Saffron Fries",
-                    price = "$12",
-                    description = "Triple-cooked hand-cut batons dusted with Kashmiri saffron and served with a roasted garlic confit dip.",
-                    imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuANtMk8nUlKAA2ReyocZY_KslUkl91nRJwy1_LJJXjCWfbl8XW6LpFS4Ho6KvqoTJEpVs7O0Bp0W7VBmi16AOTa73CdSIi4EjuqgG3X1_nE-JOy1KeQwEk1CpHrpPA5cz5u2JvkOQrhHnc8CGSwWgaSXmNn3bSXD0KdBca78UZzHk1p9PAWGuOfzJALFy8yKPj3JvcBz9CCMPcZgmTWVtipd8bRea_17N4VetRnVtPjz5Nx13eA2qweBqYtgQqzgRVnSrx-1r24gMM",
-                    tag = "TRENDING",
-                    isPrimary = false
-                )
+                state.featuredItems.forEach { item ->
+                    FeaturedItemCard(
+                        item = item,
+                        onAddToOrder = { state.eventSink(OrderEvent.AddToOrder(item.id)) },
+                    )
+                }
             }
         }
 
         // Floating Cart Bar
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(24.dp)
-                .padding(bottom = 64.dp) // Leave space for Bottom Navigation
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.primary)
-                .padding(horizontal = 24.dp, vertical = 16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+        state.cartSummary?.let { cart ->
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(24.dp)
+                    .padding(bottom = 64.dp)
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.primary)
+                    .clickable { state.eventSink(OrderEvent.CartClicked) }
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .background(Color(0xFF690001).copy(alpha = 0.2f), CircleShape), // on-primary/20
-                        contentAlignment = Alignment.Center
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .background(Color(0xFF690001).copy(alpha = 0.2f), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "${cart.itemCount}",
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                color = Color(0xFFFFEBE8)
+                            )
+                        }
                         Text(
-                            text = "2",
+                            text = "${cart.itemCount} ITEMS",
                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Color(0xFFFFEBE8) // on-primary-container
+                            color = Color(0xFFFFEBE8),
+                            letterSpacing = 2.sp
                         )
                     }
-                    Text(
-                        text = "2 ITEMS",
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Color(0xFFFFEBE8),
-                        letterSpacing = 2.sp
-                    )
-                }
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "$36.00",
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Black),
-                        color = Color(0xFFFFEBE8)
-                    )
-                    Text(text = "->", color = Color(0xFFFFEBE8), fontWeight = FontWeight.Bold) // Icon placeholder
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = cart.total,
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Black),
+                            color = Color(0xFFFFEBE8)
+                        )
+                        Text(text = "->", color = Color(0xFFFFEBE8), fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }
@@ -165,14 +154,7 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun FeaturedItem(
-    title: String,
-    price: String,
-    description: String,
-    imageUrl: String,
-    tag: String,
-    isPrimary: Boolean
-) {
+fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Box(
             modifier = Modifier
@@ -182,16 +164,16 @@ fun FeaturedItem(
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
         ) {
             AsyncImage(
-                model = imageUrl,
-                contentDescription = title,
+                model = item.imageUrl,
+                contentDescription = item.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
-            
+
             Box(
                 modifier = Modifier
                     .padding(16.dp)
-                    .align(if (isPrimary) Alignment.TopEnd else Alignment.TopStart)
+                    .align(if (item.isPrimary) Alignment.TopEnd else Alignment.TopStart)
                     .background(
                         MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
                         CircleShape
@@ -199,7 +181,7 @@ fun FeaturedItem(
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text = tag,
+                    text = item.tag,
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.secondary,
                     letterSpacing = 1.sp
@@ -214,14 +196,14 @@ fun FeaturedItem(
                 verticalAlignment = Alignment.Bottom
             ) {
                 Text(
-                    text = title,
+                    text = item.title,
                     style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Black, fontSize = 32.sp),
                     color = MaterialTheme.colorScheme.onSurface,
                     lineHeight = 36.sp,
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = price,
+                    text = item.price,
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.padding(start = 16.dp)
@@ -229,14 +211,14 @@ fun FeaturedItem(
             }
 
             Text(
-                text = description,
+                text = item.description,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
             Button(
-                onClick = { },
+                onClick = onAddToOrder,
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 contentPadding = PaddingValues(),
                 modifier = Modifier.fillMaxWidth(),
@@ -246,7 +228,7 @@ fun FeaturedItem(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            if (isPrimary) {
+                            if (item.isPrimary) {
                                 Brush.horizontalGradient(listOf(MaterialTheme.colorScheme.primary, Color(0xFF930003)))
                             } else {
                                 Brush.horizontalGradient(listOf(MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.colorScheme.surfaceContainerHighest))
@@ -259,11 +241,11 @@ fun FeaturedItem(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "+", color = if (isPrimary) Color(0xFFFFEBE8) else MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold) // Icon
+                        Text(text = "+", color = if (item.isPrimary) Color(0xFFFFEBE8) else MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
                         Text(
                             text = "ADD TO ORDER",
                             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                            color = if (isPrimary) Color(0xFFFFEBE8) else MaterialTheme.colorScheme.secondary
+                            color = if (item.isPrimary) Color(0xFFFFEBE8) else MaterialTheme.colorScheme.secondary
                         )
                     }
                 }

@@ -8,57 +8,65 @@ struct MoreView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 40) {
                 // User Profile Section
-                HStack(spacing: 20) {
-                    // Profile picture with gradient border
-                    ZStack {
-                        Circle()
-                            .strokeBorder(
-                                AngularGradient(
-                                    gradient: Gradient(stops: [
-                                        .init(color: MockDonaldsColors.primary, location: 0),
-                                        .init(color: MockDonaldsColors.secondary, location: 0.45),
-                                        .init(color: MockDonaldsColors.secondary, location: 0.65),
-                                        .init(color: MockDonaldsColors.primary, location: 1),
-                                    ]),
-                                    center: .center
-                                ),
-                                lineWidth: 3
-                            )
-                            .frame(width: 68, height: 68)
+                if let profile = state.userProfile {
+                    HStack(spacing: 20) {
+                        // Profile picture with gradient border
+                        ZStack {
+                            Circle()
+                                .strokeBorder(
+                                    AngularGradient(
+                                        gradient: Gradient(stops: [
+                                            .init(color: MockDonaldsColors.primary, location: 0),
+                                            .init(color: MockDonaldsColors.secondary, location: 0.45),
+                                            .init(color: MockDonaldsColors.secondary, location: 0.65),
+                                            .init(color: MockDonaldsColors.primary, location: 1),
+                                        ]),
+                                        center: .center
+                                    ),
+                                    lineWidth: 3
+                                )
+                                .frame(width: 68, height: 68)
 
-                        AsyncImage(url: URL(string: "https://lh3.googleusercontent.com/aida-public/AB6AXuBFVaei4-VUjNq0l_ZGz6rArkAkp-dfveXXlPEl_pcZxRm8PiBdB1Ou7OAx2lEYYD9sPqyC0Rw34pGxWZ_0NWGUvTRio8O5wqu0oobfn5TWDTglgEvOWyPDn6rtcYPzMO5PK6I5IvCQfhWru2-mYEE8s45hGeUZIAQd7mvcCjvhIV9c4vrSetu5K1hBrZmIUQu2TND-knQQzGfp7U_8aQ0JPl_FgLwTXM47MsuJKCkkhDodQ_0vCMZbkh6SRx_s4Qmwlk14O8d1sgQ")) { image in
-                            image.resizable().aspectRatio(contentMode: .fill)
-                        } placeholder: {
-                            MockDonaldsColors.surfaceContainerHighest
+                            AsyncImage(url: URL(string: profile.avatarUrl)) { image in
+                                image.resizable().aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                MockDonaldsColors.surfaceContainerHighest
+                            }
+                            .frame(width: 60, height: 60)
+                            .clipShape(Circle())
                         }
-                        .frame(width: 60, height: 60)
-                        .clipShape(Circle())
-                    }
 
-                    VStack(alignment: .leading) {
-                        Text("Alex Grayson")
-                            .font(.title3)
-                            .fontWeight(.bold)
-                            .foregroundColor(MockDonaldsColors.onSurface)
-                        Text("Gold Member \u{2022} 1,240 pts")
-                            .font(.subheadline)
-                            .foregroundColor(MockDonaldsColors.onSurfaceVariant.opacity(0.8))
+                        VStack(alignment: .leading) {
+                            Text(profile.name)
+                                .font(.title3)
+                                .fontWeight(.bold)
+                                .foregroundColor(MockDonaldsColors.onSurface)
+                            Text("\(profile.tier) \u{2022} \(profile.points)")
+                                .font(.subheadline)
+                                .foregroundColor(MockDonaldsColors.onSurfaceVariant.opacity(0.8))
+                        }
+                        Spacer()
+                        Text(">")
+                            .foregroundColor(MockDonaldsColors.secondary)
                     }
-                    Spacer()
-                    Text(">")
-                        .foregroundColor(MockDonaldsColors.secondary)
+                    .padding(24)
+                    .background(MockDonaldsColors.surfaceContainerLow)
+                    .cornerRadius(12)
+                    .onTapGesture { state.eventSink(MoreEvent.ProfileClicked()) }
                 }
-                .padding(24)
-                .background(MockDonaldsColors.surfaceContainerLow)
-                .cornerRadius(12)
 
                 // Menu List
-                VStack(spacing: 4) {
-                    MenuItemView(icon: "🕒", title: "Recents", isOdd: true)
-                    MenuItemView(icon: "📍", title: "Locations", isOdd: false)
-                    MenuItemView(icon: "🥗", title: "Nutrition", isOdd: true)
-                    MenuItemView(icon: "❓", title: "Help", isOdd: false)
-                    MenuItemView(icon: "💼", title: "Careers", isOdd: true)
+                if !state.menuItems.isEmpty {
+                    VStack(spacing: 4) {
+                        ForEach(Array(state.menuItems.enumerated()), id: \.offset) { index, item in
+                            MenuItemView(
+                                icon: item.icon,
+                                title: item.title,
+                                isOdd: index % 2 == 0
+                            )
+                            .onTapGesture { state.eventSink(MoreEvent.MenuItemClicked(id: item.id)) }
+                        }
+                    }
                 }
 
                 // Join the Team Banner

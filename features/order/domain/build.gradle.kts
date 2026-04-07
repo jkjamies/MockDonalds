@@ -1,7 +1,6 @@
 plugins {
-    id("mockdonalds.kmp.library")
+    id("mockdonalds.kmp.domain")
 }
-
 
 kotlin {
     android {
@@ -10,7 +9,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":features:order:api"))
+            api(project(":features:order:api"))
             implementation(project(":core:common"))
         }
     }

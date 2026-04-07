@@ -1,5 +1,5 @@
 plugins {
-    id("mockdonalds.kmp.compose")
+    id("mockdonalds.kmp.presentation")
 }
 
 
@@ -11,7 +11,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":features:scan:api"))
-            implementation(project(":features:scan:domain"))
+            implementation(project(":core:centerpost"))
             implementation(project(":core:theme"))
             implementation(project(":core:common"))
         }

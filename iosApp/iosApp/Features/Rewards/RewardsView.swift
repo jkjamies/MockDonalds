@@ -8,143 +8,162 @@ struct RewardsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 48) {
                 // Points Hero
-                VStack(alignment: .leading) {
-                    Text("CURRENT BALANCE")
-                        .font(.caption2)
-                        .fontWeight(.bold)
-                        .tracking(2)
-                        .foregroundColor(MockDonaldsColors.secondary)
-                        .padding(.bottom, 8)
-
-                    HStack(alignment: .bottom, spacing: 8) {
-                        Text("5,432")
-                            .font(.system(size: 64, weight: .black))
-                            .foregroundColor(MockDonaldsColors.onSurface)
-                        Text("PTS")
-                            .font(.title3)
+                if let progress = state.progress {
+                    VStack(alignment: .leading) {
+                        Text("CURRENT BALANCE")
+                            .font(.caption2)
                             .fontWeight(.bold)
-                            .foregroundColor(Color(hex: 0xFFDF99))
-                            .padding(.bottom, 8)
-                    }
-
-                    // Tier Progress
-                    VStack(spacing: 16) {
-                        HStack {
-                            Text("NEXT REWARD: GOLDEN BURGER")
-                                .font(.caption)
-                                .fontWeight(.bold)
-                                .foregroundColor(MockDonaldsColors.onSurfaceVariant)
-                            Spacer()
-                            Text("568 PTS TO GO")
-                                .font(.caption)
-                                .fontWeight(.bold)
-                                .foregroundColor(MockDonaldsColors.secondary)
-                        }
-
-                        GeometryReader { geo in
-                            ZStack(alignment: .leading) {
-                                Capsule()
-                                    .fill(MockDonaldsColors.surfaceContainerHighest)
-                                    .frame(height: 12)
-                                Capsule()
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [MockDonaldsColors.primary, MockDonaldsColors.secondary],
-                                            startPoint: .leading, endPoint: .trailing
-                                        )
-                                    )
-                                    .frame(width: geo.size.width * 0.88, height: 12)
-                            }
-                        }
-                        .frame(height: 12)
-                    }
-                    .padding(.top, 32)
-                }
-
-                // Vault Specials
-                VStack(alignment: .leading, spacing: 24) {
-                    HStack {
-                        Text("The Vault Specials")
-                            .font(.title3)
-                            .fontWeight(.black)
-                            .foregroundColor(MockDonaldsColors.onSurface)
-                        Spacer()
-                        Text("VIEW ALL")
-                            .font(.caption)
-                            .fontWeight(.bold)
+                            .tracking(2)
                             .foregroundColor(MockDonaldsColors.secondary)
-                    }
+                            .padding(.bottom, 8)
 
-                    // Large Feature
-                    Color.clear
-                        .frame(height: 256)
-                        .overlay {
-                            AsyncImage(url: URL(string: "https://lh3.googleusercontent.com/aida-public/AB6AXuB5_cdcHUFE84dPqS6Myqe6DPjZLm7pZA-e1xL-BJHKW6FCi5icL1OaYz6O0QLr7dMgVSBGZTVSR3DW_x8R6vqU-1yGdcX4FitIvyYNz2CpwgdZY3RzxncTcPO2LXm58UMBTeT3MfGELg7SGehbrXvkUKdOhMUnPoHl4z5gxJMOzk8axC97CfHSaJWx-eSv0ZrGXjxJslTIoNQTYmcHWAYA7aknA-NTcH69D36Q3_7mthLoelcYqIPuYCloGsEcM3-a-aehWSYx23g")) { image in
-                                image.resizable().aspectRatio(contentMode: .fill)
-                            } placeholder: {
-                                MockDonaldsColors.surfaceContainerHigh
-                            }
+                        HStack(alignment: .bottom, spacing: 8) {
+                            Text(NumberFormatter.localizedString(from: NSNumber(value: progress.currentPoints), number: .decimal))
+                                .font(.system(size: 64, weight: .black))
+                                .foregroundColor(MockDonaldsColors.onSurface)
+                            Text("PTS")
+                                .font(.title3)
+                                .fontWeight(.bold)
+                                .foregroundColor(Color(hex: 0xFFDF99))
+                                .padding(.bottom, 8)
                         }
-                        .clipped()
-                        .overlay {
-                            LinearGradient(
-                                colors: [.clear, MockDonaldsColors.background.opacity(0.9)],
-                                startPoint: .top, endPoint: .bottom
-                            )
-                        }
-                        .overlay(alignment: .bottomLeading) {
-                            VStack(alignment: .leading, spacing: 0) {
-                                Text("EXCLUSIVE")
-                                    .font(.caption2)
+
+                        // Tier Progress
+                        VStack(spacing: 16) {
+                            HStack {
+                                Text("NEXT REWARD: \(progress.nextRewardName.uppercased())")
+                                    .font(.caption)
                                     .fontWeight(.bold)
-                                    .tracking(1)
-                                    .foregroundColor(Color(hex: 0x3F2E00))
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 4)
-                                    .background(MockDonaldsColors.secondary)
-                                    .clipShape(Capsule())
-
-                                Text("The Midnight Wagyu")
-                                    .font(.title2)
-                                    .fontWeight(.black)
-                                    .foregroundColor(MockDonaldsColors.onSurface)
-                                    .padding(.top, 12)
-                                Text("2,500 PTS")
+                                    .foregroundColor(MockDonaldsColors.onSurfaceVariant)
+                                Spacer()
+                                Text("\(progress.pointsToNextReward) PTS TO GO")
                                     .font(.caption)
                                     .fontWeight(.bold)
                                     .foregroundColor(MockDonaldsColors.secondary)
-                                    .padding(.top, 4)
                             }
-                            .padding(24)
-                        }
-                    .cornerRadius(12)
 
-                    // Secondary Specials
-                    HStack(spacing: 16) {
-                        VaultSpecialCard(
-                            title: "Truffle Penne",
-                            points: "1,200 PTS",
-                            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAtHYBNce4Wzgh78FbEg0YNoKbsdq-hHJUw2wrcV-wEYo3SNwtvHYwoqnnnOIGdLp43aAMfr8hYCP8COxfQVNjzEr9KOR0efa8_4WR8xQE-5h0zGVsaG0tc0NPiahRIFU5FXttF6_u6UrOdHCnmJgOhjeyNsgmLOv0rclMNNkWmxsfgLjH2UpmjWyzuir5SJ4y5uGhKA0Ffw4iBaWJqDdEvJVixU4liT-OqUP7F6dSYbT7IYKonLHCnzcDKGo0AZCKSsovifdDnlM"
-                        )
-                        VaultSpecialCard(
-                            title: "Lava Souffle",
-                            points: "850 PTS",
-                            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuCGwqtRYRBh2rJ9gv9F5Aj-NJIU0LV1aTQCuE-rAG-hc0Sp4HxZe68TmrfldrKtSWAyNhHps0VArNVduvzRYn7iju2ZUzmC0Ld1HgKNHCSgjcSPI6EiYYhlrRhTJiz9Lk5wmSFvZ9vjwTG6l6YLqr16HFuz9DHEoW5swuJDQYUGVMkxW-W8T_aJiKr8iM42PRBgnhBxVioMyJmqyIeZG0j4BgGaCLyK-v6mgNzlU5KAQmWDzhF4Vfr0JwBE4kOFH03cgiMyLgj8cLY"
-                        )
+                            GeometryReader { geo in
+                                ZStack(alignment: .leading) {
+                                    Capsule()
+                                        .fill(MockDonaldsColors.surfaceContainerHighest)
+                                        .frame(height: 12)
+                                    Capsule()
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [MockDonaldsColors.primary, MockDonaldsColors.secondary],
+                                                startPoint: .leading, endPoint: .trailing
+                                            )
+                                        )
+                                        .frame(width: geo.size.width * CGFloat(progress.progressFraction), height: 12)
+                                }
+                            }
+                            .frame(height: 12)
+                        }
+                        .padding(.top, 32)
+                    }
+                }
+
+                // Vault Specials
+                if !state.vaultSpecials.isEmpty {
+                    VStack(alignment: .leading, spacing: 24) {
+                        HStack {
+                            Text("The Vault Specials")
+                                .font(.title3)
+                                .fontWeight(.black)
+                                .foregroundColor(MockDonaldsColors.onSurface)
+                            Spacer()
+                            Text("VIEW ALL")
+                                .font(.caption)
+                                .fontWeight(.bold)
+                                .foregroundColor(MockDonaldsColors.secondary)
+                                .onTapGesture { state.eventSink(RewardsEvent.ViewAllClicked()) }
+                        }
+
+                        // Large Feature
+                        if let featured = state.vaultSpecials.first(where: { $0.isFeatured }) {
+                            Color.clear
+                                .frame(height: 256)
+                                .overlay {
+                                    AsyncImage(url: URL(string: featured.imageUrl)) { image in
+                                        image.resizable().aspectRatio(contentMode: .fill)
+                                    } placeholder: {
+                                        MockDonaldsColors.surfaceContainerHigh
+                                    }
+                                }
+                                .clipped()
+                                .overlay {
+                                    LinearGradient(
+                                        colors: [.clear, MockDonaldsColors.background.opacity(0.9)],
+                                        startPoint: .top, endPoint: .bottom
+                                    )
+                                }
+                                .overlay(alignment: .bottomLeading) {
+                                    VStack(alignment: .leading, spacing: 0) {
+                                        if let tag = featured.tag {
+                                            Text(tag)
+                                                .font(.caption2)
+                                                .fontWeight(.bold)
+                                                .tracking(1)
+                                                .foregroundColor(Color(hex: 0x3F2E00))
+                                                .padding(.horizontal, 12)
+                                                .padding(.vertical, 4)
+                                                .background(MockDonaldsColors.secondary)
+                                                .clipShape(Capsule())
+                                        }
+
+                                        Text(featured.title)
+                                            .font(.title2)
+                                            .fontWeight(.black)
+                                            .foregroundColor(MockDonaldsColors.onSurface)
+                                            .padding(.top, 12)
+                                        Text(featured.pointsCost)
+                                            .font(.caption)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(MockDonaldsColors.secondary)
+                                            .padding(.top, 4)
+                                    }
+                                    .padding(24)
+                                }
+                                .cornerRadius(12)
+                                .onTapGesture { state.eventSink(RewardsEvent.VaultSpecialClicked(id: featured.id)) }
+                        }
+
+                        // Secondary Specials
+                        let secondary = state.vaultSpecials.filter { !$0.isFeatured }
+                        if !secondary.isEmpty {
+                            HStack(spacing: 16) {
+                                ForEach(Array(secondary.enumerated()), id: \.offset) { _, special in
+                                    VaultSpecialCard(
+                                        title: special.title,
+                                        points: special.pointsCost,
+                                        imageUrl: special.imageUrl
+                                    )
+                                    .onTapGesture { state.eventSink(RewardsEvent.VaultSpecialClicked(id: special.id)) }
+                                }
+                            }
+                        }
                     }
                 }
 
                 // Earning History
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Earning History")
-                        .font(.title3)
-                        .fontWeight(.black)
-                        .foregroundColor(MockDonaldsColors.onSurface)
-                        .padding(.bottom, 8)
+                if !state.history.isEmpty {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Earning History")
+                            .font(.title3)
+                            .fontWeight(.black)
+                            .foregroundColor(MockDonaldsColors.onSurface)
+                            .padding(.bottom, 8)
 
-                    HistoryItemView(title: "Late Night Diner Order", subtitle: "Oct 24 \u{2022} Order #8821", points: "+125", isPositive: true, icon: "🍽️")
-                    HistoryItemView(title: "The Midnight Wagyu", subtitle: "Oct 21 \u{2022} Reward Redeemed", points: "-2,500", isPositive: false, icon: "🎁")
-                    HistoryItemView(title: "Birthday Bonus", subtitle: "Oct 18 \u{2022} Annual Gift", points: "+500", isPositive: true, icon: "🎉")
+                        ForEach(Array(state.history.enumerated()), id: \.offset) { _, entry in
+                            HistoryItemView(
+                                title: entry.title,
+                                subtitle: entry.subtitle,
+                                points: entry.points,
+                                isPositive: entry.isPositive,
+                                icon: entry.icon
+                            )
+                        }
+                    }
                 }
             }
             .padding(.horizontal, 24)

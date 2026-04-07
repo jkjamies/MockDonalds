@@ -22,6 +22,7 @@ include(":androidApp")
 include(":composeApp")
 
 // Core modules
+include(":core:centerpost")
 include(":core:theme")
 include(":core:network")
 include(":core:common")

@@ -8,8 +8,8 @@ plugins {
     alias(libs.plugins.kmp.nativecoroutines)
 }
 
-ksp {
-    arg("circuit.codegen.mode", "metro")
+metro {
+    enableCircuitCodegen.set(true)
 }
 
 kotlin {
@@ -50,9 +50,6 @@ kotlin {
     }
 
     sourceSets {
-        commonMain {
-            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
-        }
         commonMain.dependencies {
             // Compose
             implementation(compose.runtime)
@@ -87,6 +84,7 @@ kotlin {
 
             // Core
             api(project(":core:common"))
+            implementation(project(":core:centerpost"))
             implementation(project(":core:theme"))
             implementation(project(":core:network"))
 
@@ -96,7 +94,6 @@ kotlin {
             implementation(libs.circuit.runtime.presenter)
             implementation(libs.circuit.runtime.ui)
             implementation(libs.circuit.retained)
-            implementation(libs.circuit.codegen.annotations)
 
             // Metro DI
             implementation(libs.metro.runtime)
@@ -113,12 +110,3 @@ kotlin {
     }
 }
 
-dependencies {
-    add("kspCommonMainMetadata", libs.circuit.codegen)
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
-    if (name != "kspCommonMainKotlinMetadata") {
-        dependsOn("kspCommonMainKotlinMetadata")
-    }
-}

@@ -11,9 +11,9 @@ struct OrderView: View {
                     // Category Chips
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
-                            ForEach(["Burgers", "Fries", "Drinks", "Desserts"], id: \.self) { name in
-                                let isSelected = name == "Burgers"
-                                Text(name)
+                            ForEach(Array(state.categories.enumerated()), id: \.offset) { _, category in
+                                let isSelected = category.id == state.selectedCategoryId
+                                Text(category.name)
                                     .font(.caption)
                                     .fontWeight(.bold)
                                     .foregroundColor(isSelected ? Color(hex: 0xFFEBE8) : MockDonaldsColors.onSurface)
@@ -21,6 +21,7 @@ struct OrderView: View {
                                     .padding(.vertical, 8)
                                     .background(isSelected ? MockDonaldsColors.primary : MockDonaldsColors.surfaceContainerHigh)
                                     .clipShape(Capsule())
+                                    .onTapGesture { state.eventSink(OrderEvent.CategorySelected(id: category.id)) }
                             }
                         }
                         .padding(.horizontal, 24)
@@ -29,22 +30,17 @@ struct OrderView: View {
 
                     // Featured Items
                     VStack(spacing: 48) {
-                        FeaturedItemView(
-                            title: "Midnight Truffle",
-                            price: "$24",
-                            description: "Double wagyu beef, black truffle aioli, aged gruyere, and caramelized balsamic onions on a charcoal brioche bun.",
-                            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuCIgoaLEiJ_bs2e8Me_lZ4aFmkrX6vIJZNq8pxZvTHgTWm1Tf3owVjnv0TB10EdFBml3pZnGq5zSKGEA7e-jieP5DA8Z6TPrl-bZubc97xrDi06vNYqb2tQQ4lyimnkB7D0ea0DQWBUuDI399M7wip6bz1Sx03HyAqp4FKPE8QDJezB45YFf3lOWquJQm0PordZaY7vResoMshyeZI6C2VR-oryDi51W3sAThDRaUZdHSPcZOxs_DxnsPssQmc8SzuMxeh3BbD_iDQ",
-                            tag: "SIGNATURE",
-                            isPrimary: true
-                        )
-                        FeaturedItemView(
-                            title: "Saffron Fries",
-                            price: "$12",
-                            description: "Triple-cooked hand-cut batons dusted with Kashmiri saffron and served with a roasted garlic confit dip.",
-                            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuANtMk8nUlKAA2ReyocZY_KslUkl91nRJwy1_LJJXjCWfbl8XW6LpFS4Ho6KvqoTJEpVs7O0Bp0W7VBmi16AOTa73CdSIi4EjuqgG3X1_nE-JOy1KeQwEk1CpHrpPA5cz5u2JvkOQrhHnc8CGSwWgaSXmNn3bSXD0KdBca78UZzHk1p9PAWGuOfzJALFy8yKPj3JvcBz9CCMPcZgmTWVtipd8bRea_17N4VetRnVtPjz5Nx13eA2qweBqYtgQqzgRVnSrx-1r24gMM",
-                            tag: "TRENDING",
-                            isPrimary: false
-                        )
+                        ForEach(Array(state.featuredItems.enumerated()), id: \.offset) { _, item in
+                            FeaturedItemView(
+                                title: item.title,
+                                price: item.price,
+                                description: item.description_,
+                                imageUrl: item.imageUrl,
+                                tag: item.tag,
+                                isPrimary: item.isPrimary,
+                                onAddToOrder: { state.eventSink(OrderEvent.AddToOrder(itemId: item.id)) }
+                            )
+                        }
                     }
                     .padding(.horizontal, 24)
                     .padding(.bottom, 128)
@@ -52,40 +48,43 @@ struct OrderView: View {
             }
 
             // Floating Cart Bar
-            HStack {
-                HStack(spacing: 12) {
-                    Circle()
-                        .fill(Color(hex: 0x690001).opacity(0.2))
-                        .frame(width: 32, height: 32)
-                        .overlay(
-                            Text("2")
-                                .font(.caption)
-                                .fontWeight(.bold)
-                                .foregroundColor(Color(hex: 0xFFEBE8))
-                        )
-                    Text("2 ITEMS")
-                        .font(.caption)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color(hex: 0xFFEBE8))
-                        .tracking(2)
+            if let cart = state.cartSummary {
+                HStack {
+                    HStack(spacing: 12) {
+                        Circle()
+                            .fill(Color(hex: 0x690001).opacity(0.2))
+                            .frame(width: 32, height: 32)
+                            .overlay(
+                                Text("\(cart.itemCount)")
+                                    .font(.caption)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(Color(hex: 0xFFEBE8))
+                            )
+                        Text("\(cart.itemCount) ITEMS")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(Color(hex: 0xFFEBE8))
+                            .tracking(2)
+                    }
+                    Spacer()
+                    HStack(spacing: 8) {
+                        Text(cart.total)
+                            .font(.title3)
+                            .fontWeight(.black)
+                            .foregroundColor(Color(hex: 0xFFEBE8))
+                        Text("->")
+                            .fontWeight(.bold)
+                            .foregroundColor(Color(hex: 0xFFEBE8))
+                    }
                 }
-                Spacer()
-                HStack(spacing: 8) {
-                    Text("$36.00")
-                        .font(.title3)
-                        .fontWeight(.black)
-                        .foregroundColor(Color(hex: 0xFFEBE8))
-                    Text("->")
-                        .fontWeight(.bold)
-                        .foregroundColor(Color(hex: 0xFFEBE8))
-                }
+                .padding(.horizontal, 24)
+                .padding(.vertical, 16)
+                .background(MockDonaldsColors.primary)
+                .cornerRadius(12)
+                .padding(.horizontal, 24)
+                .padding(.bottom, 88)
+                .onTapGesture { state.eventSink(OrderEvent.CartClicked()) }
             }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 16)
-            .background(MockDonaldsColors.primary)
-            .cornerRadius(12)
-            .padding(.horizontal, 24)
-            .padding(.bottom, 88)
         }
         .background(MockDonaldsColors.background)
     }
@@ -98,6 +97,7 @@ struct FeaturedItemView: View {
     let imageUrl: String
     let tag: String
     let isPrimary: Bool
+    var onAddToOrder: () -> Void = {}
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -142,7 +142,7 @@ struct FeaturedItemView: View {
                 .foregroundColor(MockDonaldsColors.onSurfaceVariant)
                 .padding(.bottom, 16)
 
-            Button(action: {}) {
+            Button(action: onAddToOrder) {
                 HStack(spacing: 8) {
                     Text("+").fontWeight(.bold)
                     Text("ADD TO ORDER").font(.caption).fontWeight(.bold)
