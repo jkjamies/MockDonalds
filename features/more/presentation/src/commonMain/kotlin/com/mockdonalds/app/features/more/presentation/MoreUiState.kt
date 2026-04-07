@@ -10,7 +10,7 @@ data class MoreUiState(
     val eventSink: (MoreEvent) -> Unit,
 ) : CircuitUiState
 
-sealed interface MoreEvent {
-    data object ProfileClicked : MoreEvent
-    data class MenuItemClicked(val id: String) : MoreEvent
+sealed class MoreEvent {
+    data object ProfileClicked : MoreEvent()
+    data class MenuItemClicked(val id: String) : MoreEvent()
 }

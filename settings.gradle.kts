@@ -23,6 +23,7 @@ include(":composeApp")
 
 // Core modules
 include(":core:centerpost")
+include(":core:test-fixtures")
 include(":core:theme")
 include(":core:network")
 include(":core:common")
@@ -32,6 +33,7 @@ include(":features:home:api")
 include(":features:home:data")
 include(":features:home:domain")
 include(":features:home:presentation")
+include(":features:home:test")
 
 include(":features:order:api")
 include(":features:order:data")

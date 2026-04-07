@@ -13,8 +13,8 @@ data class OrderUiState(
     val eventSink: (OrderEvent) -> Unit,
 ) : CircuitUiState
 
-sealed interface OrderEvent {
-    data class CategorySelected(val id: String) : OrderEvent
-    data class AddToOrder(val itemId: String) : OrderEvent
-    data object CartClicked : OrderEvent
+sealed class OrderEvent {
+    data class CategorySelected(val id: String) : OrderEvent()
+    data class AddToOrder(val itemId: String) : OrderEvent()
+    data object CartClicked : OrderEvent()
 }

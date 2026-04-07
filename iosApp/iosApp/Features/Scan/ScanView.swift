@@ -3,6 +3,7 @@ import ComposeApp
 
 struct ScanView: View {
     let state: ScanUiState
+    @State private var gradientAngle: Double = 0
 
     var body: some View {
         ScrollView {
@@ -22,7 +23,7 @@ struct ScanView: View {
                                 .foregroundColor(MockDonaldsColors.onSurfaceVariant)
                                 .padding(.bottom, 32)
 
-                            // QR Code with gradient border
+                            // QR Code with animated gradient border
                             ZStack {
                                 AngularGradient(
                                     gradient: Gradient(stops: [
@@ -31,10 +32,16 @@ struct ScanView: View {
                                         .init(color: MockDonaldsColors.secondary, location: 0.65),
                                         .init(color: MockDonaldsColors.primary, location: 1),
                                     ]),
-                                    center: .center
+                                    center: .center,
+                                    angle: .degrees(gradientAngle)
                                 )
                                 .frame(width: 260, height: 260)
                                 .clipShape(RoundedRectangle(cornerRadius: 16))
+                                .onAppear {
+                                    withAnimation(.linear(duration: 3).repeatForever(autoreverses: false)) {
+                                        gradientAngle = 360
+                                    }
+                                }
 
                                 AsyncImage(url: URL(string: member.qrCodeUrl)) { image in
                                     image.resizable().aspectRatio(contentMode: .fit)

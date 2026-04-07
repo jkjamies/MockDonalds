@@ -14,5 +14,7 @@ kotlin {
             api(project(":core:common"))
             implementation(compose.runtime)
         }
+        commonTest.dependencies {
+        }
     }
 }

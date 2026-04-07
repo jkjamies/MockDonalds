@@ -23,6 +23,11 @@ kotlin {
                 implementation(catalog.findLibrary("circuit-codegen-annotations").get())
             }
         }
+        commonTest {
+            dependencies {
+                implementation(catalog.findLibrary("circuit-test").get())
+            }
+        }
         androidMain {
             dependencies {
                 implementation(compose.foundation)

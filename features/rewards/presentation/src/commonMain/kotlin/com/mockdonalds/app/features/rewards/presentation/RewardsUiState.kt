@@ -12,7 +12,7 @@ data class RewardsUiState(
     val eventSink: (RewardsEvent) -> Unit,
 ) : CircuitUiState
 
-sealed interface RewardsEvent {
-    data class VaultSpecialClicked(val id: String) : RewardsEvent
-    data object ViewAllClicked : RewardsEvent
+sealed class RewardsEvent {
+    data class VaultSpecialClicked(val id: String) : RewardsEvent()
+    data object ViewAllClicked : RewardsEvent()
 }

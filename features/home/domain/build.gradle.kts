@@ -12,5 +12,7 @@ kotlin {
             api(project(":features:home:api"))
             implementation(project(":core:common"))
         }
+        commonTest.dependencies {
+        }
     }
 }

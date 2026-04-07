@@ -13,8 +13,8 @@ data class HomeUiState(
     val eventSink: (HomeEvent) -> Unit,
 ) : CircuitUiState
 
-sealed interface HomeEvent {
-    data object HeroCtaClicked : HomeEvent
-    data class CravingClicked(val id: String) : HomeEvent
-    data class ExploreItemClicked(val id: String) : HomeEvent
+sealed class HomeEvent {
+    data object HeroCtaClicked : HomeEvent()
+    data class CravingClicked(val id: String) : HomeEvent()
+    data class ExploreItemClicked(val id: String) : HomeEvent()
 }

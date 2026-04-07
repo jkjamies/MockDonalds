@@ -9,7 +9,9 @@ dependencies {
     compileOnly(libs.plugins.compose.compiler.toDep())
     compileOnly(libs.plugins.kotlin.parcelize.toDep())
     compileOnly(libs.plugins.kotlin.serialization.toDep())
+    compileOnly(libs.plugins.ksp.toDep())
     compileOnly(libs.plugins.metro.toDep())
+    implementation(libs.plugins.kotest.toDep())
 }
 
 fun Provider<PluginDependency>.toDep() = map {

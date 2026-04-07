@@ -10,7 +10,7 @@ data class ScanUiState(
     val eventSink: (ScanEvent) -> Unit,
 ) : CircuitUiState
 
-sealed interface ScanEvent {
-    data object PayNowClicked : ScanEvent
-    data object ViewOffersClicked : ScanEvent
+sealed class ScanEvent {
+    data object PayNowClicked : ScanEvent()
+    data object ViewOffersClicked : ScanEvent()
 }

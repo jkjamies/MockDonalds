@@ -14,6 +14,9 @@ A Kotlin Multiplatform (KMP) reference app showcasing a clean, scalable architec
 | [KMP-NativeCoroutines](https://github.com/rickclephas/KMP-NativeCoroutines) | 1.0.2 | Bridges Kotlin `StateFlow` to Swift `AsyncSequence` |
 | [Coil](https://coil-kt.github.io/coil/) | 3.1.0 | Image loading (Compose) |
 | [Ktor](https://ktor.io/) | 3.1.1 | HTTP client (KMP) |
+| [Kotest](https://kotest.io/) | 6.1.11 | Test framework (BehaviorSpec, assertions, KMP) |
+| [Turbine](https://github.com/cashapp/turbine) | 1.2.0 | Flow testing |
+| [Circuit Test](https://slackhq.github.io/circuit/) | 0.33.1 | Presenter testing (`presenterTestOf`, `FakeNavigator`) |
 
 ## Architecture Overview
 
@@ -451,6 +454,7 @@ MockDonalds/
 │   ├── centerpost/                     # Business logic framework (interactors, result types, launcher)
 │   ├── common/                         # Shared utilities (Parcelize, ResultWrapper)
 │   ├── network/                        # HTTP client (Ktor)
+│   ├── test-fixtures/                  # Shared test utilities (TestCenterPostDispatchers, KotestProjectConfig)
 │   └── theme/                          # Design system (Colors, Typography, GlassEffect)
 │
 ├── features/
@@ -458,6 +462,7 @@ MockDonalds/
 │   │   ├── api/                        # HomeScreen, HomeModels, GetHomeContent abstract class
 │   │   ├── domain/                     # GetHomeContentImpl, HomeRepository interface
 │   │   ├── data/                       # HomeRepositoryImpl
+│   │   ├── test/                       # Feature-specific test fakes (FakeGetHomeContent)
 │   │   └── presentation/              
 │   │       ├── commonMain/             # HomePresenter, HomeUiState, HomeEvent
 │   │       └── androidMain/            # HomeUi (Compose)
@@ -492,7 +497,14 @@ MockDonalds/
 Convention plugins eliminate boilerplate across the 20+ feature modules. Each layer has a dedicated plugin:
 
 ### `mockdonalds.kmp.library`
-Base KMP library plugin. Used by `api` modules. Pure Kotlin — no DI, no Compose.
+Base KMP library plugin. Used by `api` modules. Provides:
+- KMP targets: Android (`com.android.kotlin.multiplatform.library`), iOS (x64, arm64, simulator)
+- Android host tests (`withHostTest { isReturnDefaultValues = true }`)
+- Kotest 6.1.11 + KSP for native test discovery (`io.kotest` Gradle plugin)
+- All `commonTest` dependencies: kotest-framework-engine, kotest-assertions-core, kotlinx-coroutines-test, turbine
+- Auto-generated `KotestProjectConfig` per module for native KSP discovery
+- `core:test-fixtures` as a `commonTest` dependency (except for test-fixtures itself)
+- `kotest-runner-junit6` on `androidHostTest` with JUnit Platform configuration
 
 ### `mockdonalds.kmp.domain`
 ```kotlin
@@ -723,6 +735,175 @@ open iosApp/iosApp.xcodeproj
 ```
 
 The Xcode project includes a "Compile Kotlin Framework" build phase that runs the Gradle task automatically.
+
+## Testing
+
+### Running Tests
+
+```bash
+# Android host tests (JVM — fastest, all modules)
+./gradlew testAndroidHostTest
+
+# iOS native tests (single architecture)
+./gradlew iosSimulatorArm64Test
+
+# All targets
+./gradlew allTests
+```
+
+All tests live in `commonTest` source sets and run on both Android (JVM via host tests) and iOS (native via Kotlin/Native).
+
+### Test Framework: Kotest 6.1.11
+
+Tests use [Kotest](https://kotest.io/) BehaviorSpec (Given/When/Then) with the following stack:
+
+| Library | Purpose |
+|---------|---------|
+| `kotest-framework-engine` | BehaviorSpec, test discovery (commonTest) |
+| `kotest-assertions-core` | `shouldBe`, `shouldHaveSize`, etc. |
+| `kotest-runner-junit6` | JUnit Platform runner (androidHostTest only) |
+| `kotlinx-coroutines-test` | `TestDispatcher`, `StandardTestDispatcher` |
+| `turbine` | Flow testing (`test { awaitItem() }`) |
+| `circuit-test` | `presenterTestOf()`, `FakeNavigator` (presentation modules) |
+
+All test dependencies are provided automatically by the `mockdonalds.kmp.library` convention plugin — no per-module configuration needed.
+
+### Kotest Concurrent Spec Execution
+
+Specs run concurrently (up to 4 in parallel) via a shared `KotestProjectConfig`:
+
+```kotlin
+// core/test-fixtures/src/commonMain/kotlin/.../KotestProjectConfig.kt
+open class KotestProjectConfig : AbstractProjectConfig() {
+    override val specExecutionMode = SpecExecutionMode.LimitedConcurrency(4)
+}
+```
+
+**Why auto-generation is needed:** Kotest uses KSP for test discovery on native targets. KSP only processes source files within the module being compiled — it cannot discover `AbstractProjectConfig` subclasses from compiled dependencies. Following [Kotest's recommended pattern for sharing config across modules](https://kotest.io/docs/next/framework/project-config.html#sharing-config-across-modules), the convention plugin auto-generates a one-liner subclass into each module's `build/generated/kotest/commonTest/kotlin/`:
+
+```kotlin
+// Auto-generated into build/generated/ by mockdonalds.kmp.library convention plugin
+package io.kotest.provided
+
+import com.mockdonalds.app.core.test.KotestProjectConfig
+
+class ProjectConfig : KotestProjectConfig()
+```
+
+This means:
+- **One place to change settings** — edit `KotestProjectConfig` in `core:test-fixtures`
+- **Zero per-module boilerplate** — the convention plugin handles generation
+- **Native KSP discovers it** — because it's generated as source in each module
+- **JVM discovers it** — via `systemProperty("kotest.framework.config.fqn", "io.kotest.provided.ProjectConfig")`
+
+### Android Host Tests
+
+The `com.android.kotlin.multiplatform.library` plugin enables Android JVM unit tests via `withHostTest`:
+
+```kotlin
+android {
+    withHostTest {
+        isReturnDefaultValues = true  // Prevents "Method not mocked" errors from android.util.Log etc.
+    }
+}
+```
+
+The `androidHostTest` source set gets `kotest-runner-junit6` for JUnit Platform integration, and all `Test` tasks are configured with `useJUnitPlatform()`. Test output includes pass/fail/skip events via `testLogging`.
+
+### Test Module Structure
+
+```
+core/test-fixtures/                    # Shared test utilities (all modules get this automatically)
+├── TestCenterPostDispatchers          # Routes all dispatchers to TestDispatcher
+└── KotestProjectConfig                # Base config for concurrent spec execution
+
+features/{feature}/test/               # Feature-specific test fakes
+└── FakeGetFeatureContent              # Fake use case backed by MutableStateFlow
+```
+
+**`core:test-fixtures`** is automatically added as a `commonTest` dependency to every module by the convention plugin (except itself). It provides:
+- `TestCenterPostDispatchers` — swaps all dispatchers to a `TestDispatcher` for deterministic coroutine execution
+- `KotestProjectConfig` — base class for the auto-generated project config
+
+**Feature test modules** (e.g., `features/home/test/`) contain fakes for that feature's use cases. These are `commonMain` modules (not test modules) so they can be pulled as test dependencies by other modules:
+
+```kotlin
+// features/home/test/build.gradle.kts
+plugins { id("mockdonalds.kmp.library") }
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            api(project(":features:home:api"))
+            api(project(":core:test-fixtures"))
+        }
+    }
+}
+```
+
+Presentation modules pull feature test fakes for presenter testing:
+```kotlin
+// features/home/presentation/build.gradle.kts
+commonTest.dependencies {
+    implementation(project(":features:home:test"))
+}
+```
+
+Domain tests use inline fakes for repository interfaces (since repositories are internal to the domain/data boundary).
+
+### Example: Presenter Test
+
+```kotlin
+class HomePresenterTest : BehaviorSpec({
+    Given("a home presenter with content available") {
+        val fakeGetHomeContent = FakeGetHomeContent()
+        val dispatchers = TestCenterPostDispatchers()
+        val navigator = FakeNavigator(HomeScreen)
+
+        When("the presenter emits state") {
+            Then("it should start with empty defaults then populate") {
+                presenterTestOf(
+                    presentFunction = {
+                        HomePresenter(
+                            navigator = navigator,
+                            getHomeContent = fakeGetHomeContent,
+                            dispatchers = dispatchers,
+                        )
+                    },
+                ) {
+                    val initial = awaitItem()
+                    initial.userName shouldBe ""
+
+                    val state = awaitItem()
+                    state.userName shouldBe "TestUser"
+                    state.heroPromotion?.title shouldBe "Test Promo"
+                }
+            }
+        }
+    }
+})
+```
+
+### Example: Domain Use Case Test
+
+```kotlin
+class GetHomeContentImplTest : BehaviorSpec({
+    Given("a home content interactor with repository data") {
+        val userNameFlow = MutableStateFlow("TestUser")
+        val repository = object : HomeRepository { /* inline fake */ }
+        val interactor = GetHomeContentImpl(repository)
+
+        When("the interactor is invoked and flow is collected") {
+            Then("it should combine all repository data into HomeContent") {
+                interactor(Unit)
+                interactor.flow.test {
+                    val content = awaitItem()
+                    content.userName shouldBe "TestUser"
+                }
+            }
+        }
+    }
+})
+```
 
 ## Features
 
