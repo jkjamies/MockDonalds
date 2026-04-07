@@ -41,8 +41,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.features.scan.api.navigation.ScanScreen
+import com.mockdonalds.app.features.scan.api.ui.ScanTestTags
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
@@ -72,6 +74,7 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                    .testTag(ScanTestTags.MEMBER_CARD)
             ) {
                 Box(
                     modifier = Modifier
@@ -169,7 +172,7 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
         // Rewards Progress
         state.rewardsProgress?.let { progress ->
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag(ScanTestTags.REWARDS_PROGRESS),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Row(
@@ -234,7 +237,7 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
                 shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(vertical = 20.dp),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f).testTag(ScanTestTags.PAY_NOW_BUTTON)
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "💳", color = MaterialTheme.colorScheme.secondary)
@@ -251,7 +254,7 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
                 shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(vertical = 20.dp),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f).testTag(ScanTestTags.VIEW_OFFERS_BUTTON)
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "🏷️", color = MaterialTheme.colorScheme.secondary)
@@ -270,6 +273,7 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                .testTag(ScanTestTags.PRO_TIP)
                 .padding(start = 4.dp)
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
                 .padding(20.dp)

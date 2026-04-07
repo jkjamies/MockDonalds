@@ -33,9 +33,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.features.order.api.domain.FeaturedItem
 import com.mockdonalds.app.features.order.api.navigation.OrderScreen
+import com.mockdonalds.app.features.order.api.ui.OrderTestTags
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
@@ -65,6 +67,7 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
                     val isSelected = category.id == state.selectedCategoryId
                     Box(
                         modifier = Modifier
+                            .testTag("${OrderTestTags.CATEGORY_CHIP}-${category.id}")
                             .background(
                                 if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh,
                                 CircleShape
@@ -83,13 +86,14 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
 
             // Featured Items
             Column(
-                modifier = Modifier.padding(horizontal = 24.dp),
+                modifier = Modifier.padding(horizontal = 24.dp).testTag(OrderTestTags.FEATURED_ITEMS_SECTION),
                 verticalArrangement = Arrangement.spacedBy(48.dp)
             ) {
                 state.featuredItems.forEach { item ->
                     FeaturedItemCard(
                         item = item,
                         onAddToOrder = { state.eventSink(OrderEvent.AddToOrder(item.id)) },
+                        modifier = Modifier.testTag("${OrderTestTags.FEATURED_ITEM_CARD}-${item.id}"),
                     )
                 }
             }
@@ -105,6 +109,7 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.primary)
+                    .testTag(OrderTestTags.CART_BAR)
                     .clickable { state.eventSink(OrderEvent.CartClicked) }
                     .padding(horizontal = 24.dp, vertical = 16.dp)
             ) {
@@ -154,8 +159,8 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit, modifier: Modifier = Modifier) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -221,7 +226,7 @@ fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit) {
                 onClick = onAddToOrder,
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 contentPadding = PaddingValues(),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("${OrderTestTags.ADD_TO_ORDER_BUTTON}-${item.id}"),
                 shape = RoundedCornerShape(6.dp)
             ) {
                 Box(

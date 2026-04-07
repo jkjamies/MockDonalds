@@ -31,10 +31,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.features.rewards.api.domain.HistoryEntry
 import com.mockdonalds.app.features.rewards.api.domain.VaultSpecial
 import com.mockdonalds.app.features.rewards.api.navigation.RewardsScreen
+import com.mockdonalds.app.features.rewards.api.ui.RewardsTestTags
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
@@ -58,7 +60,7 @@ fun RewardsUi(state: RewardsUiState, modifier: Modifier = Modifier) {
 
         // Points Hero Section
         state.progress?.let { progress ->
-            Box(modifier = Modifier.fillMaxWidth()) {
+            Box(modifier = Modifier.fillMaxWidth().testTag(RewardsTestTags.POINTS_SECTION)) {
                 Box(
                     modifier = Modifier
                         .size(256.dp)
@@ -142,7 +144,7 @@ fun RewardsUi(state: RewardsUiState, modifier: Modifier = Modifier) {
 
         // The Vault Specials
         if (state.vaultSpecials.isNotEmpty()) {
-            Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+            Column(modifier = Modifier.testTag(RewardsTestTags.VAULT_SPECIALS_SECTION), verticalArrangement = Arrangement.spacedBy(24.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -157,7 +159,7 @@ fun RewardsUi(state: RewardsUiState, modifier: Modifier = Modifier) {
                         text = "VIEW ALL",
                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.clickable { state.eventSink(RewardsEvent.ViewAllClicked) }
+                        modifier = Modifier.testTag(RewardsTestTags.VIEW_ALL).clickable { state.eventSink(RewardsEvent.ViewAllClicked) }
                     )
                 }
 
@@ -166,6 +168,7 @@ fun RewardsUi(state: RewardsUiState, modifier: Modifier = Modifier) {
                     FeaturedVaultCard(
                         special = featured,
                         onClick = { state.eventSink(RewardsEvent.VaultSpecialClicked(featured.id)) },
+                        modifier = Modifier.testTag("${RewardsTestTags.FEATURED_VAULT_CARD}-${featured.id}"),
                     )
                 }
 
@@ -180,7 +183,7 @@ fun RewardsUi(state: RewardsUiState, modifier: Modifier = Modifier) {
                             VaultSpecialCard(
                                 special = special,
                                 onClick = { state.eventSink(RewardsEvent.VaultSpecialClicked(special.id)) },
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier.weight(1f).testTag("${RewardsTestTags.VAULT_SPECIAL_CARD}-${special.id}"),
                             )
                         }
                     }
@@ -190,7 +193,7 @@ fun RewardsUi(state: RewardsUiState, modifier: Modifier = Modifier) {
 
         // Earning History
         if (state.history.isNotEmpty()) {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(modifier = Modifier.testTag(RewardsTestTags.HISTORY_SECTION), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text(
                     text = "Earning History",
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Black),
@@ -210,9 +213,9 @@ fun RewardsUi(state: RewardsUiState, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun FeaturedVaultCard(special: VaultSpecial, onClick: () -> Unit) {
+fun FeaturedVaultCard(special: VaultSpecial, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(256.dp)
             .clip(RoundedCornerShape(12.dp))

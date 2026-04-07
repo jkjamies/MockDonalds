@@ -32,9 +32,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.features.more.api.domain.MoreMenuItem
 import com.mockdonalds.app.features.more.api.navigation.MoreScreen
+import com.mockdonalds.app.features.more.api.ui.MoreTestTags
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
@@ -63,6 +65,7 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                    .testTag(MoreTestTags.PROFILE_SECTION)
                     .clickable { state.eventSink(MoreEvent.ProfileClicked) }
                     .padding(24.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -119,12 +122,13 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
 
         // Menu List
         if (state.menuItems.isNotEmpty()) {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Column(modifier = Modifier.testTag(MoreTestTags.MENU_LIST), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 state.menuItems.forEachIndexed { index, item ->
                     MenuItemRow(
                         item = item,
                         isOdd = index % 2 == 0,
                         onClick = { state.eventSink(MoreEvent.MenuItemClicked(item.id)) },
+                        modifier = Modifier.testTag("${MoreTestTags.MENU_ITEM}-${item.id}"),
                     )
                 }
             }
@@ -136,6 +140,7 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
                 .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                .testTag(MoreTestTags.JOIN_TEAM_BANNER)
         ) {
             AsyncImage(
                 model = "https://lh3.googleusercontent.com/aida-public/AB6AXuDtoKS4itUpfiQzJW9FGblMq9_3wzFqLR5CaS2eM929pYK-KWYvYqQiXcGfWz8ZVUlPcU1hmo0qseeHENBB_sP17bYCskdZ9VPfrIdYy7P63B5tGH6kgBQmn_i0RAanG3-y3r2F2U9G7IdqC5pgPPtd0CVRV-7jjEKtk7VGHqiwH40htvVQRSEZSqoJZ0hnlFw0FvqVNCM5k7pn_eI5N9zunkr86XGaaEl2qddd7Zld_sJOFnulnp_tJ8eqVDNAqvGdId-JcKf1t2s",
@@ -203,9 +208,9 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MenuItemRow(item: MoreMenuItem, isOdd: Boolean, onClick: () -> Unit) {
+fun MenuItemRow(item: MoreMenuItem, isOdd: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(if (isOdd) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceContainerLow)

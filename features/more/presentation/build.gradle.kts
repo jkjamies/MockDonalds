@@ -15,5 +15,8 @@ kotlin {
             implementation(project(":core:theme"))
             implementation(project(":core:common"))
         }
+        commonTest.dependencies {
+            implementation(project(":features:more:test"))
+        }
     }
 }

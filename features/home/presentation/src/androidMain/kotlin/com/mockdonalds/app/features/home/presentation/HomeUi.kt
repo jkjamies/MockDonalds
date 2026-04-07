@@ -32,12 +32,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.features.home.api.domain.Craving
 import com.mockdonalds.app.features.home.api.domain.ExploreItem
 import com.mockdonalds.app.features.home.api.navigation.HomeScreen
+import com.mockdonalds.app.features.home.api.ui.HomeTestTags
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
@@ -68,7 +70,8 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
             Text(
                 text = state.userName,
                 style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.ExtraBold),
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.testTag(HomeTestTags.USER_NAME)
             )
         }
 
@@ -78,6 +81,7 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(480.dp)
+                    .testTag(HomeTestTags.HERO_BANNER)
             ) {
                 AsyncImage(
                     model = hero.imageUrl,
@@ -140,7 +144,7 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                         onClick = { state.eventSink(HomeEvent.HeroCtaClicked) },
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                         contentPadding = PaddingValues(),
-                        modifier = Modifier.padding(top = 16.dp),
+                        modifier = Modifier.padding(top = 16.dp).testTag(HomeTestTags.HERO_CTA_BUTTON),
                         shape = RoundedCornerShape(6.dp)
                     ) {
                         Box(
@@ -164,7 +168,10 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
 
         // Recent Cravings Section
         if (state.recentCravings.isNotEmpty()) {
-            Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+            Column(
+                modifier = Modifier.testTag(HomeTestTags.RECENT_CRAVINGS_SECTION),
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -192,6 +199,7 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                         CravingCard(
                             craving = craving,
                             onClick = { state.eventSink(HomeEvent.CravingClicked(craving.id)) },
+                            modifier = Modifier.testTag("${HomeTestTags.CRAVING_CARD}-${craving.id}"),
                         )
                     }
                 }
@@ -201,7 +209,7 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
         // Quick Actions Bento Grid
         if (state.exploreItems.isNotEmpty()) {
             Column(
-                modifier = Modifier.padding(horizontal = 24.dp),
+                modifier = Modifier.padding(horizontal = 24.dp).testTag(HomeTestTags.EXPLORE_SECTION),
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 Text(
@@ -223,6 +231,7 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                                 .height(160.dp)
                                 .clip(RoundedCornerShape(12.dp))
                                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                                .testTag("${HomeTestTags.EXPLORE_ITEM}-${item.id}")
                                 .clickable { state.eventSink(HomeEvent.ExploreItemClicked(item.id)) }
                                 .padding(24.dp)
                         ) {
@@ -247,6 +256,7 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
                             .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                            .testTag("${HomeTestTags.EXPLORE_ITEM}-${item.id}")
                             .clickable { state.eventSink(HomeEvent.ExploreItemClicked(item.id)) }
                             .padding(24.dp)
                     ) {
@@ -284,9 +294,9 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun CravingCard(craving: Craving, onClick: () -> Unit) {
+fun CravingCard(craving: Craving, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .width(288.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.surfaceContainerLow)

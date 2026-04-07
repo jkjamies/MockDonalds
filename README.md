@@ -463,9 +463,10 @@ MockDonalds/
 │   │   ├── domain/                     # GetHomeContentImpl, HomeRepository interface
 │   │   ├── data/                       # HomeRepositoryImpl
 │   │   ├── test/                       # Feature-specific test fakes (FakeGetHomeContent)
-│   │   └── presentation/              
+│   │   └── presentation/
 │   │       ├── commonMain/             # HomePresenter, HomeUiState, HomeEvent
-│   │       └── androidMain/            # HomeUi (Compose)
+│   │       ├── androidMain/            # HomeUi (Compose) + TestTags
+│   │       └── androidDeviceTest/      # UI tests: StateRobot, UiRobot, UiTest
 │   ├── order/                          # Same structure: menu, featured items, cart
 │   ├── rewards/                        # Same structure: points, vault specials, history
 │   ├── scan/                           # Same structure: QR code, member info, progress
@@ -538,7 +539,7 @@ metro {
     enableCircuitCodegen.set(true)      // Metro's built-in Circuit codegen
 }
 ```
-For presentation modules. Provides Compose runtime, Circuit, and Metro with built-in Circuit factory generation. The `circuit-codegen-annotations` artifact is added automatically by Metro. Provides Coil for image loading on Android.
+For presentation modules. Provides Compose runtime, Circuit, and Metro with built-in Circuit factory generation. The `circuit-codegen-annotations` artifact is added automatically by Metro. Provides Coil for image loading on Android. Configures `androidDeviceTest` with `compose-ui-test-junit4`, `core:test-fixtures`, and `AndroidJUnitRunner` for instrumented UI tests.
 
 ## How to Add a New Feature
 
@@ -740,18 +741,165 @@ The Xcode project includes a "Compile Kotlin Framework" build phase that runs th
 
 ### Running Tests
 
+| Command | Scope | Speed | CI Stage |
+|---------|-------|-------|----------|
+| `./gradlew testAndroidHostTest` | All Android unit tests (JVM) | Fast | Unit tests |
+| `./gradlew iosSimulatorArm64Test` | All iOS unit tests (K/Native) | Fast | Unit tests |
+| `./gradlew :konsist:test` | Architecture enforcement only | Fast | Separate — fast feedback |
+| `./gradlew connectedAndroidDeviceTest` | Android UI tests (emulator) | Slow | UI tests |
+| `./gradlew allTests` | All targets (Android + iOS) | Medium | Full suite |
+
+**Konsist runs separately from unit tests.** It is a pure JVM module (`kotlin("jvm")`) and is not included in `testAndroidHostTest`, `iosSimulatorArm64Test`, or `allTests`. This is intentional — in CI, Konsist should run as its own step for fast architectural feedback independent of the unit test suite.
+
+Unit tests live in `commonTest` source sets and run on both Android (JVM via host tests) and iOS (native via Kotlin/Native).
+
+### Android UI Tests (Instrumented)
+
+Component-level UI tests run on a real device/emulator via `androidDeviceTest` (not Robolectric). They validate that Compose UI renders correctly for given states and emits correct events on interaction.
+
 ```bash
-# Android host tests (JVM — fastest, all modules)
-./gradlew testAndroidHostTest
+# Run all UI tests (requires a connected device or emulator)
+./gradlew connectedAndroidDeviceTest
 
-# iOS native tests (single architecture)
-./gradlew iosSimulatorArm64Test
-
-# All targets
-./gradlew allTests
+# Run a single feature's UI tests
+./gradlew :features:home:presentation:connectedAndroidDeviceTest
 ```
 
-All tests live in `commonTest` source sets and run on both Android (JVM via host tests) and iOS (native via Kotlin/Native).
+#### Infrastructure
+
+The `mockdonalds.kmp.presentation` convention plugin configures everything:
+
+- **`withDeviceTest`** — enables the `androidDeviceTest` source set with `AndroidJUnitRunner`
+- **Packaging excludes** — `META-INF/AL2.0`, `META-INF/LGPL2.1`, etc. to avoid duplicate resource conflicts
+- **`compose-ui-test-junit4`** — JetBrains Compose Multiplatform test library
+- **`core:test-fixtures`** — shared `StateRobot` base class
+- **Disabled task** — `copyAndroidDeviceTestComposeResourcesToAndroidAssets` is disabled as a workaround for a Compose Multiplatform 1.10.3 bug
+
+Each presentation module's `androidDeviceTest` also includes an `AndroidManifest.xml` declaring `ComponentActivity` (required by `createComposeRule()`).
+
+#### Robot Pattern
+
+UI tests use a two-layer robot pattern where the **UiRobot owns the StateRobot**. Tests only interact with the UiRobot:
+
+```
+Test ──► UiRobot ──► StateRobot
+              │
+              └──► ComposeContentTestRule
+```
+
+**StateRobot** (`core:test-fixtures`) — pure Kotlin base class for constructing `UiState` objects with captured event sinks:
+
+```kotlin
+abstract class StateRobot<State, Event> {
+    val capturedEvents: List<Event>
+    val lastEvent: Event?
+    protected fun createEventSink(): (Event) -> Unit
+    abstract fun defaultState(): State
+}
+```
+
+**Feature StateRobot** — constructs states for different scenarios:
+
+```kotlin
+class HomeStateRobot : StateRobot<HomeUiState, HomeEvent>() {
+    override fun defaultState() = HomeUiState(
+        userName = "TestUser",
+        heroPromotion = HeroPromotion(...),
+        recentCravings = listOf(Craving(...)),
+        exploreItems = listOf(ExploreItem(...), ExploreItem(...)),
+        eventSink = createEventSink(),
+    )
+    fun stateWithNoPromotion() = defaultState().copy(heroPromotion = null, eventSink = createEventSink())
+    fun stateWithEmptyCravings() = defaultState().copy(recentCravings = emptyList(), eventSink = createEventSink())
+}
+```
+
+**UiRobot** — owns the StateRobot, wraps `ComposeContentTestRule`, exposes semantic screen assertions and actions:
+
+```kotlin
+class HomeUiRobot(private val rule: ComposeContentTestRule) {
+    private val stateRobot = HomeStateRobot()
+
+    // State + Content — always wrapped in MockDonaldsTheme
+    fun setDefaultContent() {
+        val state = stateRobot.defaultState()
+        rule.setContent { MockDonaldsTheme { HomeUi(state = state) } }
+    }
+
+    // Screen assertions — composite checks for a given state
+    fun assertDefaultScreen() {
+        assertUserNameDisplayed("TestUser")
+        assertHeroBannerDisplayed()
+        assertRecentCravingsDisplayed()
+        assertExploreSectionDisplayed()
+    }
+
+    // Actions
+    fun tapHeroCtaButton() { rule.onNodeWithTag(HomeTestTags.HERO_CTA_BUTTON).performClick() }
+
+    // Event verification
+    fun assertLastEvent(expected: HomeEvent) { assertEquals(expected, stateRobot.lastEvent) }
+}
+```
+
+#### Test Structure
+
+Tests are grouped by concern — **rendering tests grouped per state** (one `setContent` call, multiple assertions), **event tests separate per interaction** (each gets its own test for clear failure attribution):
+
+```kotlin
+class HomeUiTest {
+    @get:Rule val composeTestRule = createComposeRule()
+    private val robot by lazy { HomeUiRobot(composeTestRule) }
+
+    // Rendering: one test per state, composite assertion
+    @Test fun rendersDefaultState() {
+        robot.setDefaultContent()
+        robot.assertDefaultScreen()
+    }
+
+    @Test fun rendersWithNoPromotion() {
+        robot.setContentWithNoPromotion()
+        robot.assertScreenWithNoPromotion()
+    }
+
+    // Events: one test per interaction
+    @Test fun heroCtaButtonEmitsEvent() {
+        robot.setDefaultContent()
+        robot.tapHeroCtaButton()
+        robot.assertLastEvent(HomeEvent.HeroCtaClicked)
+    }
+}
+```
+
+**Why this structure:** On-device `setContent` is expensive (activity launch + composition). Grouping rendering assertions per state minimizes inflations while keeping event tests isolated for clear failure messages.
+
+#### Conventions
+
+| Convention | Rule |
+|------------|------|
+| **Test tags** | `<Feature>TestTags` object in the feature's api module (`api/ui` package), shared across Android, iOS, and navigation tests |
+| **Tag naming** | PascalCase: `HomeHeroBanner`, `OrderCategoryChip`. List items get ID suffix: `HomeCravingCard-{id}` |
+| **Theme** | All `setContent` calls wrap content in `MockDonaldsTheme` for accurate rendering |
+| **Scrolling** | Robot handles `performScrollTo()` internally — tests don't worry about viewport position |
+| **File naming** | `*StateRobot.kt`, `*UiRobot.kt`, `*UiTest.kt` — all in `androidDeviceTest` source set |
+| **Visibility** | Element assertions are `private` in the robot; only screen-level assertions and actions are `public` |
+
+#### File Structure
+
+```
+features/{feature}/
+├── api/src/commonMain/kotlin/.../ui/
+│   └── {Feature}TestTags.kt          # Shared test tag constants (Android + iOS)
+├── presentation/
+│   ├── src/androidMain/kotlin/.../
+│   │   └── {Feature}Ui.kt            # Compose UI (imports TestTags from api)
+│   ├── src/androidDeviceTest/
+│   │   ├── AndroidManifest.xml        # Declares ComponentActivity
+│   │   └── kotlin/.../
+│   │       ├── {Feature}StateRobot.kt # State construction with event capture
+│   │       ├── {Feature}UiRobot.kt    # UI interactions + screen assertions (owns StateRobot)
+│   │       └── {Feature}UiTest.kt     # JUnit4 test class
+```
 
 ### Test Framework: Kotest 6.1.11
 
@@ -904,6 +1052,57 @@ class GetHomeContentImplTest : BehaviorSpec({
     }
 })
 ```
+
+## Architecture Tests (Konsist)
+
+The `:konsist` module enforces architectural conventions via [Konsist](https://docs.konsist.lemonappdev.com/) — a standalone JVM test module that scans source code without compiling against it. Run independently from unit tests:
+
+```bash
+./gradlew :konsist:test
+```
+
+### What's Enforced
+
+| Category | Tests | What It Checks |
+|----------|-------|----------------|
+| **Layer Dependency** | 7 | api/domain/data/presentation isolation, cross-feature only via api, core can't import features |
+| **Circuit Conventions** | 4 | Events must be `sealed class` (not interface, for iOS interop), Screens in api with `@Parcelize` |
+| **Naming Conventions** | 7 | `*Screen`, `*Event`, `*Presenter`, `*Ui`, `*UiState`, `*Repository`, `*RepositoryImpl` suffixes |
+| **Domain Layer** | 4 | Abstract use cases in api, Impl classes in domain, matching pairs, `@ContributesBinding` |
+| **Data Layer** | 6 | Repo interfaces in domain, impls in data, matching pairs, DI annotations, no `suspend` (use Flow) |
+| **Presentation Layer** | 5 | `@CircuitInject` on presenters, UiState implements `CircuitUiState`, has `eventSink`, no direct model construction |
+| **Api Layer** | 5 | Immutable data classes (val only), `@Serializable` placement, no public MutableFlow, DTOs in data only, circuit.runtime exports |
+| **Dependency Injection** | 4 | All interfaces have `@ContributesBinding` impls, `@Inject` on presenters |
+| **Visibility** | 3 | Impl classes are `internal`, UiState is public |
+| **Forbidden Patterns** | 9 | No ViewModels, no raw CoroutineScope/launch/async/Dispatchers (use CenterPost), no android.* in commonMain, no app module imports |
+| **Code Hygiene** | 6 | No wildcard imports, no println/System.out, no Thread.sleep, no runBlocking, no lateinit var |
+| **Test Conventions** | 10 | BehaviorSpec only, no mockk/runBlocking/runTest/Unconfined, fakes in test modules only, Fake coverage, Test suffix |
+| **UI Test Conventions** | 9 | UiTest/UiRobot/StateRobot per feature, StateRobot extends base class, encapsulation (tests only reference UiRobot), TestTags exist in api module, theme wrapping, AndroidManifest |
+| **Test Coverage** | 4 | Every feature has test module, every Impl/Presenter/Repo has a test file |
+| **Package Structure** | 3 | Package naming matches module path |
+
+### Key Architectural Rules
+
+- **CenterPost only** — Features must use `CenterPost`/`rememberCenterPost()` for async work, not raw coroutines
+- **Sealed class events** — Circuit events use `sealed class` (not `sealed interface`) so iOS Swift gets `Event.Subtype()` syntax
+- **No mockk** — Thread-unsafe under `SpecExecutionMode.LimitedConcurrency(4)`, use fakes in dedicated test modules
+- **Internal implementations** — All `*Impl` and `*RepositoryImpl` classes are `internal`, wired via `@ContributesBinding`
+- **Cross-feature via api only** — Features can depend on other features, but only through their `:api` module
+
+### Future: Linting (detekt/ktlint)
+
+The following are style/formatting concerns better handled by a linter (not Konsist):
+
+- Unused imports (auto-fixable)
+- Empty files/classes
+- Import ordering and grouping
+- Max line length, indentation
+- Trailing commas consistency
+- Blank line conventions
+- Comment style (KDoc vs inline)
+- String template usage (`"$x"` vs `"" + x`)
+- Explicit return types on public APIs
+- Expression body vs block body preference
 
 ## Features
 

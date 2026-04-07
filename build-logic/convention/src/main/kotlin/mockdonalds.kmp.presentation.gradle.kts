@@ -12,6 +12,22 @@ metro {
 }
 
 kotlin {
+    android {
+        withDeviceTest {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+            packaging {
+                resources.excludes.addAll(
+                    listOf(
+                        "META-INF/AL2.0",
+                        "META-INF/LGPL2.1",
+                        "META-INF/LICENSE.md",
+                        "META-INF/LICENSE-notice.md",
+                    )
+                )
+            }
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -37,4 +53,16 @@ kotlin {
             }
         }
     }
+}
+
+kotlin.sourceSets.getByName("androidDeviceTest") {
+    dependencies {
+        implementation(catalog.findLibrary("compose-ui-test-junit4").get())
+        implementation(project(":core:test-fixtures"))
+    }
+}
+
+// Compose Multiplatform 1.10.3 doesn't configure outputDirectory for androidDeviceTest resource copy task
+tasks.matching { it.name == "copyAndroidDeviceTestComposeResourcesToAndroidAssets" }.configureEach {
+    enabled = false
 }
