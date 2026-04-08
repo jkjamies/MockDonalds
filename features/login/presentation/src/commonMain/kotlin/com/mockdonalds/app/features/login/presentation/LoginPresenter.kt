@@ -27,21 +27,16 @@ fun LoginPresenter(
     val content by getLoginContent.collectAsState()
 
     var email by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
 
     return LoginUiState(
         logoUrl = content?.logoUrl ?: "",
         email = email,
-        password = password,
         eventSink = { event ->
             when (event) {
                 is LoginEvent.EmailChanged -> email = event.value
-                is LoginEvent.PasswordChanged -> password = event.value
                 is LoginEvent.SignInClicked -> centerPost { }
-                is LoginEvent.ForgotPasswordClicked -> centerPost { }
                 is LoginEvent.AppleSignInClicked -> centerPost { }
                 is LoginEvent.GoogleSignInClicked -> centerPost { }
-                is LoginEvent.SignUpClicked -> centerPost { }
             }
         },
     )

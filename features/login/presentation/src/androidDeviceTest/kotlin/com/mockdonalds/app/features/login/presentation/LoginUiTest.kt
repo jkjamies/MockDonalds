@@ -25,30 +25,10 @@ class LoginUiTest {
     }
 
     @Test
-    fun forgotPasswordEmitsEvent() {
-        robot.setDefaultContent()
-        robot.tapForgotPassword()
-        robot.assertLastEvent(LoginEvent.ForgotPasswordClicked)
-    }
-
-    @Test
-    fun appleSignInEmitsEvent() {
-        robot.setDefaultContent()
-        robot.tapAppleButton()
-        robot.assertLastEvent(LoginEvent.AppleSignInClicked)
-    }
-
-    @Test
     fun googleSignInEmitsEvent() {
         robot.setDefaultContent()
         robot.tapGoogleButton()
         robot.assertLastEvent(LoginEvent.GoogleSignInClicked)
     }
 
-    @Test
-    fun signUpLinkEmitsEvent() {
-        robot.setDefaultContent()
-        robot.tapSignUpLink()
-        robot.assertLastEvent(LoginEvent.SignUpClicked)
-    }
 }

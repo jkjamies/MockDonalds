@@ -28,7 +28,6 @@ class LoginPresenterTest : BehaviorSpec({
                 ) {
                     val initial = awaitItem()
                     initial.email shouldBe ""
-                    initial.password shouldBe ""
                     initial.isLoading shouldBe false
                     initial.errorMessage shouldBe null
                     cancelAndIgnoreRemainingEvents()
@@ -56,24 +55,5 @@ class LoginPresenterTest : BehaviorSpec({
             }
         }
 
-        When("the user types a password") {
-            Then("the password state should update") {
-                presenterTestOf(
-                    presentFunction = {
-                        LoginPresenter(
-                            navigator = navigator,
-                            getLoginContent = fakeGetLoginContent,
-                            dispatchers = dispatchers,
-                        )
-                    },
-                ) {
-                    val initial = awaitItem()
-                    initial.eventSink(LoginEvent.PasswordChanged("secret123"))
-                    val updated = awaitItem()
-                    updated.password shouldBe "secret123"
-                    cancelAndIgnoreRemainingEvents()
-                }
-            }
-        }
     }
 })

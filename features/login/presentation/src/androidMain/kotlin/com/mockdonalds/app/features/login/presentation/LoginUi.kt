@@ -36,7 +36,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -97,14 +96,6 @@ fun LoginUi(state: LoginUiState, modifier: Modifier = Modifier) {
 
             // Social Buttons
             SocialButtons(state = state)
-
-            Spacer(modifier = Modifier.height(MockDimens.SpacingXxxl))
-
-            // Sign Up Footer
-            SignUpFooter(
-                onClick = { state.eventSink(LoginEvent.SignUpClicked) },
-                modifier = Modifier.testTag(LoginTestTags.SIGN_UP_LINK),
-            )
 
             Spacer(modifier = Modifier.height(MockDimens.SpacingXxl))
         }
@@ -173,61 +164,6 @@ private fun LoginForm(state: LoginUiState) {
                     .fillMaxWidth()
                     .height(56.dp)
                     .testTag(LoginTestTags.EMAIL_INPUT),
-            )
-        }
-
-        // Password Field
-        Column(verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingSm)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = "PASSWORD",
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 2.sp,
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-                    modifier = Modifier.padding(start = MockDimens.SpacingXs),
-                )
-                Text(
-                    text = "FORGOT PASSWORD?",
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 2.sp,
-                    ),
-                    color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier
-                        .clickable { state.eventSink(LoginEvent.ForgotPasswordClicked) }
-                        .testTag(LoginTestTags.FORGOT_PASSWORD),
-                )
-            }
-            TextField(
-                value = state.password,
-                onValueChange = { state.eventSink(LoginEvent.PasswordChanged(it)) },
-                placeholder = {
-                    Text(
-                        text = "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022",
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
-                    )
-                },
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                singleLine = true,
-                shape = RoundedCornerShape(MockDimens.RadiusMd),
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    cursorColor = MaterialTheme.colorScheme.secondary,
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .testTag(LoginTestTags.PASSWORD_INPUT),
             )
         }
 
@@ -303,14 +239,6 @@ private fun SocialButtons(state: LoginUiState) {
         horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
     ) {
         SocialButton(
-            label = "APPLE",
-            icon = "\uF8FF",
-            onClick = { state.eventSink(LoginEvent.AppleSignInClicked) },
-            modifier = Modifier
-                .weight(1f)
-                .testTag(LoginTestTags.APPLE_BUTTON),
-        )
-        SocialButton(
             label = "GOOGLE",
             icon = "G",
             onClick = { state.eventSink(LoginEvent.GoogleSignInClicked) },
@@ -357,22 +285,3 @@ private fun SocialButton(
     }
 }
 
-@Composable
-private fun SignUpFooter(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingXs),
-    ) {
-        Text(
-            text = "New to the Gourmet?",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-        )
-        Text(
-            text = "Sign Up",
-            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.clickable(onClick = onClick),
-        )
-    }
-}

@@ -100,6 +100,7 @@ kotlin {
             implementation(libs.circuit.runtime.presenter)
             implementation(libs.circuit.runtime.ui)
             implementation(libs.circuit.retained)
+            implementation(libs.circuitx.gesture.navigation)
 
             // Metro DI
             implementation(libs.metro.runtime)

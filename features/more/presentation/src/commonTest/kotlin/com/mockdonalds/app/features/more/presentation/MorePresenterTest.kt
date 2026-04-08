@@ -1,6 +1,7 @@
 package com.mockdonalds.app.features.more.presentation
 
 import com.mockdonalds.app.core.test.TestCenterPostDispatchers
+import com.mockdonalds.app.features.login.api.navigation.LoginScreen
 import com.mockdonalds.app.features.more.api.navigation.MoreScreen
 import com.mockdonalds.app.features.more.test.FakeGetMoreContent
 import com.slack.circuit.test.FakeNavigator
@@ -32,6 +33,25 @@ class MorePresenterTest : BehaviorSpec({
                     val state = awaitItem()
                     state.userProfile?.name shouldBe "Test User"
                     state.menuItems.size shouldBe 2
+                }
+            }
+        }
+
+        When("the user taps the profile") {
+            Then("it should navigate to the login screen") {
+                presenterTestOf(
+                    presentFunction = {
+                        MorePresenter(
+                            navigator = navigator,
+                            getMoreContent = fakeGetMoreContent,
+                            dispatchers = dispatchers,
+                        )
+                    },
+                ) {
+                    val state = awaitItem()
+                    state.eventSink(MoreEvent.ProfileClicked)
+                    navigator.awaitNextScreen() shouldBe LoginScreen
+                    cancelAndIgnoreRemainingEvents()
                 }
             }
         }

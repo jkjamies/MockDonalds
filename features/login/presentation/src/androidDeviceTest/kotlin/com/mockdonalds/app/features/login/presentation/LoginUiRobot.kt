@@ -30,10 +30,8 @@ class LoginUiRobot(private val rule: ComposeContentTestRule) {
     fun assertDefaultScreen() {
         assertBrandingDisplayed()
         assertEmailInputDisplayed()
-        assertPasswordInputDisplayed()
         assertSignInButtonDisplayed()
         assertSocialButtonsDisplayed()
-        assertSignUpLinkDisplayed()
     }
 
     // --- Element Assertions ---
@@ -47,21 +45,12 @@ class LoginUiRobot(private val rule: ComposeContentTestRule) {
         rule.onNodeWithTag(LoginTestTags.EMAIL_INPUT).assertIsDisplayed()
     }
 
-    private fun assertPasswordInputDisplayed() {
-        rule.onNodeWithTag(LoginTestTags.PASSWORD_INPUT).performScrollTo().assertIsDisplayed()
-    }
-
     private fun assertSignInButtonDisplayed() {
         rule.onNodeWithTag(LoginTestTags.SIGN_IN_BUTTON).performScrollTo().assertIsDisplayed()
     }
 
     private fun assertSocialButtonsDisplayed() {
-        rule.onNodeWithTag(LoginTestTags.APPLE_BUTTON).performScrollTo().assertIsDisplayed()
         rule.onNodeWithTag(LoginTestTags.GOOGLE_BUTTON).performScrollTo().assertIsDisplayed()
-    }
-
-    private fun assertSignUpLinkDisplayed() {
-        rule.onNodeWithTag(LoginTestTags.SIGN_UP_LINK).performScrollTo().assertIsDisplayed()
     }
 
     // --- Actions ---
@@ -70,20 +59,8 @@ class LoginUiRobot(private val rule: ComposeContentTestRule) {
         rule.onNodeWithTag(LoginTestTags.SIGN_IN_BUTTON).performScrollTo().performClick()
     }
 
-    fun tapForgotPassword() {
-        rule.onNodeWithTag(LoginTestTags.FORGOT_PASSWORD).performScrollTo().performClick()
-    }
-
-    fun tapAppleButton() {
-        rule.onNodeWithTag(LoginTestTags.APPLE_BUTTON).performScrollTo().performClick()
-    }
-
     fun tapGoogleButton() {
         rule.onNodeWithTag(LoginTestTags.GOOGLE_BUTTON).performScrollTo().performClick()
-    }
-
-    fun tapSignUpLink() {
-        rule.onNodeWithTag(LoginTestTags.SIGN_UP_LINK).performScrollTo().performClick()
     }
 
     // --- Event Verification ---

@@ -11,6 +11,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":features:more:api"))
+            implementation(project(":features:login:api"))
             implementation(project(":core:centerpost"))
             implementation(project(":core:theme"))
             implementation(project(":core:common"))

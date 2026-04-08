@@ -4,19 +4,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.mockdonalds.app.core.theme.MockDonaldsTheme
 import com.mockdonalds.app.features.home.api.navigation.HomeScreen
 import com.mockdonalds.app.features.order.api.navigation.OrderScreen
 import com.mockdonalds.app.features.rewards.api.navigation.RewardsScreen
 import com.mockdonalds.app.features.scan.api.navigation.ScanScreen
-import com.mockdonalds.app.features.login.api.navigation.LoginScreen
 import com.mockdonalds.app.features.more.api.navigation.MoreScreen
-import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
+import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import dev.zacsweers.metro.createGraph
 
 @Composable
@@ -25,10 +25,13 @@ fun MockDonaldsApp() {
 
     MockDonaldsTheme {
         val backStack = rememberSaveableBackStack(root = HomeScreen)
-        val navigator = rememberCircuitNavigator(backStack) { /* root pop - no-op */ }
+        val navigator = rememberCircuitNavigator(
+            backStack = backStack,
+            onRootPop = { },
+        )
 
         CircuitCompositionLocals(graph.circuit) {
-            val topScreen = backStack.lastOrNull()?.screen
+            val topScreen = backStack.topRecord?.screen
 
             val currentRoute = when (topScreen) {
                 is HomeScreen -> "home"
@@ -36,7 +39,6 @@ fun MockDonaldsApp() {
                 is RewardsScreen -> "rewards"
                 is ScanScreen -> "scan"
                 is MoreScreen -> "more"
-                is LoginScreen -> "login"
                 else -> ""
             }
 
@@ -52,19 +54,23 @@ fun MockDonaldsApp() {
                                     "rewards" -> RewardsScreen
                                     "scan" -> ScanScreen
                                     "more" -> MoreScreen
-                                    "login" -> LoginScreen
                                     else -> return@MockDonaldsBottomNavigation
                                 }
                                 navigator.resetRoot(targetScreen)
-                            }
+                            },
                         )
                     }
-                }
+                },
             ) { innerPadding ->
-                Box(modifier = Modifier.fillMaxSize() /* Padding intentionally ignored as bottom nav is overlay */) {
+                Box(modifier = Modifier.fillMaxSize()) {
                     NavigableCircuitContent(
                         navigator = navigator,
                         backStack = backStack,
+                        decoratorFactory = remember(navigator) {
+                            GestureNavigationDecorationFactory(
+                                onBackInvoked = navigator::pop,
+                            )
+                        },
                     )
                 }
             }

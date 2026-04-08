@@ -15,7 +15,6 @@ struct LoginView: View {
                 loginForm
                 orDivider
                 socialButtons
-                signUpFooter
                 Spacer().frame(height: MockDimens.spacingXxl)
             }
             .padding(.horizontal, MockDimens.spacingXxl)
@@ -25,7 +24,7 @@ struct LoginView: View {
 
     private var dragHandle: some View {
         RoundedRectangle(cornerRadius: 3)
-            .fill(colors.surfaceVariant.opacity(0.4))
+            .fill(colors.surfaceContainerHighest.opacity(0.4))
             .frame(width: 48, height: 6)
             .padding(.vertical, MockDimens.spacingSm)
             .accessibilityIdentifier(tags.DRAG_HANDLE)
@@ -59,7 +58,6 @@ struct LoginView: View {
     private var loginForm: some View {
         VStack(spacing: MockDimens.spacingLg) {
             emailField
-            passwordField
 
             Spacer().frame(height: MockDimens.spacingSm)
 
@@ -101,61 +99,6 @@ struct LoginView: View {
             .background(colors.surfaceContainerHighest)
             .cornerRadius(MockDimens.radiusMd)
             .accessibilityIdentifier(tags.EMAIL_INPUT)
-        }
-    }
-
-    private var passwordField: some View {
-        VStack(alignment: .leading, spacing: MockDimens.spacingSm) {
-            HStack {
-                Text("PASSWORD")
-                    .font(.caption2)
-                    .fontWeight(.bold)
-                    .tracking(2)
-                    .foregroundColor(
-                        colors.onSurface.opacity(0.4)
-                    )
-                    .padding(.leading, MockDimens.spacingXs)
-
-                Spacer()
-
-                Button(
-                    action: {
-                        state.eventSink(
-                            LoginEvent.ForgotPasswordClicked()
-                        )
-                    },
-                    label: {
-                        Text("FORGOT PASSWORD?")
-                            .font(.caption2)
-                            .fontWeight(.bold)
-                            .tracking(2)
-                            .foregroundColor(colors.secondary)
-                    }
-                )
-                .accessibilityIdentifier(tags.FORGOT_PASSWORD)
-            }
-
-            SecureField(
-                "",
-                text: Binding(
-                    get: { state.password },
-                    set: {
-                        state.eventSink(
-                            LoginEvent.PasswordChanged(value: $0)
-                        )
-                    }
-                ),
-                prompt: Text("••••••••")
-                    .foregroundColor(
-                        colors.onSurface.opacity(0.2)
-                    )
-            )
-            .foregroundColor(colors.onSurface)
-            .padding(.horizontal, MockDimens.spacingLg)
-            .frame(height: 56)
-            .background(colors.surfaceContainerHighest)
-            .cornerRadius(MockDimens.radiusMd)
-            .accessibilityIdentifier(tags.PASSWORD_INPUT)
         }
     }
 
@@ -237,29 +180,6 @@ struct LoginView: View {
             )
             .accessibilityIdentifier(tags.GOOGLE_BUTTON)
         }
-    }
-
-    private var signUpFooter: some View {
-        HStack(spacing: MockDimens.spacingXs) {
-            Text("New to the Gourmet?")
-                .font(.subheadline)
-                .foregroundColor(
-                    colors.onSurface.opacity(0.4)
-                )
-            Button(
-                action: {
-                    state.eventSink(LoginEvent.SignUpClicked())
-                },
-                label: {
-                    Text("Sign Up")
-                        .font(.subheadline)
-                        .fontWeight(.bold)
-                        .foregroundColor(colors.secondary)
-                }
-            )
-        }
-        .padding(.top, MockDimens.spacingXxxl)
-        .accessibilityIdentifier(tags.SIGN_UP_LINK)
     }
 }
 

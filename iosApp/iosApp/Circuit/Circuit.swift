@@ -10,6 +10,8 @@ final class CircuitIos: ObservableObject {
     private let iosApp: IosApp
     private let uiFactories: [UiFactory]
 
+    var navigator: BridgeNavigator { iosApp.navigator }
+
     init(
         iosApp: IosApp,
         uiFactories: [UiFactory]

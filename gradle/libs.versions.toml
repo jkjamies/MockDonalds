@@ -27,6 +27,7 @@ circuit-runtime-presenter = { group = "com.slack.circuit", name = "circuit-runti
 circuit-runtime-ui = { group = "com.slack.circuit", name = "circuit-runtime-ui", version.ref = "circuit" }
 circuit-retained = { group = "com.slack.circuit", name = "circuit-retained", version.ref = "circuit" }
 circuit-codegen-annotations = { group = "com.slack.circuit", name = "circuit-codegen-annotations", version.ref = "circuit" }
+circuitx-gesture-navigation = { group = "com.slack.circuit", name = "circuitx-gesture-navigation", version.ref = "circuit" }
 
 # Metro DI
 metro-runtime = { group = "dev.zacsweers.metro", name = "runtime", version.ref = "metro" }

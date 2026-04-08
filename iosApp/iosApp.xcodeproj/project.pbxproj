@@ -39,6 +39,11 @@
 		BAEF5302BC73D422B5608270 /* MoreViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5AFDA1D48BF1DCC2A0AA17 /* MoreViewRobot.swift */; };
 		BF222A235485A03E839543DB /* HomeStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = C567766B567EE9C3E5A66BE5 /* HomeStateRobot.swift */; };
 		D83025297EF110A52CB99ACB /* RewardsViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B327F071FB5FB234E9888D1A /* RewardsViewTest.swift */; };
+		AA100001AAAA000100000001 /* CircuitNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100001AAAA000000000001 /* CircuitNavigator.swift */; };
+		AA100002AAAA000100000002 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100002AAAA000000000002 /* LoginView.swift */; };
+		AA100003AAAA000100000003 /* LoginStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100003AAAA000000000003 /* LoginStateRobot.swift */; };
+		AA100004AAAA000100000004 /* LoginViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100004AAAA000000000004 /* LoginViewRobot.swift */; };
+		AA100005AAAA000100000005 /* LoginViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100005AAAA000000000005 /* LoginViewTest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -85,6 +90,11 @@
 		F6173708533DBC5267F31A2C /* MoreViewTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MoreViewTest.swift; sourceTree = "<group>"; };
 		FDBDC98EE92C1069DBBF31E0 /* MoreStateRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MoreStateRobot.swift; sourceTree = "<group>"; };
 		FE6929F479ACC98EB6607900 /* HomeViewTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HomeViewTest.swift; sourceTree = "<group>"; };
+		AA100001AAAA000000000001 /* CircuitNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircuitNavigator.swift; sourceTree = "<group>"; };
+		AA100002AAAA000000000002 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		AA100003AAAA000000000003 /* LoginStateRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginStateRobot.swift; sourceTree = "<group>"; };
+		AA100004AAAA000000000004 /* LoginViewRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginViewRobot.swift; sourceTree = "<group>"; };
+		AA100005AAAA000000000005 /* LoginViewTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginViewTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,8 +137,19 @@
 				8138BF1707098B060884A036 /* Rewards */,
 				01E8709B2A09624D4A7D7595 /* Scan */,
 				8791E5D3427617818943090D /* More */,
+				AA100007AAAA000000000007 /* Login */,
 			);
 			path = iosAppTests;
+			sourceTree = "<group>";
+		};
+		AA100007AAAA000000000007 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				AA100003AAAA000000000003 /* LoginStateRobot.swift */,
+				AA100004AAAA000000000004 /* LoginViewRobot.swift */,
+				AA100005AAAA000000000005 /* LoginViewTest.swift */,
+			);
+			path = Login;
 			sourceTree = "<group>";
 		};
 		2A1B6A772B0A000100123461 = {
@@ -171,6 +192,7 @@
 				2A1B6A8D2B0A00010012345C /* CircuitView.swift */,
 				2A1B6A8F2B0A00010012345D /* CircuitContent.swift */,
 				2A1B6A912B0A00010012345E /* CircuitStack.swift */,
+				AA100001AAAA000000000001 /* CircuitNavigator.swift */,
 			);
 			path = Circuit;
 			sourceTree = "<group>";
@@ -191,6 +213,7 @@
 				3A1C7B152C0A000100100015 /* Rewards */,
 				3A1C7B162C0A000100100016 /* Scan */,
 				3A1C7B172C0A000100100017 /* More */,
+				AA100006AAAA000000000006 /* Login */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -233,6 +256,14 @@
 				3A1C7B0C2C0A000100100007 /* MoreView.swift */,
 			);
 			path = More;
+			sourceTree = "<group>";
+		};
+		AA100006AAAA000000000006 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				AA100002AAAA000000000002 /* LoginView.swift */,
+			);
+			path = Login;
 			sourceTree = "<group>";
 		};
 		8138BF1707098B060884A036 /* Rewards */ = {
@@ -427,6 +458,8 @@
 				3A1C7B092C0A000100100005 /* RewardsView.swift in Sources */,
 				3A1C7B0B2C0A000100100006 /* ScanView.swift in Sources */,
 				3A1C7B0D2C0A000100100007 /* MoreView.swift in Sources */,
+				AA100001AAAA000100000001 /* CircuitNavigator.swift in Sources */,
+				AA100002AAAA000100000002 /* LoginView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -450,6 +483,9 @@
 				5C96DF5D52D5AB8A8543BF47 /* MoreStateRobot.swift in Sources */,
 				BAEF5302BC73D422B5608270 /* MoreViewRobot.swift in Sources */,
 				B24629462C0A24AA7D9DC57D /* MoreViewTest.swift in Sources */,
+				AA100003AAAA000100000003 /* LoginStateRobot.swift in Sources */,
+				AA100004AAAA000100000004 /* LoginViewRobot.swift in Sources */,
+				AA100005AAAA000100000005 /* LoginViewTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

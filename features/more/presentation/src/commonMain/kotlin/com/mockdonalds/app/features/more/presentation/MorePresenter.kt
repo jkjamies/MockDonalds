@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import com.mockdonalds.app.core.centerpost.CenterPostDispatchers
 import com.mockdonalds.app.core.centerpost.collectAsState
 import com.mockdonalds.app.core.centerpost.rememberCenterPost
+import com.mockdonalds.app.features.login.api.navigation.LoginScreen
 import com.mockdonalds.app.features.more.api.domain.GetMoreContent
 import com.mockdonalds.app.features.more.api.navigation.MoreScreen
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -28,7 +29,7 @@ fun MorePresenter(
         menuItems = content?.menuItems ?: emptyList(),
         eventSink = { event ->
             when (event) {
-                is MoreEvent.ProfileClicked -> centerPost { }
+                is MoreEvent.ProfileClicked -> navigator.goTo(LoginScreen)
                 is MoreEvent.MenuItemClicked -> centerPost { }
             }
         },

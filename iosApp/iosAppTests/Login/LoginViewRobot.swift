@@ -40,11 +40,6 @@ final class LoginViewRobot {
         state.eventSink(LoginEvent.SignInClicked())
     }
 
-    func simulateForgotPasswordTap() {
-        let state = stateRobot.defaultState()
-        state.eventSink(LoginEvent.ForgotPasswordClicked())
-    }
-
     func simulateAppleSignInTap() {
         let state = stateRobot.defaultState()
         state.eventSink(LoginEvent.AppleSignInClicked())
@@ -53,11 +48,6 @@ final class LoginViewRobot {
     func simulateGoogleSignInTap() {
         let state = stateRobot.defaultState()
         state.eventSink(LoginEvent.GoogleSignInClicked())
-    }
-
-    func simulateSignUpTap() {
-        let state = stateRobot.defaultState()
-        state.eventSink(LoginEvent.SignUpClicked())
     }
 
     func assertLastEvent(_ expected: LoginEvent) {

@@ -23,11 +23,6 @@ import ComposeApp
         robot.assertLastEvent(LoginEvent.SignInClicked())
     }
 
-    @Test func forgotPasswordTapEmitsEvent() {
-        robot.simulateForgotPasswordTap()
-        robot.assertLastEvent(LoginEvent.ForgotPasswordClicked())
-    }
-
     @Test func appleSignInTapEmitsEvent() {
         robot.simulateAppleSignInTap()
         robot.assertLastEvent(LoginEvent.AppleSignInClicked())
@@ -36,10 +31,5 @@ import ComposeApp
     @Test func googleSignInTapEmitsEvent() {
         robot.simulateGoogleSignInTap()
         robot.assertLastEvent(LoginEvent.GoogleSignInClicked())
-    }
-
-    @Test func signUpTapEmitsEvent() {
-        robot.simulateSignUpTap()
-        robot.assertLastEvent(LoginEvent.SignUpClicked())
     }
 }

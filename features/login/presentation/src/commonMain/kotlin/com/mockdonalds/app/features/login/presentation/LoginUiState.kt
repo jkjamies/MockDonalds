@@ -5,7 +5,6 @@ import com.slack.circuit.runtime.CircuitUiState
 data class LoginUiState(
     val logoUrl: String = "",
     val email: String = "",
-    val password: String = "",
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val eventSink: (LoginEvent) -> Unit,
@@ -13,10 +12,7 @@ data class LoginUiState(
 
 sealed class LoginEvent {
     data class EmailChanged(val value: String) : LoginEvent()
-    data class PasswordChanged(val value: String) : LoginEvent()
     data object SignInClicked : LoginEvent()
-    data object ForgotPasswordClicked : LoginEvent()
     data object AppleSignInClicked : LoginEvent()
     data object GoogleSignInClicked : LoginEvent()
-    data object SignUpClicked : LoginEvent()
 }

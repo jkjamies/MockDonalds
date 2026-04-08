@@ -7,7 +7,6 @@ class LoginStateRobot : StateRobot<LoginUiState, LoginEvent>() {
     override fun defaultState() = LoginUiState(
         logoUrl = "",
         email = "",
-        password = "",
         isLoading = false,
         errorMessage = null,
         eventSink = createEventSink(),
@@ -15,12 +14,6 @@ class LoginStateRobot : StateRobot<LoginUiState, LoginEvent>() {
 
     fun stateWithEmail(email: String) = defaultState().copy(
         email = email,
-        eventSink = createEventSink(),
-    )
-
-    fun stateWithCredentials(email: String, password: String) = defaultState().copy(
-        email = email,
-        password = password,
         eventSink = createEventSink(),
     )
 }
