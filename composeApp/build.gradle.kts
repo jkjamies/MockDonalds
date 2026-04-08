@@ -38,6 +38,7 @@ kotlin {
             export(project(":features:rewards:api"))
             export(project(":features:scan:api"))
             export(project(":features:more:api"))
+            export(project(":features:login:api"))
             export(project(":core:common"))
 
             // Export presentation modules (UiState types + PresenterFactory for Swift)
@@ -46,6 +47,7 @@ kotlin {
             export(project(":features:rewards:presentation"))
             export(project(":features:scan:presentation"))
             export(project(":features:more:presentation"))
+            export(project(":features:login:presentation"))
         }
     }
 
@@ -64,6 +66,7 @@ kotlin {
             api(project(":features:rewards:api"))
             api(project(":features:scan:api"))
             api(project(":features:more:api"))
+            api(project(":features:login:api"))
 
             // Feature implementations
             implementation(project(":features:home:data"))
@@ -81,6 +84,9 @@ kotlin {
             implementation(project(":features:more:data"))
             implementation(project(":features:more:domain"))
             api(project(":features:more:presentation"))
+            implementation(project(":features:login:data"))
+            implementation(project(":features:login:domain"))
+            api(project(":features:login:presentation"))
 
             // Core
             api(project(":core:common"))

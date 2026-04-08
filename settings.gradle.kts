@@ -59,5 +59,11 @@ include(":features:more:domain")
 include(":features:more:presentation")
 include(":features:more:test")
 
+include(":features:login:api")
+include(":features:login:data")
+include(":features:login:domain")
+include(":features:login:presentation")
+include(":features:login:test")
+
 // Architecture tests
 include(":konsist")

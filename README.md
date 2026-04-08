@@ -771,6 +771,96 @@ CircuitContent(screen: FeatureScreen.shared)
 | SwiftUI View | `iosApp/Features/` | iOS-only, pure state function |
 | UI Registration | `AppDelegate.swift` | One-liner per screen via `ScreenUiFactory` |
 
+### 7. Add tests
+
+**Test fixtures module** (`features/{feature}/test/`):
+```kotlin
+class FakeGetFeatureContent(
+    initial: FeatureContent = DEFAULT,
+) : GetFeatureContent() {
+    private val _content = MutableStateFlow(initial)
+    override fun createObservable(params: Unit): Flow<FeatureContent> = _content
+    fun emit(content: FeatureContent) { _content.value = content }
+}
+```
+
+**Presenter test** (`presentation/commonTest/`) — Kotest BehaviorSpec:
+```kotlin
+class FeaturePresenterTest : BehaviorSpec({
+    Given("a feature presenter") {
+        val fake = FakeGetFeatureContent()
+        val dispatchers = TestCenterPostDispatchers()
+        val navigator = FakeNavigator(FeatureScreen)
+
+        When("it emits state") {
+            Then("it should have defaults") {
+                presenterTestOf(
+                    presentFunction = { FeaturePresenter(navigator, fake, dispatchers) },
+                ) {
+                    val state = awaitItem()
+                    state.items shouldBe emptyList()
+                    cancelAndIgnoreRemainingEvents()
+                }
+            }
+        }
+    }
+})
+```
+
+**Android device tests** (`presentation/androidDeviceTest/`) — Robot pattern:
+- `FeatureStateRobot` extends `StateRobot<FeatureUiState, FeatureEvent>` — creates test states
+- `FeatureUiRobot` — sets content, asserts UI elements by test tag, performs actions
+- `FeatureUiTest` — JUnit4 tests using `createComposeRule()` + robot
+
+**iOS view tests** (`iosAppTests/{Feature}/`) — Swift Testing:
+- `FeatureStateRobot` extends `BaseStateRobot<FeatureUiState, FeatureEvent>` — creates test states
+- `FeatureViewRobot` — creates views, simulates events, asserts with `#expect`
+- `FeatureViewTest` — `@Suite struct` with `@Test func` methods using robot
+
+### 8. Wire remaining configuration
+
+**settings.gradle.kts** — add module includes:
+```kotlin
+include(":features:{feature}:api")
+include(":features:{feature}:data")
+include(":features:{feature}:domain")
+include(":features:{feature}:presentation")
+include(":features:{feature}:test")
+```
+
+**App.kt** — add screen to route mapping:
+```kotlin
+is FeatureScreen -> "feature"
+// ...
+"feature" -> FeatureScreen
+```
+
+**TestTags** (`api/ui/`) — shared test tag constants used by both platforms:
+```kotlin
+object FeatureTestTags {
+    const val SECTION_A = "FeatureSectionA"
+    const val BUTTON_B = "FeatureButtonB"
+}
+```
+
+### Quick Checklist
+
+1. `features/{name}/api` — Screen, TestTags, domain models, interactor
+2. `features/{name}/domain` — Repository interface, interactor impl (`@ContributesBinding`)
+3. `features/{name}/data` — Repository impl (`@ContributesBinding`)
+4. `features/{name}/presentation/commonMain` — UiState/Events, Presenter (`@CircuitInject`)
+5. `features/{name}/presentation/androidMain` — Compose UI (`@CircuitInject`)
+6. `features/{name}/test` — Fake interactor
+7. `features/{name}/presentation/commonTest` — Presenter test (Kotest)
+8. `features/{name}/presentation/androidDeviceTest` — StateRobot, UiRobot, UiTest
+9. `iosApp/Features/{Name}/` — SwiftUI view
+10. `iosApp/iosAppTests/{Name}/` — StateRobot, ViewRobot, ViewTest (Swift Testing)
+11. `settings.gradle.kts` — 5 include statements
+12. `composeApp/build.gradle.kts` — api, data, domain, presentation deps + iOS exports
+13. `App.kt` — screen route mapping
+14. `AppDelegate.swift` — `ScreenUiFactory` registration
+15. Verify — detekt, SwiftLint, konsist, Harmonize, all tests pass
+
 ## iOS Bridge Layer
 
 The iOS bridge is a one-time setup in `composeApp/src/iosMain/`:

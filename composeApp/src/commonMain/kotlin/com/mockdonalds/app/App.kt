@@ -10,6 +10,7 @@ import com.mockdonalds.app.features.home.api.navigation.HomeScreen
 import com.mockdonalds.app.features.order.api.navigation.OrderScreen
 import com.mockdonalds.app.features.rewards.api.navigation.RewardsScreen
 import com.mockdonalds.app.features.scan.api.navigation.ScanScreen
+import com.mockdonalds.app.features.login.api.navigation.LoginScreen
 import com.mockdonalds.app.features.more.api.navigation.MoreScreen
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
@@ -35,6 +36,7 @@ fun MockDonaldsApp() {
                 is RewardsScreen -> "rewards"
                 is ScanScreen -> "scan"
                 is MoreScreen -> "more"
+                is LoginScreen -> "login"
                 else -> ""
             }
 
@@ -50,6 +52,7 @@ fun MockDonaldsApp() {
                                     "rewards" -> RewardsScreen
                                     "scan" -> ScanScreen
                                     "more" -> MoreScreen
+                                    "login" -> LoginScreen
                                     else -> return@MockDonaldsBottomNavigation
                                 }
                                 navigator.resetRoot(targetScreen)
