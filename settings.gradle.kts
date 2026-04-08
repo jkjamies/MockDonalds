@@ -27,6 +27,7 @@ include(":core:test-fixtures")
 include(":core:theme")
 include(":core:network")
 include(":core:common")
+include(":core:circuit")
 
 // Feature modules — auto-discovered, architecture-enforced submodules
 rootDir.resolve("features").listFiles()

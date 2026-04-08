@@ -84,16 +84,105 @@ NavigableCircuitContent(
 
 **Why not just the manifest flag alone?** Without `GestureNavigationDecorationFactory`, the system handles back but Circuit doesn't animate the transition — the screen just snaps.
 
-## Future: Overlay Support
+## Bottom Sheet Navigation
 
-Circuit's overlay system (`OverlayHost`, `ContentWithOverlays`) uses Compose composition locals — unavailable on iOS. When needed:
+Cross-platform system that lets presenters present a full Circuit `Screen` as a modal bottom sheet with a single `suspend` call, receiving the result when the sheet is dismissed.
 
-1. Create `OverlayNavigator` interface in `commonMain`
-2. Android impl wraps `OverlayHost` from composition local
-3. iOS impl emits through `BridgeNavigator`, uses `CompletableDeferred` for suspend semantics
-4. Inject via Metro DI — presenters stay platform-agnostic
-5. Add `ShowBottomSheet`, `ShowFullScreen` actions to `NavigationAction`
-6. `CircuitNavigator` handles via `.sheet()` and `.fullScreenCover()`
+This is distinct from Circuit's own `Overlay` system (`OverlayHost`, `BottomSheetOverlay`) which renders inline composable content — not full screens with their own presenters. Circuit's overlays are for simple, self-contained UI (confirmation dialogs, pickers). `BottomSheetNavigator` is for presenting complete screens modally (e.g., showing LoginScreen as a sheet from the More tab).
+
+### Architecture
+
+```
+Presenter calls bottomSheet.show(LoginScreen)
+  ↓ suspend — awaits CompletableDeferred<BottomSheetResult>
+
+  Android:
+    BottomSheetNavigatorImpl.request → collectAsState() in App.kt
+      → ModalBottomSheet { CircuitContent(screen) }
+      → onDismissRequest → complete(Dismissed)
+      → presenter resumes with BottomSheetResult.Dismissed
+
+  iOS:
+    BridgeNavigator.bottomSheetRequest → @NativeCoroutinesState
+      → Swift asyncSequence(for: bottomSheetRequestFlow)
+      → .sheet { CircuitContent(screen) }
+      → onDismiss → completeBottomSheet(result: Dismissed)
+      → presenter resumes with BottomSheetResult.Dismissed
+```
+
+### BottomSheetNavigator (core:circuit)
+
+Platform-agnostic interface available to presenters via `LocalBottomSheetNavigator`:
+
+```kotlin
+interface BottomSheetNavigator {
+    suspend fun show(screen: Screen): BottomSheetResult
+}
+
+sealed class BottomSheetResult {
+    data object Confirmed : BottomSheetResult()
+    data object Dismissed : BottomSheetResult()
+}
+```
+
+Provided as a `staticCompositionLocalOf` with a no-op default (returns `Dismissed`). This follows the same pattern as Circuit's own `LocalOverlayHost` — the default enables presenter unit tests without needing to provide the local, while real bottom sheet interactions are tested at the UI/integration level.
+
+Presenters access it in their `@Composable present()` body:
+
+```kotlin
+@CircuitInject(MoreScreen::class, AppScope::class)
+@Inject
+@Composable
+fun MorePresenter(navigator: Navigator, ...): MoreUiState {
+    val bottomSheet = LocalBottomSheetNavigator.current
+    val centerPost = rememberCenterPost(dispatchers)
+
+    return MoreUiState(
+        eventSink = { event ->
+            when (event) {
+                is MoreEvent.MenuItemClicked -> centerPost {
+                    val result = bottomSheet.show(LoginScreen)
+                    // resumes here when sheet is dismissed
+                }
+            }
+        },
+    )
+}
+```
+
+### BottomSheetNavigatorImpl (core:circuit)
+
+Shared implementation backed by `MutableStateFlow<BottomSheetRequest?>` + `CompletableDeferred<BottomSheetResult>`:
+
+- `show(screen)` — sets the request and suspends on a deferred
+- `complete(result)` — called by the host when the sheet is dismissed, completes the deferred and clears the request
+- `request: StateFlow` — observed by the platform host to render the sheet
+
+### Android Integration
+
+`App.kt` creates a `BottomSheetNavigatorImpl` and provides it via `LocalBottomSheetNavigator`. It collects the `request` flow and renders `ModalBottomSheet` with `CircuitContent(screen)` for the presented screen.
+
+### iOS Integration
+
+`BridgeNavigator` implements `BottomSheetNavigator` by delegating to `BottomSheetNavigatorImpl`. It exposes `bottomSheetRequest` as a `@NativeCoroutinesState StateFlow` which generates `bottomSheetRequestFlow` for Swift.
+
+`CircuitNavigator.swift` observes `bottomSheetRequestFlow` via a second `.task {}` and presents sheets using `.sheet()`. On dismiss, it calls `navigator.completeBottomSheet(result:)` which completes the Kotlin deferred.
+
+`CircuitPresenterKotlinBridge` provides `LocalBottomSheetNavigator` in the Molecule composition so presenters can access it.
+
+### Testing
+
+Bottom sheet rendering is a UI/integration concern — presenter unit tests verify state logic using the no-op default CompositionLocal. Actual sheet presentation and dismissal behavior is tested at the UI test level where the full composition (host + `ModalBottomSheet`/`.sheet`) is exercised.
+
+### Key Files
+
+| File | Role |
+|------|------|
+| `core/circuit/src/commonMain/.../bottomsheet/BottomSheetNavigator.kt` | Interface, result types, CompositionLocal, shared impl |
+| `composeApp/src/iosMain/.../bridge/BridgeNavigator.kt` | Implements BottomSheetNavigator, exposes flow for Swift |
+| `composeApp/src/iosMain/.../bridge/CircuitPresenterKotlinBridge.kt` | Provides LocalBottomSheetNavigator to presenters |
+| `composeApp/src/androidMain/.../App.kt` | Bottom sheet host — renders ModalBottomSheet |
+| `iosApp/iosApp/Circuit/CircuitNavigator.swift` | Observes bottomSheetRequestFlow, shows .sheet |
 
 ## Future: Auth Interceptor
 

@@ -6,6 +6,8 @@ import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.currentComposer
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
+import com.mockdonalds.app.core.circuit.bottomsheet.BottomSheetNavigator
+import com.mockdonalds.app.core.circuit.bottomsheet.LocalBottomSheetNavigator
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.rememberRetainedStateRegistry
@@ -17,10 +19,9 @@ import kotlinx.coroutines.flow.StateFlow
 
 class CircuitPresenterKotlinBridge<UiState : CircuitUiState>(
     private val presenter: Presenter<UiState>,
-    scope: CoroutineScope,
+    private val bottomSheetNavigator: BottomSheetNavigator,
+    scope: CoroutineScope = MainScope(),
 ) {
-    constructor(presenter: Presenter<UiState>) : this(presenter, MainScope())
-
     @NativeCoroutinesState
     val state: StateFlow<UiState> = scope.launchMolecule(
         RecompositionMode.Immediate,
@@ -29,6 +30,7 @@ class CircuitPresenterKotlinBridge<UiState : CircuitUiState>(
 
         withCompositionLocalProvider(
             LocalRetainedStateRegistry provides retainedStateRegistry,
+            LocalBottomSheetNavigator provides bottomSheetNavigator,
         ) {
             presenter.present()
         }

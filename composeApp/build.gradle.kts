@@ -43,6 +43,7 @@ kotlin {
                     export(project(":features:$feature:presentation"))
                 }
             export(project(":core:common"))
+            export(project(":core:circuit"))
         }
     }
 
@@ -73,6 +74,7 @@ kotlin {
             implementation(project(":core:centerpost"))
             implementation(project(":core:theme"))
             implementation(project(":core:network"))
+            implementation(project(":core:circuit"))
 
             // Circuit
             implementation(libs.circuit.foundation)

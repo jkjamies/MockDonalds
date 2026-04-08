@@ -1,5 +1,9 @@
 package com.mockdonalds.app.bridge
 
+import com.mockdonalds.app.core.circuit.bottomsheet.BottomSheetNavigator
+import com.mockdonalds.app.core.circuit.bottomsheet.BottomSheetNavigatorImpl
+import com.mockdonalds.app.core.circuit.bottomsheet.BottomSheetRequest
+import com.mockdonalds.app.core.circuit.bottomsheet.BottomSheetResult
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavStackList
@@ -9,11 +13,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class BridgeNavigator : Navigator {
+class BridgeNavigator : Navigator, BottomSheetNavigator {
     private val _navigationAction = MutableStateFlow<NavigationAction>(NavigationAction.Idle)
 
     @NativeCoroutinesState
     val navigationAction: StateFlow<NavigationAction> = _navigationAction.asStateFlow()
+
+    // Bottom sheet support — delegates to shared impl, exposes flow for Swift observation
+    private val bottomSheetImpl = BottomSheetNavigatorImpl()
+
+    @NativeCoroutinesState
+    val bottomSheetRequest: StateFlow<BottomSheetRequest?> = bottomSheetImpl.request
 
     override fun goTo(screen: Screen): Boolean {
         _navigationAction.value = NavigationAction.GoTo(screen)
@@ -53,4 +63,11 @@ class BridgeNavigator : Navigator {
     fun consume() {
         _navigationAction.value = NavigationAction.Idle
     }
+
+    // BottomSheetNavigator
+
+    override suspend fun show(screen: Screen): BottomSheetResult =
+        bottomSheetImpl.show(screen)
+
+    fun completeBottomSheet(result: BottomSheetResult) = bottomSheetImpl.complete(result)
 }

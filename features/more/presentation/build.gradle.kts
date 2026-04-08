@@ -16,6 +16,7 @@ kotlin {
             implementation(project(":core:centerpost"))
             implementation(project(":core:theme"))
             implementation(project(":core:common"))
+            implementation(project(":core:circuit"))
         }
         commonTest.dependencies {
             implementation(project(":features:more:test"))

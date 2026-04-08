@@ -19,10 +19,12 @@ struct ScreenEntry: Hashable, Identifiable {
 
 /// The iOS equivalent of Android's NavigableCircuitContent.
 /// Observes BridgeNavigator's NavigationAction flow and drives native SwiftUI navigation.
+/// Also observes overlay requests and presents them as sheets or full-screen covers.
 struct CircuitNavigator<Content: View>: View {
     @EnvironmentObject var circuit: CircuitIos
 
     @State private var navigationPath: [ScreenEntry] = []
+    @State private var bottomSheetScreen: ScreenEntry?
 
     let content: () -> Content
 
@@ -38,8 +40,17 @@ struct CircuitNavigator<Content: View>: View {
                         .mockDonaldsTheme()
                 }
         }
+        .sheet(item: $bottomSheetScreen, onDismiss: {
+            circuit.navigator.completeBottomSheet(result: BottomSheetResult.Dismissed())
+        }) { entry in
+            CircuitContent(screen: entry.screen)
+                .mockDonaldsTheme()
+        }
         .task {
             await observeNavigation()
+        }
+        .task {
+            await observeBottomSheet()
         }
     }
 
@@ -53,6 +64,23 @@ struct CircuitNavigator<Content: View>: View {
             }
         } catch {
             print("Navigation observation ended: \(error)")
+        }
+    }
+
+    // MARK: - Bottom Sheet Observation
+
+    private func observeBottomSheet() async {
+        do {
+            let sequence = asyncSequence(for: circuit.navigator.bottomSheetRequestFlow)
+            for try await request in sequence {
+                if let request {
+                    bottomSheetScreen = ScreenEntry(screen: request.screen)
+                } else {
+                    bottomSheetScreen = nil
+                }
+            }
+        } catch {
+            print("Bottom sheet observation ended: \(error)")
         }
     }
 

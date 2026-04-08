@@ -17,6 +17,9 @@ class IosApp {
         val presenter = circuit.presenter(screen, navigator)
             ?: error("No presenter found for screen: $screen")
         @Suppress("UNCHECKED_CAST")
-        return CircuitPresenterKotlinBridge(presenter as Presenter<CircuitUiState>)
+        return CircuitPresenterKotlinBridge(
+            presenter = presenter as Presenter<CircuitUiState>,
+            bottomSheetNavigator = navigator,
+        )
     }
 }
