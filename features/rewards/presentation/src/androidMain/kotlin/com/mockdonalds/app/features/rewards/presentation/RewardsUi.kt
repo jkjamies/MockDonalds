@@ -33,6 +33,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.mockdonalds.app.core.theme.MockDimens
+import com.mockdonalds.app.core.theme.MockDonaldsTheme
 import com.mockdonalds.app.features.rewards.api.domain.HistoryEntry
 import com.mockdonalds.app.features.rewards.api.domain.VaultSpecial
 import com.mockdonalds.app.features.rewards.api.navigation.RewardsScreen
@@ -52,10 +54,10 @@ fun RewardsUi(state: RewardsUiState, modifier: Modifier = Modifier) {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
-            .padding(horizontal = 24.dp)
-            .padding(bottom = 128.dp)
+            .padding(horizontal = MockDimens.SpacingXl)
+            .padding(bottom = MockDimens.BottomBarPadding)
             .statusBarsPadding(),
-        verticalArrangement = Arrangement.spacedBy(48.dp),
+        verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXxxl),
     ) {
         // Points Hero Section
         state.progress?.let { progress ->
@@ -83,10 +85,13 @@ fun RewardsUi(state: RewardsUiState, modifier: Modifier = Modifier) {
                             letterSpacing = 2.sp,
                         ),
                         color = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.padding(bottom = 8.dp),
+                        modifier = Modifier.padding(bottom = MockDimens.SpacingSm),
                     )
 
-                    Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.Bottom,
+                        horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingSm),
+                    ) {
                         Text(
                             text = "%,d".format(progress.currentPoints),
                             style = MaterialTheme.typography.displayLarge.copy(
@@ -99,13 +104,13 @@ fun RewardsUi(state: RewardsUiState, modifier: Modifier = Modifier) {
                         Text(
                             text = "PTS",
                             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                            color = Color(0xFFFFDF99),
+                            color = MockDonaldsTheme.extendedColors.secondaryLight,
                         )
                     }
 
                     Column(
-                        modifier = Modifier.padding(top = 32.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.padding(top = MockDimens.SpacingXxl),
+                        verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -154,7 +159,7 @@ fun RewardsUi(state: RewardsUiState, modifier: Modifier = Modifier) {
         if (state.vaultSpecials.isNotEmpty()) {
             Column(
                 modifier = Modifier.testTag(RewardsTestTags.VAULT_SPECIALS_SECTION),
-                verticalArrangement = Arrangement.spacedBy(24.dp),
+                verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXl),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -190,7 +195,7 @@ fun RewardsUi(state: RewardsUiState, modifier: Modifier = Modifier) {
                 if (secondary.isNotEmpty()) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
                     ) {
                         secondary.forEach { special ->
                             VaultSpecialCard(
@@ -210,13 +215,13 @@ fun RewardsUi(state: RewardsUiState, modifier: Modifier = Modifier) {
         if (state.history.isNotEmpty()) {
             Column(
                 modifier = Modifier.testTag(RewardsTestTags.HISTORY_SECTION),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
             ) {
                 Text(
                     text = "Earning History",
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Black),
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(bottom = 8.dp),
+                    modifier = Modifier.padding(bottom = MockDimens.SpacingSm),
                 )
 
                 state.history.forEachIndexed { index, entry ->
@@ -240,7 +245,7 @@ fun FeaturedVaultCard(special: VaultSpecial, onClick: () -> Unit, modifier: Modi
         modifier = modifier
             .fillMaxWidth()
             .height(256.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(MockDimens.RadiusMd))
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .clickable(onClick = onClick),
     ) {
@@ -264,14 +269,14 @@ fun FeaturedVaultCard(special: VaultSpecial, onClick: () -> Unit, modifier: Modi
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(24.dp),
+                .padding(MockDimens.SpacingXl),
         ) {
             special.tag?.let { tag ->
                 Box(
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.secondary, CircleShape)
-                        .padding(horizontal = 12.dp, vertical = 4.dp)
-                        .padding(bottom = 12.dp),
+                        .padding(horizontal = MockDimens.SpacingMd, vertical = MockDimens.SpacingXs)
+                        .padding(bottom = MockDimens.SpacingMd),
                 ) {
                     Text(
                         text = tag,
@@ -279,7 +284,7 @@ fun FeaturedVaultCard(special: VaultSpecial, onClick: () -> Unit, modifier: Modi
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.sp,
                         ),
-                        color = Color(0xFF3F2E00),
+                        color = MockDonaldsTheme.extendedColors.onSecondaryContainer,
                     )
                 }
             }
@@ -287,7 +292,7 @@ fun FeaturedVaultCard(special: VaultSpecial, onClick: () -> Unit, modifier: Modi
                 text = special.title,
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black),
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
+                modifier = Modifier.padding(top = MockDimens.SpacingMd, bottom = MockDimens.SpacingXs),
             )
             Text(
                 text = special.pointsCost,
@@ -302,11 +307,11 @@ fun FeaturedVaultCard(special: VaultSpecial, onClick: () -> Unit, modifier: Modi
 fun VaultSpecialCard(special: VaultSpecial, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(MockDimens.RadiusMd))
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .clickable(onClick = onClick)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+            .padding(MockDimens.SpacingLg),
+        verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
     ) {
         Box(
             modifier = Modifier
@@ -342,14 +347,14 @@ fun HistoryItem(entry: HistoryEntry, containerColor: Color) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(MockDimens.RadiusMd))
             .background(containerColor)
             .padding(20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(

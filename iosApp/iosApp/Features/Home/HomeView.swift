@@ -4,42 +4,43 @@ import ComposeApp
 private let tags = HomeTestTags.shared
 
 struct HomeView: View {
+    @Environment(\.mockDonaldsColors) private var colors
     let state: HomeUiState
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 48) {
+            VStack(alignment: .leading, spacing: MockDimens.spacingXxxl) {
                 greetingSection
                 heroBanner
                 recentCravingsSection
                 exploreSection
-                Spacer().frame(height: 24)
+                Spacer().frame(height: MockDimens.spacingXl)
             }
-            .padding(.bottom, 128)
+            .padding(.bottom, MockDimens.bottomBarPadding)
         }
-        .background(MockDonaldsColors.background)
+        .background(colors.background)
     }
 
     private var greetingSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: MockDimens.spacingXs) {
             Text("GOOD EVENING, GOURMET")
                 .font(.caption)
                 .fontWeight(.bold)
-                .foregroundColor(MockDonaldsColors.onSurfaceVariant)
+                .foregroundColor(colors.onSurfaceVariant)
             Text(state.userName)
                 .font(.largeTitle)
                 .fontWeight(.black)
-                .foregroundColor(MockDonaldsColors.onSurface)
+                .foregroundColor(colors.onSurface)
                 .accessibilityIdentifier(tags.USER_NAME)
         }
-        .padding(.horizontal, 24)
+        .padding(.horizontal, MockDimens.spacingXl)
     }
 
     @ViewBuilder
     private var heroBanner: some View {
         if let hero = state.heroPromotion {
             Color.clear
-                .frame(height: 480)
+                .frame(height: MockDimens.heroHeight)
                 .overlay {
                     AsyncImage(
                         url: URL(string: hero.imageUrl),
@@ -48,7 +49,7 @@ struct HomeView: View {
                                 .aspectRatio(contentMode: .fill)
                         },
                         placeholder: {
-                            MockDonaldsColors.surfaceContainerHigh
+                            colors.surfaceContainerHigh
                         }
                     )
                 }
@@ -57,7 +58,7 @@ struct HomeView: View {
                     LinearGradient(
                         colors: [
                             .clear,
-                            MockDonaldsColors.background.opacity(0.9),
+                            colors.background.opacity(0.9),
                         ],
                         startPoint: .top, endPoint: .bottom
                     )
@@ -65,7 +66,7 @@ struct HomeView: View {
                 .overlay {
                     LinearGradient(
                         colors: [
-                            MockDonaldsColors.background.opacity(0.6),
+                            colors.background.opacity(0.6),
                             .clear,
                         ],
                         startPoint: .leading, endPoint: .trailing
@@ -81,25 +82,25 @@ struct HomeView: View {
     private func heroOverlayContent(
         hero: HeroPromotion
     ) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: MockDimens.spacingLg) {
             Text(hero.tag)
                 .font(.caption2)
                 .fontWeight(.bold)
-                .foregroundColor(Color(hex: 0x584200))
-                .padding(.horizontal, 12)
-                .padding(.vertical, 4)
-                .background(MockDonaldsColors.secondary)
+                .foregroundColor(colors.onSecondaryTag)
+                .padding(.horizontal, MockDimens.spacingMd)
+                .padding(.vertical, MockDimens.spacingXs)
+                .background(colors.secondary)
                 .clipShape(Capsule())
 
             Text(hero.title)
                 .font(.system(size: 36, weight: .black))
-                .foregroundColor(MockDonaldsColors.onSurface)
+                .foregroundColor(colors.onSurface)
                 .lineSpacing(-4)
 
             Text(hero.description_)
                 .font(.subheadline)
                 .foregroundColor(
-                    MockDonaldsColors.onSurface.opacity(0.7)
+                    colors.onSurface.opacity(0.7)
                 )
 
             Button(
@@ -110,47 +111,47 @@ struct HomeView: View {
                     Text(hero.ctaText)
                     .font(.caption)
                     .fontWeight(.bold)
-                    .foregroundColor(Color(hex: 0xFFEBE8))
-                    .padding(.horizontal, 32)
-                    .padding(.vertical, 16)
+                    .foregroundColor(colors.onPrimaryButton)
+                    .padding(.horizontal, MockDimens.spacingXxl)
+                    .padding(.vertical, MockDimens.spacingLg)
                     .background(
                         LinearGradient(
                             colors: [
-                                MockDonaldsColors.primary,
-                                Color(hex: 0x930003),
+                                colors.primary,
+                                colors.primaryDark,
                             ],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
                     )
-                    .cornerRadius(6)
+                    .cornerRadius(MockDimens.radiusSm)
                 }
             )
             .accessibilityIdentifier(tags.HERO_CTA_BUTTON)
-            .padding(.top, 16)
+            .padding(.top, MockDimens.spacingLg)
         }
-        .padding(32)
+        .padding(MockDimens.spacingXxl)
     }
 
     @ViewBuilder
     private var recentCravingsSection: some View {
         if !state.recentCravings.isEmpty {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: MockDimens.spacingXl) {
                 HStack {
                     Text("Recent Cravings")
                         .font(.title3)
                         .fontWeight(.bold)
-                        .foregroundColor(MockDonaldsColors.onSurface)
+                        .foregroundColor(colors.onSurface)
                     Spacer()
                     Text("View All")
                         .font(.caption)
                         .fontWeight(.bold)
-                        .foregroundColor(MockDonaldsColors.secondary)
+                        .foregroundColor(colors.secondary)
                 }
-                .padding(.horizontal, 24)
+                .padding(.horizontal, MockDimens.spacingXl)
 
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 24) {
+                    HStack(spacing: MockDimens.spacingXl) {
                         ForEach(
                             Array(state.recentCravings.enumerated()),
                             id: \.offset
@@ -172,7 +173,7 @@ struct HomeView: View {
                             )
                         }
                     }
-                    .padding(.horizontal, 24)
+                    .padding(.horizontal, MockDimens.spacingXl)
                 }
             }
             .accessibilityIdentifier(tags.RECENT_CRAVINGS_SECTION)
@@ -182,23 +183,23 @@ struct HomeView: View {
     @ViewBuilder
     private var exploreSection: some View {
         if !state.exploreItems.isEmpty {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: MockDimens.spacingXl) {
                 Text("Explore")
                     .font(.title3)
                     .fontWeight(.bold)
-                    .foregroundColor(MockDonaldsColors.onSurface)
+                    .foregroundColor(colors.onSurface)
 
                 exploreBentoGrid
                 exploreListItems
             }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, MockDimens.spacingXl)
             .accessibilityIdentifier(tags.EXPLORE_SECTION)
         }
     }
 
     private var exploreBentoGrid: some View {
         let gridItems = Array(state.exploreItems.prefix(2))
-        return HStack(spacing: 16) {
+        return HStack(spacing: MockDimens.spacingLg) {
             ForEach(
                 Array(gridItems.enumerated()),
                 id: \.offset
@@ -225,31 +226,31 @@ struct HomeView: View {
             Array(state.exploreItems.dropFirst(2).enumerated()),
             id: \.offset
         ) { _, item in
-            HStack(spacing: 16) {
+            HStack(spacing: MockDimens.spacingLg) {
                 Circle()
-                    .fill(MockDonaldsColors.surfaceContainerHighest)
-                    .frame(width: 48, height: 48)
+                    .fill(colors.surfaceContainerHighest)
+                    .frame(width: MockDimens.iconLg, height: MockDimens.iconLg)
                     .overlay(Text(item.icon))
                 VStack(alignment: .leading) {
                     Text(item.title)
                         .font(.title3)
                         .fontWeight(.bold)
-                        .foregroundColor(MockDonaldsColors.onSurface)
+                        .foregroundColor(colors.onSurface)
                     Text(item.subtitle)
                         .font(.caption)
                         .foregroundColor(
-                            MockDonaldsColors.onSurface.opacity(0.5)
+                            colors.onSurface.opacity(0.5)
                         )
                 }
                 Spacer()
                 Text(">")
                     .foregroundColor(
-                        MockDonaldsColors.onSurface.opacity(0.3)
+                        colors.onSurface.opacity(0.3)
                     )
             }
-            .padding(24)
-            .background(MockDonaldsColors.surfaceContainerLow)
-            .cornerRadius(12)
+            .padding(MockDimens.spacingXl)
+            .background(colors.surfaceContainerLow)
+            .cornerRadius(MockDimens.radiusMd)
             .accessibilityIdentifier(
                 "\(tags.EXPLORE_ITEM)-\(item.id)"
             )
@@ -263,6 +264,7 @@ struct HomeView: View {
 }
 
 struct CravingCard: View {
+    @Environment(\.mockDonaldsColors) private var colors
     let title: String
     let subtitle: String
     let imageUrl: String
@@ -277,10 +279,10 @@ struct CravingCard: View {
                         .aspectRatio(contentMode: .fill)
                 },
                 placeholder: {
-                    MockDonaldsColors.surfaceContainerHigh
+                    colors.surfaceContainerHigh
                 }
             )
-            .frame(width: 288, height: 176)
+            .frame(width: MockDimens.cardWidth, height: MockDimens.cardHeight)
             .clipped()
 
             HStack {
@@ -288,33 +290,34 @@ struct CravingCard: View {
                     Text(title)
                         .font(.title3)
                         .fontWeight(.bold)
-                        .foregroundColor(MockDonaldsColors.onSurface)
+                        .foregroundColor(colors.onSurface)
                     Text(subtitle)
                         .font(.caption)
                         .foregroundColor(
-                            MockDonaldsColors.onSurface.opacity(0.5)
+                            colors.onSurface.opacity(0.5)
                         )
                 }
                 Spacer()
                 Circle()
-                    .fill(MockDonaldsColors.surfaceContainerHighest)
-                    .frame(width: 40, height: 40)
+                    .fill(colors.surfaceContainerHighest)
+                    .frame(width: MockDimens.iconMd, height: MockDimens.iconMd)
                     .overlay(
                         Text("+")
                             .fontWeight(.bold)
-                            .foregroundColor(MockDonaldsColors.secondary)
+                            .foregroundColor(colors.secondary)
                     )
             }
             .padding(20)
         }
-        .frame(width: 288)
-        .background(MockDonaldsColors.surfaceContainerLow)
-        .cornerRadius(12)
+        .frame(width: MockDimens.cardWidth)
+        .background(colors.surfaceContainerLow)
+        .cornerRadius(MockDimens.radiusMd)
         .onTapGesture(perform: onTap)
     }
 }
 
 struct BentoCard: View {
+    @Environment(\.mockDonaldsColors) private var colors
     let icon: String
     let title: String
     let subtitle: String
@@ -323,24 +326,24 @@ struct BentoCard: View {
         VStack(alignment: .leading) {
             Text(icon)
                 .font(.title2)
-                .foregroundColor(MockDonaldsColors.secondary)
+                .foregroundColor(colors.secondary)
             Spacer()
             VStack(alignment: .leading) {
                 Text(title)
                     .font(.caption)
                     .fontWeight(.bold)
-                    .foregroundColor(MockDonaldsColors.onSurface)
+                    .foregroundColor(colors.onSurface)
                 Text(subtitle)
                     .font(.caption2)
                     .foregroundColor(
-                        MockDonaldsColors.onSurface.opacity(0.5)
+                        colors.onSurface.opacity(0.5)
                     )
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(height: 160)
-        .padding(24)
-        .background(MockDonaldsColors.surfaceContainerLow)
-        .cornerRadius(12)
+        .frame(height: MockDimens.thumbnailHeight)
+        .padding(MockDimens.spacingXl)
+        .background(colors.surfaceContainerLow)
+        .cornerRadius(MockDimens.radiusMd)
     }
 }

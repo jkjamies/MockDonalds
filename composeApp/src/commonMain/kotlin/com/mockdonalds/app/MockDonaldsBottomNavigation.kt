@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mockdonalds.app.core.theme.MockDimens
 import com.mockdonalds.app.core.theme.glassEffect
 
 data class BottomNavItem(
@@ -61,21 +62,25 @@ fun MockDonaldsBottomNavigation(
             )
             .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             .glassEffect(
-                overlayColor = Color(0xFF131313).copy(alpha = 0.85f),
-                blurRadius = 24
+                overlayColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
+                blurRadius = 24,
             )
             .windowInsetsPadding(WindowInsets.navigationBars)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(80.dp),
+                .height(MockDimens.BottomNavHeight),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
             items.forEach { item ->
                 val isSelected = currentRoute == item.route
-                val contentColor = if (isSelected) Color(0xFFFFC72C) else Color(0xFFE5E2E1)
+                val contentColor = if (isSelected) {
+                    MaterialTheme.colorScheme.secondary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                }
 
                 Column(
                     modifier = Modifier

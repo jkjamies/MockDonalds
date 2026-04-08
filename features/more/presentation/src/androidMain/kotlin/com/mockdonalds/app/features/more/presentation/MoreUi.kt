@@ -34,6 +34,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.mockdonalds.app.core.theme.MockDimens
+import com.mockdonalds.app.core.theme.MockDonaldsTheme
 import com.mockdonalds.app.features.more.api.domain.MoreMenuItem
 import com.mockdonalds.app.features.more.api.navigation.MoreScreen
 import com.mockdonalds.app.features.more.api.ui.MoreTestTags
@@ -52,8 +54,8 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
-            .padding(horizontal = 24.dp)
-            .padding(bottom = 128.dp)
+            .padding(horizontal = MockDimens.SpacingXl)
+            .padding(bottom = MockDimens.BottomBarPadding)
             .statusBarsPadding(),
         verticalArrangement = Arrangement.spacedBy(40.dp),
     ) {
@@ -62,11 +64,11 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(MockDimens.RadiusMd))
                     .background(MaterialTheme.colorScheme.surfaceContainerLow)
                     .testTag(MoreTestTags.PROFILE_SECTION)
                     .clickable { state.eventSink(MoreEvent.ProfileClicked) }
-                    .padding(24.dp),
+                    .padding(MockDimens.SpacingXl),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -123,7 +125,7 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
         if (state.menuItems.isNotEmpty()) {
             Column(
                 modifier = Modifier.testTag(MoreTestTags.MENU_LIST),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXs),
             ) {
                 state.menuItems.forEachIndexed { index, item ->
                     MenuItemRow(
@@ -140,7 +142,7 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(MockDimens.RadiusMd))
                 .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                 .testTag(MoreTestTags.JOIN_TEAM_BANNER),
         ) {
@@ -158,8 +160,8 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
                     .background(
                         Brush.horizontalGradient(
                             colors = listOf(
-                                Color(0xFF000000),
-                                Color(0xFF000000).copy(alpha = 0.4f),
+                                Color.Black,
+                                Color.Black.copy(alpha = 0.4f),
                                 Color.Transparent,
                             ),
                         ),
@@ -169,33 +171,38 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
-                    .padding(32.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                    .padding(MockDimens.SpacingXxl),
+                verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
             ) {
                 Text(
                     text = "Join the Team",
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black),
-                    color = Color(0xFFF5F5F5),
+                    color = MaterialTheme.colorScheme.onSurface,
                     lineHeight = 36.sp,
                 )
                 Text(
                     text = "Craft the future of late-night dining with us. We're looking for culinary masters.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFFD4D4D4),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Button(
                     onClick = { },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                     contentPadding = PaddingValues(),
-                    modifier = Modifier.padding(top = 8.dp),
-                    shape = RoundedCornerShape(6.dp),
+                    modifier = Modifier.padding(top = MockDimens.SpacingSm),
+                    shape = RoundedCornerShape(MockDimens.RadiusSm),
                 ) {
                     Box(
                         modifier = Modifier
                             .background(
-                                Brush.horizontalGradient(listOf(MaterialTheme.colorScheme.primary, Color(0xFF930003))),
+                                Brush.horizontalGradient(
+                                    listOf(
+                                        MaterialTheme.colorScheme.primary,
+                                        MockDonaldsTheme.extendedColors.primaryDark,
+                                    ),
+                                ),
                             )
-                            .padding(horizontal = 24.dp, vertical = 12.dp),
+                            .padding(horizontal = MockDimens.SpacingXl, vertical = MockDimens.SpacingMd),
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
@@ -215,7 +222,7 @@ fun MenuItemRow(item: MoreMenuItem, isOdd: Boolean, onClick: () -> Unit, modifie
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(MockDimens.RadiusMd))
             .background(if (isOdd) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceContainerLow)
             .clickable(onClick = onClick)
             .padding(20.dp),
@@ -223,7 +230,7 @@ fun MenuItemRow(item: MoreMenuItem, isOdd: Boolean, onClick: () -> Unit, modifie
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(text = item.icon, color = MaterialTheme.colorScheme.onSurfaceVariant)

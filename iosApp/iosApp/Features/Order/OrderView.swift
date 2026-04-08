@@ -4,6 +4,8 @@ import ComposeApp
 private let tags = OrderTestTags.shared
 
 struct OrderView: View {
+    @Environment(\.mockDonaldsColors) private var colors
+
     let state: OrderUiState
 
     var body: some View {
@@ -17,12 +19,12 @@ struct OrderView: View {
 
             cartBar
         }
-        .background(MockDonaldsColors.background)
+        .background(colors.background)
     }
 
     private var categoryChipsSection: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 12) {
+            HStack(spacing: MockDimens.spacingMd) {
                 ForEach(
                     Array(state.categories.enumerated()),
                     id: \.offset
@@ -33,15 +35,15 @@ struct OrderView: View {
                         .fontWeight(.bold)
                         .foregroundColor(
                             isSelected
-                                ? Color(hex: 0xFFEBE8)
-                                : MockDonaldsColors.onSurface
+                                ? colors.onPrimaryButton
+                                : colors.onSurface
                         )
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 8)
+                        .padding(.horizontal, MockDimens.spacingXl)
+                        .padding(.vertical, MockDimens.spacingSm)
                         .background(
                             isSelected
-                                ? MockDonaldsColors.primary
-                                : MockDonaldsColors.surfaceContainerHigh
+                                ? colors.primary
+                                : colors.surfaceContainerHigh
                         )
                         .clipShape(Capsule())
                         .accessibilityIdentifier(
@@ -54,13 +56,13 @@ struct OrderView: View {
                         }
                 }
             }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, MockDimens.spacingXl)
         }
-        .padding(.bottom, 32)
+        .padding(.bottom, MockDimens.spacingXxl)
     }
 
     private var featuredItemsSection: some View {
-        VStack(spacing: 48) {
+        VStack(spacing: MockDimens.spacingXxxl) {
             ForEach(
                 Array(state.featuredItems.enumerated()),
                 id: \.offset
@@ -83,8 +85,8 @@ struct OrderView: View {
                 )
             }
         }
-        .padding(.horizontal, 24)
-        .padding(.bottom, 128)
+        .padding(.horizontal, MockDimens.spacingXl)
+        .padding(.bottom, MockDimens.bottomBarPadding)
         .accessibilityIdentifier(tags.FEATURED_ITEMS_SECTION)
     }
 
@@ -92,38 +94,38 @@ struct OrderView: View {
     private var cartBar: some View {
         if let cart = state.cartSummary {
             HStack {
-                HStack(spacing: 12) {
+                HStack(spacing: MockDimens.spacingMd) {
                     Circle()
-                        .fill(Color(hex: 0x690001).opacity(0.2))
-                        .frame(width: 32, height: 32)
+                        .fill(colors.primaryDarker.opacity(0.2))
+                        .frame(width: MockDimens.spacingXxl, height: MockDimens.spacingXxl)
                         .overlay(
                             Text("\(cart.itemCount)")
                                 .font(.caption)
                                 .fontWeight(.bold)
-                                .foregroundColor(Color(hex: 0xFFEBE8))
+                                .foregroundColor(colors.onPrimaryButton)
                         )
                     Text("\(cart.itemCount) ITEMS")
                         .font(.caption)
                         .fontWeight(.bold)
-                        .foregroundColor(Color(hex: 0xFFEBE8))
+                        .foregroundColor(colors.onPrimaryButton)
                         .tracking(2)
                 }
                 Spacer()
-                HStack(spacing: 8) {
+                HStack(spacing: MockDimens.spacingSm) {
                     Text(cart.total)
                         .font(.title3)
                         .fontWeight(.black)
-                        .foregroundColor(Color(hex: 0xFFEBE8))
+                        .foregroundColor(colors.onPrimaryButton)
                     Text("->")
                         .fontWeight(.bold)
-                        .foregroundColor(Color(hex: 0xFFEBE8))
+                        .foregroundColor(colors.onPrimaryButton)
                 }
             }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 16)
-            .background(MockDonaldsColors.primary)
-            .cornerRadius(12)
-            .padding(.horizontal, 24)
+            .padding(.horizontal, MockDimens.spacingXl)
+            .padding(.vertical, MockDimens.spacingLg)
+            .background(colors.primary)
+            .cornerRadius(MockDimens.radiusMd)
+            .padding(.horizontal, MockDimens.spacingXl)
             .padding(.bottom, 88)
             .accessibilityIdentifier(tags.CART_BAR)
             .onTapGesture {
@@ -134,6 +136,8 @@ struct OrderView: View {
 }
 
 struct FeaturedItemView: View {
+    @Environment(\.mockDonaldsColors) private var colors
+
     let title: String
     let price: String
     let description: String
@@ -143,7 +147,7 @@ struct FeaturedItemView: View {
     var onAddToOrder: () -> Void = {}
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: MockDimens.spacingLg) {
             imageSection
             titleRow
             descriptionText
@@ -163,25 +167,25 @@ struct FeaturedItemView: View {
                                 .aspectRatio(contentMode: .fill)
                         },
                         placeholder: {
-                            MockDonaldsColors.surfaceContainerLow
+                            colors.surfaceContainerLow
                         }
                     )
                 }
                 .clipped()
-                .cornerRadius(12)
+                .cornerRadius(MockDimens.radiusMd)
 
             Text(tag)
                 .font(.caption2)
                 .fontWeight(.bold)
-                .foregroundColor(MockDonaldsColors.secondary)
+                .foregroundColor(colors.secondary)
                 .tracking(1)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 4)
+                .padding(.horizontal, MockDimens.spacingMd)
+                .padding(.vertical, MockDimens.spacingXs)
                 .background(
-                    MockDonaldsColors.secondary.opacity(0.2)
+                    colors.secondary.opacity(0.2)
                 )
                 .clipShape(Capsule())
-                .padding(16)
+                .padding(MockDimens.spacingLg)
         }
     }
 
@@ -189,53 +193,53 @@ struct FeaturedItemView: View {
         HStack(alignment: .bottom) {
             Text(title)
                 .font(.system(size: 32, weight: .black))
-                .foregroundColor(MockDonaldsColors.onSurface)
+                .foregroundColor(colors.onSurface)
             Spacer()
             Text(price)
                 .font(.title3)
                 .fontWeight(.bold)
-                .foregroundColor(MockDonaldsColors.secondary)
+                .foregroundColor(colors.secondary)
         }
     }
 
     private var descriptionText: some View {
         Text(description)
             .font(.subheadline)
-            .foregroundColor(MockDonaldsColors.onSurfaceVariant)
-            .padding(.bottom, 16)
+            .foregroundColor(colors.onSurfaceVariant)
+            .padding(.bottom, MockDimens.spacingLg)
     }
 
     private var addToOrderButton: some View {
         Button(action: onAddToOrder) {
-            HStack(spacing: 8) {
+            HStack(spacing: MockDimens.spacingSm) {
                 Text("+").fontWeight(.bold)
                 Text("ADD TO ORDER")
                     .font(.caption).fontWeight(.bold)
             }
             .foregroundColor(
                 isPrimary
-                    ? Color(hex: 0xFFEBE8)
-                    : MockDonaldsColors.secondary
+                    ? colors.onPrimaryButton
+                    : colors.secondary
             )
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .padding(.vertical, MockDimens.spacingLg)
             .background(
                 isPrimary
                     ? AnyShapeStyle(
                         LinearGradient(
                             colors: [
-                                MockDonaldsColors.primary,
-                                Color(hex: 0x930003),
+                                colors.primary,
+                                colors.primaryDark,
                             ],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
                     )
                     : AnyShapeStyle(
-                        MockDonaldsColors.surfaceContainerHighest
+                        colors.surfaceContainerHighest
                     )
             )
-            .cornerRadius(6)
+            .cornerRadius(MockDimens.radiusSm)
         }
     }
 }

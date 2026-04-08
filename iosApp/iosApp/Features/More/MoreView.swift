@@ -5,6 +5,7 @@ private let tags = MoreTestTags.shared
 
 struct MoreView: View {
     let state: MoreUiState
+    @Environment(\.mockDonaldsColors) private var colors
 
     var body: some View {
         ScrollView {
@@ -13,10 +14,10 @@ struct MoreView: View {
                 menuList
                 joinTeamBanner
             }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 128)
+            .padding(.horizontal, MockDimens.spacingXl)
+            .padding(.bottom, MockDimens.bottomBarPadding)
         }
-        .background(MockDonaldsColors.background)
+        .background(colors.background)
     }
 
     @ViewBuilder
@@ -29,23 +30,23 @@ struct MoreView: View {
                     Text(profile.name)
                         .font(.title3)
                         .fontWeight(.bold)
-                        .foregroundColor(MockDonaldsColors.onSurface)
+                        .foregroundColor(colors.onSurface)
                     Text(
                         "\(profile.tier) \u{2022} \(profile.points)"
                     )
                     .font(.subheadline)
                     .foregroundColor(
-                        MockDonaldsColors.onSurfaceVariant
+                        colors.onSurfaceVariant
                             .opacity(0.8)
                     )
                 }
                 Spacer()
                 Text(">")
-                    .foregroundColor(MockDonaldsColors.secondary)
+                    .foregroundColor(colors.secondary)
             }
-            .padding(24)
-            .background(MockDonaldsColors.surfaceContainerLow)
-            .cornerRadius(12)
+            .padding(MockDimens.spacingXl)
+            .background(colors.surfaceContainerLow)
+            .cornerRadius(MockDimens.radiusMd)
             .accessibilityIdentifier(tags.PROFILE_SECTION)
             .onTapGesture {
                 state.eventSink(MoreEvent.ProfileClicked())
@@ -62,19 +63,19 @@ struct MoreView: View {
                     AngularGradient(
                         gradient: Gradient(stops: [
                             .init(
-                                color: MockDonaldsColors.primary,
+                                color: colors.primary,
                                 location: 0
                             ),
                             .init(
-                                color: MockDonaldsColors.secondary,
+                                color: colors.secondary,
                                 location: 0.45
                             ),
                             .init(
-                                color: MockDonaldsColors.secondary,
+                                color: colors.secondary,
                                 location: 0.65
                             ),
                             .init(
-                                color: MockDonaldsColors.primary,
+                                color: colors.primary,
                                 location: 1
                             ),
                         ]),
@@ -91,7 +92,7 @@ struct MoreView: View {
                         .aspectRatio(contentMode: .fill)
                 },
                 placeholder: {
-                    MockDonaldsColors.surfaceContainerHighest
+                    colors.surfaceContainerHighest
                 }
             )
             .frame(width: 60, height: 60)
@@ -102,7 +103,7 @@ struct MoreView: View {
     @ViewBuilder
     private var menuList: some View {
         if !state.menuItems.isEmpty {
-            VStack(spacing: 4) {
+            VStack(spacing: MockDimens.spacingXs) {
                 ForEach(
                     Array(state.menuItems.enumerated()),
                     id: \.offset
@@ -147,7 +148,7 @@ struct MoreView: View {
             .overlay(alignment: .leading) {
                 joinTeamContent
             }
-            .cornerRadius(12)
+            .cornerRadius(MockDimens.radiusMd)
             .accessibilityIdentifier(tags.JOIN_TEAM_BANNER)
     }
 
@@ -161,24 +162,24 @@ struct MoreView: View {
                     .aspectRatio(contentMode: .fill)
             },
             placeholder: {
-                MockDonaldsColors.surfaceContainerHighest
+                colors.surfaceContainerHighest
             }
         )
     }
 
     private var joinTeamContent: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: MockDimens.spacingLg) {
             Text("Join the Team")
                 .font(.title2)
                 .fontWeight(.black)
-                .foregroundColor(Color(hex: 0xF5F5F5))
+                .foregroundColor(colors.onSurface)
             Text(
                 "Craft the future of late-night dining "
                 + "with us. We're looking for culinary "
                 + "masters."
             )
             .font(.subheadline)
-            .foregroundColor(Color(hex: 0xD4D4D4))
+            .foregroundColor(colors.onSurfaceVariant)
 
             Button(
                 action: {},
@@ -187,24 +188,24 @@ struct MoreView: View {
                         .font(.caption)
                         .fontWeight(.bold)
                         .foregroundColor(.white)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 12)
+                        .padding(.horizontal, MockDimens.spacingXl)
+                        .padding(.vertical, MockDimens.spacingMd)
                         .background(
                             LinearGradient(
                                 colors: [
-                                    MockDonaldsColors.primary,
-                                    Color(hex: 0x930003),
+                                    colors.primary,
+                                    colors.primaryDark,
                                 ],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
                         )
-                        .cornerRadius(6)
+                        .cornerRadius(MockDimens.radiusSm)
                 }
             )
-            .padding(.top, 8)
+            .padding(.top, MockDimens.spacingSm)
         }
-        .padding(32)
+        .padding(MockDimens.spacingXxl)
     }
 }
 
@@ -212,31 +213,32 @@ struct MenuItemView: View {
     let icon: String
     let title: String
     let isOdd: Bool
+    @Environment(\.mockDonaldsColors) private var colors
 
     var body: some View {
         HStack {
-            HStack(spacing: 16) {
+            HStack(spacing: MockDimens.spacingLg) {
                 Text(icon)
                     .foregroundColor(
-                        MockDonaldsColors.onSurfaceVariant
+                        colors.onSurfaceVariant
                     )
                 Text(title)
                     .font(.body)
                     .fontWeight(.semibold)
-                    .foregroundColor(MockDonaldsColors.onSurface)
+                    .foregroundColor(colors.onSurface)
             }
             Spacer()
             Text(">")
                 .foregroundColor(
-                    MockDonaldsColors.onSurfaceVariant
+                    colors.onSurfaceVariant
                 )
         }
         .padding(20)
         .background(
             isOdd
-                ? MockDonaldsColors.surface
-                : MockDonaldsColors.surfaceContainerLow
+                ? colors.surface
+                : colors.surfaceContainerLow
         )
-        .cornerRadius(12)
+        .cornerRadius(MockDimens.radiusMd)
     }
 }

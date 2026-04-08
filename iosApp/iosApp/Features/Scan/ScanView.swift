@@ -6,6 +6,7 @@ private let tags = ScanTestTags.shared
 struct ScanView: View {
     let state: ScanUiState
     @State private var gradientAngle: Double = 0
+    @Environment(\.mockDonaldsColors) private var colors
 
     var body: some View {
         ScrollView {
@@ -15,10 +16,10 @@ struct ScanView: View {
                 actionButtons
                 proTipSection
             }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 128)
+            .padding(.horizontal, MockDimens.spacingXl)
+            .padding(.bottom, MockDimens.bottomBarPadding)
         }
-        .background(MockDonaldsColors.background)
+        .background(colors.background)
     }
 
     @ViewBuilder
@@ -29,36 +30,36 @@ struct ScanView: View {
                     Text("MOCK REWARDS")
                         .font(.title3)
                         .fontWeight(.bold)
-                        .foregroundColor(MockDonaldsColors.onSurface)
-                        .padding(.bottom, 8)
+                        .foregroundColor(colors.onSurface)
+                        .padding(.bottom, MockDimens.spacingSm)
                     Text("Scan at the counter to earn & redeem")
                         .font(.caption)
                         .fontWeight(.medium)
                         .foregroundColor(
-                            MockDonaldsColors.onSurfaceVariant
+                            colors.onSurfaceVariant
                         )
-                        .padding(.bottom, 32)
+                        .padding(.bottom, MockDimens.spacingXxl)
 
                     qrCodeView(member: member)
 
-                    HStack(spacing: 12) {
+                    HStack(spacing: MockDimens.spacingMd) {
                         Text("\u{2B50}")
                             .foregroundColor(
-                                MockDonaldsColors.secondary
+                                colors.secondary
                             )
                         Text(member.memberStatus)
                             .font(.title3)
                             .fontWeight(.heavy)
                             .foregroundColor(
-                                MockDonaldsColors.onSurface
+                                colors.onSurface
                             )
                     }
-                    .padding(.top, 32)
+                    .padding(.top, MockDimens.spacingXxl)
                 }
-                .padding(32)
+                .padding(MockDimens.spacingXxl)
             }
-            .background(MockDonaldsColors.surfaceContainerLow)
-            .cornerRadius(12)
+            .background(colors.surfaceContainerLow)
+            .cornerRadius(MockDimens.radiusMd)
             .accessibilityIdentifier(tags.MEMBER_CARD)
         }
     }
@@ -68,19 +69,19 @@ struct ScanView: View {
             AngularGradient(
                 gradient: Gradient(stops: [
                     .init(
-                        color: MockDonaldsColors.primary,
+                        color: colors.primary,
                         location: 0
                     ),
                     .init(
-                        color: MockDonaldsColors.secondary,
+                        color: colors.secondary,
                         location: 0.45
                     ),
                     .init(
-                        color: MockDonaldsColors.secondary,
+                        color: colors.secondary,
                         location: 0.65
                     ),
                     .init(
-                        color: MockDonaldsColors.primary,
+                        color: colors.primary,
                         location: 1
                     ),
                 ]),
@@ -88,7 +89,7 @@ struct ScanView: View {
                 angle: .degrees(gradientAngle)
             )
             .frame(width: 260, height: 260)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: MockDimens.radiusLg))
             .onAppear {
                 withAnimation(
                     .linear(duration: 3)
@@ -105,7 +106,7 @@ struct ScanView: View {
                         .aspectRatio(contentMode: .fit)
                 },
                 placeholder: {
-                    MockDonaldsColors.surfaceContainerHighest
+                    colors.surfaceContainerHighest
                 }
             )
             .frame(width: 252, height: 252)
@@ -116,28 +117,28 @@ struct ScanView: View {
     @ViewBuilder
     private var rewardsProgressSection: some View {
         if let progress = state.rewardsProgress {
-            VStack(spacing: 16) {
+            VStack(spacing: MockDimens.spacingLg) {
                 HStack(alignment: .bottom) {
                     Text("REWARDS PROGRESS")
                         .font(.caption2)
                         .fontWeight(.bold)
                         .tracking(1)
                         .foregroundColor(
-                            MockDonaldsColors.onSurfaceVariant
+                            colors.onSurfaceVariant
                         )
                     Spacer()
-                    HStack(alignment: .bottom, spacing: 4) {
+                    HStack(alignment: .bottom, spacing: MockDimens.spacingXs) {
                         Text("\(progress.currentPoints)")
                             .font(.title3)
                             .fontWeight(.black)
                             .foregroundColor(
-                                MockDonaldsColors.secondary
+                                colors.secondary
                             )
                         Text("PTS")
                             .font(.caption2)
                             .fontWeight(.bold)
                             .foregroundColor(
-                                MockDonaldsColors.onSurfaceVariant
+                                colors.onSurfaceVariant
                             )
                     }
                 }
@@ -146,16 +147,16 @@ struct ScanView: View {
                     ZStack(alignment: .leading) {
                         Capsule()
                             .fill(
-                                MockDonaldsColors
+                                colors
                                     .surfaceContainerHighest
                             )
-                            .frame(height: 8)
+                            .frame(height: MockDimens.spacingSm)
                         Capsule()
                             .fill(
                                 LinearGradient(
                                     colors: [
-                                        MockDonaldsColors.primary,
-                                        MockDonaldsColors.secondary,
+                                        colors.primary,
+                                        colors.secondary,
                                     ],
                                     startPoint: .leading,
                                     endPoint: .trailing
@@ -166,17 +167,17 @@ struct ScanView: View {
                                     * CGFloat(
                                         progress.progressFraction
                                     ),
-                                height: 8
+                                height: MockDimens.spacingSm
                             )
                     }
                 }
-                .frame(height: 8)
+                .frame(height: MockDimens.spacingSm)
 
                 Text(progress.message)
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundColor(
-                        MockDonaldsColors.onSurface.opacity(0.8)
+                        colors.onSurface.opacity(0.8)
                     )
             }
             .accessibilityIdentifier(tags.REWARDS_PROGRESS)
@@ -184,30 +185,30 @@ struct ScanView: View {
     }
 
     private var actionButtons: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: MockDimens.spacingLg) {
             Button(
                 action: {
                     state.eventSink(ScanEvent.PayNowClicked())
                 },
                 label: {
-                    HStack(spacing: 12) {
+                    HStack(spacing: MockDimens.spacingMd) {
                         Text("\u{1F4B3}")
                             .foregroundColor(
-                                MockDonaldsColors.secondary
+                                colors.secondary
                             )
                         Text("Pay Now")
                             .font(.caption)
                             .fontWeight(.bold)
                             .foregroundColor(
-                                MockDonaldsColors.onSurface
+                                colors.onSurface
                             )
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 20)
                     .background(
-                        MockDonaldsColors.surfaceContainerHigh
+                        colors.surfaceContainerHigh
                     )
-                    .cornerRadius(12)
+                    .cornerRadius(MockDimens.radiusMd)
                 }
             )
             .accessibilityIdentifier(tags.PAY_NOW_BUTTON)
@@ -218,24 +219,24 @@ struct ScanView: View {
                     )
                 },
                 label: {
-                    HStack(spacing: 12) {
+                    HStack(spacing: MockDimens.spacingMd) {
                         Text("\u{1F3F7}\u{FE0F}")
                             .foregroundColor(
-                                MockDonaldsColors.secondary
+                                colors.secondary
                             )
                         Text("View Offers")
                             .font(.caption)
                             .fontWeight(.bold)
                             .foregroundColor(
-                                MockDonaldsColors.onSurface
+                                colors.onSurface
                             )
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 20)
                     .background(
-                        MockDonaldsColors.surfaceContainerHigh
+                        colors.surfaceContainerHigh
                     )
-                    .cornerRadius(12)
+                    .cornerRadius(MockDimens.radiusMd)
                 }
             )
             .accessibilityIdentifier(tags.VIEW_OFFERS_BUTTON)
@@ -243,16 +244,16 @@ struct ScanView: View {
     }
 
     private var proTipSection: some View {
-        HStack(alignment: .top, spacing: 16) {
+        HStack(alignment: .top, spacing: MockDimens.spacingLg) {
             Circle()
-                .fill(MockDonaldsColors.surfaceContainerHighest)
-                .frame(width: 40, height: 40)
+                .fill(colors.surfaceContainerHighest)
+                .frame(width: MockDimens.iconMd, height: MockDimens.iconMd)
                 .overlay(Text("\u{2139}\u{FE0F}"))
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: MockDimens.spacingXs) {
                 Text("Pro Tip")
                     .font(.caption)
                     .fontWeight(.bold)
-                    .foregroundColor(MockDonaldsColors.onSurface)
+                    .foregroundColor(colors.onSurface)
                 Text(
                     "Ensure your screen brightness is turned "
                     + "up for the best scanning experience "
@@ -260,13 +261,13 @@ struct ScanView: View {
                 )
                 .font(.caption)
                 .foregroundColor(
-                    MockDonaldsColors.onSurfaceVariant
+                    colors.onSurfaceVariant
                 )
             }
         }
         .padding(20)
-        .background(MockDonaldsColors.surfaceContainerLow)
-        .cornerRadius(12)
+        .background(colors.surfaceContainerLow)
+        .cornerRadius(MockDimens.radiusMd)
         .accessibilityIdentifier(tags.PRO_TIP)
     }
 }

@@ -36,6 +36,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.mockdonalds.app.core.theme.MockDimens
+import com.mockdonalds.app.core.theme.MockDonaldsTheme
 import com.mockdonalds.app.features.home.api.domain.Craving
 import com.mockdonalds.app.features.home.api.navigation.HomeScreen
 import com.mockdonalds.app.features.home.api.ui.HomeTestTags
@@ -54,17 +56,17 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
-            .padding(bottom = 128.dp)
+            .padding(bottom = MockDimens.BottomBarPadding)
             .statusBarsPadding(),
-        verticalArrangement = Arrangement.spacedBy(48.dp),
+        verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXxxl),
     ) {
         // Greeting Section
-        Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+        Column(modifier = Modifier.padding(horizontal = MockDimens.SpacingXl)) {
             Text(
                 text = "GOOD EVENING, GOURMET",
                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 4.dp),
+                modifier = Modifier.padding(bottom = MockDimens.SpacingXs),
             )
             Text(
                 text = state.userName,
@@ -79,7 +81,7 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(480.dp)
+                    .height(MockDimens.HeroHeight)
                     .testTag(HomeTestTags.HERO_BANNER),
             ) {
                 AsyncImage(
@@ -116,19 +118,19 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                 Column(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
-                        .padding(32.dp)
+                        .padding(MockDimens.SpacingXxl)
                         .fillMaxWidth(0.8f),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
                 ) {
                     Box(
                         modifier = Modifier
                             .background(MaterialTheme.colorScheme.secondary, CircleShape)
-                            .padding(horizontal = 12.dp, vertical = 4.dp),
+                            .padding(horizontal = MockDimens.SpacingMd, vertical = MockDimens.SpacingXs),
                     ) {
                         Text(
                             text = hero.tag,
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = Color(0xFF584200),
+                            color = MockDonaldsTheme.extendedColors.onSecondaryTag,
                         )
                     }
 
@@ -149,23 +151,26 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                         onClick = { state.eventSink(HomeEvent.HeroCtaClicked) },
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                         contentPadding = PaddingValues(),
-                        modifier = Modifier.padding(top = 16.dp).testTag(HomeTestTags.HERO_CTA_BUTTON),
-                        shape = RoundedCornerShape(6.dp),
+                        modifier = Modifier.padding(top = MockDimens.SpacingLg).testTag(HomeTestTags.HERO_CTA_BUTTON),
+                        shape = RoundedCornerShape(MockDimens.RadiusSm),
                     ) {
                         Box(
                             modifier = Modifier
                                 .background(
                                     Brush.horizontalGradient(
-                                        listOf(MaterialTheme.colorScheme.primary, Color(0xFF930003)),
+                                        listOf(
+                                            MaterialTheme.colorScheme.primary,
+                                            MockDonaldsTheme.extendedColors.primaryDark,
+                                        ),
                                     ),
                                 )
-                                .padding(horizontal = 32.dp, vertical = 16.dp),
+                                .padding(horizontal = MockDimens.SpacingXxl, vertical = MockDimens.SpacingLg),
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
                                 text = hero.ctaText,
                                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                                color = Color(0xFFFFEBE8),
+                                color = MockDonaldsTheme.extendedColors.onPrimaryButton,
                             )
                         }
                     }
@@ -177,12 +182,12 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
         if (state.recentCravings.isNotEmpty()) {
             Column(
                 modifier = Modifier.testTag(HomeTestTags.RECENT_CRAVINGS_SECTION),
-                verticalArrangement = Arrangement.spacedBy(24.dp),
+                verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXl),
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp),
+                        .padding(horizontal = MockDimens.SpacingXl),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Bottom,
                 ) {
@@ -199,8 +204,8 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                 }
 
                 LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(24.dp),
-                    contentPadding = PaddingValues(horizontal = 24.dp),
+                    horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingXl),
+                    contentPadding = PaddingValues(horizontal = MockDimens.SpacingXl),
                 ) {
                     items(state.recentCravings) { craving ->
                         CravingCard(
@@ -216,8 +221,8 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
         // Quick Actions Bento Grid
         if (state.exploreItems.isNotEmpty()) {
             Column(
-                modifier = Modifier.padding(horizontal = 24.dp).testTag(HomeTestTags.EXPLORE_SECTION),
-                verticalArrangement = Arrangement.spacedBy(24.dp),
+                modifier = Modifier.padding(horizontal = MockDimens.SpacingXl).testTag(HomeTestTags.EXPLORE_SECTION),
+                verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXl),
             ) {
                 Text(
                     text = "Explore",
@@ -229,18 +234,18 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                 val gridItems = state.exploreItems.take(2)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
                 ) {
                     gridItems.forEach { item ->
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .height(160.dp)
-                                .clip(RoundedCornerShape(12.dp))
+                                .height(MockDimens.ThumbnailHeight)
+                                .clip(RoundedCornerShape(MockDimens.RadiusMd))
                                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
                                 .testTag("${HomeTestTags.EXPLORE_ITEM}-${item.id}")
                                 .clickable { state.eventSink(HomeEvent.ExploreItemClicked(item.id)) }
-                                .padding(24.dp),
+                                .padding(MockDimens.SpacingXl),
                         ) {
                             Column(
                                 modifier = Modifier.fillMaxSize(),
@@ -273,11 +278,11 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(MockDimens.RadiusMd))
                             .background(MaterialTheme.colorScheme.surfaceContainerLow)
                             .testTag("${HomeTestTags.EXPLORE_ITEM}-${item.id}")
                             .clickable { state.eventSink(HomeEvent.ExploreItemClicked(item.id)) }
-                            .padding(24.dp),
+                            .padding(MockDimens.SpacingXl),
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -285,12 +290,12 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Box(
                                     modifier = Modifier
-                                        .size(48.dp)
+                                        .size(MockDimens.IconLg)
                                         .background(MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape),
                                     contentAlignment = Alignment.Center,
                                 ) {
@@ -316,7 +321,7 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(MockDimens.SpacingXl))
     }
 }
 
@@ -324,8 +329,8 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
 fun CravingCard(craving: Craving, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
-            .width(288.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .width(MockDimens.CardWidth)
+            .clip(RoundedCornerShape(MockDimens.RadiusMd))
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .clickable(onClick = onClick),
     ) {
@@ -335,7 +340,7 @@ fun CravingCard(craving: Craving, onClick: () -> Unit, modifier: Modifier = Modi
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(176.dp),
+                .height(MockDimens.CardHeight),
         )
         Row(
             modifier = Modifier
@@ -358,7 +363,7 @@ fun CravingCard(craving: Craving, onClick: () -> Unit, modifier: Modifier = Modi
             }
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(MockDimens.IconMd)
                     .background(MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape),
                 contentAlignment = Alignment.Center,
             ) {

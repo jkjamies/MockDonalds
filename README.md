@@ -429,6 +429,73 @@ struct HomeView: View {
 }
 ```
 
+## Design System
+
+The app uses a unified design system across both platforms, with light and dark mode support driven by system preference.
+
+### Theme Architecture
+
+| Layer | Kotlin (Compose) | Swift (SwiftUI) |
+|-------|------------------|-----------------|
+| **Color schemes** | `darkColorScheme()` / `lightColorScheme()` via `isSystemInDarkTheme()` | `MockDonaldsColorScheme` resolved via `@Environment(\.colorScheme)` |
+| **Extended colors** | `MockDonaldsExtendedColors` via `CompositionLocal` | Part of `MockDonaldsColorScheme` struct |
+| **Design tokens** | `MockDimens` object (spacing, radii, sizes) | `MockDimens` enum (matching values) |
+| **Typography** | `MockDonaldsTypography()` — Epilogue (headlines) + Manrope (body) | System fonts (SwiftUI) |
+| **Theme provider** | `MockDonaldsTheme { }` composable wrapping content | `.mockDonaldsTheme()` modifier at app root |
+
+### Color System
+
+Brand colors (red, yellow) are constant across modes. Surface and text colors adapt:
+
+| Role | Dark | Light |
+|------|------|-------|
+| Background | `#131313` (Deep Obsidian) | `#FFFBFF` (Warm White) |
+| Surface | `#131313` – `#2E2E2E` (tonal grays) | `#FFFBFF` – `#E8E0D8` (warm grays) |
+| On-surface | `#FFFFFF` / `#B3B3B3` | `#1C1B1F` / `#49454F` |
+| Primary | `#DB0007` (MockRed) | `#DB0007` (MockRed) |
+| Secondary | `#FFC72C` (MockYellow) | `#FFC72C` (MockYellow) |
+
+Extended colors (`primaryDark`, `onPrimaryButton`, `secondaryLight`, etc.) handle brand gradients and accent text that don't map to Material 3 color roles.
+
+### Design Tokens (MockDimens)
+
+Spacing, corner radii, and component sizes are centralized — no magic numbers in UI files:
+
+```
+Spacing:  Xs(4) Sm(8) Md(12) Lg(16) Xl(24) Xxl(32) Xxxl(48)
+Radii:    Sm(6) Md(12) Lg(16)
+Sizes:    HeroHeight(480) CardWidth(288) CardHeight(176) IconLg(48) IconMd(40)
+```
+
+### Usage
+
+**Kotlin** — colors via `MaterialTheme.colorScheme.*` and `MockDonaldsTheme.extendedColors.*`, tokens via `MockDimens.*`:
+```kotlin
+Text(
+    color = MaterialTheme.colorScheme.onSurface,
+    modifier = Modifier.padding(MockDimens.SpacingXl),
+)
+// Extended: MockDonaldsTheme.extendedColors.primaryDark
+```
+
+**Swift** — colors via `@Environment(\.mockDonaldsColors)`, tokens via `MockDimens.*`:
+```swift
+@Environment(\.mockDonaldsColors) private var colors
+// ...
+Text("Hello").foregroundColor(colors.onSurface)
+    .padding(MockDimens.spacingXl)
+```
+
+### Key Files
+
+```
+core/theme/.../Color.kt          — Light + dark color palettes, extended brand colors
+core/theme/.../Theme.kt          — Dual ColorScheme, CompositionLocal, MockDonaldsTheme composable
+core/theme/.../MockDimens.kt     — Spacing, radii, component size tokens
+core/theme/.../Type.kt           — Typography (Epilogue + Manrope font families)
+iosApp/.../Theme/MockDonaldsTheme.swift  — iOS color scheme, dimens, environment key
+```
+
 ## Project Structure
 
 ```
@@ -455,7 +522,7 @@ MockDonalds/
 │   ├── common/                         # Shared utilities (Parcelize, ResultWrapper)
 │   ├── network/                        # HTTP client (Ktor)
 │   ├── test-fixtures/                  # Shared test utilities (TestCenterPostDispatchers, KotestProjectConfig)
-│   └── theme/                          # Design system (Colors, Typography, GlassEffect)
+│   └── theme/                          # Design system (Colors, Theme, Dimens, Typography, GlassEffect)
 │
 ├── features/
 │   ├── home/
@@ -475,7 +542,7 @@ MockDonalds/
 ├── iosApp/                             # iOS application (Xcode project)
 │   └── iosApp/
 │       ├── Circuit/                    # CircuitIos, CircuitView, CircuitContent, CircuitStack
-│       ├── Theme/                      # MockDonaldsTheme (colors, fonts)
+│       ├── Theme/                      # MockDonaldsTheme (light/dark colors, dimens, environment)
 │       ├── Features/
 │       │   ├── Home/HomeView.swift
 │       │   ├── Order/OrderView.swift

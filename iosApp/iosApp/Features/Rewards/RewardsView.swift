@@ -5,18 +5,19 @@ private let tags = RewardsTestTags.shared
 
 struct RewardsView: View {
     let state: RewardsUiState
+    @Environment(\.mockDonaldsColors) private var colors
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 48) {
+            VStack(alignment: .leading, spacing: MockDimens.spacingXxxl) {
                 pointsHeroSection
                 vaultSpecialsSection
                 earningHistorySection
             }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 128)
+            .padding(.horizontal, MockDimens.spacingXl)
+            .padding(.bottom, MockDimens.bottomBarPadding)
         }
-        .background(MockDonaldsColors.background)
+        .background(colors.background)
     }
 
     @ViewBuilder
@@ -27,10 +28,10 @@ struct RewardsView: View {
                     .font(.caption2)
                     .fontWeight(.bold)
                     .tracking(2)
-                    .foregroundColor(MockDonaldsColors.secondary)
-                    .padding(.bottom, 8)
+                    .foregroundColor(colors.secondary)
+                    .padding(.bottom, MockDimens.spacingSm)
 
-                HStack(alignment: .bottom, spacing: 8) {
+                HStack(alignment: .bottom, spacing: MockDimens.spacingSm) {
                     Text(
                         NumberFormatter.localizedString(
                             from: NSNumber(
@@ -40,12 +41,12 @@ struct RewardsView: View {
                         )
                     )
                     .font(.system(size: 64, weight: .black))
-                    .foregroundColor(MockDonaldsColors.onSurface)
+                    .foregroundColor(colors.onSurface)
                     Text("PTS")
                         .font(.title3)
                         .fontWeight(.bold)
-                        .foregroundColor(Color(hex: 0xFFDF99))
-                        .padding(.bottom, 8)
+                        .foregroundColor(colors.secondaryLight)
+                        .padding(.bottom, MockDimens.spacingSm)
                 }
 
                 tierProgress(progress: progress)
@@ -57,7 +58,7 @@ struct RewardsView: View {
     private func tierProgress(
         progress: RewardsProgress
     ) -> some View {
-        VStack(spacing: 16) {
+        VStack(spacing: MockDimens.spacingLg) {
             HStack {
                 Text(
                     "NEXT REWARD: "
@@ -66,29 +67,29 @@ struct RewardsView: View {
                 .font(.caption)
                 .fontWeight(.bold)
                 .foregroundColor(
-                    MockDonaldsColors.onSurfaceVariant
+                    colors.onSurfaceVariant
                 )
                 Spacer()
                 Text("\(progress.pointsToNextReward) PTS TO GO")
                     .font(.caption)
                     .fontWeight(.bold)
-                    .foregroundColor(MockDonaldsColors.secondary)
+                    .foregroundColor(colors.secondary)
             }
 
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule()
                         .fill(
-                            MockDonaldsColors
+                            colors
                                 .surfaceContainerHighest
                         )
-                        .frame(height: 12)
+                        .frame(height: MockDimens.spacingMd)
                     Capsule()
                         .fill(
                             LinearGradient(
                                 colors: [
-                                    MockDonaldsColors.primary,
-                                    MockDonaldsColors.secondary,
+                                    colors.primary,
+                                    colors.secondary,
                                 ],
                                 startPoint: .leading,
                                 endPoint: .trailing
@@ -97,19 +98,19 @@ struct RewardsView: View {
                         .frame(
                             width: geo.size.width
                                 * CGFloat(progress.progressFraction),
-                            height: 12
+                            height: MockDimens.spacingMd
                         )
                 }
             }
-            .frame(height: 12)
+            .frame(height: MockDimens.spacingMd)
         }
-        .padding(.top, 32)
+        .padding(.top, MockDimens.spacingXxl)
     }
 
     @ViewBuilder
     private var vaultSpecialsSection: some View {
         if !state.vaultSpecials.isEmpty {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: MockDimens.spacingXl) {
                 vaultSpecialsHeader
                 featuredVaultCard
                 secondarySpecials
@@ -123,12 +124,12 @@ struct RewardsView: View {
             Text("The Vault Specials")
                 .font(.title3)
                 .fontWeight(.black)
-                .foregroundColor(MockDonaldsColors.onSurface)
+                .foregroundColor(colors.onSurface)
             Spacer()
             Text("VIEW ALL")
                 .font(.caption)
                 .fontWeight(.bold)
-                .foregroundColor(MockDonaldsColors.secondary)
+                .foregroundColor(colors.secondary)
                 .accessibilityIdentifier(tags.VIEW_ALL)
                 .onTapGesture {
                     state.eventSink(
@@ -153,7 +154,7 @@ struct RewardsView: View {
                                 .aspectRatio(contentMode: .fill)
                         },
                         placeholder: {
-                            MockDonaldsColors.surfaceContainerHigh
+                            colors.surfaceContainerHigh
                         }
                     )
                 }
@@ -162,7 +163,7 @@ struct RewardsView: View {
                     LinearGradient(
                         colors: [
                             .clear,
-                            MockDonaldsColors.background
+                            colors.background
                                 .opacity(0.9),
                         ],
                         startPoint: .top,
@@ -172,7 +173,7 @@ struct RewardsView: View {
                 .overlay(alignment: .bottomLeading) {
                     featuredOverlay(featured: featured)
                 }
-                .cornerRadius(12)
+                .cornerRadius(MockDimens.radiusMd)
                 .accessibilityIdentifier(
                     "\(tags.FEATURED_VAULT_CARD)-\(featured.id)"
                 )
@@ -195,25 +196,25 @@ struct RewardsView: View {
                     .font(.caption2)
                     .fontWeight(.bold)
                     .tracking(1)
-                    .foregroundColor(Color(hex: 0x3F2E00))
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 4)
-                    .background(MockDonaldsColors.secondary)
+                    .foregroundColor(colors.onSecondaryContainer)
+                    .padding(.horizontal, MockDimens.spacingMd)
+                    .padding(.vertical, MockDimens.spacingXs)
+                    .background(colors.secondary)
                     .clipShape(Capsule())
             }
 
             Text(featured.title)
                 .font(.title2)
                 .fontWeight(.black)
-                .foregroundColor(MockDonaldsColors.onSurface)
-                .padding(.top, 12)
+                .foregroundColor(colors.onSurface)
+                .padding(.top, MockDimens.spacingMd)
             Text(featured.pointsCost)
                 .font(.caption)
                 .fontWeight(.bold)
-                .foregroundColor(MockDonaldsColors.secondary)
-                .padding(.top, 4)
+                .foregroundColor(colors.secondary)
+                .padding(.top, MockDimens.spacingXs)
         }
-        .padding(24)
+        .padding(MockDimens.spacingXl)
     }
 
     @ViewBuilder
@@ -222,7 +223,7 @@ struct RewardsView: View {
             !$0.isFeatured
         }
         if !secondary.isEmpty {
-            HStack(spacing: 16) {
+            HStack(spacing: MockDimens.spacingLg) {
                 ForEach(
                     Array(secondary.enumerated()),
                     id: \.offset
@@ -250,12 +251,12 @@ struct RewardsView: View {
     @ViewBuilder
     private var earningHistorySection: some View {
         if !state.history.isEmpty {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: MockDimens.spacingLg) {
                 Text("Earning History")
                     .font(.title3)
                     .fontWeight(.black)
-                    .foregroundColor(MockDonaldsColors.onSurface)
-                    .padding(.bottom, 8)
+                    .foregroundColor(colors.onSurface)
+                    .padding(.bottom, MockDimens.spacingSm)
 
                 ForEach(
                     Array(state.history.enumerated()),
@@ -279,9 +280,10 @@ struct VaultSpecialCard: View {
     let title: String
     let points: String
     let imageUrl: String
+    @Environment(\.mockDonaldsColors) private var colors
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: MockDimens.spacingLg) {
             AsyncImage(
                 url: URL(string: imageUrl),
                 content: { image in
@@ -289,27 +291,27 @@ struct VaultSpecialCard: View {
                         .aspectRatio(contentMode: .fill)
                 },
                 placeholder: {
-                    MockDonaldsColors.surfaceContainerHighest
+                    colors.surfaceContainerHighest
                 }
             )
             .aspectRatio(1, contentMode: .fill)
             .clipped()
-            .cornerRadius(8)
+            .cornerRadius(MockDimens.spacingSm)
 
             VStack(alignment: .leading) {
                 Text(title)
                     .font(.headline)
                     .fontWeight(.bold)
-                    .foregroundColor(MockDonaldsColors.onSurface)
+                    .foregroundColor(colors.onSurface)
                 Text(points)
                     .font(.caption)
                     .fontWeight(.bold)
-                    .foregroundColor(MockDonaldsColors.secondary)
+                    .foregroundColor(colors.secondary)
             }
         }
-        .padding(16)
-        .background(MockDonaldsColors.surfaceContainerLow)
-        .cornerRadius(12)
+        .padding(MockDimens.spacingLg)
+        .background(colors.surfaceContainerLow)
+        .cornerRadius(MockDimens.radiusMd)
     }
 }
 
@@ -319,24 +321,25 @@ struct HistoryItemView: View {
     let points: String
     let isPositive: Bool
     let icon: String
+    @Environment(\.mockDonaldsColors) private var colors
 
     var body: some View {
         HStack {
-            HStack(spacing: 16) {
+            HStack(spacing: MockDimens.spacingLg) {
                 Circle()
-                    .fill(MockDonaldsColors.surfaceContainerHighest)
-                    .frame(width: 48, height: 48)
+                    .fill(colors.surfaceContainerHighest)
+                    .frame(width: MockDimens.iconLg, height: MockDimens.iconLg)
                     .overlay(Text(icon))
                 VStack(alignment: .leading) {
                     Text(title)
                         .font(.headline)
                         .fontWeight(.bold)
-                        .foregroundColor(MockDonaldsColors.onSurface)
+                        .foregroundColor(colors.onSurface)
                     Text(subtitle)
                         .font(.caption)
                         .fontWeight(.medium)
                         .foregroundColor(
-                            MockDonaldsColors.onSurfaceVariant
+                            colors.onSurfaceVariant
                         )
                 }
             }
@@ -346,12 +349,12 @@ struct HistoryItemView: View {
                 .fontWeight(.black)
                 .foregroundColor(
                     isPositive
-                        ? MockDonaldsColors.secondary
-                        : MockDonaldsColors.primary
+                        ? colors.secondary
+                        : colors.primary
                 )
         }
         .padding(20)
-        .background(MockDonaldsColors.surface)
-        .cornerRadius(12)
+        .background(colors.surface)
+        .cornerRadius(MockDimens.radiusMd)
     }
 }

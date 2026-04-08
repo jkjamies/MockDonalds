@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.mockdonalds.app.core.theme.MockDimens
 import com.mockdonalds.app.features.scan.api.navigation.ScanScreen
 import com.mockdonalds.app.features.scan.api.ui.ScanTestTags
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -60,8 +61,8 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
-            .padding(horizontal = 24.dp)
-            .padding(bottom = 128.dp)
+            .padding(horizontal = MockDimens.SpacingXl)
+            .padding(bottom = MockDimens.BottomBarPadding)
             .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(40.dp),
@@ -71,7 +72,7 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(MockDimens.RadiusMd))
                     .background(MaterialTheme.colorScheme.surfaceContainerLow)
                     .testTag(ScanTestTags.MEMBER_CARD),
             ) {
@@ -79,36 +80,36 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .size(128.dp)
                         .align(Alignment.TopEnd)
-                        .offset(x = 48.dp, y = (-48).dp)
+                        .offset(x = MockDimens.SpacingXxxl, y = -MockDimens.SpacingXxxl)
                         .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape)
-                        .blur(48.dp),
+                        .blur(MockDimens.SpacingXxxl),
                 )
                 Box(
                     modifier = Modifier
                         .size(128.dp)
                         .align(Alignment.BottomStart)
-                        .offset(x = (-48).dp, y = 48.dp)
+                        .offset(x = -MockDimens.SpacingXxxl, y = MockDimens.SpacingXxxl)
                         .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f), CircleShape)
-                        .blur(48.dp),
+                        .blur(MockDimens.SpacingXxxl),
                 )
 
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(32.dp),
+                        .padding(MockDimens.SpacingXxl),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
                         text = "MOCK REWARDS",
                         style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(bottom = 8.dp),
+                        modifier = Modifier.padding(bottom = MockDimens.SpacingSm),
                     )
                     Text(
                         text = "Scan at the counter to earn & redeem",
                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = 32.dp),
+                        modifier = Modifier.padding(bottom = MockDimens.SpacingXxl),
                     )
 
                     val infiniteTransition = rememberInfiniteTransition()
@@ -142,7 +143,7 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                                 }
                                 drawContent()
                             }
-                            .padding(4.dp),
+                            .padding(MockDimens.SpacingXs),
                     ) {
                         AsyncImage(
                             model = member.qrCodeUrl,
@@ -153,8 +154,8 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                     }
 
                     Row(
-                        modifier = Modifier.padding(top = 32.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.padding(top = MockDimens.SpacingXxl),
+                        horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(text = "⭐", color = MaterialTheme.colorScheme.secondary)
@@ -172,7 +173,7 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
         state.rewardsProgress?.let { progress ->
             Column(
                 modifier = Modifier.fillMaxWidth().testTag(ScanTestTags.REWARDS_PROGRESS),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -187,7 +188,10 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                         ),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.Bottom,
+                        horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingXs),
+                    ) {
                         Text(
                             text = "${progress.currentPoints}",
                             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Black),
@@ -235,17 +239,17 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
         // Action Buttons
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
         ) {
             Button(
                 onClick = { state.eventSink(ScanEvent.PayNowClicked) },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(MockDimens.RadiusMd),
                 contentPadding = PaddingValues(vertical = 20.dp),
                 modifier = Modifier.weight(1f).testTag(ScanTestTags.PAY_NOW_BUTTON),
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(text = "💳", color = MaterialTheme.colorScheme.secondary)
@@ -260,12 +264,12 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
             Button(
                 onClick = { state.eventSink(ScanEvent.ViewOffersClicked) },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(MockDimens.RadiusMd),
                 contentPadding = PaddingValues(vertical = 20.dp),
                 modifier = Modifier.weight(1f).testTag(ScanTestTags.VIEW_OFFERS_BUTTON),
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(text = "🏷️", color = MaterialTheme.colorScheme.secondary)
@@ -282,15 +286,15 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(MockDimens.RadiusMd))
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
                 .testTag(ScanTestTags.PRO_TIP)
-                .padding(start = 4.dp)
+                .padding(start = MockDimens.SpacingXs)
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
                 .padding(20.dp),
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
                 verticalAlignment = Alignment.Top,
             ) {
                 Box(
@@ -306,7 +310,7 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                         text = "Pro Tip",
                         style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(bottom = 4.dp),
+                        modifier = Modifier.padding(bottom = MockDimens.SpacingXs),
                     )
                     Text(
                         text = "Ensure your screen brightness is turned up " +

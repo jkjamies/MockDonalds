@@ -21,6 +21,7 @@ struct MockDonaldsApp: App {
                         .tabItem { Label("MORE", systemImage: "ellipsis") }
                 }
                 .tint(MockDonaldsColors.secondary)
+                .mockDonaldsTheme()
             }
         }
     }

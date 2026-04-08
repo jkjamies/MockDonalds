@@ -35,6 +35,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.mockdonalds.app.core.theme.MockDimens
+import com.mockdonalds.app.core.theme.MockDonaldsTheme
 import com.mockdonalds.app.features.order.api.domain.FeaturedItem
 import com.mockdonalds.app.features.order.api.navigation.OrderScreen
 import com.mockdonalds.app.features.order.api.ui.OrderTestTags
@@ -53,14 +55,14 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(bottom = 128.dp)
+                .padding(bottom = MockDimens.BottomBarPadding)
                 .statusBarsPadding(),
         ) {
             // Category Chips
             LazyRow(
-                contentPadding = PaddingValues(horizontal = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.padding(bottom = 32.dp),
+                contentPadding = PaddingValues(horizontal = MockDimens.SpacingXl),
+                horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
+                modifier = Modifier.padding(bottom = MockDimens.SpacingXxl),
             ) {
                 items(state.categories) { category ->
                     val isSelected = category.id == state.selectedCategoryId
@@ -76,12 +78,16 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
                                 CircleShape,
                             )
                             .clickable { state.eventSink(OrderEvent.CategorySelected(category.id)) }
-                            .padding(horizontal = 24.dp, vertical = 8.dp),
+                            .padding(horizontal = MockDimens.SpacingXl, vertical = MockDimens.SpacingSm),
                     ) {
                         Text(
                             text = category.name,
                             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                            color = if (isSelected) Color(0xFFFFEBE8) else MaterialTheme.colorScheme.onSurface,
+                            color = if (isSelected) {
+                                MockDonaldsTheme.extendedColors.onPrimaryButton
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            },
                         )
                     }
                 }
@@ -89,8 +95,10 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
 
             // Featured Items
             Column(
-                modifier = Modifier.padding(horizontal = 24.dp).testTag(OrderTestTags.FEATURED_ITEMS_SECTION),
-                verticalArrangement = Arrangement.spacedBy(48.dp),
+                modifier = Modifier.padding(
+                    horizontal = MockDimens.SpacingXl,
+                ).testTag(OrderTestTags.FEATURED_ITEMS_SECTION),
+                verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXxxl),
             ) {
                 state.featuredItems.forEach { item ->
                     FeaturedItemCard(
@@ -107,14 +115,14 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(24.dp)
+                    .padding(MockDimens.SpacingXl)
                     .padding(bottom = 64.dp)
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(MockDimens.RadiusMd))
                     .background(MaterialTheme.colorScheme.primary)
                     .testTag(OrderTestTags.CART_BAR)
                     .clickable { state.eventSink(OrderEvent.CartClicked) }
-                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                    .padding(horizontal = MockDimens.SpacingXl, vertical = MockDimens.SpacingLg),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -122,38 +130,45 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(32.dp)
-                                .background(Color(0xFF690001).copy(alpha = 0.2f), CircleShape),
+                                .size(MockDimens.SpacingXxl)
+                                .background(
+                                    MockDonaldsTheme.extendedColors.primaryDarker.copy(alpha = 0.2f),
+                                    CircleShape,
+                                ),
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
                                 text = "${cart.itemCount}",
                                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                color = Color(0xFFFFEBE8),
+                                color = MockDonaldsTheme.extendedColors.onPrimaryButton,
                             )
                         }
                         Text(
                             text = "${cart.itemCount} ITEMS",
                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Color(0xFFFFEBE8),
+                            color = MockDonaldsTheme.extendedColors.onPrimaryButton,
                             letterSpacing = 2.sp,
                         )
                     }
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingSm),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = cart.total,
                             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Black),
-                            color = Color(0xFFFFEBE8),
+                            color = MockDonaldsTheme.extendedColors.onPrimaryButton,
                         )
-                        Text(text = "->", color = Color(0xFFFFEBE8), fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "->",
+                            color = MockDonaldsTheme.extendedColors.onPrimaryButton,
+                            fontWeight = FontWeight.Bold,
+                        )
                     }
                 }
             }
@@ -163,12 +178,12 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
 
 @Composable
 fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit, modifier: Modifier = Modifier) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg)) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(4f / 3f)
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(MockDimens.RadiusMd))
                 .background(MaterialTheme.colorScheme.surfaceContainerLow),
         ) {
             AsyncImage(
@@ -180,13 +195,13 @@ fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit, modifier: Mod
 
             Box(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(MockDimens.SpacingLg)
                     .align(if (item.isPrimary) Alignment.TopEnd else Alignment.TopStart)
                     .background(
                         MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
                         CircleShape,
                     )
-                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                    .padding(horizontal = MockDimens.SpacingMd, vertical = MockDimens.SpacingXs),
             ) {
                 Text(
                     text = item.tag,
@@ -197,7 +212,7 @@ fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit, modifier: Mod
             }
         }
 
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingSm)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -214,7 +229,7 @@ fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit, modifier: Mod
                     text = item.price,
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.padding(start = 16.dp),
+                    modifier = Modifier.padding(start = MockDimens.SpacingLg),
                 )
             }
 
@@ -222,7 +237,7 @@ fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit, modifier: Mod
                 text = item.description,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 16.dp),
+                modifier = Modifier.padding(bottom = MockDimens.SpacingLg),
             )
 
             Button(
@@ -230,14 +245,19 @@ fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit, modifier: Mod
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 contentPadding = PaddingValues(),
                 modifier = Modifier.fillMaxWidth().testTag("${OrderTestTags.ADD_TO_ORDER_BUTTON}-${item.id}"),
-                shape = RoundedCornerShape(6.dp),
+                shape = RoundedCornerShape(MockDimens.RadiusSm),
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
                             if (item.isPrimary) {
-                                Brush.horizontalGradient(listOf(MaterialTheme.colorScheme.primary, Color(0xFF930003)))
+                                Brush.horizontalGradient(
+                                    listOf(
+                                        MaterialTheme.colorScheme.primary,
+                                        MockDonaldsTheme.extendedColors.primaryDark,
+                                    ),
+                                )
                             } else {
                                 Brush.horizontalGradient(
                                     listOf(
@@ -247,22 +267,30 @@ fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit, modifier: Mod
                                 )
                             },
                         )
-                        .padding(vertical = 16.dp),
+                        .padding(vertical = MockDimens.SpacingLg),
                     contentAlignment = Alignment.Center,
                 ) {
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingSm),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = "+",
-                            color = if (item.isPrimary) Color(0xFFFFEBE8) else MaterialTheme.colorScheme.secondary,
+                            color = if (item.isPrimary) {
+                                MockDonaldsTheme.extendedColors.onPrimaryButton
+                            } else {
+                                MaterialTheme.colorScheme.secondary
+                            },
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
                             text = "ADD TO ORDER",
                             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                            color = if (item.isPrimary) Color(0xFFFFEBE8) else MaterialTheme.colorScheme.secondary,
+                            color = if (item.isPrimary) {
+                                MockDonaldsTheme.extendedColors.onPrimaryButton
+                            } else {
+                                MaterialTheme.colorScheme.secondary
+                            },
                         )
                     }
                 }

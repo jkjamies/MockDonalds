@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 @Suppress("UnusedParameter") // blurRadius reserved for platform-specific backdrop blur implementation
 fun Modifier.glassEffect(
     blurRadius: Int = 20,
-    overlayColor: Color = SurfaceContainer.copy(alpha = 0.6f),
+    overlayColor: Color = DarkSurfaceContainer.copy(alpha = 0.6f),
 ): Modifier = this
     .background(overlayColor)
 
