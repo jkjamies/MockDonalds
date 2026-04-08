@@ -15,10 +15,14 @@ import io.kotest.core.spec.style.BehaviorSpec
 class DomainLayerTest : BehaviorSpec({
 
     Given("use case abstractions") {
-        Then("abstract use cases extending CenterPostSubjectInteractor should reside in api modules") {
+        Then("abstract use cases extending CenterPost base types should reside in api modules") {
             Konsist.scopeFromProject()
                 .classes()
-                .filter { it.hasAbstractModifier && it.hasParent { p -> p.name == "CenterPostSubjectInteractor" } }
+                .filter {
+                    it.hasAbstractModifier && it.hasParent { p ->
+                        p.name == "CenterPostInteractor" || p.name == "CenterPostSubjectInteractor"
+                    }
+                }
                 .assertTrue { it.resideInPath("..api..") }
         }
     }
@@ -35,7 +39,11 @@ class DomainLayerTest : BehaviorSpec({
         Then("every abstract use case should have a matching Impl in domain") {
             val abstractUseCases = Konsist.scopeFromSourceSet("commonMain", "features..", "api")
                 .classes()
-                .filter { it.hasAbstractModifier && it.hasParent { p -> p.name == "CenterPostSubjectInteractor" } }
+                .filter {
+                    it.hasAbstractModifier && it.hasParent { p ->
+                        p.name == "CenterPostInteractor" || p.name == "CenterPostSubjectInteractor"
+                    }
+                }
                 .map { it.name }
                 .toSet()
 
@@ -49,6 +57,22 @@ class DomainLayerTest : BehaviorSpec({
                 assert(useCaseName in domainImpls) {
                     "Missing implementation for abstract use case '$useCaseName' — expected '${useCaseName}Impl' in the feature's domain module"
                 }
+            }
+        }
+
+        Then("use case Impl classes should extend their abstract use case from api") {
+            val violators = Konsist.scopeFromSourceSet("commonMain", "features..", "domain")
+                .classes()
+                .withNameEndingWith("Impl")
+                .filter { !it.name.endsWith("RepositoryImpl") }
+                .filter { cls ->
+                    val expectedParent = cls.name.removeSuffix("Impl")
+                    !cls.hasParent { p -> p.name == expectedParent }
+                }
+
+            assert(violators.isEmpty()) {
+                val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
+                "Domain use case Impls must extend their matching abstract use case from api:\n$names"
             }
         }
 

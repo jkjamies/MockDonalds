@@ -746,6 +746,7 @@ The Xcode project includes a "Compile Kotlin Framework" build phase that runs th
 | `./gradlew testAndroidHostTest` | All Android unit tests (JVM) | Fast | Unit tests |
 | `./gradlew iosSimulatorArm64Test` | All iOS unit tests (K/Native) | Fast | Unit tests |
 | `./gradlew :konsist:test` | Architecture enforcement only | Fast | Separate — fast feedback |
+| `swift test --package-path iosApp/ArchitectureCheck` | iOS architecture enforcement (Harmonize) | Fast | Separate — fast feedback |
 | `./gradlew connectedAndroidDeviceTest` | Android UI tests (emulator) | Slow | UI tests |
 | `./gradlew allTests` | All targets (Android + iOS) | Medium | Full suite |
 
@@ -1068,14 +1069,14 @@ The `:konsist` module enforces architectural conventions via [Konsist](https://d
 | **Layer Dependency** | 7 | api/domain/data/presentation isolation, cross-feature only via api, core can't import features |
 | **Circuit Conventions** | 4 | Events must be `sealed class` (not interface, for iOS interop), Screens in api with `@Parcelize` |
 | **Naming Conventions** | 7 | `*Screen`, `*Event`, `*Presenter`, `*Ui`, `*UiState`, `*Repository`, `*RepositoryImpl` suffixes |
-| **Domain Layer** | 4 | Abstract use cases in api, Impl classes in domain, matching pairs, `@ContributesBinding` |
+| **Domain Layer** | 5 | Abstract use cases in api (CenterPostInteractor/SubjectInteractor), Impl classes in domain, Impls extend their abstract use case, matching pairs, `@ContributesBinding` |
 | **Data Layer** | 6 | Repo interfaces in domain, impls in data, matching pairs, DI annotations, no `suspend` (use Flow) |
 | **Presentation Layer** | 5 | `@CircuitInject` on presenters, UiState implements `CircuitUiState`, has `eventSink`, no direct model construction |
 | **Api Layer** | 5 | Immutable data classes (val only), `@Serializable` placement, no public MutableFlow, DTOs in data only, circuit.runtime exports |
 | **Dependency Injection** | 4 | All interfaces have `@ContributesBinding` impls, `@Inject` on presenters |
 | **Visibility** | 3 | Impl classes are `internal`, UiState is public |
 | **Forbidden Patterns** | 9 | No ViewModels, no raw CoroutineScope/launch/async/Dispatchers (use CenterPost), no android.* in commonMain, no app module imports |
-| **Code Hygiene** | 6 | No wildcard imports, no println/System.out, no Thread.sleep, no runBlocking, no lateinit var |
+| **Code Hygiene** | 7 | No wildcard imports, no println/System.out, no Thread.sleep, no runBlocking, no `!!` force unwraps, no lateinit var |
 | **Test Conventions** | 10 | BehaviorSpec only, no mockk/runBlocking/runTest/Unconfined, fakes in test modules only, Fake coverage, Test suffix |
 | **UI Test Conventions** | 9 | UiTest/UiRobot/StateRobot per feature, StateRobot extends base class, encapsulation (tests only reference UiRobot), TestTags exist in api module, theme wrapping, AndroidManifest |
 | **Test Coverage** | 4 | Every feature has test module, every Impl/Presenter/Repo has a test file |
@@ -1103,6 +1104,58 @@ The following are style/formatting concerns better handled by a linter (not Kons
 - String template usage (`"$x"` vs `"" + x`)
 - Explicit return types on public APIs
 - Expression body vs block body preference
+
+## Architecture Tests (Harmonize)
+
+The `iosApp/ArchitectureCheck` SPM package enforces iOS-specific architectural conventions via [Harmonize](https://github.com/perrystreetsoftware/Harmonize) — a Swift architecture test library that uses swift-syntax for semantic AST analysis. Run independently from unit tests:
+
+```bash
+swift test --package-path iosApp/ArchitectureCheck
+```
+
+Harmonize is the iOS counterpart to Konsist. It uses `productionCode()` and `testCode()` scoping APIs to analyze Swift source files semantically (structs, classes, imports, properties, modifiers) rather than raw text.
+
+### What's Enforced
+
+| Category | Tests | What It Checks |
+|----------|-------|----------------|
+| **View Structure** | 3 | Conform to `View` protocol, import `ComposeApp` for shared KMP state, have `state` property |
+| **View Safety** | 3 | No force unwraps/casts/try, no UIKit imports (pure SwiftUI), no Combine or DispatchQueue (async/await only) |
+| **View Hygiene** | 2 | No `print()` statements, no `TODO`/`FIXME`/`HACK` comments |
+| **View Accessibility** | 2 | Use `accessibilityIdentifier`, use shared KMP `TestTags` (not hardcoded strings) |
+| **Robot Coverage** | 3 | Every `*View` has a `*ViewTest`, every `*ViewTest` has a `*ViewRobot`, every `*ViewRobot` has a `*StateRobot` |
+| **Robot Structure** | 2 | `ViewRobot` classes are `final`, compose a `stateRobot` property |
+| **Robot Encapsulation** | 1 | `ViewTest` files only reference `ViewRobot` — `StateRobot` is an implementation detail |
+| **Robot Inheritance** | 1 | `StateRobot` classes extend `BaseStateRobot` |
+| **Test Naming** | 3 | `ViewTest` classes are `final`, extend `XCTestCase`, test classes end with `Test` |
+| **Test Hygiene** | 1 | No `print()` statements in test code |
+
+### Key Architectural Rules
+
+- **No force unwraps** — Implicitly unwrapped optionals (`Type!`), force casts (`as!`), and force try (`try!`) are banned in views; Kotlin `!!` is banned in shared production code
+- **Pure SwiftUI** — Feature views must not import UIKit; all UI is SwiftUI consuming shared KMP state
+- **Async/await only** — No Combine or DispatchQueue in views; use Swift concurrency
+- **Shared TestTags** — Accessibility identifiers use `TestTags` constants from ComposeApp, not hardcoded strings, keeping iOS and Android test identifiers in sync
+- **Robot pattern encapsulation** — `ViewTest` → `ViewRobot` → `StateRobot` layering; tests never touch `StateRobot` directly
+- **Stateless views** — Every view receives its `UiState` as a `state` property from the shared Circuit presenter
+
+### Scoping
+
+Harmonize discovers the project root via `.harmonize.yaml` at the repo root. The architecture tests use two scopes:
+
+- **`Harmonize.productionCode().on("iosApp/iosApp/Features")`** — View conventions (excludes test directories)
+- **`Harmonize.testCode()`** — Test/robot conventions (semantic queries like `withNameEndingWith("ViewTest")` naturally filter to only the relevant classes)
+
+### Future: Linting (SwiftLint)
+
+The following are style/formatting concerns better handled by a linter (not Harmonize):
+
+- Unused imports
+- Line length, indentation
+- Trailing closures
+- Blank line conventions
+- Force unwrap detection (more nuanced than `as!`/`try!`)
+- Naming style (camelCase enforcement)
 
 ## Features
 

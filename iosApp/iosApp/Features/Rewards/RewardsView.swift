@@ -1,6 +1,8 @@
 import SwiftUI
 import ComposeApp
 
+private let tags = RewardsTestTags.shared
+
 struct RewardsView: View {
     let state: RewardsUiState
 
@@ -61,6 +63,7 @@ struct RewardsView: View {
                         }
                         .padding(.top, 32)
                     }
+                    .accessibilityIdentifier(tags.POINTS_SECTION)
                 }
 
                 // Vault Specials
@@ -76,6 +79,7 @@ struct RewardsView: View {
                                 .font(.caption)
                                 .fontWeight(.bold)
                                 .foregroundColor(MockDonaldsColors.secondary)
+                                .accessibilityIdentifier(tags.VIEW_ALL)
                                 .onTapGesture { state.eventSink(RewardsEvent.ViewAllClicked()) }
                         }
 
@@ -125,6 +129,7 @@ struct RewardsView: View {
                                     .padding(24)
                                 }
                                 .cornerRadius(12)
+                                .accessibilityIdentifier("\(tags.FEATURED_VAULT_CARD)-\(featured.id)")
                                 .onTapGesture { state.eventSink(RewardsEvent.VaultSpecialClicked(id: featured.id)) }
                         }
 
@@ -138,11 +143,13 @@ struct RewardsView: View {
                                         points: special.pointsCost,
                                         imageUrl: special.imageUrl
                                     )
+                                    .accessibilityIdentifier("\(tags.VAULT_SPECIAL_CARD)-\(special.id)")
                                     .onTapGesture { state.eventSink(RewardsEvent.VaultSpecialClicked(id: special.id)) }
                                 }
                             }
                         }
                     }
+                    .accessibilityIdentifier(tags.VAULT_SPECIALS_SECTION)
                 }
 
                 // Earning History
@@ -164,6 +171,7 @@ struct RewardsView: View {
                             )
                         }
                     }
+                    .accessibilityIdentifier(tags.HISTORY_SECTION)
                 }
             }
             .padding(.horizontal, 24)

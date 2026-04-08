@@ -101,6 +101,7 @@ class ForbiddenPatternsTest : BehaviorSpec({
                 "Hardcoded Dispatchers are not allowed — use CenterPostDispatchers (injected) instead:\n${violators.joinToString("\n")}"
             }
         }
+
     }
 
     Given("app module isolation") {

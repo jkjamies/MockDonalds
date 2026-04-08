@@ -1,6 +1,8 @@
 import SwiftUI
 import ComposeApp
 
+private let tags = ScanTestTags.shared
+
 struct ScanView: View {
     let state: ScanUiState
     @State private var gradientAngle: Double = 0
@@ -66,6 +68,7 @@ struct ScanView: View {
                     }
                     .background(MockDonaldsColors.surfaceContainerLow)
                     .cornerRadius(12)
+                    .accessibilityIdentifier(tags.MEMBER_CARD)
                 }
 
                 // Rewards Progress
@@ -110,6 +113,7 @@ struct ScanView: View {
                             .fontWeight(.medium)
                             .foregroundColor(MockDonaldsColors.onSurface.opacity(0.8))
                     }
+                    .accessibilityIdentifier(tags.REWARDS_PROGRESS)
                 }
 
                 // Action Buttons
@@ -124,6 +128,7 @@ struct ScanView: View {
                         .background(MockDonaldsColors.surfaceContainerHigh)
                         .cornerRadius(12)
                     }
+                    .accessibilityIdentifier(tags.PAY_NOW_BUTTON)
                     Button(action: { state.eventSink(ScanEvent.ViewOffersClicked()) }) {
                         HStack(spacing: 12) {
                             Text("\u{1F3F7}\u{FE0F}").foregroundColor(MockDonaldsColors.secondary)
@@ -134,6 +139,7 @@ struct ScanView: View {
                         .background(MockDonaldsColors.surfaceContainerHigh)
                         .cornerRadius(12)
                     }
+                    .accessibilityIdentifier(tags.VIEW_OFFERS_BUTTON)
                 }
 
                 // Pro Tip
@@ -155,6 +161,7 @@ struct ScanView: View {
                 .padding(20)
                 .background(MockDonaldsColors.surfaceContainerLow)
                 .cornerRadius(12)
+                .accessibilityIdentifier(tags.PRO_TIP)
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 128)

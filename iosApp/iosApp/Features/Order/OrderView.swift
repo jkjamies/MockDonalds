@@ -1,6 +1,8 @@
 import SwiftUI
 import ComposeApp
 
+private let tags = OrderTestTags.shared
+
 struct OrderView: View {
     let state: OrderUiState
 
@@ -21,6 +23,7 @@ struct OrderView: View {
                                     .padding(.vertical, 8)
                                     .background(isSelected ? MockDonaldsColors.primary : MockDonaldsColors.surfaceContainerHigh)
                                     .clipShape(Capsule())
+                                    .accessibilityIdentifier("\(tags.CATEGORY_CHIP)-\(category.id)")
                                     .onTapGesture { state.eventSink(OrderEvent.CategorySelected(id: category.id)) }
                             }
                         }
@@ -40,10 +43,12 @@ struct OrderView: View {
                                 isPrimary: item.isPrimary,
                                 onAddToOrder: { state.eventSink(OrderEvent.AddToOrder(itemId: item.id)) }
                             )
+                            .accessibilityIdentifier("\(tags.FEATURED_ITEM_CARD)-\(item.id)")
                         }
                     }
                     .padding(.horizontal, 24)
                     .padding(.bottom, 128)
+                    .accessibilityIdentifier(tags.FEATURED_ITEMS_SECTION)
                 }
             }
 
@@ -83,6 +88,7 @@ struct OrderView: View {
                 .cornerRadius(12)
                 .padding(.horizontal, 24)
                 .padding(.bottom, 88)
+                .accessibilityIdentifier(tags.CART_BAR)
                 .onTapGesture { state.eventSink(OrderEvent.CartClicked()) }
             }
         }

@@ -95,6 +95,18 @@ class CodeHygieneTest : BehaviorSpec({
         }
     }
 
+    Given("no force unwraps in production") {
+        Then("production code should not use non-null assertion operator (!!)") {
+            val violators = productionFiles
+                .filter { it.text.contains("!!") }
+
+            assert(violators.isEmpty()) {
+                val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
+                "Non-null assertion (!!) is not allowed in production code — handle nullability explicitly:\n$names"
+            }
+        }
+    }
+
     Given("no lateinit var in production") {
         Then("production classes should not use lateinit var") {
             val violators = Konsist.scopeFromProject()

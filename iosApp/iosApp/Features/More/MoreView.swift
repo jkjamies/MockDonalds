@@ -1,6 +1,8 @@
 import SwiftUI
 import ComposeApp
 
+private let tags = MoreTestTags.shared
+
 struct MoreView: View {
     let state: MoreUiState
 
@@ -52,6 +54,7 @@ struct MoreView: View {
                     .padding(24)
                     .background(MockDonaldsColors.surfaceContainerLow)
                     .cornerRadius(12)
+                    .accessibilityIdentifier(tags.PROFILE_SECTION)
                     .onTapGesture { state.eventSink(MoreEvent.ProfileClicked()) }
                 }
 
@@ -64,9 +67,11 @@ struct MoreView: View {
                                 title: item.title,
                                 isOdd: index % 2 == 0
                             )
+                            .accessibilityIdentifier("\(tags.MENU_ITEM)-\(item.id)")
                             .onTapGesture { state.eventSink(MoreEvent.MenuItemClicked(id: item.id)) }
                         }
                     }
+                    .accessibilityIdentifier(tags.MENU_LIST)
                 }
 
                 // Join the Team Banner
@@ -116,6 +121,7 @@ struct MoreView: View {
                         .padding(32)
                     }
                     .cornerRadius(12)
+                    .accessibilityIdentifier(tags.JOIN_TEAM_BANNER)
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 128)

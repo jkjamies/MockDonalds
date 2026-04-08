@@ -1,0 +1,6 @@
+excludes:
+  - "iosApp/ArchitectureCheck/**"
+  - "**/.build/**"
+  - "**/DerivedData/**"
+  - "**/*.xcodeproj"
+  - "**/.swiftpm/**"

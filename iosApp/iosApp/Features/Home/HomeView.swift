@@ -1,6 +1,8 @@
 import SwiftUI
 import ComposeApp
 
+private let tags = HomeTestTags.shared
+
 struct HomeView: View {
     let state: HomeUiState
 
@@ -17,6 +19,7 @@ struct HomeView: View {
                         .font(.largeTitle)
                         .fontWeight(.black)
                         .foregroundColor(MockDonaldsColors.onSurface)
+                        .accessibilityIdentifier(tags.USER_NAME)
                 }
                 .padding(.horizontal, 24)
 
@@ -44,6 +47,7 @@ struct HomeView: View {
                                 startPoint: .leading, endPoint: .trailing
                             )
                         }
+                        .accessibilityIdentifier(tags.HERO_BANNER)
                         .overlay(alignment: .bottomLeading) {
                             VStack(alignment: .leading, spacing: 16) {
                                 Text(hero.tag)
@@ -79,6 +83,7 @@ struct HomeView: View {
                                         )
                                         .cornerRadius(6)
                                 }
+                                .accessibilityIdentifier(tags.HERO_CTA_BUTTON)
                                 .padding(.top, 16)
                             }
                             .padding(32)
@@ -110,11 +115,13 @@ struct HomeView: View {
                                         imageUrl: craving.imageUrl,
                                         onTap: { state.eventSink(HomeEvent.CravingClicked(id: craving.id)) }
                                     )
+                                    .accessibilityIdentifier("\(tags.CRAVING_CARD)-\(craving.id)")
                                 }
                             }
                             .padding(.horizontal, 24)
                         }
                     }
+                    .accessibilityIdentifier(tags.RECENT_CRAVINGS_SECTION)
                 }
 
                 // Explore Bento Grid
@@ -133,6 +140,7 @@ struct HomeView: View {
                                     title: item.title,
                                     subtitle: item.subtitle
                                 )
+                                .accessibilityIdentifier("\(tags.EXPLORE_ITEM)-\(item.id)")
                                 .onTapGesture { state.eventSink(HomeEvent.ExploreItemClicked(id: item.id)) }
                             }
                         }
@@ -159,10 +167,12 @@ struct HomeView: View {
                             .padding(24)
                             .background(MockDonaldsColors.surfaceContainerLow)
                             .cornerRadius(12)
+                            .accessibilityIdentifier("\(tags.EXPLORE_ITEM)-\(item.id)")
                             .onTapGesture { state.eventSink(HomeEvent.ExploreItemClicked(id: item.id)) }
                         }
                     }
                     .padding(.horizontal, 24)
+                    .accessibilityIdentifier(tags.EXPLORE_SECTION)
                 }
 
                 Spacer().frame(height: 24)
