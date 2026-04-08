@@ -1,5 +1,5 @@
 import SwiftUI
-import XCTest
+import Testing
 import ComposeApp
 @testable import iosApp
 
@@ -25,17 +25,17 @@ final class HomeViewRobot {
 
     func assertDefaultViewCreated() {
         let view = createDefaultView()
-        XCTAssertNotNil(view.body)
+        #expect(view.body != nil)
     }
 
     func assertViewWithNoPromotionCreated() {
         let view = createViewWithNoPromotion()
-        XCTAssertNotNil(view.body)
+        #expect(view.body != nil)
     }
 
     func assertViewWithEmptyCravingsCreated() {
         let view = createViewWithEmptyCravings()
-        XCTAssertNotNil(view.body)
+        #expect(view.body != nil)
     }
 
     // MARK: - Event Verification
@@ -56,6 +56,6 @@ final class HomeViewRobot {
     }
 
     func assertLastEvent(_ expected: HomeEvent) {
-        XCTAssertEqual(stateRobot.lastEvent, expected)
+        #expect(stateRobot.lastEvent == expected)
     }
 }

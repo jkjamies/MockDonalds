@@ -1143,7 +1143,8 @@ Harmonize is the iOS counterpart to Konsist. It uses `productionCode()` and `tes
 | **Robot Structure** | 2 | `ViewRobot` classes are `final`, compose a `stateRobot` property |
 | **Robot Encapsulation** | 1 | `ViewTest` files only reference `ViewRobot` — `StateRobot` is an implementation detail |
 | **Robot Inheritance** | 1 | `StateRobot` classes extend `BaseStateRobot` |
-| **Test Naming** | 3 | `ViewTest` classes are `final`, extend `XCTestCase`, test classes end with `Test` |
+| **Swift Testing** | 4 | `ViewTest` are `@Suite` structs, not `XCTestCase`; contain `@Test` methods; do not import `XCTest` |
+| **Test Naming** | 1 | `@Suite` structs end with `Test` |
 | **Test Hygiene** | 1 | No `print()` statements in test code |
 
 ### Key Architectural Rules
@@ -1153,6 +1154,7 @@ Harmonize is the iOS counterpart to Konsist. It uses `productionCode()` and `tes
 - **Async/await only** — No Combine or DispatchQueue in views; use Swift concurrency
 - **Shared TestTags** — Accessibility identifiers use `TestTags` constants from ComposeApp, not hardcoded strings, keeping iOS and Android test identifiers in sync
 - **Robot pattern encapsulation** — `ViewTest` → `ViewRobot` → `StateRobot` layering; tests never touch `StateRobot` directly
+- **Swift Testing** — ViewTests use `@Suite struct` with `@Test` methods, not XCTest; ViewRobots use `#expect` assertions
 - **Stateless views** — Every view receives its `UiState` as a `state` property from the shared Circuit presenter
 
 ### Scoping
@@ -1160,7 +1162,7 @@ Harmonize is the iOS counterpart to Konsist. It uses `productionCode()` and `tes
 Harmonize discovers the project root via `.harmonize.yaml` at the repo root. The architecture tests use two scopes:
 
 - **`Harmonize.productionCode().on("iosApp/iosApp/Features")`** — View conventions (excludes test directories)
-- **`Harmonize.testCode()`** — Test/robot conventions (semantic queries like `withNameEndingWith("ViewTest")` naturally filter to only the relevant classes)
+- **`Harmonize.testCode()`** — Test/robot conventions (semantic queries like `withNameEndingWith("ViewTest")` naturally filter to only the relevant structs and classes)
 
 ### Linting (SwiftLint)
 

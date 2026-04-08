@@ -1,5 +1,5 @@
 import SwiftUI
-import XCTest
+import Testing
 import ComposeApp
 @testable import iosApp
 
@@ -29,22 +29,22 @@ final class RewardsViewRobot {
 
     func assertDefaultViewCreated() {
         let view = createDefaultView()
-        XCTAssertNotNil(view.body)
+        #expect(view.body != nil)
     }
 
     func assertViewWithNoProgressCreated() {
         let view = createViewWithNoProgress()
-        XCTAssertNotNil(view.body)
+        #expect(view.body != nil)
     }
 
     func assertViewWithEmptyVaultCreated() {
         let view = createViewWithEmptyVault()
-        XCTAssertNotNil(view.body)
+        #expect(view.body != nil)
     }
 
     func assertViewWithEmptyHistoryCreated() {
         let view = createViewWithEmptyHistory()
-        XCTAssertNotNil(view.body)
+        #expect(view.body != nil)
     }
 
     // MARK: - Event Verification
@@ -60,6 +60,6 @@ final class RewardsViewRobot {
     }
 
     func assertLastEvent(_ expected: RewardsEvent) {
-        XCTAssertEqual(stateRobot.lastEvent, expected)
+        #expect(stateRobot.lastEvent == expected)
     }
 }

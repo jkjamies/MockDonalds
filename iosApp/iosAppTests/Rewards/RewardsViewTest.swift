@@ -1,42 +1,42 @@
-import XCTest
+import Testing
 import ComposeApp
 @testable import iosApp
 
-final class RewardsViewTest: XCTestCase {
+@Suite struct RewardsViewTest {
 
-    private lazy var robot = RewardsViewRobot()
+    private let robot = RewardsViewRobot()
 
     // MARK: - Rendering
 
-    func testRendersDefaultState() {
+    @Test func rendersDefaultState() {
         robot.assertDefaultViewCreated()
     }
 
-    func testRendersWithNoProgress() {
+    @Test func rendersWithNoProgress() {
         robot.assertViewWithNoProgressCreated()
     }
 
-    func testRendersWithEmptyVault() {
+    @Test func rendersWithEmptyVault() {
         robot.assertViewWithEmptyVaultCreated()
     }
 
-    func testRendersWithEmptyHistory() {
+    @Test func rendersWithEmptyHistory() {
         robot.assertViewWithEmptyHistoryCreated()
     }
 
     // MARK: - Events
 
-    func testViewAllTapEmitsEvent() {
+    @Test func viewAllTapEmitsEvent() {
         robot.simulateViewAllTap()
         robot.assertLastEvent(RewardsEvent.ViewAllClicked())
     }
 
-    func testFeaturedVaultCardTapEmitsEvent() {
+    @Test func featuredVaultCardTapEmitsEvent() {
         robot.simulateVaultSpecialTap(id: "1")
         robot.assertLastEvent(RewardsEvent.VaultSpecialClicked(id: "1"))
     }
 
-    func testVaultSpecialCardTapEmitsEvent() {
+    @Test func vaultSpecialCardTapEmitsEvent() {
         robot.simulateVaultSpecialTap(id: "2")
         robot.assertLastEvent(RewardsEvent.VaultSpecialClicked(id: "2"))
     }

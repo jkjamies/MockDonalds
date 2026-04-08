@@ -1,5 +1,5 @@
 import SwiftUI
-import XCTest
+import Testing
 import ComposeApp
 @testable import iosApp
 
@@ -25,17 +25,17 @@ final class MoreViewRobot {
 
     func assertDefaultViewCreated() {
         let view = createDefaultView()
-        XCTAssertNotNil(view.body)
+        #expect(view.body != nil)
     }
 
     func assertViewWithNoProfileCreated() {
         let view = createViewWithNoProfile()
-        XCTAssertNotNil(view.body)
+        #expect(view.body != nil)
     }
 
     func assertViewWithEmptyMenuCreated() {
         let view = createViewWithEmptyMenu()
-        XCTAssertNotNil(view.body)
+        #expect(view.body != nil)
     }
 
     // MARK: - Event Verification
@@ -51,6 +51,6 @@ final class MoreViewRobot {
     }
 
     func assertLastEvent(_ expected: MoreEvent) {
-        XCTAssertEqual(stateRobot.lastEvent, expected)
+        #expect(stateRobot.lastEvent == expected)
     }
 }

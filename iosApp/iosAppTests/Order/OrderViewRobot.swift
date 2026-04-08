@@ -1,5 +1,5 @@
 import SwiftUI
-import XCTest
+import Testing
 import ComposeApp
 @testable import iosApp
 
@@ -21,12 +21,12 @@ final class OrderViewRobot {
 
     func assertDefaultViewCreated() {
         let view = createDefaultView()
-        XCTAssertNotNil(view.body)
+        #expect(view.body != nil)
     }
 
     func assertViewWithNoCartCreated() {
         let view = createViewWithNoCart()
-        XCTAssertNotNil(view.body)
+        #expect(view.body != nil)
     }
 
     // MARK: - Event Verification
@@ -47,6 +47,6 @@ final class OrderViewRobot {
     }
 
     func assertLastEvent(_ expected: OrderEvent) {
-        XCTAssertEqual(stateRobot.lastEvent, expected)
+        #expect(stateRobot.lastEvent == expected)
     }
 }

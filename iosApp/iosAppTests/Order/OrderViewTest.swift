@@ -1,34 +1,34 @@
-import XCTest
+import Testing
 import ComposeApp
 @testable import iosApp
 
-final class OrderViewTest: XCTestCase {
+@Suite struct OrderViewTest {
 
-    private lazy var robot = OrderViewRobot()
+    private let robot = OrderViewRobot()
 
     // MARK: - Rendering
 
-    func testRendersDefaultState() {
+    @Test func rendersDefaultState() {
         robot.assertDefaultViewCreated()
     }
 
-    func testRendersWithNoCart() {
+    @Test func rendersWithNoCart() {
         robot.assertViewWithNoCartCreated()
     }
 
     // MARK: - Events
 
-    func testCategoryTapEmitsEvent() {
+    @Test func categoryTapEmitsEvent() {
         robot.simulateCategoryTap(id: "1")
         robot.assertLastEvent(OrderEvent.CategorySelected(id: "1"))
     }
 
-    func testAddToOrderEmitsEvent() {
+    @Test func addToOrderEmitsEvent() {
         robot.simulateAddToOrder(itemId: "1")
         robot.assertLastEvent(OrderEvent.AddToOrder(itemId: "1"))
     }
 
-    func testCartTapEmitsEvent() {
+    @Test func cartTapEmitsEvent() {
         robot.simulateCartTap()
         robot.assertLastEvent(OrderEvent.CartClicked())
     }

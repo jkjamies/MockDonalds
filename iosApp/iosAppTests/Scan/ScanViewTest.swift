@@ -1,33 +1,33 @@
-import XCTest
+import Testing
 import ComposeApp
 @testable import iosApp
 
-final class ScanViewTest: XCTestCase {
+@Suite struct ScanViewTest {
 
-    private lazy var robot = ScanViewRobot()
+    private let robot = ScanViewRobot()
 
     // MARK: - Rendering
 
-    func testRendersDefaultState() {
+    @Test func rendersDefaultState() {
         robot.assertDefaultViewCreated()
     }
 
-    func testRendersWithNoMember() {
+    @Test func rendersWithNoMember() {
         robot.assertViewWithNoMemberCreated()
     }
 
-    func testRendersWithNoProgress() {
+    @Test func rendersWithNoProgress() {
         robot.assertViewWithNoProgressCreated()
     }
 
     // MARK: - Events
 
-    func testPayNowTapEmitsEvent() {
+    @Test func payNowTapEmitsEvent() {
         robot.simulatePayNowTap()
         robot.assertLastEvent(ScanEvent.PayNowClicked())
     }
 
-    func testViewOffersTapEmitsEvent() {
+    @Test func viewOffersTapEmitsEvent() {
         robot.simulateViewOffersTap()
         robot.assertLastEvent(ScanEvent.ViewOffersClicked())
     }

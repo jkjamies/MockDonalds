@@ -1,38 +1,38 @@
-import XCTest
+import Testing
 import ComposeApp
 @testable import iosApp
 
-final class HomeViewTest: XCTestCase {
+@Suite struct HomeViewTest {
 
-    private lazy var robot = HomeViewRobot()
+    private let robot = HomeViewRobot()
 
     // MARK: - Rendering
 
-    func testRendersDefaultState() {
+    @Test func rendersDefaultState() {
         robot.assertDefaultViewCreated()
     }
 
-    func testRendersWithNoPromotion() {
+    @Test func rendersWithNoPromotion() {
         robot.assertViewWithNoPromotionCreated()
     }
 
-    func testRendersWithEmptyCravings() {
+    @Test func rendersWithEmptyCravings() {
         robot.assertViewWithEmptyCravingsCreated()
     }
 
     // MARK: - Events
 
-    func testHeroCtaTapEmitsEvent() {
+    @Test func heroCtaTapEmitsEvent() {
         robot.simulateHeroCtaTap()
         robot.assertLastEvent(HomeEvent.HeroCtaClicked())
     }
 
-    func testCravingTapEmitsEvent() {
+    @Test func cravingTapEmitsEvent() {
         robot.simulateCravingTap(id: "1")
         robot.assertLastEvent(HomeEvent.CravingClicked(id: "1"))
     }
 
-    func testExploreItemTapEmitsEvent() {
+    @Test func exploreItemTapEmitsEvent() {
         robot.simulateExploreItemTap(id: "1")
         robot.assertLastEvent(HomeEvent.ExploreItemClicked(id: "1"))
     }

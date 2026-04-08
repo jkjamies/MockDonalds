@@ -1,33 +1,33 @@
-import XCTest
+import Testing
 import ComposeApp
 @testable import iosApp
 
-final class MoreViewTest: XCTestCase {
+@Suite struct MoreViewTest {
 
-    private lazy var robot = MoreViewRobot()
+    private let robot = MoreViewRobot()
 
     // MARK: - Rendering
 
-    func testRendersDefaultState() {
+    @Test func rendersDefaultState() {
         robot.assertDefaultViewCreated()
     }
 
-    func testRendersWithNoProfile() {
+    @Test func rendersWithNoProfile() {
         robot.assertViewWithNoProfileCreated()
     }
 
-    func testRendersWithEmptyMenu() {
+    @Test func rendersWithEmptyMenu() {
         robot.assertViewWithEmptyMenuCreated()
     }
 
     // MARK: - Events
 
-    func testProfileTapEmitsEvent() {
+    @Test func profileTapEmitsEvent() {
         robot.simulateProfileTap()
         robot.assertLastEvent(MoreEvent.ProfileClicked())
     }
 
-    func testMenuItemTapEmitsEvent() {
+    @Test func menuItemTapEmitsEvent() {
         robot.simulateMenuItemTap(id: "1")
         robot.assertLastEvent(MoreEvent.MenuItemClicked(id: "1"))
     }

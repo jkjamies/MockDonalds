@@ -1,5 +1,5 @@
 import SwiftUI
-import XCTest
+import Testing
 import ComposeApp
 @testable import iosApp
 
@@ -25,17 +25,17 @@ final class ScanViewRobot {
 
     func assertDefaultViewCreated() {
         let view = createDefaultView()
-        XCTAssertNotNil(view.body)
+        #expect(view.body != nil)
     }
 
     func assertViewWithNoMemberCreated() {
         let view = createViewWithNoMember()
-        XCTAssertNotNil(view.body)
+        #expect(view.body != nil)
     }
 
     func assertViewWithNoProgressCreated() {
         let view = createViewWithNoProgress()
-        XCTAssertNotNil(view.body)
+        #expect(view.body != nil)
     }
 
     // MARK: - Event Verification
@@ -51,6 +51,6 @@ final class ScanViewRobot {
     }
 
     func assertLastEvent(_ expected: ScanEvent) {
-        XCTAssertEqual(stateRobot.lastEvent, expected)
+        #expect(stateRobot.lastEvent == expected)
     }
 }

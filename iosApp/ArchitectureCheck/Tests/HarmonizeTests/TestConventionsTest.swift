@@ -2,16 +2,14 @@ import Harmonize
 import HarmonizeSemantics
 import XCTest
 
-/// Validates iOS test conventions (robot pattern):
+/// Validates iOS test conventions (robot pattern with Swift Testing):
 /// - Every *View.swift has a corresponding *ViewTest
 /// - Every *ViewTest has a corresponding *ViewRobot
 /// - Every *ViewRobot has a corresponding *StateRobot
 /// - ViewTest files only reference ViewRobot, not StateRobot directly
 /// - StateRobots extend BaseStateRobot
-/// - ViewRobots are final classes
-/// - ViewRobots compose a StateRobot
-/// - ViewTest classes are final
-/// - ViewTest classes extend XCTestCase
+/// - ViewRobots are final classes that compose a StateRobot
+/// - ViewTests are @Suite structs with @Test methods
 /// - Test code does not contain print statements
 final class TestConventionsTest: XCTestCase {
 
@@ -31,7 +29,7 @@ final class TestConventionsTest: XCTestCase {
 
         XCTAssertTrue(viewNames.isNotEmpty, "Expected to find View structs")
 
-        let testNames = testScope.classes()
+        let testNames = testScope.structs()
             .withNameEndingWith("ViewTest")
             .map { $0.name.replacingOccurrences(of: "ViewTest", with: "") }
 
@@ -44,11 +42,11 @@ final class TestConventionsTest: XCTestCase {
     }
 
     func testEveryViewTestHasAViewRobot() {
-        let testNames = testScope.classes()
+        let testNames = testScope.structs()
             .withNameEndingWith("ViewTest")
             .map { $0.name.replacingOccurrences(of: "ViewTest", with: "") }
 
-        XCTAssertTrue(testNames.isNotEmpty, "Expected to find ViewTest classes")
+        XCTAssertTrue(testNames.isNotEmpty, "Expected to find ViewTest structs")
 
         let robotNames = testScope.classes()
             .withNameEndingWith("ViewRobot")
@@ -86,7 +84,7 @@ final class TestConventionsTest: XCTestCase {
 
     func testViewTestsOnlyReferenceViewRobot() {
         let viewTestSources = testScope.sources()
-            .filter { $0.classes().contains(where: { $0.name.hasSuffix("ViewTest") }) }
+            .filter { $0.structs().contains(where: { $0.name.hasSuffix("ViewTest") }) }
 
         let violators = viewTestSources.filter { $0.source.contains("StateRobot") }
 
@@ -147,40 +145,78 @@ final class TestConventionsTest: XCTestCase {
         )
     }
 
-    // MARK: - Naming
+    // MARK: - Swift Testing Conventions
 
-    func testViewTestClassesAreFinal() {
-        let viewTests = testScope.classes()
+    func testViewTestsAreSuiteStructs() {
+        let viewTests = testScope.structs()
             .withNameEndingWith("ViewTest")
 
-        XCTAssertTrue(viewTests.isNotEmpty, "Expected to find ViewTest classes")
+        XCTAssertTrue(viewTests.isNotEmpty, "Expected to find ViewTest structs")
 
-        let violators = viewTests.filter { !$0.modifiers.contains(.final) }
+        let violators = viewTests.filter { strct in
+            !strct.attributes.contains(where: { $0.name == "Suite" })
+        }
 
         XCTAssertTrue(
             violators.isEmpty,
-            "ViewTest classes must be final:\n\(violators.map { $0.name }.joined(separator: "\n"))"
+            "ViewTest structs must have @Suite attribute:\n\(violators.map { $0.name }.joined(separator: "\n"))"
         )
     }
 
-    func testViewTestClassesExtendXCTestCase() {
-        let viewTests = testScope.classes()
+    func testViewTestsDoNotExtendXCTestCase() {
+        let xcTestViewTests = testScope.classes()
+            .withNameEndingWith("ViewTest")
+            .filter { $0.inheritanceTypesNames.contains("XCTestCase") }
+
+        XCTAssertTrue(
+            xcTestViewTests.isEmpty,
+            "ViewTests must use @Suite struct, not XCTestCase:\n\(xcTestViewTests.map { $0.name }.joined(separator: "\n"))"
+        )
+    }
+
+    func testTestCodeDoesNotImportXCTest() {
+        let testSources = testScope.sources()
+            .filter { source in
+                source.structs().contains(where: { $0.name.hasSuffix("ViewTest") }) ||
+                source.classes().contains(where: {
+                    $0.name.hasSuffix("ViewRobot") || $0.name.hasSuffix("StateRobot")
+                })
+            }
+
+        let violators = testSources.filter { $0.source.contains("import XCTest") }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "Test code must use Swift Testing (import Testing), not XCTest:\n\(violators.map { $0.fileName ?? "unknown" }.joined(separator: "\n"))"
+        )
+    }
+
+    func testViewTestSuitesContainTestMethods() {
+        let viewTests = testScope.structs()
             .withNameEndingWith("ViewTest")
 
-        XCTAssertTrue(viewTests.isNotEmpty, "Expected to find ViewTest classes")
+        XCTAssertTrue(viewTests.isNotEmpty, "Expected to find ViewTest structs")
 
-        viewTests.assertTrue(
-            message: "ViewTest classes must extend XCTestCase"
-        ) { cls in
-            cls.inheritanceTypesNames.contains("XCTestCase")
+        let violators = viewTests.filter { strct in
+            !strct.functions.contains(where: { $0.attributes.contains(where: { $0.name == "Test" }) })
         }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "ViewTest suites must contain @Test methods:\n\(violators.map { $0.name }.joined(separator: "\n"))"
+        )
     }
 
     // MARK: - Hygiene
 
     func testTestCodeDoesNotContainPrintStatements() {
         let testSources = testScope.sources()
-            .filter { $0.classes().contains(where: { $0.name.hasSuffix("ViewTest") || $0.name.hasSuffix("ViewRobot") || $0.name.hasSuffix("StateRobot") }) }
+            .filter { source in
+                source.structs().contains(where: { $0.name.hasSuffix("ViewTest") }) ||
+                source.classes().contains(where: {
+                    $0.name.hasSuffix("ViewRobot") || $0.name.hasSuffix("StateRobot")
+                })
+            }
 
         let violators = testSources.filter { $0.source.contains("print(") }
 
@@ -190,14 +226,14 @@ final class TestConventionsTest: XCTestCase {
         )
     }
 
-    func testTestClassesEndWithTest() {
-        let testClasses = testScope.classes()
-            .filter { $0.inheritanceTypesNames.contains("XCTestCase") }
+    func testTestSuitesEndWithTest() {
+        let testSuites = testScope.structs()
+            .filter { $0.attributes.contains(where: { $0.name == "Suite" }) }
 
-        testClasses.assertTrue(
-            message: "Test classes extending XCTestCase must end with 'Test'"
-        ) { cls in
-            cls.name.hasSuffix("Test")
+        testSuites.assertTrue(
+            message: "Test suites with @Suite must end with 'Test'"
+        ) { strct in
+            strct.name.hasSuffix("Test")
         }
     }
 }
