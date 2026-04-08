@@ -24,10 +24,18 @@ class LoginUiTest {
     }
 
     @Test
-    fun signInButtonEmitsEvent() {
+    fun signInButtonShowsDialog() {
         robot.setDefaultContent()
         robot.tapSignInButton()
-        robot.assertLastEvent(LoginEvent.SignInClicked)
+        robot.assertSignInDialogDisplayed()
+    }
+
+    @Test
+    fun signInDialogConfirmEmitsEvent() {
+        robot.setDefaultContent()
+        robot.tapSignInButton()
+        robot.tapDialogConfirm()
+        robot.assertLastEvent(LoginEvent.SignInConfirmed)
     }
 
     @Test

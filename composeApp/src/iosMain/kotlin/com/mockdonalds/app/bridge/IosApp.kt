@@ -19,7 +19,6 @@ class IosApp {
         @Suppress("UNCHECKED_CAST")
         return CircuitPresenterKotlinBridge(
             presenter = presenter as Presenter<CircuitUiState>,
-            bottomSheetNavigator = navigator,
         )
     }
 }

@@ -7,6 +7,8 @@ struct MoreView: View {
     let state: MoreUiState
     @Environment(\.mockDonaldsColors) private var colors
     @Environment(\.verticalSizeClass) private var verticalSizeClass
+    @State private var showLoginSheet = false
+    @State private var showSignInDialog = false
 
     private var isLandscape: Bool { verticalSizeClass == .compact }
 
@@ -21,6 +23,37 @@ struct MoreView: View {
             .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: isLandscape))
         }
         .background(colors.background)
+        .onChange(of: state.loginSheet != nil) { isPresented in
+            showLoginSheet = isPresented
+        }
+        .sheet(
+            isPresented: $showLoginSheet,
+            onDismiss: {
+                state.eventSink(MoreEvent.LoginSheetDismissed())
+            },
+            content: {
+                let email = state.loginSheet?.email ?? ""
+                LoginSheetContentView(
+                    email: email,
+                    onEmailChanged: { state.eventSink(MoreEvent.LoginEmailChanged(value: $0)) },
+                    onSignInClick: { showSignInDialog = true }
+                )
+                .alert(
+                    "Sign In",
+                    isPresented: $showSignInDialog,
+                    actions: {
+                        Button("Send Link") {
+                            showLoginSheet = false
+                            state.eventSink(MoreEvent.LoginSignInConfirmed())
+                        }
+                        Button("Cancel", role: .cancel) {}
+                    },
+                    message: {
+                        Text("Send a magic link to \(email.isEmpty ? "your email" : email)?")
+                    }
+                )
+            }
+        )
     }
 
     @ViewBuilder

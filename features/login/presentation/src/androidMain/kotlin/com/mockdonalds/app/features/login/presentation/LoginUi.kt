@@ -18,14 +18,20 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,6 +59,32 @@ import dev.zacsweers.metro.Inject
 @Composable
 fun LoginUi(state: LoginUiState, modifier: Modifier = Modifier) {
     val landscape = isCompactHeight()
+    var showSignInDialog by remember { mutableStateOf(false) }
+
+    if (showSignInDialog) {
+        AlertDialog(
+            onDismissRequest = { showSignInDialog = false },
+            title = { Text("Sign In") },
+            text = {
+                Text(
+                    "Send a magic link to ${state.email.ifEmpty { "your email" }}?",
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showSignInDialog = false
+                    state.eventSink(LoginEvent.SignInConfirmed)
+                }) {
+                    Text("Send Link")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showSignInDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+        )
+    }
 
     Box(
         modifier = modifier
@@ -100,7 +132,7 @@ fun LoginUi(state: LoginUiState, modifier: Modifier = Modifier) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXl),
                     ) {
-                        LoginForm(state = state)
+                        LoginForm(state = state, onSignInClick = { showSignInDialog = true })
                         OrDivider()
                         SocialButtons(state = state)
                     }
@@ -115,7 +147,7 @@ fun LoginUi(state: LoginUiState, modifier: Modifier = Modifier) {
 
                 Spacer(modifier = Modifier.height(MockDimens.SpacingXxxl))
 
-                LoginForm(state = state)
+                LoginForm(state = state, onSignInClick = { showSignInDialog = true })
 
                 Spacer(modifier = Modifier.height(MockDimens.SpacingXxxl))
 
@@ -157,7 +189,7 @@ private fun BrandingSection(logoUrl: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun LoginForm(state: LoginUiState) {
+private fun LoginForm(state: LoginUiState, onSignInClick: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg)) {
         // Email Field
         Column(verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingSm)) {
@@ -200,7 +232,7 @@ private fun LoginForm(state: LoginUiState) {
 
         // Sign In Button
         Button(
-            onClick = { state.eventSink(LoginEvent.SignInClicked) },
+            onClick = onSignInClick,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
             contentPadding = PaddingValues(),
             modifier = Modifier

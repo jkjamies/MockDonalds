@@ -8,6 +8,7 @@ import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.presenterTestOf
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 
 class MorePresenterTest : BehaviorSpec({
 
@@ -51,6 +52,52 @@ class MorePresenterTest : BehaviorSpec({
                     val state = awaitItem()
                     state.eventSink(MoreEvent.ProfileClicked)
                     navigator.awaitNextScreen() shouldBe LoginScreen
+                    cancelAndIgnoreRemainingEvents()
+                }
+            }
+        }
+
+        When("the user taps a menu item") {
+            Then("it should show the login sheet") {
+                presenterTestOf(
+                    presentFunction = {
+                        MorePresenter(
+                            navigator = navigator,
+                            getMoreContent = fakeGetMoreContent,
+                            dispatchers = dispatchers,
+                        )
+                    },
+                ) {
+                    awaitItem() // initial null profile
+                    val state = awaitItem() // populated content
+                    state.loginSheet shouldBe null
+                    state.eventSink(MoreEvent.MenuItemClicked("1"))
+                    val updated = awaitItem()
+                    updated.loginSheet shouldNotBe null
+                    cancelAndIgnoreRemainingEvents()
+                }
+            }
+        }
+
+        When("the user dismisses the login sheet") {
+            Then("the login sheet state should be cleared") {
+                presenterTestOf(
+                    presentFunction = {
+                        MorePresenter(
+                            navigator = navigator,
+                            getMoreContent = fakeGetMoreContent,
+                            dispatchers = dispatchers,
+                        )
+                    },
+                ) {
+                    awaitItem() // initial null profile
+                    val state = awaitItem() // populated content
+                    state.eventSink(MoreEvent.MenuItemClicked("1"))
+                    val withSheet = awaitItem()
+                    withSheet.loginSheet shouldNotBe null
+                    withSheet.eventSink(MoreEvent.LoginSheetDismissed)
+                    val dismissed = awaitItem()
+                    dismissed.loginSheet shouldBe null
                     cancelAndIgnoreRemainingEvents()
                 }
             }

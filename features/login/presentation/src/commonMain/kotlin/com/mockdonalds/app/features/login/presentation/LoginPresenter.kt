@@ -34,7 +34,7 @@ fun LoginPresenter(
         eventSink = { event ->
             when (event) {
                 is LoginEvent.EmailChanged -> email = event.value
-                is LoginEvent.SignInClicked -> centerPost { }
+                is LoginEvent.SignInConfirmed -> navigator.pop()
                 is LoginEvent.AppleSignInClicked -> centerPost { }
                 is LoginEvent.GoogleSignInClicked -> centerPost { }
             }

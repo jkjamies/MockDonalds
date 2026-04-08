@@ -31,6 +31,7 @@
 		3A1C7B092C0A000100100005 /* RewardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B082C0A000100100005 /* RewardsView.swift */; };
 		3A1C7B0B2C0A000100100006 /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B0A2C0A000100100006 /* ScanView.swift */; };
 		3A1C7B0D2C0A000100100007 /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B0C2C0A000100100007 /* MoreView.swift */; };
+		3A1C7B0E2C0A000100100008 /* LoginSheetContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B0F2C0A000100100008 /* LoginSheetContentView.swift */; };
 		3F7FE3C243EA2474EC5ED9B3 /* ScanViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE83391F0042238028012AF /* ScanViewRobot.swift */; };
 		5C96DF5D52D5AB8A8543BF47 /* MoreStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBDC98EE92C1069DBBF31E0 /* MoreStateRobot.swift */; };
 		6AB7311879DE457185285F19 /* RewardsStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F5BACDF6DC1E6C3703B84D2 /* RewardsStateRobot.swift */; };
@@ -76,6 +77,7 @@
 		3A1C7B082C0A000100100005 /* RewardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardsView.swift; sourceTree = "<group>"; };
 		3A1C7B0A2C0A000100100006 /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
 		3A1C7B0C2C0A000100100007 /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
+		3A1C7B0F2C0A000100100008 /* LoginSheetContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSheetContentView.swift; sourceTree = "<group>"; };
 		47030C030A9A404F3DB59815 /* ScanStateRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScanStateRobot.swift; sourceTree = "<group>"; };
 		4C2FECF2564C8AD2C98E0191 /* OrderViewRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OrderViewRobot.swift; sourceTree = "<group>"; };
 		4E8CF74CB8120042F7576C84 /* RewardsViewRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RewardsViewRobot.swift; sourceTree = "<group>"; };
@@ -258,6 +260,7 @@
 		3A1C7B172C0A000100100017 /* More */ = {
 			isa = PBXGroup;
 			children = (
+				3A1C7B0F2C0A000100100008 /* LoginSheetContentView.swift */,
 				3A1C7B0C2C0A000100100007 /* MoreView.swift */,
 			);
 			path = More;
@@ -467,6 +470,7 @@
 				3A1C7B072C0A000100100004 /* OrderView.swift in Sources */,
 				3A1C7B092C0A000100100005 /* RewardsView.swift in Sources */,
 				3A1C7B0B2C0A000100100006 /* ScanView.swift in Sources */,
+				3A1C7B0E2C0A000100100008 /* LoginSheetContentView.swift in Sources */,
 				3A1C7B0D2C0A000100100007 /* MoreView.swift in Sources */,
 				AA100001AAAA000100000001 /* CircuitNavigator.swift in Sources */,
 				AA100002AAAA000100000002 /* LoginView.swift in Sources */,

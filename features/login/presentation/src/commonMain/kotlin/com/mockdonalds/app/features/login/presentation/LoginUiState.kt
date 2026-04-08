@@ -12,7 +12,7 @@ data class LoginUiState(
 
 sealed class LoginEvent {
     data class EmailChanged(val value: String) : LoginEvent()
-    data object SignInClicked : LoginEvent()
+    data object SignInConfirmed : LoginEvent()
     data object AppleSignInClicked : LoginEvent()
     data object GoogleSignInClicked : LoginEvent()
 }

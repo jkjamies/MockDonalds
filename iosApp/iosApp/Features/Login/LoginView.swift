@@ -7,6 +7,7 @@ struct LoginView: View {
     let state: LoginUiState
     @Environment(\.mockDonaldsColors) private var colors
     @Environment(\.verticalSizeClass) private var verticalSizeClass
+    @State private var showSignInDialog = false
     private var isLandscape: Bool { verticalSizeClass == .compact }
 
     var body: some View {
@@ -38,6 +39,14 @@ struct LoginView: View {
             .padding(.horizontal, MockDimens.spacingXxl)
         }
         .background(colors.surfaceContainerLow)
+        .alert("Sign In", isPresented: $showSignInDialog) {
+            Button("Send Link") {
+                state.eventSink(LoginEvent.SignInConfirmed())
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Send a magic link to \(state.email.isEmpty ? "your email" : state.email)?")
+        }
     }
 
     private var dragHandle: some View {
@@ -123,7 +132,7 @@ struct LoginView: View {
     private var signInButton: some View {
         Button(
             action: {
-                state.eventSink(LoginEvent.SignInClicked())
+                showSignInDialog = true
             },
             label: {
                 Text("Sign In")

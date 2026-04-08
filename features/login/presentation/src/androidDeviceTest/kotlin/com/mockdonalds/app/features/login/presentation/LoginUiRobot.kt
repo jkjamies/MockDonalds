@@ -90,6 +90,18 @@ class LoginUiRobot(private val rule: ComposeContentTestRule) {
         rule.onNodeWithTag(LoginTestTags.GOOGLE_BUTTON).performScrollTo().performClick()
     }
 
+    fun tapDialogConfirm() {
+        rule.onNodeWithText("Send Link").performClick()
+    }
+
+    // --- Dialog Assertions ---
+
+    fun assertSignInDialogDisplayed() {
+        rule.onNodeWithText("Sign In").assertIsDisplayed()
+        rule.onNodeWithText("Send Link").assertIsDisplayed()
+        rule.onNodeWithText("Cancel").assertIsDisplayed()
+    }
+
     // --- Event Verification ---
 
     fun assertLastEvent(expected: LoginEvent) {

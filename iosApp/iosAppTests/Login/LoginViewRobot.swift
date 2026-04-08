@@ -59,9 +59,9 @@ final class LoginViewRobot {
 
     // MARK: - Event Verification
 
-    func simulateSignInTap() {
+    func simulateSignInConfirm() {
         let state = stateRobot.defaultState()
-        state.eventSink(LoginEvent.SignInClicked())
+        state.eventSink(LoginEvent.SignInConfirmed())
     }
 
     func simulateAppleSignInTap() {

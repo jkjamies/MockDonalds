@@ -9,6 +9,7 @@ final class MoreStateRobot: BaseStateRobot<MoreUiState, MoreEvent> {
                 MoreMenuItem(id: "1", icon: "⚙️", title: "Settings"),
                 MoreMenuItem(id: "2", icon: "❓", title: "Help"),
             ],
+            loginSheet: nil,
             eventSink: createEventSink()
         )
     }
@@ -20,6 +21,7 @@ final class MoreStateRobot: BaseStateRobot<MoreUiState, MoreEvent> {
                 MoreMenuItem(id: "1", icon: "⚙️", title: "Settings"),
                 MoreMenuItem(id: "2", icon: "❓", title: "Help"),
             ],
+            loginSheet: nil,
             eventSink: createEventSink()
         )
     }
@@ -28,6 +30,7 @@ final class MoreStateRobot: BaseStateRobot<MoreUiState, MoreEvent> {
         MoreUiState(
             userProfile: UserProfile(name: "Test User", tier: "Gold", points: "2,450 pts", avatarUrl: ""),
             menuItems: [],
+            loginSheet: nil,
             eventSink: createEventSink()
         )
     }

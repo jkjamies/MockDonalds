@@ -84,105 +84,197 @@ NavigableCircuitContent(
 
 **Why not just the manifest flag alone?** Without `GestureNavigationDecorationFactory`, the system handles back but Circuit doesn't animate the transition — the screen just snaps.
 
-## Bottom Sheet Navigation
+## Bottom Sheets
 
-Cross-platform system that lets presenters present a full Circuit `Screen` as a modal bottom sheet with a single `suspend` call, receiving the result when the sheet is dismissed.
+Bottom sheets are **UI state owned by the presenting screen**, not independent Circuit screens on the backstack.
 
-This is distinct from Circuit's own `Overlay` system (`OverlayHost`, `BottomSheetOverlay`) which renders inline composable content — not full screens with their own presenters. Circuit's overlays are for simple, self-contained UI (confirmation dialogs, pickers). `BottomSheetNavigator` is for presenting complete screens modally (e.g., showing LoginScreen as a sheet from the More tab).
+### Why Not a Circuit Screen?
 
-### Architecture
+A Circuit `Screen` has its own presenter, lifecycle, and backstack entry. Bottom sheets are transient UI that:
+- Don't belong on the navigation backstack
+- Can't use `PopResult` (not on the stack)
+- Create awkward ownership splits (who calls `show()` vs `dismiss()`?)
+
+Making a bottom sheet a full Screen forces a parallel result system and couples two unrelated presenters through a shared side channel.
+
+### Pattern: State-Hoisted Bottom Sheet
+
+The presenting screen's **presenter owns all sheet state**. The **UI renders the sheet** based on that state and hoists actions back via `eventSink`.
 
 ```
-Presenter calls bottomSheet.show(LoginScreen)
-  ↓ suspend — awaits CompletableDeferred<BottomSheetResult>
-
-  Android:
-    BottomSheetNavigatorImpl.request → collectAsState() in App.kt
-      → ModalBottomSheet { CircuitContent(screen) }
-      → onDismissRequest → complete(Dismissed)
-      → presenter resumes with BottomSheetResult.Dismissed
-
-  iOS:
-    BridgeNavigator.bottomSheetRequest → @NativeCoroutinesState
-      → Swift asyncSequence(for: bottomSheetRequestFlow)
-      → .sheet { CircuitContent(screen) }
-      → onDismiss → completeBottomSheet(result: Dismissed)
-      → presenter resumes with BottomSheetResult.Dismissed
+MorePresenter (owns loginSheet state)
+  └─ MoreUi / MoreView
+       └─ ModalBottomSheet / .sheet
+            └─ LoginSheetContent(email, onEmailChanged, onSignIn)
 ```
 
-### BottomSheetNavigator (core:circuit)
+### Implementation
 
-Platform-agnostic interface available to presenters via `LocalBottomSheetNavigator`:
+**UiState** — nullable sheet state signals show/hide:
 
 ```kotlin
-interface BottomSheetNavigator {
-    suspend fun show(screen: Screen): BottomSheetResult
-}
+data class MoreUiState(
+    val loginSheet: LoginSheetState? = null,  // null = hidden
+    val eventSink: (MoreEvent) -> Unit,
+) : CircuitUiState
 
-sealed class BottomSheetResult {
-    data object Confirmed : BottomSheetResult()
-    data object Dismissed : BottomSheetResult()
+data class LoginSheetState(
+    val email: String = "",
+)
+
+sealed class MoreEvent {
+    data class MenuItemClicked(val id: String) : MoreEvent()
+    data class LoginEmailChanged(val value: String) : MoreEvent()
+    data object LoginSignInConfirmed : MoreEvent()
+    data object LoginSheetDismissed : MoreEvent()
 }
 ```
 
-Provided as a `staticCompositionLocalOf` with a no-op default (returns `Dismissed`). This follows the same pattern as Circuit's own `LocalOverlayHost` — the default enables presenter unit tests without needing to provide the local, while real bottom sheet interactions are tested at the UI/integration level.
-
-Presenters access it in their `@Composable present()` body:
+**Presenter** — manages sheet lifecycle:
 
 ```kotlin
-@CircuitInject(MoreScreen::class, AppScope::class)
-@Inject
+is MoreEvent.MenuItemClicked -> {
+    loginSheet = LoginSheetState()
+}
+is MoreEvent.LoginSignInConfirmed -> {
+    loginSheet = null
+}
+is MoreEvent.LoginSheetDismissed -> {
+    loginSheet = null
+}
+```
+
+**Android UI** — uses `ModalBottomSheet` with `rememberModalBottomSheetState` for animated show/hide. A private `LoginBottomSheet` composable encapsulates the sheet state, animation, and dialog:
+
+```kotlin
 @Composable
-fun MorePresenter(navigator: Navigator, ...): MoreUiState {
-    val bottomSheet = LocalBottomSheetNavigator.current
-    val centerPost = rememberCenterPost(dispatchers)
+private fun LoginBottomSheet(
+    loginSheet: LoginSheetState?,
+    onEmailChanged: (String) -> Unit,
+    onSignInConfirmed: () -> Unit,
+    onDismissed: () -> Unit,
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    // ...
+    if (loginSheet != null) {
+        ModalBottomSheet(onDismissRequest = onDismissed, sheetState = sheetState) {
+            LoginSheetContent(...)
+        }
+    }
+}
+```
 
-    return MoreUiState(
-        eventSink = { event ->
-            when (event) {
-                is MoreEvent.MenuItemClicked -> centerPost {
-                    val result = bottomSheet.show(LoginScreen)
-                    // resumes here when sheet is dismissed
-                }
-            }
+**iOS View** — uses `.sheet(isPresented:onDismiss:)` driven by a local `@State` synced from the presenter state via `.onChange(of:)`:
+
+```swift
+.onChange(of: state.loginSheet != nil) { isPresented in
+    showLoginSheet = isPresented
+}
+.sheet(isPresented: $showLoginSheet, onDismiss: {
+    state.eventSink(MoreEvent.LoginSheetDismissed())
+}) {
+    loginSheetContent
+}
+```
+
+### When the Sheet Content is Complex
+
+The sheet content can be as complex as needed — it's just a composable/View with hoisted callbacks. If the presenter gets too heavy, extract business logic into use cases. The presenter stays thin, wiring state and delegating to interactors.
+
+## Dialogs
+
+Dialogs are **screen-local UI state** — owned by the UI layer, not the presenter.
+
+### Why Not the Presenter?
+
+A dialog showing/hiding is a UI concern. The presenter only needs to know when the user *confirms* — not that a dialog was shown. This keeps dialog lifecycle out of shared code and lets each platform use its native dialog API directly.
+
+### Pattern
+
+1. **UI owns dialog visibility** — `remember { mutableStateOf(false) }` on Android, `@State` on iOS
+2. **Button tap shows dialog** — UI-local, no event to presenter
+3. **Dialog confirm sends event** — `eventSink(SignInConfirmed)` triggers presenter logic (navigation, state change)
+4. **Dialog dismiss hides dialog** — UI-local, no event to presenter
+
+**Android:**
+```kotlin
+var showSignInDialog by remember { mutableStateOf(false) }
+
+if (showSignInDialog) {
+    AlertDialog(
+        onDismissRequest = { showSignInDialog = false },
+        confirmButton = {
+            TextButton(onClick = {
+                showSignInDialog = false
+                state.eventSink(LoginEvent.SignInConfirmed)
+            }) { Text("Send Link") }
         },
+        // ...
     )
 }
+
+// Button triggers dialog, not an event:
+Button(onClick = { showSignInDialog = true }) { Text("Sign In") }
 ```
 
-### BottomSheetNavigatorImpl (core:circuit)
+**iOS:**
+```swift
+@State private var showSignInDialog = false
 
-Shared implementation backed by `MutableStateFlow<BottomSheetRequest?>` + `CompletableDeferred<BottomSheetResult>`:
+.alert("Sign In", isPresented: $showSignInDialog) {
+    Button("Send Link") {
+        state.eventSink(LoginEvent.SignInConfirmed())
+    }
+    Button("Cancel", role: .cancel) {}
+}
 
-- `show(screen)` — sets the request and suspends on a deferred
-- `complete(result)` — called by the host when the sheet is dismissed, completes the deferred and clears the request
-- `request: StateFlow` — observed by the platform host to render the sheet
-
-### Android Integration
-
-`App.kt` creates a `BottomSheetNavigatorImpl` and provides it via `LocalBottomSheetNavigator`. It collects the `request` flow and renders `ModalBottomSheet` with `CircuitContent(screen)` for the presented screen.
-
-### iOS Integration
-
-`BridgeNavigator` implements `BottomSheetNavigator` by delegating to `BottomSheetNavigatorImpl`. It exposes `bottomSheetRequest` as a `@NativeCoroutinesState StateFlow` which generates `bottomSheetRequestFlow` for Swift.
-
-`CircuitNavigator.swift` observes `bottomSheetRequestFlow` via a second `.task {}` and presents sheets using `.sheet()`. On dismiss, it calls `navigator.completeBottomSheet(result:)` which completes the Kotlin deferred.
-
-`CircuitPresenterKotlinBridge` provides `LocalBottomSheetNavigator` in the Molecule composition so presenters can access it.
+// Button triggers dialog:
+Button(action: { showSignInDialog = true }) { Text("Sign In") }
+```
 
 ### Testing
 
-Bottom sheet rendering is a UI/integration concern — presenter unit tests verify state logic using the no-op default CompositionLocal. Actual sheet presentation and dismissal behavior is tested at the UI test level where the full composition (host + `ModalBottomSheet`/`.sheet`) is exercised.
+- **Presenter tests**: verify `SignInConfirmed` triggers navigation — no dialog state to test
+- **UI tests**: tap button → assert dialog appears → tap confirm → assert event fired
 
-### Key Files
+## Nested Circuit Flows (Circuit-in-Circuit)
 
-| File | Role |
-|------|------|
-| `core/circuit/src/commonMain/.../bottomsheet/BottomSheetNavigator.kt` | Interface, result types, CompositionLocal, shared impl |
-| `composeApp/src/iosMain/.../bridge/BridgeNavigator.kt` | Implements BottomSheetNavigator, exposes flow for Swift |
-| `composeApp/src/iosMain/.../bridge/CircuitPresenterKotlinBridge.kt` | Provides LocalBottomSheetNavigator to presenters |
-| `composeApp/src/androidMain/.../App.kt` | Bottom sheet host — renders ModalBottomSheet |
-| `iosApp/iosApp/Circuit/CircuitNavigator.swift` | Observes bottomSheetRequestFlow, shows .sheet |
+A Circuit screen's UI can host its own `NavigableCircuitContent` with an independent backstack. This enables multi-step flows inside a container without affecting the app's main navigation.
+
+### Android Support
+
+On Android, this works natively. Inside any composable (including a `ModalBottomSheet`), you can drop a `NavigableCircuitContent` with its own `rememberSaveableBackStack` and `rememberCircuitNavigator`. Inner screens navigate independently of the app's main backstack.
+
+```kotlin
+@Composable
+fun LoginFlowUi(state: LoginFlowUiState, modifier: Modifier = Modifier) {
+    val backStack = rememberSaveableBackStack(root = EmailEntryScreen)
+    val navigator = rememberCircuitNavigator(backStack) {
+        state.eventSink(LoginFlowEvent.FlowDismissed)
+    }
+    NavigableCircuitContent(navigator = navigator, backStack = backStack)
+}
+```
+
+### iOS Limitation
+
+Nested Circuit flows are **not currently supported on iOS** with our bridge architecture. The `BridgeNavigator` is a single shared instance — `goTo`/`pop` from inner screens would drive the app's main `NavigationStack`, not a nested one.
+
+Supporting this would require:
+- A **scoped navigator** — a second `BridgeNavigator` instance per nested flow
+- The sheet's SwiftUI host embedding its own `CircuitNavigator` with that scoped navigator
+- Presenters inside the flow receiving the scoped navigator instead of the root one
+
+For now, use **state-hoisted bottom sheets** (single-screen content owned by the host presenter) on both platforms. If a multi-step flow in a sheet is required, it can be implemented on Android with nested Circuit while iOS uses a sequential state machine in the presenter — or the scoped navigator approach can be built out.
+
+### When to Use What
+
+| Scenario | Approach |
+|----------|----------|
+| Single-screen bottom sheet | State-hoisted: presenter owns sheet state, UI renders content |
+| Confirmation dialog | UI-local state: `remember`/`@State` boolean, confirm fires event |
+| Full-screen navigation | `navigator.goTo(screen)` — standard Circuit navigation |
+| Multi-step flow in sheet (Android only) | Nested `NavigableCircuitContent` with independent backstack |
 
 ## Future: Auth Interceptor
 
@@ -287,7 +379,7 @@ Add:
 
 - `./gradlew assemble` — full build
 - `./gradlew testAndroidHostTest` — unit tests
-- `./gradlew :konsist:test` — architecture enforcement (96 tests)
+- `./gradlew :konsist:test` — architecture enforcement
 - `./gradlew detektMetadataCommonMain` — lint
 - `swiftlint lint iosApp` — Swift lint
 - `swift test --package-path iosApp/ArchitectureCheck` — Harmonize

@@ -22,9 +22,9 @@ import ComposeApp
 
     // MARK: - Events
 
-    @Test func signInTapEmitsEvent() {
-        robot.simulateSignInTap()
-        robot.assertLastEvent(LoginEvent.SignInClicked())
+    @Test func signInConfirmEmitsEvent() {
+        robot.simulateSignInConfirm()
+        robot.assertLastEvent(LoginEvent.SignInConfirmed())
     }
 
     @Test func appleSignInTapEmitsEvent() {
