@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.core.theme.MockDimens
 import com.mockdonalds.app.core.theme.MockDonaldsTheme
+import com.mockdonalds.app.core.theme.isCompactHeight
 import com.mockdonalds.app.features.login.api.navigation.LoginScreen
 import com.mockdonalds.app.features.login.api.ui.LoginTestTags
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -51,6 +52,8 @@ import dev.zacsweers.metro.Inject
 @Inject
 @Composable
 fun LoginUi(state: LoginUiState, modifier: Modifier = Modifier) {
+    val landscape = isCompactHeight()
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -74,28 +77,54 @@ fun LoginUi(state: LoginUiState, modifier: Modifier = Modifier) {
                     .testTag(LoginTestTags.DRAG_HANDLE),
             )
 
-            Spacer(modifier = Modifier.height(MockDimens.SpacingXxl))
+            Spacer(modifier = Modifier.height(MockDimens.SpacingXl))
 
-            // Branding
-            BrandingSection(
-                logoUrl = state.logoUrl,
-                modifier = Modifier.testTag(LoginTestTags.BRANDING),
-            )
+            if (landscape) {
+                // Two-column: branding left, form + social right
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingXxl),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(
+                        modifier = Modifier.weight(1f),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        BrandingSection(
+                            logoUrl = state.logoUrl,
+                            modifier = Modifier.testTag(LoginTestTags.BRANDING),
+                        )
+                    }
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXl),
+                    ) {
+                        LoginForm(state = state)
+                        OrDivider()
+                        SocialButtons(state = state)
+                    }
+                }
+            } else {
+                Spacer(modifier = Modifier.height(MockDimens.SpacingMd))
 
-            Spacer(modifier = Modifier.height(MockDimens.SpacingXxxl))
+                BrandingSection(
+                    logoUrl = state.logoUrl,
+                    modifier = Modifier.testTag(LoginTestTags.BRANDING),
+                )
 
-            // Login Form
-            LoginForm(state = state)
+                Spacer(modifier = Modifier.height(MockDimens.SpacingXxxl))
 
-            Spacer(modifier = Modifier.height(MockDimens.SpacingXxxl))
+                LoginForm(state = state)
 
-            // Divider
-            OrDivider()
+                Spacer(modifier = Modifier.height(MockDimens.SpacingXxxl))
 
-            Spacer(modifier = Modifier.height(MockDimens.SpacingXxxl))
+                OrDivider()
 
-            // Social Buttons
-            SocialButtons(state = state)
+                Spacer(modifier = Modifier.height(MockDimens.SpacingXxxl))
+
+                SocialButtons(state = state)
+            }
 
             Spacer(modifier = Modifier.height(MockDimens.SpacingXxl))
         }

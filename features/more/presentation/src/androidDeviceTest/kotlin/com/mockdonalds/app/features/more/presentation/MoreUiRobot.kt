@@ -1,10 +1,16 @@
 package com.mockdonalds.app.features.more.presentation
 
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
+import com.mockdonalds.app.core.theme.LocalWindowSizeClass
 import com.mockdonalds.app.core.theme.MockDonaldsTheme
 import com.mockdonalds.app.features.more.api.ui.MoreTestTags
 
@@ -12,21 +18,34 @@ class MoreUiRobot(private val rule: ComposeContentTestRule) {
 
     private val stateRobot = MoreStateRobot()
 
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+    private fun setContentWith(state: MoreUiState, landscape: Boolean = false) {
+        val size = if (landscape) DpSize(800.dp, 400.dp) else DpSize(400.dp, 800.dp)
+        rule.setContent {
+            CompositionLocalProvider(
+                LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(size),
+            ) {
+                MockDonaldsTheme { MoreUi(state = state) }
+            }
+        }
+    }
+
     // --- State + Content ---
 
     fun setDefaultContent() {
-        val state = stateRobot.defaultState()
-        rule.setContent { MockDonaldsTheme { MoreUi(state = state) } }
+        setContentWith(stateRobot.defaultState())
     }
 
     fun setContentWithNoProfile() {
-        val state = stateRobot.stateWithNoProfile()
-        rule.setContent { MockDonaldsTheme { MoreUi(state = state) } }
+        setContentWith(stateRobot.stateWithNoProfile())
     }
 
     fun setContentWithEmptyMenu() {
-        val state = stateRobot.stateWithEmptyMenu()
-        rule.setContent { MockDonaldsTheme { MoreUi(state = state) } }
+        setContentWith(stateRobot.stateWithEmptyMenu())
+    }
+
+    fun setLandscapeContent() {
+        setContentWith(stateRobot.defaultState(), landscape = true)
     }
 
     // --- Screen Assertions ---
@@ -48,6 +67,12 @@ class MoreUiRobot(private val rule: ComposeContentTestRule) {
     fun assertScreenWithEmptyMenu() {
         assertProfileSectionDisplayed()
         assertMenuListNotDisplayed()
+        assertJoinTeamBannerDisplayed()
+    }
+
+    fun assertLandscapeScreen() {
+        assertProfileSectionDisplayed()
+        assertMenuListDisplayed()
         assertJoinTeamBannerDisplayed()
     }
 

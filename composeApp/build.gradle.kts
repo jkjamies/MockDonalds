@@ -89,6 +89,10 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
         }
 
+        androidMain.dependencies {
+            implementation(libs.androidx.compose.material3.windowsizeclass)
+        }
+
         iosMain.dependencies {
             // Molecule for Compose → StateFlow bridge
             implementation(libs.molecule.runtime)

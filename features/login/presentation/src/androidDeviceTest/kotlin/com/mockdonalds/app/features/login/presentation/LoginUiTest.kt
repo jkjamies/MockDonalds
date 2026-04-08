@@ -18,6 +18,12 @@ class LoginUiTest {
     }
 
     @Test
+    fun rendersLandscapeLayout() {
+        robot.setLandscapeContent()
+        robot.assertLandscapeScreen()
+    }
+
+    @Test
     fun signInButtonEmitsEvent() {
         robot.setDefaultContent()
         robot.tapSignInButton()

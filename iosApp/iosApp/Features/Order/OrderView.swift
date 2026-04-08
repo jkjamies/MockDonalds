@@ -5,6 +5,8 @@ private let tags = OrderTestTags.shared
 
 struct OrderView: View {
     @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    private var isLandscape: Bool { verticalSizeClass == .compact }
 
     let state: OrderUiState
 
@@ -62,31 +64,68 @@ struct OrderView: View {
     }
 
     private var featuredItemsSection: some View {
-        VStack(spacing: MockDimens.spacingXxxl) {
-            ForEach(
-                Array(state.featuredItems.enumerated()),
-                id: \.offset
-            ) { _, item in
-                FeaturedItemView(
-                    title: item.title,
-                    price: item.price,
-                    description: item.description_,
-                    imageUrl: item.imageUrl,
-                    tag: item.tag,
-                    isPrimary: item.isPrimary,
-                    onAddToOrder: {
-                        state.eventSink(
-                            OrderEvent.AddToOrder(itemId: item.id)
+        Group {
+            if isLandscape {
+                // 2-column grid in landscape
+                let items = Array(state.featuredItems.enumerated())
+                let pairs = stride(from: 0, to: items.count, by: 2).map {
+                    Array(items[$0..<min($0 + 2, items.count)])
+                }
+                VStack(spacing: MockDimens.spacingXxl) {
+                    ForEach(Array(pairs.enumerated()), id: \.offset) { _, pair in
+                        HStack(alignment: .top, spacing: MockDimens.spacingLg) {
+                            ForEach(pair, id: \.offset) { _, item in
+                                FeaturedItemView(
+                                    title: item.title,
+                                    price: item.price,
+                                    description: item.description_,
+                                    imageUrl: item.imageUrl,
+                                    tag: item.tag,
+                                    isPrimary: item.isPrimary,
+                                    onAddToOrder: {
+                                        state.eventSink(
+                                            OrderEvent.AddToOrder(itemId: item.id)
+                                        )
+                                    }
+                                )
+                                .accessibilityIdentifier(
+                                    "\(tags.FEATURED_ITEM_CARD)-\(item.id)"
+                                )
+                            }
+                            if pair.count == 1 {
+                                Spacer().frame(maxWidth: .infinity)
+                            }
+                        }
+                    }
+                }
+            } else {
+                VStack(spacing: MockDimens.spacingXxxl) {
+                    ForEach(
+                        Array(state.featuredItems.enumerated()),
+                        id: \.offset
+                    ) { _, item in
+                        FeaturedItemView(
+                            title: item.title,
+                            price: item.price,
+                            description: item.description_,
+                            imageUrl: item.imageUrl,
+                            tag: item.tag,
+                            isPrimary: item.isPrimary,
+                            onAddToOrder: {
+                                state.eventSink(
+                                    OrderEvent.AddToOrder(itemId: item.id)
+                                )
+                            }
+                        )
+                        .accessibilityIdentifier(
+                            "\(tags.FEATURED_ITEM_CARD)-\(item.id)"
                         )
                     }
-                )
-                .accessibilityIdentifier(
-                    "\(tags.FEATURED_ITEM_CARD)-\(item.id)"
-                )
+                }
             }
         }
         .padding(.horizontal, MockDimens.spacingXl)
-        .padding(.bottom, MockDimens.bottomBarPadding)
+        .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: isLandscape))
         .accessibilityIdentifier(tags.FEATURED_ITEMS_SECTION)
     }
 

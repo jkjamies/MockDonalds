@@ -18,6 +18,12 @@ class RewardsUiTest {
     }
 
     @Test
+    fun rendersLandscapeLayout() {
+        robot.setLandscapeContent()
+        robot.assertLandscapeScreen()
+    }
+
+    @Test
     fun rendersWithNoProgress() {
         robot.setContentWithNoProgress()
         robot.assertScreenWithNoProgress()

@@ -37,6 +37,8 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.core.theme.MockDimens
 import com.mockdonalds.app.core.theme.MockDonaldsTheme
+import com.mockdonalds.app.core.theme.adaptiveBottomBarPadding
+import com.mockdonalds.app.core.theme.isCompactHeight
 import com.mockdonalds.app.features.order.api.domain.FeaturedItem
 import com.mockdonalds.app.features.order.api.navigation.OrderScreen
 import com.mockdonalds.app.features.order.api.ui.OrderTestTags
@@ -48,6 +50,8 @@ import dev.zacsweers.metro.Inject
 @Inject
 @Composable
 fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
+    val landscape = isCompactHeight()
+
     Box(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         val scrollState = rememberScrollState()
 
@@ -55,7 +59,7 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(bottom = MockDimens.BottomBarPadding)
+                .padding(bottom = adaptiveBottomBarPadding())
                 .statusBarsPadding(),
         ) {
             // Category Chips
@@ -93,19 +97,48 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
                 }
             }
 
-            // Featured Items
-            Column(
-                modifier = Modifier.padding(
-                    horizontal = MockDimens.SpacingXl,
-                ).testTag(OrderTestTags.FEATURED_ITEMS_SECTION),
-                verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXxxl),
-            ) {
-                state.featuredItems.forEach { item ->
-                    FeaturedItemCard(
-                        item = item,
-                        onAddToOrder = { state.eventSink(OrderEvent.AddToOrder(item.id)) },
-                        modifier = Modifier.testTag("${OrderTestTags.FEATURED_ITEM_CARD}-${item.id}"),
-                    )
+            // Featured Items — 2-column grid in landscape, single column in portrait
+            if (landscape) {
+                Column(
+                    modifier = Modifier.padding(
+                        horizontal = MockDimens.SpacingXl,
+                    ).testTag(OrderTestTags.FEATURED_ITEMS_SECTION),
+                    verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXxl),
+                ) {
+                    state.featuredItems.chunked(2).forEach { pair ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
+                        ) {
+                            pair.forEach { item ->
+                                FeaturedItemCard(
+                                    item = item,
+                                    onAddToOrder = { state.eventSink(OrderEvent.AddToOrder(item.id)) },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .testTag("${OrderTestTags.FEATURED_ITEM_CARD}-${item.id}"),
+                                )
+                            }
+                            if (pair.size == 1) {
+                                Box(modifier = Modifier.weight(1f))
+                            }
+                        }
+                    }
+                }
+            } else {
+                Column(
+                    modifier = Modifier.padding(
+                        horizontal = MockDimens.SpacingXl,
+                    ).testTag(OrderTestTags.FEATURED_ITEMS_SECTION),
+                    verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXxxl),
+                ) {
+                    state.featuredItems.forEach { item ->
+                        FeaturedItemCard(
+                            item = item,
+                            onAddToOrder = { state.eventSink(OrderEvent.AddToOrder(item.id)) },
+                            modifier = Modifier.testTag("${OrderTestTags.FEATURED_ITEM_CARD}-${item.id}"),
+                        )
+                    }
                 }
             }
         }

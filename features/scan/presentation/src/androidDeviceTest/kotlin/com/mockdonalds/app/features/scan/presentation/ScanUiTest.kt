@@ -18,6 +18,12 @@ class ScanUiTest {
     }
 
     @Test
+    fun rendersLandscapeLayout() {
+        robot.setLandscapeContent()
+        robot.assertLandscapeScreen()
+    }
+
+    @Test
     fun rendersWithNoMember() {
         robot.setContentWithNoMember()
         robot.assertScreenWithNoMember()

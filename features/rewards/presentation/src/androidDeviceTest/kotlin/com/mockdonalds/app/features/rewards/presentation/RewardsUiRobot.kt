@@ -1,10 +1,16 @@
 package com.mockdonalds.app.features.rewards.presentation
 
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
+import com.mockdonalds.app.core.theme.LocalWindowSizeClass
 import com.mockdonalds.app.core.theme.MockDonaldsTheme
 import com.mockdonalds.app.features.rewards.api.ui.RewardsTestTags
 
@@ -12,26 +18,38 @@ class RewardsUiRobot(private val rule: ComposeContentTestRule) {
 
     private val stateRobot = RewardsStateRobot()
 
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+    private fun setContentWith(state: RewardsUiState, landscape: Boolean = false) {
+        val size = if (landscape) DpSize(800.dp, 400.dp) else DpSize(400.dp, 800.dp)
+        rule.setContent {
+            CompositionLocalProvider(
+                LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(size),
+            ) {
+                MockDonaldsTheme { RewardsUi(state = state) }
+            }
+        }
+    }
+
     // --- State + Content ---
 
     fun setDefaultContent() {
-        val state = stateRobot.defaultState()
-        rule.setContent { MockDonaldsTheme { RewardsUi(state = state) } }
+        setContentWith(stateRobot.defaultState())
+    }
+
+    fun setLandscapeContent() {
+        setContentWith(stateRobot.defaultState(), landscape = true)
     }
 
     fun setContentWithNoProgress() {
-        val state = stateRobot.stateWithNoProgress()
-        rule.setContent { MockDonaldsTheme { RewardsUi(state = state) } }
+        setContentWith(stateRobot.stateWithNoProgress())
     }
 
     fun setContentWithEmptyVault() {
-        val state = stateRobot.stateWithEmptyVault()
-        rule.setContent { MockDonaldsTheme { RewardsUi(state = state) } }
+        setContentWith(stateRobot.stateWithEmptyVault())
     }
 
     fun setContentWithEmptyHistory() {
-        val state = stateRobot.stateWithEmptyHistory()
-        rule.setContent { MockDonaldsTheme { RewardsUi(state = state) } }
+        setContentWith(stateRobot.stateWithEmptyHistory())
     }
 
     // --- Screen Assertions ---
@@ -40,6 +58,12 @@ class RewardsUiRobot(private val rule: ComposeContentTestRule) {
         assertPointsSectionDisplayed()
         assertVaultSpecialsSectionDisplayed()
         assertFeaturedVaultCardDisplayed("1")
+        assertHistorySectionDisplayed()
+    }
+
+    fun assertLandscapeScreen() {
+        assertPointsSectionDisplayed()
+        assertVaultSpecialsSectionDisplayed()
         assertHistorySectionDisplayed()
     }
 

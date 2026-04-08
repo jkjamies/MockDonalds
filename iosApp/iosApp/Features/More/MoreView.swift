@@ -6,6 +6,9 @@ private let tags = MoreTestTags.shared
 struct MoreView: View {
     let state: MoreUiState
     @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
+    private var isLandscape: Bool { verticalSizeClass == .compact }
 
     var body: some View {
         ScrollView {
@@ -15,7 +18,7 @@ struct MoreView: View {
                 joinTeamBanner
             }
             .padding(.horizontal, MockDimens.spacingXl)
-            .padding(.bottom, MockDimens.bottomBarPadding)
+            .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: isLandscape))
         }
         .background(colors.background)
     }

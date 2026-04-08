@@ -29,7 +29,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mockdonalds.app.core.theme.MockDimens
+import com.mockdonalds.app.core.theme.adaptiveBottomNavHeight
+import com.mockdonalds.app.core.theme.isCompactHeight
 import com.mockdonalds.app.core.theme.glassEffect
 
 data class BottomNavItem(
@@ -67,10 +68,12 @@ fun MockDonaldsBottomNavigation(
             )
             .windowInsetsPadding(WindowInsets.navigationBars)
     ) {
+        val landscape = isCompactHeight()
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(MockDimens.BottomNavHeight),
+                .height(adaptiveBottomNavHeight()),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -89,15 +92,15 @@ fun MockDonaldsBottomNavigation(
                             indication = null,
                             onClick = { onNavigate(item.route) }
                         )
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                        .padding(horizontal = 8.dp, vertical = if (landscape) 2.dp else 4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(if (landscape) 0.dp else 4.dp)
                 ) {
                     Box(
                         modifier = Modifier
                             .clip(CircleShape)
                             .background(if (isSelected) Color.Transparent else Color.Transparent)
-                            .padding(8.dp),
+                            .padding(if (landscape) 4.dp else 8.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -106,14 +109,16 @@ fun MockDonaldsBottomNavigation(
                             tint = contentColor
                         )
                     }
-                    Text(
-                        text = item.label,
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp
-                        ),
-                        color = contentColor
-                    )
+                    if (!landscape) {
+                        Text(
+                            text = item.label,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.sp
+                            ),
+                            color = contentColor
+                        )
+                    }
                 }
             }
         }

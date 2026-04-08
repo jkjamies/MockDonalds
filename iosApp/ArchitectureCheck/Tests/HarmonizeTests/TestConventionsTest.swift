@@ -207,6 +207,100 @@ final class TestConventionsTest: XCTestCase {
         )
     }
 
+    // MARK: - MainActor
+
+    func testViewRobotsAreMainActor() {
+        let viewRobots = testScope.classes()
+            .withNameEndingWith("ViewRobot")
+
+        XCTAssertTrue(viewRobots.isNotEmpty, "Expected to find ViewRobot classes")
+
+        let violators = viewRobots.filter { robot in
+            !robot.attributes.contains(where: { $0.name == "MainActor" })
+        }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "ViewRobots must be @MainActor for ViewInspector thread safety:\n\(violators.map { $0.name }.joined(separator: "\n"))"
+        )
+    }
+
+    func testViewTestSuitesAreMainActor() {
+        let viewTests = testScope.structs()
+            .withNameEndingWith("ViewTest")
+
+        XCTAssertTrue(viewTests.isNotEmpty, "Expected to find ViewTest structs")
+
+        let violators = viewTests.filter { strct in
+            !strct.attributes.contains(where: { $0.name == "MainActor" })
+        }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "ViewTest suites must be @MainActor for ViewInspector thread safety:\n\(violators.map { $0.name }.joined(separator: "\n"))"
+        )
+    }
+
+    // MARK: - ViewInspector
+
+    func testViewRobotsImportViewInspector() {
+        let viewRobotSources = testScope.sources()
+            .filter { source in
+                source.classes().contains(where: { $0.name.hasSuffix("ViewRobot") })
+            }
+
+        let violators = viewRobotSources.filter { !$0.source.contains("import ViewInspector") }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "ViewRobot files must import ViewInspector for real view hierarchy assertions:\n\(violators.map { $0.fileName ?? "unknown" }.joined(separator: "\n"))"
+        )
+    }
+
+    // MARK: - Landscape Testing
+
+    func testViewRobotsHaveCreateLandscapeView() {
+        let viewRobotSources = testScope.sources()
+            .filter { source in
+                source.classes().contains(where: { $0.name.hasSuffix("ViewRobot") })
+            }
+
+        let violators = viewRobotSources.filter { !$0.source.contains("createLandscapeView") }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "ViewRobots must have a createLandscapeView() method for landscape testing:\n\(violators.map { $0.fileName ?? "unknown" }.joined(separator: "\n"))"
+        )
+    }
+
+    func testViewRobotsHaveAssertLandscapeScreen() {
+        let viewRobotSources = testScope.sources()
+            .filter { source in
+                source.classes().contains(where: { $0.name.hasSuffix("ViewRobot") })
+            }
+
+        let violators = viewRobotSources.filter { !$0.source.contains("assertLandscapeScreen") }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "ViewRobots must have an assertLandscapeScreen() method for landscape testing:\n\(violators.map { $0.fileName ?? "unknown" }.joined(separator: "\n"))"
+        )
+    }
+
+    func testViewTestsHaveRendersLandscapeLayout() {
+        let viewTestSources = testScope.sources()
+            .filter { source in
+                source.structs().contains(where: { $0.name.hasSuffix("ViewTest") })
+            }
+
+        let violators = viewTestSources.filter { !$0.source.contains("rendersLandscapeLayout") }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "ViewTests must have a rendersLandscapeLayout test for landscape coverage:\n\(violators.map { $0.fileName ?? "unknown" }.joined(separator: "\n"))"
+        )
+    }
+
     // MARK: - Hygiene
 
     func testTestCodeDoesNotContainPrintStatements() {

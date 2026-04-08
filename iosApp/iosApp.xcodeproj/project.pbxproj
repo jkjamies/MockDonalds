@@ -16,6 +16,7 @@
 		2A1B6A902B0A00010012345D /* CircuitContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B6A8F2B0A00010012345D /* CircuitContent.swift */; };
 		2A1B6A922B0A00010012345E /* CircuitStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B6A912B0A00010012345E /* CircuitStack.swift */; };
 		2AD11A235A7A21EA589D8377 /* ScanStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47030C030A9A404F3DB59815 /* ScanStateRobot.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F4 /* ViewInspector in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6A7B8C9D0E1F3 /* ViewInspector */; };
 		2D446A462F834E110014E455 /* KMPNativeCoroutinesAsync in Frameworks */ = {isa = PBXBuildFile; productRef = 2D446A452F834E110014E455 /* KMPNativeCoroutinesAsync */; };
 		2D446A482F834E110014E455 /* KMPNativeCoroutinesCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2D446A472F834E110014E455 /* KMPNativeCoroutinesCore */; };
 		2DAB47252F82D91200717705 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DAB47242F82D91200717705 /* Assets.xcassets */; };
@@ -23,6 +24,7 @@
 		324D3095CE6871F4F2D39FBD /* OrderViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2FECF2564C8AD2C98E0191 /* OrderViewRobot.swift */; };
 		39A279A56CC242CC2400B2EC /* ScanViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D308AE269880FF05B2F95A6A /* ScanViewTest.swift */; };
 		3A1C7B012C0A000100100001 /* Circuit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B002C0A000100100001 /* Circuit.swift */; };
+		B1A2C3D4E5F6A7B8C9D0E1F6 /* AdaptiveLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F6A7B8C9D0E1F5 /* AdaptiveLayout.swift */; };
 		3A1C7B032C0A000100100002 /* MockDonaldsTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B022C0A000100100002 /* MockDonaldsTheme.swift */; };
 		3A1C7B052C0A000100100003 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B042C0A000100100003 /* HomeView.swift */; };
 		3A1C7B072C0A000100100004 /* OrderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B062C0A000100100004 /* OrderView.swift */; };
@@ -67,6 +69,7 @@
 		2DAB47242F82D91200717705 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2F5BACDF6DC1E6C3703B84D2 /* RewardsStateRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RewardsStateRobot.swift; sourceTree = "<group>"; };
 		3A1C7B002C0A000100100001 /* Circuit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Circuit.swift; sourceTree = "<group>"; };
+		B1A2C3D4E5F6A7B8C9D0E1F5 /* AdaptiveLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveLayout.swift; sourceTree = "<group>"; };
 		3A1C7B022C0A000100100002 /* MockDonaldsTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDonaldsTheme.swift; sourceTree = "<group>"; };
 		3A1C7B042C0A000100100003 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		3A1C7B062C0A000100100004 /* OrderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderView.swift; sourceTree = "<group>"; };
@@ -112,6 +115,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				313B2CEE83289F7C2A4C31FF /* Foundation.framework in Frameworks */,
+				A1B2C3D4E5F6A7B8C9D0E1F4 /* ViewInspector in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,6 +204,7 @@
 		3A1C7B112C0A000100100011 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
+				B1A2C3D4E5F6A7B8C9D0E1F5 /* AdaptiveLayout.swift */,
 				3A1C7B022C0A000100100002 /* MockDonaldsTheme.swift */,
 			);
 			path = Theme;
@@ -361,6 +366,9 @@
 				77F177CE42B819A039934F2F /* PBXTargetDependency */,
 			);
 			name = iosAppTests;
+			packageProductDependencies = (
+				A1B2C3D4E5F6A7B8C9D0E1F3 /* ViewInspector */,
+			);
 			productName = iosAppTests;
 			productReference = CAEADA74764137820F0606D3 /* iosAppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -391,6 +399,7 @@
 			mainGroup = 2A1B6A772B0A000100123461;
 			packageReferences = (
 				2D446A442F834E110014E455 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* XCRemoteSwiftPackageReference "ViewInspector" */,
 			);
 			productRefGroup = 2A1B6A812B0A000100123463 /* Products */;
 			projectDirPath = "";
@@ -452,6 +461,7 @@
 				2A1B6A8E2B0A00010012345C /* CircuitView.swift in Sources */,
 				2A1B6A902B0A00010012345D /* CircuitContent.swift in Sources */,
 				2A1B6A922B0A00010012345E /* CircuitStack.swift in Sources */,
+				B1A2C3D4E5F6A7B8C9D0E1F6 /* AdaptiveLayout.swift in Sources */,
 				3A1C7B032C0A000100100002 /* MockDonaldsTheme.swift in Sources */,
 				3A1C7B052C0A000100100003 /* HomeView.swift in Sources */,
 				3A1C7B072C0A000100100004 /* OrderView.swift in Sources */,
@@ -786,6 +796,14 @@
 				version = "1.0.2-spm-async";
 			};
 		};
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* XCRemoteSwiftPackageReference "ViewInspector" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nalexn/ViewInspector.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.10.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -798,6 +816,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2D446A442F834E110014E455 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
 			productName = KMPNativeCoroutinesCore;
+		};
+		A1B2C3D4E5F6A7B8C9D0E1F3 /* ViewInspector */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1B2C3D4E5F6A7B8C9D0E1F2 /* XCRemoteSwiftPackageReference "ViewInspector" */;
+			productName = ViewInspector;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

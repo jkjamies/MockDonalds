@@ -30,6 +30,12 @@ class MoreUiTest {
     }
 
     @Test
+    fun rendersLandscapeLayout() {
+        robot.setLandscapeContent()
+        robot.assertLandscapeScreen()
+    }
+
+    @Test
     fun profileTapEmitsEvent() {
         robot.setDefaultContent()
         robot.tapProfile()

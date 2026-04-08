@@ -1,11 +1,14 @@
 import SwiftUI
 import Testing
+import ViewInspector
 import ComposeApp
 @testable import iosApp
 
+@MainActor
 final class MoreViewRobot {
 
     private let stateRobot = MoreStateRobot()
+    private let tags = MoreTestTags.shared
 
     // MARK: - State + View Creation
 
@@ -21,21 +24,49 @@ final class MoreViewRobot {
         MoreView(state: stateRobot.stateWithEmptyMenu())
     }
 
+    func createLandscapeView() -> some View {
+        createDefaultView()
+            .environment(\.verticalSizeClass, .compact)
+    }
+
     // MARK: - Screen Assertions
 
-    func assertDefaultViewCreated() {
+    func assertDefaultScreen() throws {
         let view = createDefaultView()
-        #expect(view.body != nil)
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.PROFILE_SECTION)
+        try body.find(viewWithAccessibilityIdentifier: tags.MENU_LIST)
+        try body.find(viewWithAccessibilityIdentifier: "\(tags.MENU_ITEM)-1")
+        try body.find(viewWithAccessibilityIdentifier: "\(tags.MENU_ITEM)-2")
+        try body.find(viewWithAccessibilityIdentifier: tags.JOIN_TEAM_BANNER)
     }
 
-    func assertViewWithNoProfileCreated() {
+    func assertScreenWithNoProfile() throws {
         let view = createViewWithNoProfile()
-        #expect(view.body != nil)
+        let body = try view.inspect()
+        #expect(throws: Error.self) {
+            try body.find(viewWithAccessibilityIdentifier: self.tags.PROFILE_SECTION)
+        }
+        try body.find(viewWithAccessibilityIdentifier: tags.MENU_LIST)
+        try body.find(viewWithAccessibilityIdentifier: tags.JOIN_TEAM_BANNER)
     }
 
-    func assertViewWithEmptyMenuCreated() {
+    func assertScreenWithEmptyMenu() throws {
         let view = createViewWithEmptyMenu()
-        #expect(view.body != nil)
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.PROFILE_SECTION)
+        #expect(throws: Error.self) {
+            try body.find(viewWithAccessibilityIdentifier: self.tags.MENU_LIST)
+        }
+        try body.find(viewWithAccessibilityIdentifier: tags.JOIN_TEAM_BANNER)
+    }
+
+    func assertLandscapeScreen() throws {
+        let view = createLandscapeView()
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.PROFILE_SECTION)
+        try body.find(viewWithAccessibilityIdentifier: tags.MENU_LIST)
+        try body.find(viewWithAccessibilityIdentifier: tags.JOIN_TEAM_BANNER)
     }
 
     // MARK: - Event Verification

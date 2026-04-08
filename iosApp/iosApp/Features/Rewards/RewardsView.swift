@@ -6,16 +6,28 @@ private let tags = RewardsTestTags.shared
 struct RewardsView: View {
     let state: RewardsUiState
     @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    private var isLandscape: Bool { verticalSizeClass == .compact }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: MockDimens.spacingXxxl) {
-                pointsHeroSection
-                vaultSpecialsSection
+                if isLandscape {
+                    // Two-column: points hero left (~40%), vault specials right (~60%)
+                    HStack(alignment: .top, spacing: MockDimens.spacingXxl) {
+                        pointsHeroSection
+                            .frame(maxWidth: .infinity)
+                        vaultSpecialsSection
+                            .frame(maxWidth: .infinity)
+                    }
+                } else {
+                    pointsHeroSection
+                    vaultSpecialsSection
+                }
                 earningHistorySection
             }
             .padding(.horizontal, MockDimens.spacingXl)
-            .padding(.bottom, MockDimens.bottomBarPadding)
+            .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: isLandscape))
         }
         .background(colors.background)
     }

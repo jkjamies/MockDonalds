@@ -1,11 +1,17 @@
 package com.mockdonalds.app.features.home.presentation
 
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
+import com.mockdonalds.app.core.theme.LocalWindowSizeClass
 import com.mockdonalds.app.core.theme.MockDonaldsTheme
 import com.mockdonalds.app.features.home.api.ui.HomeTestTags
 
@@ -13,21 +19,34 @@ class HomeUiRobot(private val rule: ComposeContentTestRule) {
 
     private val stateRobot = HomeStateRobot()
 
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+    private fun setContentWith(state: HomeUiState, landscape: Boolean = false) {
+        val size = if (landscape) DpSize(800.dp, 400.dp) else DpSize(400.dp, 800.dp)
+        rule.setContent {
+            CompositionLocalProvider(
+                LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(size),
+            ) {
+                MockDonaldsTheme { HomeUi(state = state) }
+            }
+        }
+    }
+
     // --- State + Content ---
 
     fun setDefaultContent() {
-        val state = stateRobot.defaultState()
-        rule.setContent { MockDonaldsTheme { HomeUi(state = state) } }
+        setContentWith(stateRobot.defaultState())
+    }
+
+    fun setLandscapeContent() {
+        setContentWith(stateRobot.defaultState(), landscape = true)
     }
 
     fun setContentWithNoPromotion() {
-        val state = stateRobot.stateWithNoPromotion()
-        rule.setContent { MockDonaldsTheme { HomeUi(state = state) } }
+        setContentWith(stateRobot.stateWithNoPromotion())
     }
 
     fun setContentWithEmptyCravings() {
-        val state = stateRobot.stateWithEmptyCravings()
-        rule.setContent { MockDonaldsTheme { HomeUi(state = state) } }
+        setContentWith(stateRobot.stateWithEmptyCravings())
     }
 
     // --- Screen Assertions ---
@@ -53,6 +72,13 @@ class HomeUiRobot(private val rule: ComposeContentTestRule) {
         assertUserNameDisplayed("TestUser")
         assertHeroBannerDisplayed()
         assertRecentCravingsNotDisplayed()
+        assertExploreSectionDisplayed()
+    }
+
+    fun assertLandscapeScreen() {
+        assertUserNameDisplayed("TestUser")
+        assertHeroBannerDisplayed()
+        assertRecentCravingsDisplayed()
         assertExploreSectionDisplayed()
     }
 

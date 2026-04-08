@@ -1,11 +1,14 @@
 import SwiftUI
 import Testing
+import ViewInspector
 import ComposeApp
 @testable import iosApp
 
+@MainActor
 final class RewardsViewRobot {
 
     private let stateRobot = RewardsStateRobot()
+    private let tags = RewardsTestTags.shared
 
     // MARK: - State + View Creation
 
@@ -25,26 +28,58 @@ final class RewardsViewRobot {
         RewardsView(state: stateRobot.stateWithEmptyHistory())
     }
 
+    func createLandscapeView() -> some View {
+        createDefaultView()
+            .environment(\.verticalSizeClass, .compact)
+    }
+
     // MARK: - Screen Assertions
 
-    func assertDefaultViewCreated() {
+    func assertDefaultScreen() throws {
         let view = createDefaultView()
-        #expect(view.body != nil)
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.POINTS_SECTION)
+        try body.find(viewWithAccessibilityIdentifier: tags.VAULT_SPECIALS_SECTION)
+        try body.find(viewWithAccessibilityIdentifier: "\(tags.FEATURED_VAULT_CARD)-1")
+        try body.find(viewWithAccessibilityIdentifier: tags.HISTORY_SECTION)
     }
 
-    func assertViewWithNoProgressCreated() {
+    func assertLandscapeScreen() throws {
+        let view = createLandscapeView()
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.POINTS_SECTION)
+        try body.find(viewWithAccessibilityIdentifier: tags.VAULT_SPECIALS_SECTION)
+        try body.find(viewWithAccessibilityIdentifier: tags.HISTORY_SECTION)
+    }
+
+    func assertScreenWithNoProgress() throws {
         let view = createViewWithNoProgress()
-        #expect(view.body != nil)
+        let body = try view.inspect()
+        #expect(throws: Error.self) {
+            try body.find(viewWithAccessibilityIdentifier: self.tags.POINTS_SECTION)
+        }
+        try body.find(viewWithAccessibilityIdentifier: tags.VAULT_SPECIALS_SECTION)
+        try body.find(viewWithAccessibilityIdentifier: tags.HISTORY_SECTION)
     }
 
-    func assertViewWithEmptyVaultCreated() {
+    func assertScreenWithEmptyVault() throws {
         let view = createViewWithEmptyVault()
-        #expect(view.body != nil)
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.POINTS_SECTION)
+        #expect(throws: Error.self) {
+            try body.find(viewWithAccessibilityIdentifier: self.tags.VAULT_SPECIALS_SECTION)
+        }
+        try body.find(viewWithAccessibilityIdentifier: tags.HISTORY_SECTION)
     }
 
-    func assertViewWithEmptyHistoryCreated() {
+    func assertScreenWithEmptyHistory() throws {
         let view = createViewWithEmptyHistory()
-        #expect(view.body != nil)
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.POINTS_SECTION)
+        try body.find(viewWithAccessibilityIdentifier: tags.VAULT_SPECIALS_SECTION)
+        #expect(throws: Error.self) {
+            try body.find(viewWithAccessibilityIdentifier: self.tags.HISTORY_SECTION)
+        }
     }
 
     // MARK: - Event Verification

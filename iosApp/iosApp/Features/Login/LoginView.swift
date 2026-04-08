@@ -6,15 +6,33 @@ private let tags = LoginTestTags.shared
 struct LoginView: View {
     let state: LoginUiState
     @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    private var isLandscape: Bool { verticalSizeClass == .compact }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
                 dragHandle
-                brandingSection
-                loginForm
-                orDivider
-                socialButtons
+
+                if isLandscape {
+                    // Two-column: branding left, form + social right
+                    HStack(alignment: .center, spacing: MockDimens.spacingXxl) {
+                        brandingSection
+                            .frame(maxWidth: .infinity)
+                        VStack(spacing: MockDimens.spacingXl) {
+                            loginForm
+                            orDivider
+                            socialButtons
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                } else {
+                    brandingSection
+                    loginForm
+                    orDivider
+                    socialButtons
+                }
+
                 Spacer().frame(height: MockDimens.spacingXxl)
             }
             .padding(.horizontal, MockDimens.spacingXxl)

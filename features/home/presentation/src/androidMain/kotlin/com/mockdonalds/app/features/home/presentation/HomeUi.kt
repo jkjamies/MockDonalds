@@ -38,6 +38,9 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.core.theme.MockDimens
 import com.mockdonalds.app.core.theme.MockDonaldsTheme
+import com.mockdonalds.app.core.theme.adaptiveBottomBarPadding
+import com.mockdonalds.app.core.theme.adaptiveHeroHeight
+import com.mockdonalds.app.core.theme.isCompactHeight
 import com.mockdonalds.app.features.home.api.domain.Craving
 import com.mockdonalds.app.features.home.api.navigation.HomeScreen
 import com.mockdonalds.app.features.home.api.ui.HomeTestTags
@@ -50,13 +53,14 @@ import dev.zacsweers.metro.Inject
 @Composable
 fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
     val scrollState = rememberScrollState()
+    val landscape = isCompactHeight()
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
-            .padding(bottom = MockDimens.BottomBarPadding)
+            .padding(bottom = adaptiveBottomBarPadding())
             .statusBarsPadding(),
         verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXxxl),
     ) {
@@ -81,7 +85,7 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(MockDimens.HeroHeight)
+                    .height(adaptiveHeroHeight())
                     .testTag(HomeTestTags.HERO_BANNER),
             ) {
                 AsyncImage(
@@ -230,8 +234,9 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                     color = MaterialTheme.colorScheme.onSurface,
                 )
 
-                // First two items as side-by-side cards
-                val gridItems = state.exploreItems.take(2)
+                // Side-by-side cards — 3 in landscape, 2 in portrait
+                val gridCount = if (landscape) 3 else 2
+                val gridItems = state.exploreItems.take(gridCount)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
@@ -274,7 +279,7 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                 }
 
                 // Remaining items as full-width rows
-                state.exploreItems.drop(2).forEach { item ->
+                state.exploreItems.drop(gridCount).forEach { item ->
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()

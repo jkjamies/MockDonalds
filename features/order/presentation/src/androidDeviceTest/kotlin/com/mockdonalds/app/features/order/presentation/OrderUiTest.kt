@@ -18,6 +18,12 @@ class OrderUiTest {
     }
 
     @Test
+    fun rendersLandscapeLayout() {
+        robot.setLandscapeContent()
+        robot.assertLandscapeScreen()
+    }
+
+    @Test
     fun rendersWithNoCart() {
         robot.setContentWithNoCart()
         robot.assertScreenWithNoCart()

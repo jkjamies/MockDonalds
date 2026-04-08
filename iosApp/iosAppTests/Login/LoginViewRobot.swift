@@ -1,11 +1,14 @@
 import SwiftUI
 import Testing
+import ViewInspector
 import ComposeApp
 @testable import iosApp
 
+@MainActor
 final class LoginViewRobot {
 
     private let stateRobot = LoginStateRobot()
+    private let tags = LoginTestTags.shared
 
     // MARK: - State + View Creation
 
@@ -21,16 +24,37 @@ final class LoginViewRobot {
         )
     }
 
-    // MARK: - Screen Assertions
-
-    func assertDefaultViewCreated() {
-        let view = createDefaultView()
-        #expect(view.body != nil)
+    func createLandscapeView() -> some View {
+        createDefaultView()
+            .environment(\.verticalSizeClass, .compact)
     }
 
-    func assertViewWithEmailCreated() {
+    // MARK: - Screen Assertions
+
+    func assertDefaultScreen() throws {
+        let view = createDefaultView()
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.BRANDING)
+        try body.find(viewWithAccessibilityIdentifier: tags.EMAIL_INPUT)
+        try body.find(viewWithAccessibilityIdentifier: tags.SIGN_IN_BUTTON)
+        try body.find(viewWithAccessibilityIdentifier: tags.GOOGLE_BUTTON)
+    }
+
+    func assertLandscapeScreen() throws {
+        let view = createLandscapeView()
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.BRANDING)
+        try body.find(viewWithAccessibilityIdentifier: tags.EMAIL_INPUT)
+        try body.find(viewWithAccessibilityIdentifier: tags.SIGN_IN_BUTTON)
+        try body.find(viewWithAccessibilityIdentifier: tags.GOOGLE_BUTTON)
+    }
+
+    func assertViewWithEmail() throws {
         let view = createViewWithEmail("test@example.com")
-        #expect(view.body != nil)
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.BRANDING)
+        try body.find(viewWithAccessibilityIdentifier: tags.EMAIL_INPUT)
+        try body.find(viewWithAccessibilityIdentifier: tags.SIGN_IN_BUTTON)
     }
 
     // MARK: - Event Verification

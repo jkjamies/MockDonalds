@@ -2,26 +2,30 @@ import Testing
 import ComposeApp
 @testable import iosApp
 
-@Suite struct RewardsViewTest {
+@Suite @MainActor struct RewardsViewTest {
 
     private let robot = RewardsViewRobot()
 
     // MARK: - Rendering
 
-    @Test func rendersDefaultState() {
-        robot.assertDefaultViewCreated()
+    @Test func rendersDefaultState() throws {
+        try robot.assertDefaultScreen()
     }
 
-    @Test func rendersWithNoProgress() {
-        robot.assertViewWithNoProgressCreated()
+    @Test func rendersLandscapeLayout() throws {
+        try robot.assertLandscapeScreen()
     }
 
-    @Test func rendersWithEmptyVault() {
-        robot.assertViewWithEmptyVaultCreated()
+    @Test func rendersWithNoProgress() throws {
+        try robot.assertScreenWithNoProgress()
     }
 
-    @Test func rendersWithEmptyHistory() {
-        robot.assertViewWithEmptyHistoryCreated()
+    @Test func rendersWithEmptyVault() throws {
+        try robot.assertScreenWithEmptyVault()
+    }
+
+    @Test func rendersWithEmptyHistory() throws {
+        try robot.assertScreenWithEmptyHistory()
     }
 
     // MARK: - Events

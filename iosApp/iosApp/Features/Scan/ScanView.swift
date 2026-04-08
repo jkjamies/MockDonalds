@@ -7,17 +7,35 @@ struct ScanView: View {
     let state: ScanUiState
     @State private var gradientAngle: Double = 0
     @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    private var isLandscape: Bool { verticalSizeClass == .compact }
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 40) {
-                memberCard
-                rewardsProgressSection
-                actionButtons
-                proTipSection
+            if isLandscape {
+                // Two-column: QR card left, supplementary right
+                HStack(alignment: .top, spacing: MockDimens.spacingXl) {
+                    memberCard
+                        .frame(maxWidth: .infinity)
+                    VStack(spacing: MockDimens.spacingXl) {
+                        rewardsProgressSection
+                        actionButtons
+                        proTipSection
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(.horizontal, MockDimens.spacingXl)
+                .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: true))
+            } else {
+                VStack(spacing: 40) {
+                    memberCard
+                    rewardsProgressSection
+                    actionButtons
+                    proTipSection
+                }
+                .padding(.horizontal, MockDimens.spacingXl)
+                .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: false))
             }
-            .padding(.horizontal, MockDimens.spacingXl)
-            .padding(.bottom, MockDimens.bottomBarPadding)
         }
         .background(colors.background)
     }

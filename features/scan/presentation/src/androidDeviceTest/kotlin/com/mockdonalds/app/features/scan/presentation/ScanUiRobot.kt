@@ -1,10 +1,16 @@
 package com.mockdonalds.app.features.scan.presentation
 
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
+import com.mockdonalds.app.core.theme.LocalWindowSizeClass
 import com.mockdonalds.app.core.theme.MockDonaldsTheme
 import com.mockdonalds.app.features.scan.api.ui.ScanTestTags
 
@@ -12,21 +18,34 @@ class ScanUiRobot(private val rule: ComposeContentTestRule) {
 
     private val stateRobot = ScanStateRobot()
 
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+    private fun setContentWith(state: ScanUiState, landscape: Boolean = false) {
+        val size = if (landscape) DpSize(800.dp, 400.dp) else DpSize(400.dp, 800.dp)
+        rule.setContent {
+            CompositionLocalProvider(
+                LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(size),
+            ) {
+                MockDonaldsTheme { ScanUi(state = state) }
+            }
+        }
+    }
+
     // --- State + Content ---
 
     fun setDefaultContent() {
-        val state = stateRobot.defaultState()
-        rule.setContent { MockDonaldsTheme { ScanUi(state = state) } }
+        setContentWith(stateRobot.defaultState())
+    }
+
+    fun setLandscapeContent() {
+        setContentWith(stateRobot.defaultState(), landscape = true)
     }
 
     fun setContentWithNoMember() {
-        val state = stateRobot.stateWithNoMember()
-        rule.setContent { MockDonaldsTheme { ScanUi(state = state) } }
+        setContentWith(stateRobot.stateWithNoMember())
     }
 
     fun setContentWithNoProgress() {
-        val state = stateRobot.stateWithNoProgress()
-        rule.setContent { MockDonaldsTheme { ScanUi(state = state) } }
+        setContentWith(stateRobot.stateWithNoProgress())
     }
 
     // --- Screen Assertions ---
@@ -34,6 +53,13 @@ class ScanUiRobot(private val rule: ComposeContentTestRule) {
     fun assertDefaultScreen() {
         assertMemberCardDisplayed()
         assertRewardsProgressDisplayed()
+        assertPayNowButtonDisplayed()
+        assertViewOffersButtonDisplayed()
+        assertProTipDisplayed()
+    }
+
+    fun assertLandscapeScreen() {
+        assertMemberCardDisplayed()
         assertPayNowButtonDisplayed()
         assertViewOffersButtonDisplayed()
         assertProTipDisplayed()

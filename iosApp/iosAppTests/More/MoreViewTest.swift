@@ -2,22 +2,26 @@ import Testing
 import ComposeApp
 @testable import iosApp
 
-@Suite struct MoreViewTest {
+@Suite @MainActor struct MoreViewTest {
 
     private let robot = MoreViewRobot()
 
     // MARK: - Rendering
 
-    @Test func rendersDefaultState() {
-        robot.assertDefaultViewCreated()
+    @Test func rendersDefaultState() throws {
+        try robot.assertDefaultScreen()
     }
 
-    @Test func rendersWithNoProfile() {
-        robot.assertViewWithNoProfileCreated()
+    @Test func rendersWithNoProfile() throws {
+        try robot.assertScreenWithNoProfile()
     }
 
-    @Test func rendersWithEmptyMenu() {
-        robot.assertViewWithEmptyMenuCreated()
+    @Test func rendersWithEmptyMenu() throws {
+        try robot.assertScreenWithEmptyMenu()
+    }
+
+    @Test func rendersLandscapeLayout() throws {
+        try robot.assertLandscapeScreen()
     }
 
     // MARK: - Events

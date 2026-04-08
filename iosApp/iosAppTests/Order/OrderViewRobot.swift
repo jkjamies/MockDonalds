@@ -1,11 +1,14 @@
 import SwiftUI
 import Testing
+import ViewInspector
 import ComposeApp
 @testable import iosApp
 
+@MainActor
 final class OrderViewRobot {
 
     private let stateRobot = OrderStateRobot()
+    private let tags = OrderTestTags.shared
 
     // MARK: - State + View Creation
 
@@ -17,16 +20,40 @@ final class OrderViewRobot {
         OrderView(state: stateRobot.stateWithNoCart())
     }
 
-    // MARK: - Screen Assertions
-
-    func assertDefaultViewCreated() {
-        let view = createDefaultView()
-        #expect(view.body != nil)
+    func createLandscapeView() -> some View {
+        createDefaultView()
+            .environment(\.verticalSizeClass, .compact)
     }
 
-    func assertViewWithNoCartCreated() {
+    // MARK: - Screen Assertions
+
+    func assertDefaultScreen() throws {
+        let view = createDefaultView()
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: "\(tags.CATEGORY_CHIP)-1")
+        try body.find(viewWithAccessibilityIdentifier: "\(tags.CATEGORY_CHIP)-2")
+        try body.find(viewWithAccessibilityIdentifier: tags.FEATURED_ITEMS_SECTION)
+        try body.find(viewWithAccessibilityIdentifier: "\(tags.FEATURED_ITEM_CARD)-1")
+        try body.find(viewWithAccessibilityIdentifier: tags.CART_BAR)
+    }
+
+    func assertLandscapeScreen() throws {
+        let view = createLandscapeView()
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: "\(tags.CATEGORY_CHIP)-1")
+        try body.find(viewWithAccessibilityIdentifier: tags.FEATURED_ITEMS_SECTION)
+        try body.find(viewWithAccessibilityIdentifier: "\(tags.FEATURED_ITEM_CARD)-1")
+        try body.find(viewWithAccessibilityIdentifier: tags.CART_BAR)
+    }
+
+    func assertScreenWithNoCart() throws {
         let view = createViewWithNoCart()
-        #expect(view.body != nil)
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: "\(tags.CATEGORY_CHIP)-1")
+        try body.find(viewWithAccessibilityIdentifier: tags.FEATURED_ITEMS_SECTION)
+        #expect(throws: Error.self) {
+            try body.find(viewWithAccessibilityIdentifier: self.tags.CART_BAR)
+        }
     }
 
     // MARK: - Event Verification

@@ -1,5 +1,5 @@
 {
-  "originHash" : "609133b310e9c4579a1d75e9696445b51bd516493282d44ac82bc290103e37c2",
+  "originHash" : "179a21be103b72fcbf55c0514fd68c8470f5357df592bd9d30ad99eb1dea4f49",
   "pins" : [
     {
       "identity" : "kmp-nativecoroutines",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "407c5ee8af48675ef0da4a64a1352400e985e5e4",
         "version" : "1.0.2-spm-async"
+      }
+    },
+    {
+      "identity" : "viewinspector",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nalexn/ViewInspector.git",
+      "state" : {
+        "revision" : "e9a06346499a3a889165647e3f23f8a7b2609a1c",
+        "version" : "0.10.3"
       }
     }
   ],

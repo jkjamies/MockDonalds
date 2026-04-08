@@ -2,22 +2,26 @@ import Testing
 import ComposeApp
 @testable import iosApp
 
-@Suite struct HomeViewTest {
+@Suite @MainActor struct HomeViewTest {
 
     private let robot = HomeViewRobot()
 
     // MARK: - Rendering
 
-    @Test func rendersDefaultState() {
-        robot.assertDefaultViewCreated()
+    @Test func rendersDefaultState() throws {
+        try robot.assertDefaultScreen()
     }
 
-    @Test func rendersWithNoPromotion() {
-        robot.assertViewWithNoPromotionCreated()
+    @Test func rendersLandscapeLayout() throws {
+        try robot.assertLandscapeScreen()
     }
 
-    @Test func rendersWithEmptyCravings() {
-        robot.assertViewWithEmptyCravingsCreated()
+    @Test func rendersWithNoPromotion() throws {
+        try robot.assertScreenWithNoPromotion()
+    }
+
+    @Test func rendersWithEmptyCravings() throws {
+        try robot.assertScreenWithEmptyCravings()
     }
 
     // MARK: - Events

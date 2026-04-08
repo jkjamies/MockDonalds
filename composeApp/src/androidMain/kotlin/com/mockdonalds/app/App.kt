@@ -3,9 +3,12 @@ package com.mockdonalds.app
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.mockdonalds.app.core.theme.LocalWindowSizeClass
 import com.mockdonalds.app.core.theme.MockDonaldsTheme
 import com.mockdonalds.app.features.home.api.navigation.HomeScreen
 import com.mockdonalds.app.features.order.api.navigation.OrderScreen
@@ -20,9 +23,10 @@ import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import dev.zacsweers.metro.createGraph
 
 @Composable
-fun MockDonaldsApp() {
+fun MockDonaldsApp(windowSizeClass: WindowSizeClass) {
     val graph = createGraph<AppGraph>()
 
+    CompositionLocalProvider(LocalWindowSizeClass provides windowSizeClass) {
     MockDonaldsTheme {
         val backStack = rememberSaveableBackStack(root = HomeScreen)
         val navigator = rememberCircuitNavigator(
@@ -75,5 +79,6 @@ fun MockDonaldsApp() {
                 }
             }
         }
+    }
     }
 }

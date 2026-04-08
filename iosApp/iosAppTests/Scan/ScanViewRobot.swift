@@ -1,11 +1,14 @@
 import SwiftUI
 import Testing
+import ViewInspector
 import ComposeApp
 @testable import iosApp
 
+@MainActor
 final class ScanViewRobot {
 
     private let stateRobot = ScanStateRobot()
+    private let tags = ScanTestTags.shared
 
     // MARK: - State + View Creation
 
@@ -21,21 +24,52 @@ final class ScanViewRobot {
         ScanView(state: stateRobot.stateWithNoProgress())
     }
 
+    func createLandscapeView() -> some View {
+        createDefaultView()
+            .environment(\.verticalSizeClass, .compact)
+    }
+
     // MARK: - Screen Assertions
 
-    func assertDefaultViewCreated() {
+    func assertDefaultScreen() throws {
         let view = createDefaultView()
-        #expect(view.body != nil)
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.MEMBER_CARD)
+        try body.find(viewWithAccessibilityIdentifier: tags.REWARDS_PROGRESS)
+        try body.find(viewWithAccessibilityIdentifier: tags.PAY_NOW_BUTTON)
+        try body.find(viewWithAccessibilityIdentifier: tags.VIEW_OFFERS_BUTTON)
+        try body.find(viewWithAccessibilityIdentifier: tags.PRO_TIP)
     }
 
-    func assertViewWithNoMemberCreated() {
+    func assertLandscapeScreen() throws {
+        let view = createLandscapeView()
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.MEMBER_CARD)
+        try body.find(viewWithAccessibilityIdentifier: tags.PAY_NOW_BUTTON)
+        try body.find(viewWithAccessibilityIdentifier: tags.VIEW_OFFERS_BUTTON)
+        try body.find(viewWithAccessibilityIdentifier: tags.PRO_TIP)
+    }
+
+    func assertScreenWithNoMember() throws {
         let view = createViewWithNoMember()
-        #expect(view.body != nil)
+        let body = try view.inspect()
+        #expect(throws: Error.self) {
+            try body.find(viewWithAccessibilityIdentifier: self.tags.MEMBER_CARD)
+        }
+        try body.find(viewWithAccessibilityIdentifier: tags.PAY_NOW_BUTTON)
+        try body.find(viewWithAccessibilityIdentifier: tags.VIEW_OFFERS_BUTTON)
+        try body.find(viewWithAccessibilityIdentifier: tags.PRO_TIP)
     }
 
-    func assertViewWithNoProgressCreated() {
+    func assertScreenWithNoProgress() throws {
         let view = createViewWithNoProgress()
-        #expect(view.body != nil)
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.MEMBER_CARD)
+        #expect(throws: Error.self) {
+            try body.find(viewWithAccessibilityIdentifier: self.tags.REWARDS_PROGRESS)
+        }
+        try body.find(viewWithAccessibilityIdentifier: tags.PAY_NOW_BUTTON)
+        try body.find(viewWithAccessibilityIdentifier: tags.VIEW_OFFERS_BUTTON)
     }
 
     // MARK: - Event Verification

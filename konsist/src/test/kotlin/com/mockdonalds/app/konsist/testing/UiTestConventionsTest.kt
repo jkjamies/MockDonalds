@@ -186,6 +186,74 @@ class UiTestConventionsTest : BehaviorSpec({
         }
     }
 
+    Given("landscape testing") {
+        Then("every *UiRobot should have a setLandscapeContent method") {
+            val uiRobotFiles = Konsist.scopeFromProject()
+                .files
+                .filter { it.resideInPath("..androidDeviceTest..") }
+                .filter { it.name.endsWith("UiRobot.kt") }
+
+            val violators = uiRobotFiles.filter { file ->
+                !file.text.contains("setLandscapeContent")
+            }
+
+            assert(violators.isEmpty()) {
+                val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
+                "UiRobots must have a setLandscapeContent() method for landscape testing:\n$names"
+            }
+        }
+
+        Then("every *UiRobot should have an assertLandscapeScreen method") {
+            val uiRobotFiles = Konsist.scopeFromProject()
+                .files
+                .filter { it.resideInPath("..androidDeviceTest..") }
+                .filter { it.name.endsWith("UiRobot.kt") }
+
+            val violators = uiRobotFiles.filter { file ->
+                !file.text.contains("assertLandscapeScreen")
+            }
+
+            assert(violators.isEmpty()) {
+                val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
+                "UiRobots must have an assertLandscapeScreen() method for landscape testing:\n$names"
+            }
+        }
+
+        Then("every *UiTest should have a rendersLandscapeLayout test") {
+            val uiTestFiles = Konsist.scopeFromProject()
+                .files
+                .filter { it.resideInPath("..androidDeviceTest..") }
+                .filter { it.name.endsWith("UiTest.kt") }
+
+            val violators = uiTestFiles.filter { file ->
+                !file.text.contains("rendersLandscapeLayout")
+            }
+
+            assert(violators.isEmpty()) {
+                val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
+                "UiTests must have a rendersLandscapeLayout test for landscape coverage:\n$names"
+            }
+        }
+    }
+
+    Given("WindowSizeClass provision") {
+        Then("every *UiRobot should provide LocalWindowSizeClass") {
+            val uiRobotFiles = Konsist.scopeFromProject()
+                .files
+                .filter { it.resideInPath("..androidDeviceTest..") }
+                .filter { it.name.endsWith("UiRobot.kt") }
+
+            val violators = uiRobotFiles.filter { file ->
+                !file.text.contains("LocalWindowSizeClass")
+            }
+
+            assert(violators.isEmpty()) {
+                val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
+                "UiRobots must provide LocalWindowSizeClass via CompositionLocalProvider for landscape support:\n$names"
+            }
+        }
+    }
+
     Given("androidDeviceTest manifest") {
         Then("every presentation module with UI tests should have an AndroidManifest.xml declaring ComponentActivity") {
             val projectRoot = Konsist.scopeFromProject()

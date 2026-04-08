@@ -35,6 +35,8 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.core.theme.MockDimens
 import com.mockdonalds.app.core.theme.MockDonaldsTheme
+import com.mockdonalds.app.core.theme.adaptiveBottomBarPadding
+import com.mockdonalds.app.core.theme.isCompactHeight
 import com.mockdonalds.app.features.rewards.api.domain.HistoryEntry
 import com.mockdonalds.app.features.rewards.api.domain.VaultSpecial
 import com.mockdonalds.app.features.rewards.api.navigation.RewardsScreen
@@ -48,6 +50,7 @@ import dev.zacsweers.metro.Inject
 @Composable
 fun RewardsUi(state: RewardsUiState, modifier: Modifier = Modifier) {
     val scrollState = rememberScrollState()
+    val landscape = isCompactHeight()
 
     Column(
         modifier = modifier
@@ -55,160 +58,32 @@ fun RewardsUi(state: RewardsUiState, modifier: Modifier = Modifier) {
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
             .padding(horizontal = MockDimens.SpacingXl)
-            .padding(bottom = MockDimens.BottomBarPadding)
+            .padding(bottom = adaptiveBottomBarPadding())
             .statusBarsPadding(),
         verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXxxl),
     ) {
-        // Points Hero Section
-        state.progress?.let { progress ->
-            Box(modifier = Modifier.fillMaxWidth().testTag(RewardsTestTags.POINTS_SECTION)) {
-                Box(
-                    modifier = Modifier
-                        .size(256.dp)
-                        .offset(x = (-48).dp, y = (-48).dp)
-                        .background(
-                            brush = Brush.radialGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f),
-                                    Color.Transparent,
-                                ),
-                                radius = 256f,
-                            ),
-                        ),
-                )
-
-                Column {
-                    Text(
-                        text = "CURRENT BALANCE",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 2.sp,
-                        ),
-                        color = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.padding(bottom = MockDimens.SpacingSm),
-                    )
-
-                    Row(
-                        verticalAlignment = Alignment.Bottom,
-                        horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingSm),
-                    ) {
-                        Text(
-                            text = "%,d".format(progress.currentPoints),
-                            style = MaterialTheme.typography.displayLarge.copy(
-                                fontWeight = FontWeight.Black,
-                                fontSize = 64.sp,
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface,
-                            lineHeight = 64.sp,
-                        )
-                        Text(
-                            text = "PTS",
-                            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MockDonaldsTheme.extendedColors.secondaryLight,
-                        )
-                    }
-
-                    Column(
-                        modifier = Modifier.padding(top = MockDimens.SpacingXxl),
-                        verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.Bottom,
-                        ) {
-                            Text(
-                                text = "NEXT REWARD: ${progress.nextRewardName.uppercase()}",
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                            Text(
-                                text = "${progress.pointsToNextReward} PTS TO GO",
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.secondary,
-                            )
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(12.dp)
-                                .background(MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape)
-                                .clip(CircleShape),
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth(progress.progressFraction)
-                                    .fillMaxHeight()
-                                    .background(
-                                        brush = Brush.horizontalGradient(
-                                            colors = listOf(
-                                                MaterialTheme.colorScheme.primary,
-                                                MaterialTheme.colorScheme.secondary,
-                                            ),
-                                        ),
-                                    ),
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        // The Vault Specials
-        if (state.vaultSpecials.isNotEmpty()) {
-            Column(
-                modifier = Modifier.testTag(RewardsTestTags.VAULT_SPECIALS_SECTION),
-                verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXl),
+        if (landscape) {
+            // Two-column: points hero left (~40%), vault specials right (~60%)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingXxl),
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom,
+                Column(
+                    modifier = Modifier.weight(0.4f),
+                    verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXxl),
                 ) {
-                    Text(
-                        text = "The Vault Specials",
-                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Black),
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    Text(
-                        text = "VIEW ALL",
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.testTag(
-                            RewardsTestTags.VIEW_ALL,
-                        ).clickable { state.eventSink(RewardsEvent.ViewAllClicked) },
-                    )
+                    PointsHero(state = state)
                 }
-
-                // Featured vault special
-                state.vaultSpecials.firstOrNull { it.isFeatured }?.let { featured ->
-                    FeaturedVaultCard(
-                        special = featured,
-                        onClick = { state.eventSink(RewardsEvent.VaultSpecialClicked(featured.id)) },
-                        modifier = Modifier.testTag("${RewardsTestTags.FEATURED_VAULT_CARD}-${featured.id}"),
-                    )
-                }
-
-                // Secondary specials
-                val secondary = state.vaultSpecials.filter { !it.isFeatured }
-                if (secondary.isNotEmpty()) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
-                    ) {
-                        secondary.forEach { special ->
-                            VaultSpecialCard(
-                                special = special,
-                                onClick = { state.eventSink(RewardsEvent.VaultSpecialClicked(special.id)) },
-                                modifier = Modifier.weight(
-                                    1f,
-                                ).testTag("${RewardsTestTags.VAULT_SPECIAL_CARD}-${special.id}"),
-                            )
-                        }
-                    }
+                Column(
+                    modifier = Modifier.weight(0.6f),
+                    verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXl),
+                ) {
+                    VaultSpecials(state = state)
                 }
             }
+        } else {
+            PointsHero(state = state)
+            VaultSpecials(state = state)
         }
 
         // Earning History
@@ -233,6 +108,162 @@ fun RewardsUi(state: RewardsUiState, modifier: Modifier = Modifier) {
                             MaterialTheme.colorScheme.surfaceContainerLow
                         },
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PointsHero(state: RewardsUiState) {
+    state.progress?.let { progress ->
+        Box(modifier = Modifier.fillMaxWidth().testTag(RewardsTestTags.POINTS_SECTION)) {
+            Box(
+                modifier = Modifier
+                    .size(256.dp)
+                    .offset(x = (-48).dp, y = (-48).dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f),
+                                Color.Transparent,
+                            ),
+                            radius = 256f,
+                        ),
+                    ),
+            )
+
+            Column {
+                Text(
+                    text = "CURRENT BALANCE",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 2.sp,
+                    ),
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.padding(bottom = MockDimens.SpacingSm),
+                )
+
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingSm),
+                ) {
+                    Text(
+                        text = "%,d".format(progress.currentPoints),
+                        style = MaterialTheme.typography.displayLarge.copy(
+                            fontWeight = FontWeight.Black,
+                            fontSize = 64.sp,
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        lineHeight = 64.sp,
+                    )
+                    Text(
+                        text = "PTS",
+                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                        color = MockDonaldsTheme.extendedColors.secondaryLight,
+                    )
+                }
+
+                Column(
+                    modifier = Modifier.padding(top = MockDimens.SpacingXxl),
+                    verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Bottom,
+                    ) {
+                        Text(
+                            text = "NEXT REWARD: ${progress.nextRewardName.uppercase()}",
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                            text = "${progress.pointsToNextReward} PTS TO GO",
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.secondary,
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(12.dp)
+                            .background(MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape)
+                            .clip(CircleShape),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(progress.progressFraction)
+                                .fillMaxHeight()
+                                .background(
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(
+                                            MaterialTheme.colorScheme.primary,
+                                            MaterialTheme.colorScheme.secondary,
+                                        ),
+                                    ),
+                                ),
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun VaultSpecials(state: RewardsUiState) {
+    if (state.vaultSpecials.isNotEmpty()) {
+        Column(
+            modifier = Modifier.testTag(RewardsTestTags.VAULT_SPECIALS_SECTION),
+            verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXl),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom,
+            ) {
+                Text(
+                    text = "The Vault Specials",
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Black),
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = "VIEW ALL",
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.testTag(
+                        RewardsTestTags.VIEW_ALL,
+                    ).clickable { state.eventSink(RewardsEvent.ViewAllClicked) },
+                )
+            }
+
+            // Featured vault special
+            state.vaultSpecials.firstOrNull { it.isFeatured }?.let { featured ->
+                FeaturedVaultCard(
+                    special = featured,
+                    onClick = { state.eventSink(RewardsEvent.VaultSpecialClicked(featured.id)) },
+                    modifier = Modifier.testTag("${RewardsTestTags.FEATURED_VAULT_CARD}-${featured.id}"),
+                )
+            }
+
+            // Secondary specials
+            val secondary = state.vaultSpecials.filter { !it.isFeatured }
+            if (secondary.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
+                ) {
+                    secondary.forEach { special ->
+                        VaultSpecialCard(
+                            special = special,
+                            onClick = { state.eventSink(RewardsEvent.VaultSpecialClicked(special.id)) },
+                            modifier = Modifier.weight(
+                                1f,
+                            ).testTag("${RewardsTestTags.VAULT_SPECIAL_CARD}-${special.id}"),
+                        )
+                    }
                 }
             }
         }

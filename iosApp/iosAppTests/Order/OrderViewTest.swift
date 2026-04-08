@@ -2,18 +2,22 @@ import Testing
 import ComposeApp
 @testable import iosApp
 
-@Suite struct OrderViewTest {
+@Suite @MainActor struct OrderViewTest {
 
     private let robot = OrderViewRobot()
 
     // MARK: - Rendering
 
-    @Test func rendersDefaultState() {
-        robot.assertDefaultViewCreated()
+    @Test func rendersDefaultState() throws {
+        try robot.assertDefaultScreen()
     }
 
-    @Test func rendersWithNoCart() {
-        robot.assertViewWithNoCartCreated()
+    @Test func rendersLandscapeLayout() throws {
+        try robot.assertLandscapeScreen()
+    }
+
+    @Test func rendersWithNoCart() throws {
+        try robot.assertScreenWithNoCart()
     }
 
     // MARK: - Events

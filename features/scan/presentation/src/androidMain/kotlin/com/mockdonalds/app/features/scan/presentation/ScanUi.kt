@@ -44,6 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.core.theme.MockDimens
+import com.mockdonalds.app.core.theme.adaptiveBottomBarPadding
+import com.mockdonalds.app.core.theme.adaptiveQrCodeSize
+import com.mockdonalds.app.core.theme.isCompactHeight
 import com.mockdonalds.app.features.scan.api.navigation.ScanScreen
 import com.mockdonalds.app.features.scan.api.ui.ScanTestTags
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -55,6 +58,8 @@ import dev.zacsweers.metro.Inject
 @Composable
 fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
     val scrollState = rememberScrollState()
+    val landscape = isCompactHeight()
+    val qrSize = adaptiveQrCodeSize()
 
     Column(
         modifier = modifier
@@ -62,263 +67,296 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
             .padding(horizontal = MockDimens.SpacingXl)
-            .padding(bottom = MockDimens.BottomBarPadding)
+            .padding(bottom = adaptiveBottomBarPadding())
             .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(40.dp),
+        verticalArrangement = Arrangement.spacedBy(if (landscape) MockDimens.SpacingXl else 40.dp),
     ) {
-        // Main QR Code Card
-        state.memberInfo?.let { member ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(MockDimens.RadiusMd))
-                    .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                    .testTag(ScanTestTags.MEMBER_CARD),
+        if (landscape) {
+            // Two-column layout: QR card left, supplementary right
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingXl),
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(128.dp)
-                        .align(Alignment.TopEnd)
-                        .offset(x = MockDimens.SpacingXxxl, y = -MockDimens.SpacingXxxl)
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape)
-                        .blur(MockDimens.SpacingXxxl),
-                )
-                Box(
-                    modifier = Modifier
-                        .size(128.dp)
-                        .align(Alignment.BottomStart)
-                        .offset(x = -MockDimens.SpacingXxxl, y = MockDimens.SpacingXxxl)
-                        .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f), CircleShape)
-                        .blur(MockDimens.SpacingXxxl),
-                )
-
+                Box(modifier = Modifier.weight(1f)) {
+                    MemberCard(state = state, qrSize = qrSize)
+                }
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(MockDimens.SpacingXxl),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXl),
                 ) {
-                    Text(
-                        text = "MOCK REWARDS",
-                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(bottom = MockDimens.SpacingSm),
-                    )
-                    Text(
-                        text = "Scan at the counter to earn & redeem",
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = MockDimens.SpacingXxl),
-                    )
-
-                    val infiniteTransition = rememberInfiniteTransition()
-                    val angle by infiniteTransition.animateFloat(
-                        initialValue = 0f,
-                        targetValue = 360f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(3000, easing = LinearEasing),
-                            repeatMode = RepeatMode.Restart,
-                        ),
-                    )
-                    val primary = MaterialTheme.colorScheme.primary
-                    val secondary = MaterialTheme.colorScheme.secondary
-
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
-                            .size(256.dp)
-                            .drawWithContent {
-                                rotate(angle) {
-                                    drawCircle(
-                                        brush = Brush.sweepGradient(
-                                            0f to primary,
-                                            0.45f to secondary,
-                                            0.65f to secondary,
-                                            1f to primary,
-                                        ),
-                                        radius = size.width,
-                                        center = center,
-                                    )
-                                }
-                                drawContent()
-                            }
-                            .padding(MockDimens.SpacingXs),
-                    ) {
-                        AsyncImage(
-                            model = member.qrCodeUrl,
-                            contentDescription = "QR Code",
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(16.dp)),
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.padding(top = MockDimens.SpacingXxl),
-                        horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(text = "⭐", color = MaterialTheme.colorScheme.secondary)
-                        Text(
-                            text = member.memberStatus,
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
+                    RewardsProgress(state = state)
+                    ActionButtons(state = state)
+                    ProTip()
                 }
             }
+        } else {
+            MemberCard(state = state, qrSize = qrSize)
+            RewardsProgress(state = state)
+            ActionButtons(state = state)
+            ProTip()
         }
+    }
+}
 
-        // Rewards Progress
-        state.rewardsProgress?.let { progress ->
-            Column(
-                modifier = Modifier.fillMaxWidth().testTag(ScanTestTags.REWARDS_PROGRESS),
-                verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom,
-                ) {
-                    Text(
-                        text = "REWARDS PROGRESS",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp,
-                        ),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Row(
-                        verticalAlignment = Alignment.Bottom,
-                        horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingXs),
-                    ) {
-                        Text(
-                            text = "${progress.currentPoints}",
-                            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Black),
-                            color = MaterialTheme.colorScheme.secondary,
-                        )
-                        Text(
-                            text = "PTS",
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(8.dp)
-                        .background(MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape)
-                        .clip(CircleShape),
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(progress.progressFraction)
-                            .fillMaxHeight()
-                            .background(
-                                brush = Brush.horizontalGradient(
-                                    colors = listOf(
-                                        MaterialTheme.colorScheme.primary,
-                                        MaterialTheme.colorScheme.secondary,
-                                    ),
-                                ),
-                            ),
-                    )
-                }
-
-                Text(
-                    text = progress.message,
-                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                )
-            }
-        }
-
-        // Action Buttons
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
-        ) {
-            Button(
-                onClick = { state.eventSink(ScanEvent.PayNowClicked) },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                shape = RoundedCornerShape(MockDimens.RadiusMd),
-                contentPadding = PaddingValues(vertical = 20.dp),
-                modifier = Modifier.weight(1f).testTag(ScanTestTags.PAY_NOW_BUTTON),
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(text = "💳", color = MaterialTheme.colorScheme.secondary)
-                    Text(
-                        text = "Pay Now",
-                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
-            }
-
-            Button(
-                onClick = { state.eventSink(ScanEvent.ViewOffersClicked) },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                shape = RoundedCornerShape(MockDimens.RadiusMd),
-                contentPadding = PaddingValues(vertical = 20.dp),
-                modifier = Modifier.weight(1f).testTag(ScanTestTags.VIEW_OFFERS_BUTTON),
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(text = "🏷️", color = MaterialTheme.colorScheme.secondary)
-                    Text(
-                        text = "View Offers",
-                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
-            }
-        }
-
-        // Pro Tip
+@Composable
+private fun MemberCard(state: ScanUiState, qrSize: androidx.compose.ui.unit.Dp) {
+    state.memberInfo?.let { member ->
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(MockDimens.RadiusMd))
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                .testTag(ScanTestTags.PRO_TIP)
-                .padding(start = MockDimens.SpacingXs)
-                .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                .padding(20.dp),
+                .testTag(ScanTestTags.MEMBER_CARD),
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
-                verticalAlignment = Alignment.Top,
+            Box(
+                modifier = Modifier
+                    .size(128.dp)
+                    .align(Alignment.TopEnd)
+                    .offset(x = MockDimens.SpacingXxxl, y = -MockDimens.SpacingXxxl)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape)
+                    .blur(MockDimens.SpacingXxxl),
+            )
+            Box(
+                modifier = Modifier
+                    .size(128.dp)
+                    .align(Alignment.BottomStart)
+                    .offset(x = -MockDimens.SpacingXxxl, y = MockDimens.SpacingXxxl)
+                    .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f), CircleShape)
+                    .blur(MockDimens.SpacingXxxl),
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(MockDimens.SpacingXxl),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                Text(
+                    text = "MOCK REWARDS",
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(bottom = MockDimens.SpacingSm),
+                )
+                Text(
+                    text = "Scan at the counter to earn & redeem",
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = MockDimens.SpacingXxl),
+                )
+
+                val infiniteTransition = rememberInfiniteTransition()
+                val angle by infiniteTransition.animateFloat(
+                    initialValue = 0f,
+                    targetValue = 360f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(3000, easing = LinearEasing),
+                        repeatMode = RepeatMode.Restart,
+                    ),
+                )
+                val primary = MaterialTheme.colorScheme.primary
+                val secondary = MaterialTheme.colorScheme.secondary
+
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
-                        .background(MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape),
-                    contentAlignment = Alignment.Center,
+                        .clip(RoundedCornerShape(16.dp))
+                        .size(qrSize)
+                        .drawWithContent {
+                            rotate(angle) {
+                                drawCircle(
+                                    brush = Brush.sweepGradient(
+                                        0f to primary,
+                                        0.45f to secondary,
+                                        0.65f to secondary,
+                                        1f to primary,
+                                    ),
+                                    radius = size.width,
+                                    center = center,
+                                )
+                            }
+                            drawContent()
+                        }
+                        .padding(MockDimens.SpacingXs),
                 ) {
-                    Text(text = "ℹ️", color = MaterialTheme.colorScheme.secondary)
+                    AsyncImage(
+                        model = member.qrCodeUrl,
+                        contentDescription = "QR Code",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(16.dp)),
+                    )
                 }
-                Column {
+
+                Row(
+                    modifier = Modifier.padding(top = MockDimens.SpacingXxl),
+                    horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(text = "⭐", color = MaterialTheme.colorScheme.secondary)
                     Text(
-                        text = "Pro Tip",
-                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                        text = member.memberStatus,
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
                         color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(bottom = MockDimens.SpacingXs),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RewardsProgress(state: ScanUiState) {
+    state.rewardsProgress?.let { progress ->
+        Column(
+            modifier = Modifier.fillMaxWidth().testTag(ScanTestTags.REWARDS_PROGRESS),
+            verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom,
+            ) {
+                Text(
+                    text = "REWARDS PROGRESS",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp,
+                    ),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingXs),
+                ) {
+                    Text(
+                        text = "${progress.currentPoints}",
+                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Black),
+                        color = MaterialTheme.colorScheme.secondary,
                     )
                     Text(
-                        text = "Ensure your screen brightness is turned up " +
-                            "for the best scanning experience at our kiosks.",
-                        style = MaterialTheme.typography.labelMedium,
+                        text = "PTS",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .background(MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape)
+                    .clip(CircleShape),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(progress.progressFraction)
+                        .fillMaxHeight()
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.secondary,
+                                ),
+                            ),
+                        ),
+                )
+            }
+
+            Text(
+                text = progress.message,
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            )
+        }
+    }
+}
+
+@Composable
+private fun ActionButtons(state: ScanUiState) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
+    ) {
+        Button(
+            onClick = { state.eventSink(ScanEvent.PayNowClicked) },
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+            shape = RoundedCornerShape(MockDimens.RadiusMd),
+            contentPadding = PaddingValues(vertical = 20.dp),
+            modifier = Modifier.weight(1f).testTag(ScanTestTags.PAY_NOW_BUTTON),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(text = "💳", color = MaterialTheme.colorScheme.secondary)
+                Text(
+                    text = "Pay Now",
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+        }
+
+        Button(
+            onClick = { state.eventSink(ScanEvent.ViewOffersClicked) },
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+            shape = RoundedCornerShape(MockDimens.RadiusMd),
+            contentPadding = PaddingValues(vertical = 20.dp),
+            modifier = Modifier.weight(1f).testTag(ScanTestTags.VIEW_OFFERS_BUTTON),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(text = "🏷️", color = MaterialTheme.colorScheme.secondary)
+                Text(
+                    text = "View Offers",
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProTip() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(MockDimens.RadiusMd))
+            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+            .testTag(ScanTestTags.PRO_TIP)
+            .padding(start = MockDimens.SpacingXs)
+            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+            .padding(20.dp),
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
+            verticalAlignment = Alignment.Top,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(text = "ℹ️", color = MaterialTheme.colorScheme.secondary)
+            }
+            Column {
+                Text(
+                    text = "Pro Tip",
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(bottom = MockDimens.SpacingXs),
+                )
+                Text(
+                    text = "Ensure your screen brightness is turned up " +
+                        "for the best scanning experience at our kiosks.",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
     }

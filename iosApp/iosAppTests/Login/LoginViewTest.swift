@@ -2,18 +2,22 @@ import Testing
 import ComposeApp
 @testable import iosApp
 
-@Suite struct LoginViewTest {
+@Suite @MainActor struct LoginViewTest {
 
     private let robot = LoginViewRobot()
 
     // MARK: - Rendering
 
-    @Test func rendersDefaultState() {
-        robot.assertDefaultViewCreated()
+    @Test func rendersDefaultState() throws {
+        try robot.assertDefaultScreen()
     }
 
-    @Test func rendersWithEmail() {
-        robot.assertViewWithEmailCreated()
+    @Test func rendersLandscapeLayout() throws {
+        try robot.assertLandscapeScreen()
+    }
+
+    @Test func rendersWithEmail() throws {
+        try robot.assertViewWithEmail()
     }
 
     // MARK: - Events

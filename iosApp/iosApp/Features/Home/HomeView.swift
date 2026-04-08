@@ -5,7 +5,10 @@ private let tags = HomeTestTags.shared
 
 struct HomeView: View {
     @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     let state: HomeUiState
+
+    private var isLandscape: Bool { verticalSizeClass == .compact }
 
     var body: some View {
         ScrollView {
@@ -16,7 +19,7 @@ struct HomeView: View {
                 exploreSection
                 Spacer().frame(height: MockDimens.spacingXl)
             }
-            .padding(.bottom, MockDimens.bottomBarPadding)
+            .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: isLandscape))
         }
         .background(colors.background)
     }
@@ -40,7 +43,7 @@ struct HomeView: View {
     private var heroBanner: some View {
         if let hero = state.heroPromotion {
             Color.clear
-                .frame(height: MockDimens.heroHeight)
+                .frame(height: MockDimens.adaptiveHeroHeight(isLandscape: isLandscape))
                 .overlay {
                     AsyncImage(
                         url: URL(string: hero.imageUrl),
@@ -198,7 +201,8 @@ struct HomeView: View {
     }
 
     private var exploreBentoGrid: some View {
-        let gridItems = Array(state.exploreItems.prefix(2))
+        let gridCount = isLandscape ? 3 : 2
+        let gridItems = Array(state.exploreItems.prefix(gridCount))
         return HStack(spacing: MockDimens.spacingLg) {
             ForEach(
                 Array(gridItems.enumerated()),
@@ -222,8 +226,9 @@ struct HomeView: View {
     }
 
     private var exploreListItems: some View {
-        ForEach(
-            Array(state.exploreItems.dropFirst(2).enumerated()),
+        let gridCount = isLandscape ? 3 : 2
+        return ForEach(
+            Array(state.exploreItems.dropFirst(gridCount).enumerated()),
             id: \.offset
         ) { _, item in
             HStack(spacing: MockDimens.spacingLg) {

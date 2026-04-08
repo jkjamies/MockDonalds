@@ -201,12 +201,16 @@ Parameters already wrapped in `Provider<T>`, `Lazy<T>`, or function types pass t
 
 ```
 Android:
-  Repository ──► UseCase ──► Presenter.present() ──[Compose Runtime]──► Compose UI
+  State: Repository ──► UseCase ──► Presenter.present() ──[Compose Runtime]──► Compose UI
+  Nav:   Presenter ──► navigator.goTo() ──► BackStack ──► NavigableCircuitContent
 
 iOS:
-  Repository ──► UseCase ──► Presenter.present() ──[Molecule]──► StateFlow
-                                                    ──[KMP-NativeCoroutines]──► AsyncSequence
-                                                    ──► SwiftUI View
+  State: Repository ──► UseCase ──► Presenter.present() ──[Molecule]──► StateFlow
+                                                          ──[KMP-NativeCoroutines]──► AsyncSequence
+                                                          ──► SwiftUI View
+  Nav:   Presenter ──► BridgeNavigator ──► StateFlow<NavigationAction>
+                                          ──[KMP-NativeCoroutines]──► CircuitNavigator
+                                          ──► NavigationStack
 ```
 
 ### CenterPost — Business Logic Framework
@@ -409,26 +413,41 @@ Extend `CenterPostException` for domain-specific errors (e.g., `PaymentDeclinedE
 ### iOS Bridge Architecture
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                      Kotlin (iosMain)                            │
-│                                                                  │
-│  IosApp                          CircuitPresenterKotlinBridge    │
-│  ├── createGraph<AppGraph>()     ├── Wraps @Composable present()│
-│  ├── circuit: Circuit            ├── Molecule → StateFlow       │
-│  └── presenterBridge(screen)     └── @NativeCoroutinesState     │
-└──────────────────────┬───────────────────────┬───────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│                        Kotlin (iosMain)                              │
+│                                                                      │
+│  IosApp                          CircuitPresenterKotlinBridge        │
+│  ├── createGraph<AppGraph>()     ├── Wraps @Composable present()    │
+│  ├── circuit: Circuit            ├── Molecule → StateFlow           │
+│  ├── navigator: BridgeNavigator  └── @NativeCoroutinesState         │
+│  └── presenterBridge(screen)                                        │
+│                                  BridgeNavigator                     │
+│  NavigationAction (sealed)       ├── Implements Circuit Navigator   │
+│  ├── Idle                        ├── StateFlow<NavigationAction>    │
+│  ├── GoTo(screen)                ├── @NativeCoroutinesState         │
+│  ├── Pop                         └── consume() resets to Idle       │
+│  ├── ResetRoot(screen)                                              │
+│  └── DeepLink(screens)                                              │
+└──────────────────────┬───────────────────────┬───────────────────────┘
                        │                       │
-┌──────────────────────▼───────────────────────▼───────────────────┐
-│                      Swift (iosApp)                              │
-│                                                                  │
-│  CircuitIos          CircuitView            CircuitContent       │
-│  ├── uiFactories     ├── Observes stateFlow ├── Resolves screen │
-│  ├── presenterBridge  ├── via asyncSequence  ├── Finds UI factory│
-│  └── shared singleton └── Renders SwiftUI   └── Creates view    │
-│                                                                  │
-│  ScreenUiFactory<S, State> { view }   ← One-liner per screen   │
-│  CircuitStack                         ← Navigation container    │
-└──────────────────────────────────────────────────────────────────┘
+┌──────────────────────▼───────────────────────▼───────────────────────┐
+│                        Swift (iosApp)                                │
+│                                                                      │
+│  CircuitIos          CircuitView            CircuitContent           │
+│  ├── uiFactories     ├── Observes stateFlow ├── Resolves screen     │
+│  ├── presenterBridge  ├── via asyncSequence  ├── Finds UI factory   │
+│  ├── navigator        └── Renders SwiftUI   └── Creates view        │
+│  └── shared singleton                                               │
+│                                                                      │
+│  CircuitNavigator                                                    │
+│  ├── Observes navigationActionFlow via asyncSequence                │
+│  ├── Drives NavigationStack (GoTo → push, Pop → pop)               │
+│  ├── ScreenEntry wrapper (Hashable + Identifiable)                  │
+│  └── Calls consume() after handling each action                     │
+│                                                                      │
+│  ScreenUiFactory<S, State> { view }   ← One-liner per screen       │
+│  CircuitStack                         ← EnvironmentObject provider  │
+└──────────────────────────────────────────────────────────────────────┘
 ```
 
 SwiftUI views are pure functions of state — no observation logic:
@@ -506,7 +525,95 @@ core/theme/.../Color.kt          — Light + dark color palettes, extended brand
 core/theme/.../Theme.kt          — Dual ColorScheme, CompositionLocal, MockDonaldsTheme composable
 core/theme/.../MockDimens.kt     — Spacing, radii, component size tokens
 core/theme/.../Type.kt           — Typography (Epilogue + Manrope font families)
+core/theme/.../AdaptiveLayout.kt — WindowSizeClass, landscape detection, adaptive tokens (Android)
 iosApp/.../Theme/MockDonaldsTheme.swift  — iOS color scheme, dimens, environment key
+iosApp/.../Theme/AdaptiveLayout.swift    — Adaptive dimension tokens (iOS)
+```
+
+### Landscape & Adaptive Layout
+
+All screens support both portrait and landscape orientations with a "compress vertical, expand horizontal" strategy — hero banners shrink, single-column layouts become two-column, and vertical spacing is reduced.
+
+#### Orientation Detection
+
+| Platform | Mechanism | API |
+|----------|-----------|-----|
+| **Android** | `WindowSizeClass` from Material 3 | `isCompactHeight()` composable (reads `LocalWindowSizeClass`) |
+| **iOS** | `verticalSizeClass` environment | `@Environment(\.verticalSizeClass)` — landscape when `.compact` |
+
+**Android** — `WindowSizeClass` is calculated from the activity and provided via `CompositionLocalProvider` in `App.kt`:
+
+```kotlin
+val windowSizeClass = calculateWindowSizeClass(activity)
+CompositionLocalProvider(LocalWindowSizeClass provides windowSizeClass) {
+    MockDonaldsTheme { /* ... */ }
+}
+```
+
+**iOS** — Each view reads the size class directly:
+
+```swift
+@Environment(\.verticalSizeClass) private var verticalSizeClass
+private var isLandscape: Bool { verticalSizeClass == .compact }
+```
+
+#### Adaptive Tokens
+
+Dimension values that change based on orientation are centralized in `AdaptiveLayout`:
+
+| Token | Portrait | Landscape | Used By |
+|-------|----------|-----------|---------|
+| `adaptiveHeroHeight` | 480 | 240 | Home hero banner |
+| `adaptiveQrCodeSize` | 252/256 | 180 | Scan QR code |
+| `adaptiveBottomBarPadding` | 128 | 72 | All screens (scroll padding above tab bar) |
+| `adaptiveBottomNavHeight` | 80 | 56 | Bottom navigation bar |
+
+#### Per-Screen Adaptations
+
+| Screen | Portrait | Landscape |
+|--------|----------|-----------|
+| **Home** | Single-column, 2-col bento grid | Compressed hero (240), 3-col bento grid |
+| **Order** | Single-column featured items | 2-column featured items grid |
+| **Rewards** | Stacked: points hero, vault, history | Two-column: points hero (left) + vault specials (right), then history |
+| **Scan** | Stacked: QR card, progress, actions, tip | Two-column: QR card (left) + progress/actions/tip (right) |
+| **Login** | Stacked: branding, form, social | Two-column: branding (left) + form/social (right) |
+| **More** | Minimal change | Reduced bottom padding only |
+
+#### Testing Landscape
+
+Both platforms include landscape-specific UI tests that verify views render correctly when orientation changes:
+
+**Android** — UiRobots provide a `setLandscapeContent()` method that simulates landscape via a `DpSize(800, 400)` WindowSizeClass:
+
+```kotlin
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+private fun setContentWith(state: HomeUiState, landscape: Boolean = false) {
+    val size = if (landscape) DpSize(800.dp, 400.dp) else DpSize(400.dp, 800.dp)
+    rule.setContent {
+        CompositionLocalProvider(
+            LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(size)
+        ) { MockDonaldsTheme { HomeUi(state = state) } }
+    }
+}
+```
+
+**iOS** — ViewRobots create landscape views by injecting `.compact` vertical size class:
+
+```swift
+func createLandscapeView() -> some View {
+    createDefaultView()
+        .environment(\.verticalSizeClass, .compact)
+}
+```
+
+Every screen (except More, which has no structural change) has a `rendersLandscapeLayout` test that verifies key elements remain visible in landscape orientation.
+
+#### Key Files
+
+```
+core/theme/src/androidMain/.../AdaptiveLayout.kt  — LocalWindowSizeClass, isCompactHeight(), adaptive tokens
+iosApp/iosApp/Theme/AdaptiveLayout.swift           — MockDimens adaptive extension functions
+iosApp/iosApp/Info.plist                           — UISupportedInterfaceOrientations (portrait + landscape)
 ```
 
 ## Project Structure
@@ -754,13 +861,20 @@ fun FeatureUi(state: FeatureUiState, modifier: Modifier = Modifier) {
 
 ```swift
 struct FeatureView: View {
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    private var isLandscape: Bool { verticalSizeClass == .compact }
     let state: FeatureUiState
+
     var body: some View {
-        VStack {
-            ForEach(state.items, id: \.id) { item in
-                Text(item.title)
+        ScrollView {
+            if isLandscape {
+                // Two-column layout for landscape
+                HStack(alignment: .top, spacing: MockDimens.spacingXl) { /* ... */ }
+            } else {
+                VStack { /* portrait layout */ }
             }
         }
+        .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: isLandscape))
     }
 }
 ```
@@ -851,10 +965,10 @@ class FeaturePresenterTest : BehaviorSpec({
 - `FeatureUiRobot` — sets content, asserts UI elements by test tag, performs actions
 - `FeatureUiTest` — JUnit4 tests using `createComposeRule()` + robot
 
-**iOS view tests** (`iosAppTests/{Feature}/`) — Swift Testing:
+**iOS view tests** (`iosAppTests/{Feature}/`) — Swift Testing + ViewInspector:
 - `FeatureStateRobot` extends `BaseStateRobot<FeatureUiState, FeatureEvent>` — creates test states
-- `FeatureViewRobot` — creates views, simulates events, asserts with `#expect`
-- `FeatureViewTest` — `@Suite struct` with `@Test func` methods using robot
+- `FeatureViewRobot` (`@MainActor final class`) — creates views, uses ViewInspector `inspect()` + `find(viewWithAccessibilityIdentifier:)` for real hierarchy assertions, includes `createLandscapeView()` via `.environment(\.verticalSizeClass, .compact)`
+- `FeatureViewTest` (`@Suite @MainActor struct`) — `@Test func` methods including `rendersLandscapeLayout`
 
 ### 8. Wire remaining configuration
 
@@ -899,8 +1013,8 @@ is FeatureScreen -> "feature"
 9. `features/{name}/presentation/androidDeviceTest` — StateRobot, UiRobot, UiTest
 10. `iosApp/Features/{Name}/` — SwiftUI view
 11. `iosApp/iosAppTests/{Name}/` — StateRobot, ViewRobot, ViewTest (Swift Testing)
-12. `settings.gradle.kts` — 6 include statements (api:domain + api:navigation + domain + data + presentation + test)
-13. `composeApp/build.gradle.kts` — api:domain, api:navigation, data, domain, presentation deps + iOS exports
+12. `settings.gradle.kts` — **automatic** (feature directory auto-discovered with 6 enforced submodules)
+13. `composeApp/build.gradle.kts` — **automatic** (feature deps auto-discovered with enforced wiring)
 14. `App.kt` — screen route mapping
 15. `AppDelegate.swift` — `ScreenUiFactory` registration
 16. Verify — detekt, SwiftLint, konsist, Harmonize, all tests pass
@@ -909,10 +1023,12 @@ is FeatureScreen -> "feature"
 
 The iOS bridge is a one-time setup in `composeApp/src/iosMain/`:
 
-- **`IosApp`** — creates the Metro DI graph (`createGraph<AppGraph>()`), exposes `presenterBridge(screen:)` which resolves any screen's presenter via Circuit
+- **`IosApp`** — creates the Metro DI graph (`createGraph<AppGraph>()`), exposes `presenterBridge(screen:)` which resolves any screen's presenter via Circuit, and holds the shared `BridgeNavigator` instance
 - **`CircuitPresenterKotlinBridge`** — wraps a `@Composable Presenter.present()` call into a `StateFlow` via Molecule, annotated with `@NativeCoroutinesState` for Swift async observation
+- **`BridgeNavigator`** — implements Circuit's `Navigator` interface. Emits navigation intents (`GoTo`, `Pop`, `ResetRoot`, `DeepLink`) as a `StateFlow<NavigationAction>` that Swift observes via `@NativeCoroutinesState`
+- **`NavigationAction`** — sealed class carrying the navigation intent so SwiftUI knows how to animate each transition
 
-The Swift Circuit infrastructure (`CircuitIos`, `CircuitView`, `CircuitContent`, `CircuitStack`) consumes these bridges. `CircuitView` observes state via:
+The Swift Circuit infrastructure (`CircuitIos`, `CircuitView`, `CircuitContent`, `CircuitStack`, `CircuitNavigator`) consumes these bridges. `CircuitView` observes state via:
 
 ```swift
 .task {
@@ -920,6 +1036,17 @@ The Swift Circuit infrastructure (`CircuitIos`, `CircuitView`, `CircuitContent`,
     for try await state in sequence { self.state = state }
 }
 ```
+
+`CircuitNavigator` observes navigation via:
+
+```swift
+.task {
+    let sequence = asyncSequence(for: circuit.navigator.navigationActionFlow)
+    for try await action in sequence { handleAction(action) }
+}
+```
+
+Each action drives native SwiftUI navigation — `GoTo` pushes onto `NavigationStack`, `Pop` pops, `ResetRoot` clears the path. After handling, `consume()` resets the flow to `Idle` to prevent replay.
 
 Task cancellation is automatic when the view disappears.
 
@@ -1084,6 +1211,8 @@ class HomeUiTest {
 | **Test tags** | `<Feature>TestTags` object in the feature's api module (`api/ui` package), shared across Android, iOS, and navigation tests |
 | **Tag naming** | PascalCase: `HomeHeroBanner`, `OrderCategoryChip`. List items get ID suffix: `HomeCravingCard-{id}` |
 | **Theme** | All `setContent` calls wrap content in `MockDonaldsTheme` for accurate rendering |
+| **WindowSizeClass** | All `setContent` calls provide `LocalWindowSizeClass` via `CompositionLocalProvider` — required for landscape detection |
+| **Landscape** | UiRobots expose `setLandscapeContent()` using `DpSize(800, 400)` and `assertLandscapeScreen()`; UiTests include `rendersLandscapeLayout` |
 | **Scrolling** | Robot handles `performScrollTo()` internally — tests don't worry about viewport position |
 | **File naming** | `*StateRobot.kt`, `*UiRobot.kt`, `*UiTest.kt` — all in `androidDeviceTest` source set |
 | **Visibility** | Element assertions are `private` in the robot; only screen-level assertions and actions are `public` |
@@ -1103,6 +1232,144 @@ features/{feature}/
 │   │       ├── {Feature}StateRobot.kt # State construction with event capture
 │   │       ├── {Feature}UiRobot.kt    # UI interactions + screen assertions (owns StateRobot)
 │   │       └── {Feature}UiTest.kt     # JUnit4 test class
+```
+
+### iOS UI Tests (ViewInspector)
+
+Component-level UI tests run on the iOS Simulator via [ViewInspector](https://github.com/nalexn/ViewInspector) — a Swift library for inspecting SwiftUI view hierarchies in unit tests. They validate that SwiftUI views render the correct elements for given states and emit correct events on interaction.
+
+```bash
+# Run all iOS UI tests (requires a booted simulator)
+xcodebuild -project iosApp.xcodeproj -scheme "iOSApp (iosApp project)" \
+  -destination 'platform=iOS Simulator,name=iPhone 16 Pro' test
+```
+
+#### Infrastructure
+
+- **ViewInspector** — SPM dependency in the `iosAppTests` target; provides `view.inspect()` and `find(viewWithAccessibilityIdentifier:)` for real view hierarchy assertions
+- **Swift Testing** — `@Suite struct` with `@Test func` methods, `#expect` assertions (not XCTest)
+- **`@MainActor`** — All test suites and robots are `@MainActor` to prevent `MainActor.assumeIsolated` crashes, since ViewInspector's `inspect()` must run on the main thread and Swift Testing runs tests concurrently by default
+- **Shared `BaseStateRobot`** — iOS counterpart of Android's `StateRobot` base class, provides `createEventSink()` and `lastEvent` for event capture
+
+#### Robot Pattern
+
+iOS UI tests use the same two-layer robot pattern as Android, where the **ViewRobot owns the StateRobot**. Tests only interact with the ViewRobot:
+
+```
+Test ──► ViewRobot ──► StateRobot
+              │
+              └──► ViewInspector (inspect + find)
+```
+
+**StateRobot** — Swift base class for constructing `UiState` objects with captured event sinks:
+
+```swift
+class BaseStateRobot<State, Event: Equatable> {
+    var lastEvent: Event?
+    func createEventSink() -> (Event) -> Void
+}
+```
+
+**Feature StateRobot** — constructs states for different scenarios:
+
+```swift
+final class HomeStateRobot: BaseStateRobot<HomeUiState, HomeEvent> {
+    func defaultState() -> HomeUiState {
+        HomeUiState(
+            userName: "TestUser",
+            heroPromotion: HeroPromotion(...),
+            recentCravings: [Craving(...)],
+            exploreItems: [ExploreItem(...), ExploreItem(...)],
+            eventSink: createEventSink()
+        )
+    }
+    func stateWithNoPromotion() -> HomeUiState { ... }
+}
+```
+
+**ViewRobot** — owns the StateRobot, uses ViewInspector to assert view hierarchy by accessibility identifiers:
+
+```swift
+@MainActor
+final class HomeViewRobot {
+    private let stateRobot = HomeStateRobot()
+    private let tags = HomeTestTags.shared
+
+    func createDefaultView() -> HomeView {
+        HomeView(state: stateRobot.defaultState())
+    }
+
+    func createLandscapeView() -> some View {
+        createDefaultView()
+            .environment(\.verticalSizeClass, .compact)
+    }
+
+    func assertDefaultScreen() throws {
+        let view = createDefaultView()
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.USER_NAME)
+        try body.find(viewWithAccessibilityIdentifier: tags.HERO_BANNER)
+        try body.find(viewWithAccessibilityIdentifier: tags.RECENT_CRAVINGS_SECTION)
+    }
+
+    func assertLandscapeScreen() throws {
+        let view = createLandscapeView()
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.USER_NAME)
+        try body.find(viewWithAccessibilityIdentifier: tags.HERO_BANNER)
+    }
+}
+```
+
+#### Test Structure
+
+Same structure as Android — **rendering tests grouped per state**, **event tests separate per interaction**:
+
+```swift
+@Suite @MainActor struct HomeViewTest {
+    private let robot = HomeViewRobot()
+
+    // Rendering: one test per state
+    @Test func rendersDefaultState() throws {
+        try robot.assertDefaultScreen()
+    }
+
+    @Test func rendersLandscapeLayout() throws {
+        try robot.assertLandscapeScreen()
+    }
+
+    // Events: one test per interaction
+    @Test func heroCtaTapEmitsEvent() {
+        robot.simulateHeroCtaTap()
+        robot.assertLastEvent(HomeEvent.HeroCtaClicked())
+    }
+}
+```
+
+#### Conventions
+
+| Convention | Rule |
+|------------|------|
+| **Test tags** | Shared `<Feature>TestTags` from ComposeApp (same constants as Android) |
+| **`@MainActor`** | All `@Suite` structs and `ViewRobot` classes must be `@MainActor` |
+| **ViewInspector** | ViewRobots use `view.inspect()` + `find(viewWithAccessibilityIdentifier:)` for real hierarchy assertions |
+| **Absent elements** | Verified with `#expect(throws: Error.self) { try body.find(...) }` |
+| **Landscape** | ViewRobots create landscape views via `.environment(\.verticalSizeClass, .compact)` |
+| **File naming** | `*StateRobot.swift`, `*ViewRobot.swift`, `*ViewTest.swift` — all in `iosAppTests/{Feature}/` |
+| **Visibility** | Element assertions are methods on the robot; tests only call screen-level assertions |
+| **No XCTest** | All view tests use Swift Testing (`import Testing`), not `XCTestCase` |
+
+#### File Structure
+
+```
+iosApp/
+├── iosAppTests/
+│   ├── {Feature}/
+│   │   ├── {Feature}StateRobot.swift  # State construction with event capture
+│   │   ├── {Feature}ViewRobot.swift   # ViewInspector assertions + view creation (@MainActor)
+│   │   └── {Feature}ViewTest.swift    # @Suite struct with @Test methods (@MainActor)
+│   └── Base/
+│       └── BaseStateRobot.swift       # Shared event sink + last event capture
 ```
 
 ### Test Framework: Kotest 6.1.11
@@ -1281,7 +1548,7 @@ The `:konsist` module enforces architectural conventions via [Konsist](https://d
 | **Forbidden Patterns** | 9 | No ViewModels, no raw CoroutineScope/launch/async/Dispatchers (use CenterPost), no android.* in commonMain, no app module imports |
 | **Code Hygiene** | 7 | No wildcard imports, no println/System.out, no Thread.sleep, no runBlocking, no `!!` force unwraps, no lateinit var |
 | **Test Conventions** | 10 | BehaviorSpec only, no mockk/runBlocking/runTest/Unconfined, fakes in test modules only, Fake coverage, Test suffix |
-| **UI Test Conventions** | 9 | UiTest/UiRobot/StateRobot per feature, StateRobot extends base class, encapsulation (tests only reference UiRobot), TestTags exist in api module, theme wrapping, AndroidManifest |
+| **UI Test Conventions** | 12 | UiTest/UiRobot/StateRobot per feature, StateRobot extends base class, encapsulation (tests only reference UiRobot), TestTags exist in api module, theme wrapping, AndroidManifest, WindowSizeClass in robots, landscape tests (`rendersLandscapeLayout`, `setLandscapeContent`, `assertLandscapeScreen`) |
 | **Test Coverage** | 4 | Every feature has test module, every Impl/Presenter/Repo has a test file |
 | **Package Structure** | 3 | Package naming matches module path |
 
@@ -1345,6 +1612,9 @@ Harmonize is the iOS counterpart to Konsist. It uses `productionCode()` and `tes
 | **Robot Encapsulation** | 1 | `ViewTest` files only reference `ViewRobot` — `StateRobot` is an implementation detail |
 | **Robot Inheritance** | 1 | `StateRobot` classes extend `BaseStateRobot` |
 | **Swift Testing** | 4 | `ViewTest` are `@Suite` structs, not `XCTestCase`; contain `@Test` methods; do not import `XCTest` |
+| **MainActor** | 2 | `ViewRobot` classes and `ViewTest` suites are `@MainActor` (required for ViewInspector thread safety) |
+| **ViewInspector** | 1 | `ViewRobot` files import `ViewInspector` |
+| **Landscape Testing** | 3 | ViewRobots have `createLandscapeView` and `assertLandscapeScreen` methods; ViewTests have `rendersLandscapeLayout` test |
 | **Test Naming** | 1 | `@Suite` structs end with `Test` |
 | **Test Hygiene** | 1 | No `print()` statements in test code |
 
@@ -1356,6 +1626,9 @@ Harmonize is the iOS counterpart to Konsist. It uses `productionCode()` and `tes
 - **Shared TestTags** — Accessibility identifiers use `TestTags` constants from ComposeApp, not hardcoded strings, keeping iOS and Android test identifiers in sync
 - **Robot pattern encapsulation** — `ViewTest` → `ViewRobot` → `StateRobot` layering; tests never touch `StateRobot` directly
 - **Swift Testing** — ViewTests use `@Suite struct` with `@Test` methods, not XCTest; ViewRobots use `#expect` assertions
+- **`@MainActor`** — All `ViewRobot` classes and `ViewTest` suites must be `@MainActor` for ViewInspector thread safety
+- **ViewInspector** — ViewRobots use `view.inspect()` + `find(viewWithAccessibilityIdentifier:)` for real view hierarchy assertions (not `view.body != nil`)
+- **Landscape tests** — ViewRobots must have `createLandscapeView` and `assertLandscapeScreen` methods; ViewTests must have a `rendersLandscapeLayout` test
 - **Stateless views** — Every view receives its `UiState` as a `state` property from the shared Circuit presenter
 
 ### Scoping
@@ -1401,10 +1674,11 @@ fi
 
 ## Features
 
-| Feature | Description |
-|---------|-------------|
-| **Home** | Greeting, hero promotional banner, recent cravings carousel, explore grid |
-| **Order** | Menu categories, featured items with images, cart summary |
-| **Rewards** | Points progress, vault specials gallery, transaction history |
-| **Scan** | QR code display, member info, rewards progress bar |
-| **More** | User profile, settings menu items |
+| Feature | Description | Landscape Adaptation |
+|---------|-------------|---------------------|
+| **Home** | Greeting, hero promotional banner, recent cravings carousel, explore grid | Compressed hero, 3-col bento grid |
+| **Order** | Menu categories, featured items with images, cart summary | 2-column featured items grid |
+| **Rewards** | Points progress, vault specials gallery, transaction history | Two-column: points + vault side-by-side |
+| **Scan** | QR code display, member info, rewards progress bar | Two-column: QR card + progress/actions |
+| **More** | User profile, settings menu items | Reduced padding |
+| **Login** | Email sign-in, social auth (Google, Apple) | Two-column: branding + form |

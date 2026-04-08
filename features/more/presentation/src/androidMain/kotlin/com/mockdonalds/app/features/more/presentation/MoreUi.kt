@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.core.theme.MockDimens
 import com.mockdonalds.app.core.theme.MockDonaldsTheme
+import com.mockdonalds.app.core.theme.adaptiveBottomBarPadding
 import com.mockdonalds.app.features.more.api.domain.MoreMenuItem
 import com.mockdonalds.app.features.more.api.navigation.MoreScreen
 import com.mockdonalds.app.features.more.api.ui.MoreTestTags
@@ -55,7 +56,7 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
             .padding(horizontal = MockDimens.SpacingXl)
-            .padding(bottom = MockDimens.BottomBarPadding)
+            .padding(bottom = adaptiveBottomBarPadding())
             .statusBarsPadding(),
         verticalArrangement = Arrangement.spacedBy(40.dp),
     ) {

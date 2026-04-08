@@ -30,6 +30,12 @@ class HomeUiTest {
     }
 
     @Test
+    fun rendersLandscapeLayout() {
+        robot.setLandscapeContent()
+        robot.assertLandscapeScreen()
+    }
+
+    @Test
     fun heroCtaButtonEmitsEvent() {
         robot.setDefaultContent()
         robot.tapHeroCtaButton()
