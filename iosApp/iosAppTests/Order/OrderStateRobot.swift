@@ -10,9 +10,20 @@ final class OrderStateRobot: BaseStateRobot<OrderUiState, OrderEvent> {
             ],
             selectedCategoryId: "1",
             featuredItems: [
-                FeaturedItem(id: "1", title: "Big Mac", price: "$5.99", description: "Classic burger", imageUrl: "", tag: "POPULAR", isPrimary: true),
+                FeaturedItem(
+                    id: "1",
+                    title: "Big Mac",
+                    price: "$5.99",
+                    description: "Classic burger",
+                    imageUrl: "",
+                    tag: "POPULAR",
+                    isPrimary: true
+                ),
             ],
-            cartSummary: CartSummary(itemCount: 2, total: "$11.98"),
+            cartSummary: CartSummary(
+                itemCount: 2,
+                total: "$11.98"
+            ),
             eventSink: createEventSink()
         )
     }
@@ -24,7 +35,15 @@ final class OrderStateRobot: BaseStateRobot<OrderUiState, OrderEvent> {
             ],
             selectedCategoryId: "1",
             featuredItems: [
-                FeaturedItem(id: "1", title: "Big Mac", price: "$5.99", description: "Classic burger", imageUrl: "", tag: "POPULAR", isPrimary: true),
+                FeaturedItem(
+                    id: "1",
+                    title: "Big Mac",
+                    price: "$5.99",
+                    description: "Classic burger",
+                    imageUrl: "",
+                    tag: "POPULAR",
+                    isPrimary: true
+                ),
             ],
             cartSummary: nil,
             eventSink: createEventSink()

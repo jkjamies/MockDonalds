@@ -1,3 +1,5 @@
+@file:Suppress("MaxLineLength") // URLs in fake data
+
 package com.mockdonalds.app.features.more.data
 
 import com.mockdonalds.app.features.more.api.domain.MoreMenuItem
@@ -17,7 +19,7 @@ class MoreRepositoryImpl : MoreRepository {
             tier = "Gold Member",
             points = "1,240 pts",
             avatarUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuBFVaei4-VUjNq0l_ZGz6rArkAkp-dfveXXlPEl_pcZxRm8PiBdB1Ou7OAx2lEYYD9sPqyC0Rw34pGxWZ_0NWGUvTRio8O5wqu0oobfn5TWDTglgEvOWyPDn6rtcYPzMO5PK6I5IvCQfhWru2-mYEE8s45hGeUZIAQd7mvcCjvhIV9c4vrSetu5K1hBrZmIUQu2TND-knQQzGfp7U_8aQ0JPl_FgLwTXM47MsuJKCkkhDodQ_0vCMZbkh6SRx_s4Qmwlk14O8d1sgQ",
-        )
+        ),
     )
 
     override fun getMenuItems(): Flow<List<MoreMenuItem>> = flowOf(
@@ -27,6 +29,6 @@ class MoreRepositoryImpl : MoreRepository {
             MoreMenuItem(id = "3", icon = "🥗", title = "Nutrition"),
             MoreMenuItem(id = "4", icon = "❓", title = "Help"),
             MoreMenuItem(id = "5", icon = "💼", title = "Careers"),
-        )
+        ),
     )
 }

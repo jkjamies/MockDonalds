@@ -1,3 +1,5 @@
+@file:Suppress("MaxLineLength") // URLs in fake data
+
 package com.mockdonalds.app.features.order.data
 
 import com.mockdonalds.app.features.order.api.domain.CartSummary
@@ -18,7 +20,7 @@ class OrderRepositoryImpl : OrderRepository {
             MenuCategory(id = "2", name = "Fries"),
             MenuCategory(id = "3", name = "Drinks"),
             MenuCategory(id = "4", name = "Desserts"),
-        )
+        ),
     )
 
     override fun getFeaturedItems(): Flow<List<FeaturedItem>> = flowOf(
@@ -41,10 +43,10 @@ class OrderRepositoryImpl : OrderRepository {
                 tag = "TRENDING",
                 isPrimary = false,
             ),
-        )
+        ),
     )
 
     override fun getCartSummary(): Flow<CartSummary> = flowOf(
-        CartSummary(itemCount = 2, total = "\$36.00")
+        CartSummary(itemCount = 2, total = "\$36.00"),
     )
 }

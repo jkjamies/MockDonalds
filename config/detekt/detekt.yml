@@ -1,0 +1,61 @@
+# detekt configuration — layers on top of defaults (buildUponDefaultConfig = true)
+# Only override rules that need tuning. Defaults apply for everything else.
+# Formatting rules come from detekt-formatting (ktlint wrapper).
+
+complexity:
+  LongMethod:
+    threshold: 300  # Compose UI functions are declarative and inherently long
+  LongParameterList:
+    functionThreshold: 8
+    constructorThreshold: 10
+  TooManyFunctions:
+    thresholdInFiles: 20
+    thresholdInClasses: 15
+
+formatting:
+  active: true
+  autoCorrect: true
+  TrailingCommaOnCallSite:
+    active: true
+    useTrailingCommaOnCallSite: true
+  TrailingCommaOnDeclarationSite:
+    active: true
+    useTrailingCommaOnDeclarationSite: true
+  MaximumLineLength:
+    active: false  # Duplicate of style.MaxLineLength — disabled to avoid double-reporting
+  ImportOrdering:
+    active: true
+
+naming:
+  # Konsist enforces architectural naming (*Presenter, *UiState, *Impl, etc.)
+  # detekt handles general Kotlin naming style
+  FunctionNaming:
+    # Allow Compose @Composable PascalCase function names
+    ignoreAnnotated: ['Composable']
+  TopLevelPropertyNaming:
+    constantPattern: '[A-Z][A-Za-z0-9]*'
+
+style:
+  MaxLineLength:
+    maxLineLength: 120
+    excludeCommentStatements: true
+  UnusedParameter:
+    # Circuit's Presenter interface requires navigator parameter even when unused
+    excludes: ['**/*Presenter.kt']
+  WildcardImport:
+    active: true
+  UnusedImports:
+    active: true
+  UnusedPrivateMember:
+    active: true
+  MagicNumber:
+    active: false  # Too noisy for UI code with padding/size values
+
+exceptions:
+  TooGenericExceptionCaught:
+    # CenterPost's runCatching intentionally catches all exceptions for error wrapping
+    excludes: ['**/centerpost/**']
+
+# Exclude generated code from all checks
+build:
+  excludeCorrectable: false

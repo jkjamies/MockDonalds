@@ -29,10 +29,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.platform.testTag
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.features.more.api.domain.MoreMenuItem
 import com.mockdonalds.app.features.more.api.navigation.MoreScreen
@@ -55,9 +55,8 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
             .padding(horizontal = 24.dp)
             .padding(bottom = 128.dp)
             .statusBarsPadding(),
-        verticalArrangement = Arrangement.spacedBy(40.dp)
+        verticalArrangement = Arrangement.spacedBy(40.dp),
     ) {
-
         // User Profile Section
         state.userProfile?.let { profile ->
             Row(
@@ -69,11 +68,11 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
                     .clickable { state.eventSink(MoreEvent.ProfileClicked) }
                     .padding(24.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(20.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     val primary = MaterialTheme.colorScheme.primary
                     val secondary = MaterialTheme.colorScheme.secondary
@@ -107,12 +106,12 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
                         Text(
                             text = profile.name,
                             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.onSurface,
                         )
                         Text(
                             text = "${profile.tier} • ${profile.points}",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
                         )
                     }
                 }
@@ -122,7 +121,10 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
 
         // Menu List
         if (state.menuItems.isNotEmpty()) {
-            Column(modifier = Modifier.testTag(MoreTestTags.MENU_LIST), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Column(
+                modifier = Modifier.testTag(MoreTestTags.MENU_LIST),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
                 state.menuItems.forEachIndexed { index, item ->
                     MenuItemRow(
                         item = item,
@@ -140,13 +142,14 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
                 .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                .testTag(MoreTestTags.JOIN_TEAM_BANNER)
+                .testTag(MoreTestTags.JOIN_TEAM_BANNER),
         ) {
+            @Suppress("MaxLineLength")
             AsyncImage(
                 model = "https://lh3.googleusercontent.com/aida-public/AB6AXuDtoKS4itUpfiQzJW9FGblMq9_3wzFqLR5CaS2eM929pYK-KWYvYqQiXcGfWz8ZVUlPcU1hmo0qseeHENBB_sP17bYCskdZ9VPfrIdYy7P63B5tGH6kgBQmn_i0RAanG3-y3r2F2U9G7IdqC5pgPPtd0CVRV-7jjEKtk7VGHqiwH40htvVQRSEZSqoJZ0hnlFw0FvqVNCM5k7pn_eI5N9zunkr86XGaaEl2qddd7Zld_sJOFnulnp_tJ8eqVDNAqvGdId-JcKf1t2s",
                 contentDescription = "Kitchen Staff",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
 
             Box(
@@ -157,48 +160,48 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
                             colors = listOf(
                                 Color(0xFF000000),
                                 Color(0xFF000000).copy(alpha = 0.4f),
-                                Color.Transparent
-                            )
-                        )
-                    )
+                                Color.Transparent,
+                            ),
+                        ),
+                    ),
             )
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
                     .padding(32.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text(
                     text = "Join the Team",
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black),
                     color = Color(0xFFF5F5F5),
-                    lineHeight = 36.sp
+                    lineHeight = 36.sp,
                 )
                 Text(
                     text = "Craft the future of late-night dining with us. We're looking for culinary masters.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFFD4D4D4)
+                    color = Color(0xFFD4D4D4),
                 )
                 Button(
                     onClick = { },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                     contentPadding = PaddingValues(),
                     modifier = Modifier.padding(top = 8.dp),
-                    shape = RoundedCornerShape(6.dp)
+                    shape = RoundedCornerShape(6.dp),
                 ) {
                     Box(
                         modifier = Modifier
                             .background(
-                                Brush.horizontalGradient(listOf(MaterialTheme.colorScheme.primary, Color(0xFF930003)))
+                                Brush.horizontalGradient(listOf(MaterialTheme.colorScheme.primary, Color(0xFF930003))),
                             )
                             .padding(horizontal = 24.dp, vertical = 12.dp),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         Text(
                             text = "View Openings",
                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Color.White
+                            color = Color.White,
                         )
                     }
                 }
@@ -217,17 +220,17 @@ fun MenuItemRow(item: MoreMenuItem, isOdd: Boolean, onClick: () -> Unit, modifie
             .clickable(onClick = onClick)
             .padding(20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(text = item.icon, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
                 text = item.title,
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
         Text(text = ">", color = MaterialTheme.colorScheme.onSurfaceVariant)

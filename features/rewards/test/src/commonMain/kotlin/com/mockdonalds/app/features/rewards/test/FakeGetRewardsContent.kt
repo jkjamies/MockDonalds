@@ -39,7 +39,14 @@ class FakeGetRewardsContent(
                 ),
             ),
             history = listOf(
-                HistoryEntry(id = "1", title = "Test Order", subtitle = "Today", points = "+100", isPositive = true, icon = "🍽️"),
+                HistoryEntry(
+                    id = "1",
+                    title = "Test Order",
+                    subtitle = "Today",
+                    points = "+100",
+                    isPositive = true,
+                    icon = "🍽️",
+                ),
             ),
         )
     }

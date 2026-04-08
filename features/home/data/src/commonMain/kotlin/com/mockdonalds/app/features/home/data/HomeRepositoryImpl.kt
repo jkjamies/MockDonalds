@@ -1,3 +1,5 @@
+@file:Suppress("MaxLineLength") // URLs in fake data
+
 package com.mockdonalds.app.features.home.data
 
 import com.mockdonalds.app.features.home.api.domain.Craving
@@ -21,7 +23,7 @@ class HomeRepositoryImpl : HomeRepository {
             tag = "LIMITED EDITION",
             imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuD3XLmAyDLCbsMni75FhYeTO5jDtRg2NYPJKTxNbg4aleYFXC5xEXR3Y5hbq8-q9a5FKcQX6SBsY9mW5l3LFaBdXetovbtu6rFyBGMpAtYcCGVhtAhSsLhMOA9SzEQq6UUAVNhJMkSlDOtmR_L3LrJaSc-HN2aOIu7iEpAwKNrEWGP6Dk9E0tzIWrUEUQZCkrXKLjo2RtdB-aI_oRSLdnTwbnQPdXM5KV-VPld0gAdzjzoJrlCTM-h3Q5dEoLNSC587K_0ossB5VKQ",
             ctaText = "Experience Now",
-        )
+        ),
     )
 
     override fun getRecentCravings(): Flow<List<Craving>> = flowOf(
@@ -44,14 +46,19 @@ class HomeRepositoryImpl : HomeRepository {
                 subtitle = "\$4.50 • 1 week ago",
                 imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuDIID3SWN4ATvLcZ6sUpRRaN-NTdxu7MHXohCtFpcxQLSR5DjiSX14VgesUoV5lcNFJ-HGoLoEUkQDJNu7_WH9ftDn_N7OR63_ryAaOtRfIqegQ2VSeWkPQNfJuQtsFdElJH3gLhP-m-fGpl_mkNAzbEO-gfRSGjUxEWVGbNyOmn1OkstqlIRZinzg0cBA_jBBo7O7nGbos-OFvb1m6yeAJwLr53Yw32vXo62Tnkzxe8jg5wVEeBzEWFIxwZqt5MDwlm7HEG8_4Ln4",
             ),
-        )
+        ),
     )
 
     override fun getExploreItems(): Flow<List<ExploreItem>> = flowOf(
         listOf(
             ExploreItem(id = "1", icon = "O", title = "Find", subtitle = "A Lounge Near You"),
             ExploreItem(id = "2", icon = "🎁", title = "Gift Cards", subtitle = "Share the Flavor"),
-            ExploreItem(id = "3", icon = "🎧", title = "Concierge Support", subtitle = "Direct line to our kitchen masters"),
-        )
+            ExploreItem(
+                id = "3",
+                icon = "🎧",
+                title = "Concierge Support",
+                subtitle = "Direct line to our kitchen masters",
+            ),
+        ),
     )
 }

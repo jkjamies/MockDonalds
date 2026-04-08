@@ -12,6 +12,7 @@ dependencies {
     compileOnly(libs.plugins.ksp.toDep())
     compileOnly(libs.plugins.metro.toDep())
     implementation(libs.plugins.kotest.toDep())
+    implementation(libs.plugins.detekt.toDep())
 }
 
 fun Provider<PluginDependency>.toDep() = map {

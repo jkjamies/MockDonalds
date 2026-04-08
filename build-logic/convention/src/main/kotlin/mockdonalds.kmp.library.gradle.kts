@@ -6,6 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.parcelize")
     id("com.google.devtools.ksp")
     id("io.kotest")
+    id("mockdonalds.detekt")
 }
 
 kotlin {

@@ -4,12 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 
 /**
  * Glass morphism modifier — 20px backdrop blur with translucent surface overlay.
  * Relies on tonal shift rather than borders (no-line policy).
  */
+@Suppress("UnusedParameter") // blurRadius reserved for platform-specific backdrop blur implementation
 fun Modifier.glassEffect(
     blurRadius: Int = 20,
     overlayColor: Color = SurfaceContainer.copy(alpha = 0.6f),

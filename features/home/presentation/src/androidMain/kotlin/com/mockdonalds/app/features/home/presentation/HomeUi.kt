@@ -37,7 +37,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.features.home.api.domain.Craving
-import com.mockdonalds.app.features.home.api.domain.ExploreItem
 import com.mockdonalds.app.features.home.api.navigation.HomeScreen
 import com.mockdonalds.app.features.home.api.ui.HomeTestTags
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -57,7 +56,7 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
             .verticalScroll(scrollState)
             .padding(bottom = 128.dp)
             .statusBarsPadding(),
-        verticalArrangement = Arrangement.spacedBy(48.dp)
+        verticalArrangement = Arrangement.spacedBy(48.dp),
     ) {
         // Greeting Section
         Column(modifier = Modifier.padding(horizontal = 24.dp)) {
@@ -65,13 +64,13 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                 text = "GOOD EVENING, GOURMET",
                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 4.dp)
+                modifier = Modifier.padding(bottom = 4.dp),
             )
             Text(
                 text = state.userName,
                 style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.ExtraBold),
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.testTag(HomeTestTags.USER_NAME)
+                modifier = Modifier.testTag(HomeTestTags.USER_NAME),
             )
         }
 
@@ -81,31 +80,37 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(480.dp)
-                    .testTag(HomeTestTags.HERO_BANNER)
+                    .testTag(HomeTestTags.HERO_BANNER),
             ) {
                 AsyncImage(
                     model = hero.imageUrl,
                     contentDescription = hero.title,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 )
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
                             Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, MaterialTheme.colorScheme.background.copy(alpha = 0.9f))
-                            )
-                        )
+                                colors = listOf(
+                                    Color.Transparent,
+                                    MaterialTheme.colorScheme.background.copy(alpha = 0.9f),
+                                ),
+                            ),
+                        ),
                 )
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
                             Brush.horizontalGradient(
-                                colors = listOf(MaterialTheme.colorScheme.background.copy(alpha = 0.6f), Color.Transparent)
-                            )
-                        )
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.background.copy(alpha = 0.6f),
+                                    Color.Transparent,
+                                ),
+                            ),
+                        ),
                 )
 
                 Column(
@@ -113,17 +118,17 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                         .align(Alignment.BottomStart)
                         .padding(32.dp)
                         .fillMaxWidth(0.8f),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     Box(
                         modifier = Modifier
                             .background(MaterialTheme.colorScheme.secondary, CircleShape)
-                            .padding(horizontal = 12.dp, vertical = 4.dp)
+                            .padding(horizontal = 12.dp, vertical = 4.dp),
                     ) {
                         Text(
                             text = hero.tag,
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = Color(0xFF584200)
+                            color = Color(0xFF584200),
                         )
                     }
 
@@ -131,13 +136,13 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                         text = hero.title,
                         style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Black),
                         color = MaterialTheme.colorScheme.onSurface,
-                        lineHeight = MaterialTheme.typography.displayMedium.fontSize * 0.9f
+                        lineHeight = MaterialTheme.typography.displayMedium.fontSize * 0.9f,
                     )
 
                     Text(
                         text = hero.description,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                     )
 
                     Button(
@@ -145,20 +150,22 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                         contentPadding = PaddingValues(),
                         modifier = Modifier.padding(top = 16.dp).testTag(HomeTestTags.HERO_CTA_BUTTON),
-                        shape = RoundedCornerShape(6.dp)
+                        shape = RoundedCornerShape(6.dp),
                     ) {
                         Box(
                             modifier = Modifier
                                 .background(
-                                    Brush.horizontalGradient(listOf(MaterialTheme.colorScheme.primary, Color(0xFF930003)))
+                                    Brush.horizontalGradient(
+                                        listOf(MaterialTheme.colorScheme.primary, Color(0xFF930003)),
+                                    ),
                                 )
                                 .padding(horizontal = 32.dp, vertical = 16.dp),
-                            contentAlignment = Alignment.Center
+                            contentAlignment = Alignment.Center,
                         ) {
                             Text(
                                 text = hero.ctaText,
                                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                                color = Color(0xFFFFEBE8)
+                                color = Color(0xFFFFEBE8),
                             )
                         }
                     }
@@ -177,23 +184,23 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom
+                    verticalAlignment = Alignment.Bottom,
                 ) {
                     Text(
                         text = "Recent Cravings",
                         style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
                         text = "View All",
                         style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.secondary
+                        color = MaterialTheme.colorScheme.secondary,
                     )
                 }
 
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(24.dp),
-                    contentPadding = PaddingValues(horizontal = 24.dp)
+                    contentPadding = PaddingValues(horizontal = 24.dp),
                 ) {
                     items(state.recentCravings) { craving ->
                         CravingCard(
@@ -210,19 +217,19 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
         if (state.exploreItems.isNotEmpty()) {
             Column(
                 modifier = Modifier.padding(horizontal = 24.dp).testTag(HomeTestTags.EXPLORE_SECTION),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+                verticalArrangement = Arrangement.spacedBy(24.dp),
             ) {
                 Text(
                     text = "Explore",
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
 
                 // First two items as side-by-side cards
                 val gridItems = state.exploreItems.take(2)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     gridItems.forEach { item ->
                         Box(
@@ -233,16 +240,28 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
                                 .testTag("${HomeTestTags.EXPLORE_ITEM}-${item.id}")
                                 .clickable { state.eventSink(HomeEvent.ExploreItemClicked(item.id)) }
-                                .padding(24.dp)
+                                .padding(24.dp),
                         ) {
                             Column(
                                 modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.SpaceBetween
+                                verticalArrangement = Arrangement.SpaceBetween,
                             ) {
-                                Text(text = item.icon, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.secondary)
+                                Text(
+                                    text = item.icon,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                )
                                 Column {
-                                    Text(text = item.title, style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
-                                    Text(text = item.subtitle, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                                    Text(
+                                        text = item.title,
+                                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                    )
+                                    Text(
+                                        text = item.subtitle,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                                    )
                                 }
                             }
                         }
@@ -258,28 +277,36 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
                             .background(MaterialTheme.colorScheme.surfaceContainerLow)
                             .testTag("${HomeTestTags.EXPLORE_ITEM}-${item.id}")
                             .clickable { state.eventSink(HomeEvent.ExploreItemClicked(item.id)) }
-                            .padding(24.dp)
+                            .padding(24.dp),
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Box(
                                     modifier = Modifier
                                         .size(48.dp)
                                         .background(MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape),
-                                    contentAlignment = Alignment.Center
+                                    contentAlignment = Alignment.Center,
                                 ) {
                                     Text(text = item.icon, color = MaterialTheme.colorScheme.secondary)
                                 }
                                 Column {
-                                    Text(text = item.title, style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
-                                    Text(text = item.subtitle, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                                    Text(
+                                        text = item.title,
+                                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                    )
+                                    Text(
+                                        text = item.subtitle,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                                    )
                                 }
                             }
                             Text(text = ">", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f))
@@ -300,7 +327,7 @@ fun CravingCard(craving: Craving, onClick: () -> Unit, modifier: Modifier = Modi
             .width(288.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick),
     ) {
         AsyncImage(
             model = craving.imageUrl,
@@ -308,32 +335,32 @@ fun CravingCard(craving: Craving, onClick: () -> Unit, modifier: Modifier = Modi
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(176.dp)
+                .height(176.dp),
         )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(20.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column {
                 Text(
                     text = craving.title,
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
                     text = craving.subtitle,
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 )
             }
             Box(
                 modifier = Modifier
                     .size(40.dp)
                     .background(MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Text(text = "+", color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
             }

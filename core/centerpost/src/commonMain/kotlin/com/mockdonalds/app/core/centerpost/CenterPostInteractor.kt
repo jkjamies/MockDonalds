@@ -29,15 +29,21 @@ public abstract class CenterPostInteractor<in P, R> {
 
     private fun addLoader(fromUser: Boolean) {
         loadingState.update {
-            if (fromUser) it.copy(userCount = it.userCount + 1)
-            else it.copy(ambientCount = it.ambientCount + 1)
+            if (fromUser) {
+                it.copy(userCount = it.userCount + 1)
+            } else {
+                it.copy(ambientCount = it.ambientCount + 1)
+            }
         }
     }
 
     private fun removeLoader(fromUser: Boolean) {
         loadingState.update {
-            if (fromUser) it.copy(userCount = it.userCount - 1)
-            else it.copy(ambientCount = it.ambientCount - 1)
+            if (fromUser) {
+                it.copy(userCount = it.userCount - 1)
+            } else {
+                it.copy(ambientCount = it.ambientCount - 1)
+            }
         }
     }
 

@@ -6,13 +6,19 @@ public sealed interface CenterPostResult<out T> {
     public data class Failure(val error: CenterPostException) : CenterPostResult<Nothing>
 
     public fun onSuccess(action: (T) -> Unit): CenterPostResult<T> = when (this) {
-        is Success -> { action(data); this }
+        is Success -> {
+            action(data)
+            this
+        }
         is Failure -> this
     }
 
     public fun onFailure(action: (CenterPostException) -> Unit): CenterPostResult<T> = when (this) {
         is Success -> this
-        is Failure -> { action(error); this }
+        is Failure -> {
+            action(error)
+            this
+        }
     }
 
     public fun getOrNull(): T? = when (this) {

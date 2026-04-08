@@ -30,10 +30,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.platform.testTag
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.features.order.api.domain.FeaturedItem
 import com.mockdonalds.app.features.order.api.navigation.OrderScreen
@@ -56,12 +56,11 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
                 .padding(bottom = 128.dp)
                 .statusBarsPadding(),
         ) {
-
             // Category Chips
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.padding(bottom = 32.dp)
+                modifier = Modifier.padding(bottom = 32.dp),
             ) {
                 items(state.categories) { category ->
                     val isSelected = category.id == state.selectedCategoryId
@@ -69,16 +68,20 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
                         modifier = Modifier
                             .testTag("${OrderTestTags.CATEGORY_CHIP}-${category.id}")
                             .background(
-                                if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh,
-                                CircleShape
+                                if (isSelected) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceContainerHigh
+                                },
+                                CircleShape,
                             )
                             .clickable { state.eventSink(OrderEvent.CategorySelected(category.id)) }
-                            .padding(horizontal = 24.dp, vertical = 8.dp)
+                            .padding(horizontal = 24.dp, vertical = 8.dp),
                     ) {
                         Text(
                             text = category.name,
                             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                            color = if (isSelected) Color(0xFFFFEBE8) else MaterialTheme.colorScheme.onSurface
+                            color = if (isSelected) Color(0xFFFFEBE8) else MaterialTheme.colorScheme.onSurface,
                         )
                     }
                 }
@@ -87,7 +90,7 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
             // Featured Items
             Column(
                 modifier = Modifier.padding(horizontal = 24.dp).testTag(OrderTestTags.FEATURED_ITEMS_SECTION),
-                verticalArrangement = Arrangement.spacedBy(48.dp)
+                verticalArrangement = Arrangement.spacedBy(48.dp),
             ) {
                 state.featuredItems.forEach { item ->
                     FeaturedItemCard(
@@ -111,44 +114,44 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
                     .background(MaterialTheme.colorScheme.primary)
                     .testTag(OrderTestTags.CART_BAR)
                     .clickable { state.eventSink(OrderEvent.CartClicked) }
-                    .padding(horizontal = 24.dp, vertical = 16.dp)
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Box(
                             modifier = Modifier
                                 .size(32.dp)
                                 .background(Color(0xFF690001).copy(alpha = 0.2f), CircleShape),
-                            contentAlignment = Alignment.Center
+                            contentAlignment = Alignment.Center,
                         ) {
                             Text(
                                 text = "${cart.itemCount}",
                                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                color = Color(0xFFFFEBE8)
+                                color = Color(0xFFFFEBE8),
                             )
                         }
                         Text(
                             text = "${cart.itemCount} ITEMS",
                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                             color = Color(0xFFFFEBE8),
-                            letterSpacing = 2.sp
+                            letterSpacing = 2.sp,
                         )
                     }
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = cart.total,
                             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Black),
-                            color = Color(0xFFFFEBE8)
+                            color = Color(0xFFFFEBE8),
                         )
                         Text(text = "->", color = Color(0xFFFFEBE8), fontWeight = FontWeight.Bold)
                     }
@@ -166,13 +169,13 @@ fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit, modifier: Mod
                 .fillMaxWidth()
                 .aspectRatio(4f / 3f)
                 .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                .background(MaterialTheme.colorScheme.surfaceContainerLow),
         ) {
             AsyncImage(
                 model = item.imageUrl,
                 contentDescription = item.title,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
 
             Box(
@@ -181,15 +184,15 @@ fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit, modifier: Mod
                     .align(if (item.isPrimary) Alignment.TopEnd else Alignment.TopStart)
                     .background(
                         MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
-                        CircleShape
+                        CircleShape,
                     )
-                    .padding(horizontal = 12.dp, vertical = 4.dp)
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
             ) {
                 Text(
                     text = item.tag,
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.secondary,
-                    letterSpacing = 1.sp
+                    letterSpacing = 1.sp,
                 )
             }
         }
@@ -198,20 +201,20 @@ fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit, modifier: Mod
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom
+                verticalAlignment = Alignment.Bottom,
             ) {
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Black, fontSize = 32.sp),
                     color = MaterialTheme.colorScheme.onSurface,
                     lineHeight = 36.sp,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 )
                 Text(
                     text = item.price,
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.padding(start = 16.dp)
+                    modifier = Modifier.padding(start = 16.dp),
                 )
             }
 
@@ -219,7 +222,7 @@ fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit, modifier: Mod
                 text = item.description,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(bottom = 16.dp),
             )
 
             Button(
@@ -227,7 +230,7 @@ fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit, modifier: Mod
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 contentPadding = PaddingValues(),
                 modifier = Modifier.fillMaxWidth().testTag("${OrderTestTags.ADD_TO_ORDER_BUTTON}-${item.id}"),
-                shape = RoundedCornerShape(6.dp)
+                shape = RoundedCornerShape(6.dp),
             ) {
                 Box(
                     modifier = Modifier
@@ -236,21 +239,30 @@ fun FeaturedItemCard(item: FeaturedItem, onAddToOrder: () -> Unit, modifier: Mod
                             if (item.isPrimary) {
                                 Brush.horizontalGradient(listOf(MaterialTheme.colorScheme.primary, Color(0xFF930003)))
                             } else {
-                                Brush.horizontalGradient(listOf(MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.colorScheme.surfaceContainerHighest))
-                            }
+                                Brush.horizontalGradient(
+                                    listOf(
+                                        MaterialTheme.colorScheme.surfaceContainerHighest,
+                                        MaterialTheme.colorScheme.surfaceContainerHighest,
+                                    ),
+                                )
+                            },
                         )
                         .padding(vertical = 16.dp),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(text = "+", color = if (item.isPrimary) Color(0xFFFFEBE8) else MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "+",
+                            color = if (item.isPrimary) Color(0xFFFFEBE8) else MaterialTheme.colorScheme.secondary,
+                            fontWeight = FontWeight.Bold,
+                        )
                         Text(
                             text = "ADD TO ORDER",
                             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                            color = if (item.isPrimary) Color(0xFFFFEBE8) else MaterialTheme.colorScheme.secondary
+                            color = if (item.isPrimary) Color(0xFFFFEBE8) else MaterialTheme.colorScheme.secondary,
                         )
                     }
                 }

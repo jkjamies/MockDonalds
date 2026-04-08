@@ -749,6 +749,8 @@ The Xcode project includes a "Compile Kotlin Framework" build phase that runs th
 | `swift test --package-path iosApp/ArchitectureCheck` | iOS architecture enforcement (Harmonize) | Fast | Separate — fast feedback |
 | `./gradlew connectedAndroidDeviceTest` | Android UI tests (emulator) | Slow | UI tests |
 | `./gradlew allTests` | All targets (Android + iOS) | Medium | Full suite |
+| `./gradlew detektMetadataCommonMain` | Kotlin linting (detekt + ktlint) | Fast | Lint |
+| `swiftlint --config .swiftlint.yml` | Swift linting (SwiftLint) | Fast | Lint |
 
 **Konsist runs separately from unit tests.** It is a pure JVM module (`kotlin("jvm")`) and is not included in `testAndroidHostTest`, `iosSimulatorArm64Test`, or `allTests`. This is intentional — in CI, Konsist should run as its own step for fast architectural feedback independent of the unit test suite.
 
@@ -1090,20 +1092,34 @@ The `:konsist` module enforces architectural conventions via [Konsist](https://d
 - **Internal implementations** — All `*Impl` and `*RepositoryImpl` classes are `internal`, wired via `@ContributesBinding`
 - **Cross-feature via api only** — Features can depend on other features, but only through their `:api` module
 
-### Future: Linting (detekt/ktlint)
+### Linting (detekt + ktlint)
 
-The following are style/formatting concerns better handled by a linter (not Konsist):
+Style and formatting enforcement uses [detekt](https://github.com/detekt/detekt) with the `detekt-formatting` plugin (which wraps [ktlint](https://pinterest.github.io/ktlint/) rules). Applied to all modules automatically via the `mockdonalds.detekt` convention plugin.
 
-- Unused imports (auto-fixable)
-- Empty files/classes
-- Import ordering and grouping
-- Max line length, indentation
-- Trailing commas consistency
-- Blank line conventions
-- Comment style (KDoc vs inline)
-- String template usage (`"$x"` vs `"" + x`)
-- Explicit return types on public APIs
-- Expression body vs block body preference
+```bash
+# Check all modules (static analysis + formatting)
+./gradlew detektMetadataCommonMain
+
+# Check Android-specific source
+./gradlew detektAndroidMain
+
+# Auto-fix formatting violations (trailing commas, import ordering, etc.)
+./gradlew detektMetadataCommonMain --auto-correct
+```
+
+**Configuration:** `config/detekt/detekt.yml` — layers on top of detekt defaults (`buildUponDefaultConfig = true`).
+
+| What It Checks | Auto-fixable |
+|----------------|-------------|
+| Trailing commas (call site + declaration site) | Yes |
+| Import ordering | Yes |
+| Max line length (120 warning, 200 error) | No — manual wrap |
+| Unused private members | No |
+| Wildcard imports | Yes |
+| Code complexity (long methods, parameter lists) | No |
+| Composable function naming (`@Composable` PascalCase allowed) | N/A |
+
+**Convention plugin:** `mockdonalds.detekt.gradle.kts` — applied via `mockdonalds.kmp.library` so every module inherits it. Adds `detekt-formatting` plugin for ktlint rules with `autoCorrect = true`.
 
 ## Architecture Tests (Harmonize)
 
@@ -1146,16 +1162,39 @@ Harmonize discovers the project root via `.harmonize.yaml` at the repo root. The
 - **`Harmonize.productionCode().on("iosApp/iosApp/Features")`** — View conventions (excludes test directories)
 - **`Harmonize.testCode()`** — Test/robot conventions (semantic queries like `withNameEndingWith("ViewTest")` naturally filter to only the relevant classes)
 
-### Future: Linting (SwiftLint)
+### Linting (SwiftLint)
 
-The following are style/formatting concerns better handled by a linter (not Harmonize):
+Style and formatting enforcement uses [SwiftLint](https://github.com/realm/SwiftLint). Install via Homebrew, runs from repo root.
 
-- Unused imports
-- Line length, indentation
-- Trailing closures
-- Blank line conventions
-- Force unwrap detection (more nuanced than `as!`/`try!`)
-- Naming style (camelCase enforcement)
+```bash
+# Install
+brew install swiftlint
+
+# Check all iOS source
+swiftlint --config .swiftlint.yml
+
+# Auto-fix (trailing whitespace, vertical whitespace, etc.)
+swiftlint --fix --config .swiftlint.yml
+```
+
+**Configuration:** `.swiftlint.yml` at repo root — `included` paths scope scanning to `iosApp/iosApp` and `iosApp/iosAppTests`. Circuit bridging code is excluded (force casts required for KMP interop).
+
+| What It Checks | Auto-fixable |
+|----------------|-------------|
+| Line length (120 warning, 200 error) | No — manual wrap |
+| Force unwrapping, force cast, force try | No |
+| Closure body length (80 warning, 160 error) | No — extract sub-views |
+| Multiple closures with trailing closure | No |
+| Vertical whitespace | Yes |
+| Trailing whitespace | Yes |
+| Implicit optional initialization | Yes |
+
+**Xcode integration:** Add a Run Script build phase to see inline warnings:
+```bash
+if command -v swiftlint >/dev/null; then
+  swiftlint --config "${SRCROOT}/../.swiftlint.yml"
+fi
+```
 
 ## Features
 

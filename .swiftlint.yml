@@ -1,0 +1,40 @@
+# SwiftLint configuration — scoped to iOS source via included paths.
+# Install: brew install swiftlint
+# Check:   swiftlint --config .swiftlint.yml
+# Fix:     swiftlint --fix --config .swiftlint.yml
+
+included:
+  - iosApp/iosApp
+  - iosApp/iosAppTests
+
+excluded:
+  - iosApp/ArchitectureCheck/.build
+  - iosApp/iosApp/Circuit  # Framework bridging code — force casts required for KMP interop
+
+# Line and body length — relaxed for SwiftUI views with long body properties
+line_length:
+  warning: 120
+  error: 200
+type_body_length:
+  warning: 300
+  error: 500
+function_body_length:
+  warning: 60
+  error: 100
+
+disabled_rules:
+  - todo  # Harmonize enforces no TODO/FIXME/HACK in views
+  - trailing_comma  # Swift convention does not use trailing commas
+
+# Closure body length — relaxed for SwiftUI view builders (@ViewBuilder body properties)
+closure_body_length:
+  warning: 80
+  error: 160
+
+opt_in_rules:
+  - force_unwrapping
+  - force_cast
+  - force_try
+  - vertical_whitespace_closing_braces
+  - closure_body_length
+  - implicit_optional_initialization

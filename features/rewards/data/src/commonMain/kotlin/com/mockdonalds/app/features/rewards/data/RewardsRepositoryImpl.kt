@@ -1,3 +1,5 @@
+@file:Suppress("MaxLineLength") // URLs in fake data
+
 package com.mockdonalds.app.features.rewards.data
 
 import com.mockdonalds.app.features.rewards.api.domain.HistoryEntry
@@ -18,7 +20,7 @@ class RewardsRepositoryImpl : RewardsRepository {
             nextRewardName = "Golden Burger",
             pointsToNextReward = 568,
             progressFraction = 0.88f,
-        )
+        ),
     )
 
     override fun getVaultSpecials(): Flow<List<VaultSpecial>> = flowOf(
@@ -47,14 +49,35 @@ class RewardsRepositoryImpl : RewardsRepository {
                 tag = null,
                 isFeatured = false,
             ),
-        )
+        ),
     )
 
     override fun getHistory(): Flow<List<HistoryEntry>> = flowOf(
         listOf(
-            HistoryEntry(id = "1", title = "Late Night Diner Order", subtitle = "Oct 24 • Order #8821", points = "+125", isPositive = true, icon = "🍽️"),
-            HistoryEntry(id = "2", title = "The Midnight Wagyu", subtitle = "Oct 21 • Reward Redeemed", points = "-2,500", isPositive = false, icon = "🎁"),
-            HistoryEntry(id = "3", title = "Birthday Bonus", subtitle = "Oct 18 • Annual Gift", points = "+500", isPositive = true, icon = "🎉"),
-        )
+            HistoryEntry(
+                id = "1",
+                title = "Late Night Diner Order",
+                subtitle = "Oct 24 • Order #8821",
+                points = "+125",
+                isPositive = true,
+                icon = "🍽️",
+            ),
+            HistoryEntry(
+                id = "2",
+                title = "The Midnight Wagyu",
+                subtitle = "Oct 21 • Reward Redeemed",
+                points = "-2,500",
+                isPositive = false,
+                icon = "🎁",
+            ),
+            HistoryEntry(
+                id = "3",
+                title = "Birthday Bonus",
+                subtitle = "Oct 18 • Annual Gift",
+                points = "+500",
+                isPositive = true,
+                icon = "🎉",
+            ),
+        ),
     )
 }

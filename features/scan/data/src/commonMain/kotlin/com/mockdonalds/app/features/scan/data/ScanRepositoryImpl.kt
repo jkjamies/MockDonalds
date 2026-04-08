@@ -1,3 +1,5 @@
+@file:Suppress("MaxLineLength") // URLs in fake data
+
 package com.mockdonalds.app.features.scan.data
 
 import com.mockdonalds.app.features.scan.api.domain.MemberInfo
@@ -15,7 +17,7 @@ class ScanRepositoryImpl : ScanRepository {
         MemberInfo(
             memberStatus = "Current Member",
             qrCodeUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuC9Pojw6DdMsOOR6hCze-e8NXeAre3ygPVczci3TVq7UnAnPDxoxM_GJQysSal74SZsWTa2Eli6wrej9xa6D_JnOd9cFYjPNapwY2oPFt_4y1988l-6Smo9p3_7Tm1cpbycujNr-US0sB3HayQD2AbCIjUc93yNVTN8VNhZknndgmID66Z92VP8jVgZ_SLb4zLUb_TqSBcfwJX6CiG_OZpDr9dNsM-Av6tOdOBkuZixKo_kctR9aeyVVf9scLxlreCGNXUSrK3bdpw",
-        )
+        ),
     )
 
     override fun getRewardsProgress(): Flow<ScanRewardsProgress> = flowOf(
@@ -24,6 +26,6 @@ class ScanRepositoryImpl : ScanRepository {
             pointsToNextReward = 250,
             progressFraction = 0.75f,
             message = "You're just 250 pts away from your next free treat!",
-        )
+        ),
     )
 }

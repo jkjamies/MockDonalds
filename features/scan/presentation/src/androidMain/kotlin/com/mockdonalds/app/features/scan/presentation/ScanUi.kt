@@ -38,10 +38,10 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.platform.testTag
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.features.scan.api.navigation.ScanScreen
 import com.mockdonalds.app.features.scan.api.ui.ScanTestTags
@@ -64,9 +64,8 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
             .padding(bottom = 128.dp)
             .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(40.dp)
+        verticalArrangement = Arrangement.spacedBy(40.dp),
     ) {
-
         // Main QR Code Card
         state.memberInfo?.let { member ->
             Box(
@@ -74,7 +73,7 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                    .testTag(ScanTestTags.MEMBER_CARD)
+                    .testTag(ScanTestTags.MEMBER_CARD),
             ) {
                 Box(
                     modifier = Modifier
@@ -82,7 +81,7 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                         .align(Alignment.TopEnd)
                         .offset(x = 48.dp, y = (-48).dp)
                         .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape)
-                        .blur(48.dp)
+                        .blur(48.dp),
                 )
                 Box(
                     modifier = Modifier
@@ -90,26 +89,26 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                         .align(Alignment.BottomStart)
                         .offset(x = (-48).dp, y = 48.dp)
                         .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f), CircleShape)
-                        .blur(48.dp)
+                        .blur(48.dp),
                 )
 
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
                         text = "MOCK REWARDS",
                         style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        modifier = Modifier.padding(bottom = 8.dp),
                     )
                     Text(
                         text = "Scan at the counter to earn & redeem",
                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = 32.dp)
+                        modifier = Modifier.padding(bottom = 32.dp),
                     )
 
                     val infiniteTransition = rememberInfiniteTransition()
@@ -118,8 +117,8 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                         targetValue = 360f,
                         animationSpec = infiniteRepeatable(
                             animation = tween(3000, easing = LinearEasing),
-                            repeatMode = RepeatMode.Restart
-                        )
+                            repeatMode = RepeatMode.Restart,
+                        ),
                     )
                     val primary = MaterialTheme.colorScheme.primary
                     val secondary = MaterialTheme.colorScheme.secondary
@@ -138,31 +137,31 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                                             1f to primary,
                                         ),
                                         radius = size.width,
-                                        center = center
+                                        center = center,
                                     )
                                 }
                                 drawContent()
                             }
-                            .padding(4.dp)
+                            .padding(4.dp),
                     ) {
                         AsyncImage(
                             model = member.qrCodeUrl,
                             contentDescription = "QR Code",
                             contentScale = ContentScale.Fit,
-                            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(16.dp))
+                            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(16.dp)),
                         )
                     }
 
                     Row(
                         modifier = Modifier.padding(top = 32.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(text = "⭐", color = MaterialTheme.colorScheme.secondary)
                         Text(
                             text = member.memberStatus,
                             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.onSurface,
                         )
                     }
                 }
@@ -173,28 +172,31 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
         state.rewardsProgress?.let { progress ->
             Column(
                 modifier = Modifier.fillMaxWidth().testTag(ScanTestTags.REWARDS_PROGRESS),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom
+                    verticalAlignment = Alignment.Bottom,
                 ) {
                     Text(
                         text = "REWARDS PROGRESS",
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp,
+                        ),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
                             text = "${progress.currentPoints}",
                             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Black),
-                            color = MaterialTheme.colorScheme.secondary
+                            color = MaterialTheme.colorScheme.secondary,
                         )
                         Text(
                             text = "PTS",
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -204,7 +206,7 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                         .fillMaxWidth()
                         .height(8.dp)
                         .background(MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape)
-                        .clip(CircleShape)
+                        .clip(CircleShape),
                 ) {
                     Box(
                         modifier = Modifier
@@ -212,9 +214,12 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                             .fillMaxHeight()
                             .background(
                                 brush = Brush.horizontalGradient(
-                                    colors = listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.secondary)
-                                )
-                            )
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.primary,
+                                        MaterialTheme.colorScheme.secondary,
+                                    ),
+                                ),
+                            ),
                     )
                 }
 
@@ -222,7 +227,7 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                     text = progress.message,
                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
                 )
             }
         }
@@ -230,21 +235,24 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
         // Action Buttons
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Button(
                 onClick = { state.eventSink(ScanEvent.PayNowClicked) },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
                 shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(vertical = 20.dp),
-                modifier = Modifier.weight(1f).testTag(ScanTestTags.PAY_NOW_BUTTON)
+                modifier = Modifier.weight(1f).testTag(ScanTestTags.PAY_NOW_BUTTON),
             ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     Text(text = "💳", color = MaterialTheme.colorScheme.secondary)
                     Text(
                         text = "Pay Now",
                         style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
             }
@@ -254,14 +262,17 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
                 shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(vertical = 20.dp),
-                modifier = Modifier.weight(1f).testTag(ScanTestTags.VIEW_OFFERS_BUTTON)
+                modifier = Modifier.weight(1f).testTag(ScanTestTags.VIEW_OFFERS_BUTTON),
             ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     Text(text = "🏷️", color = MaterialTheme.colorScheme.secondary)
                     Text(
                         text = "View Offers",
                         style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
             }
@@ -276,17 +287,17 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                 .testTag(ScanTestTags.PRO_TIP)
                 .padding(start = 4.dp)
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                .padding(20.dp)
+                .padding(20.dp),
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.Top
+                verticalAlignment = Alignment.Top,
             ) {
                 Box(
                     modifier = Modifier
                         .size(40.dp)
                         .background(MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text(text = "ℹ️", color = MaterialTheme.colorScheme.secondary)
                 }
@@ -295,12 +306,13 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
                         text = "Pro Tip",
                         style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(bottom = 4.dp)
+                        modifier = Modifier.padding(bottom = 4.dp),
                     )
                     Text(
-                        text = "Ensure your screen brightness is turned up for the best scanning experience at our kiosks.",
+                        text = "Ensure your screen brightness is turned up " +
+                            "for the best scanning experience at our kiosks.",
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
