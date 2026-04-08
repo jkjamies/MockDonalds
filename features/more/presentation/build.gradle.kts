@@ -10,8 +10,9 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":features:more:api"))
-            implementation(project(":features:login:api"))
+            implementation(project(":features:more:api:domain"))
+            implementation(project(":features:more:api:navigation"))
+            implementation(project(":features:login:api:navigation"))
             implementation(project(":core:centerpost"))
             implementation(project(":core:theme"))
             implementation(project(":core:common"))

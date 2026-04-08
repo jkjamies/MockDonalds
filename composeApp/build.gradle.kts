@@ -32,22 +32,17 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
 
-            // Export feature APIs for iOS consumption
-            export(project(":features:home:api"))
-            export(project(":features:order:api"))
-            export(project(":features:rewards:api"))
-            export(project(":features:scan:api"))
-            export(project(":features:more:api"))
-            export(project(":features:login:api"))
+            // Export feature modules for iOS consumption (auto-discovered)
+            rootDir.resolve("features").listFiles()
+                ?.filter { it.isDirectory }
+                ?.map { it.name }
+                ?.sorted()
+                ?.forEach { feature ->
+                    export(project(":features:$feature:api:domain"))
+                    export(project(":features:$feature:api:navigation"))
+                    export(project(":features:$feature:presentation"))
+                }
             export(project(":core:common"))
-
-            // Export presentation modules (UiState types + PresenterFactory for Swift)
-            export(project(":features:home:presentation"))
-            export(project(":features:order:presentation"))
-            export(project(":features:rewards:presentation"))
-            export(project(":features:scan:presentation"))
-            export(project(":features:more:presentation"))
-            export(project(":features:login:presentation"))
         }
     }
 
@@ -60,33 +55,18 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
 
-            // Feature APIs
-            api(project(":features:home:api"))
-            api(project(":features:order:api"))
-            api(project(":features:rewards:api"))
-            api(project(":features:scan:api"))
-            api(project(":features:more:api"))
-            api(project(":features:login:api"))
-
-            // Feature implementations
-            implementation(project(":features:home:data"))
-            implementation(project(":features:home:domain"))
-            api(project(":features:home:presentation"))
-            implementation(project(":features:order:data"))
-            implementation(project(":features:order:domain"))
-            api(project(":features:order:presentation"))
-            implementation(project(":features:rewards:data"))
-            implementation(project(":features:rewards:domain"))
-            api(project(":features:rewards:presentation"))
-            implementation(project(":features:scan:data"))
-            implementation(project(":features:scan:domain"))
-            api(project(":features:scan:presentation"))
-            implementation(project(":features:more:data"))
-            implementation(project(":features:more:domain"))
-            api(project(":features:more:presentation"))
-            implementation(project(":features:login:data"))
-            implementation(project(":features:login:domain"))
-            api(project(":features:login:presentation"))
+            // Feature modules (auto-discovered, architecture-enforced wiring)
+            rootDir.resolve("features").listFiles()
+                ?.filter { it.isDirectory }
+                ?.map { it.name }
+                ?.sorted()
+                ?.forEach { feature ->
+                    api(project(":features:$feature:api:domain"))
+                    api(project(":features:$feature:api:navigation"))
+                    implementation(project(":features:$feature:data"))
+                    implementation(project(":features:$feature:domain"))
+                    api(project(":features:$feature:presentation"))
+                }
 
             // Core
             api(project(":core:common"))

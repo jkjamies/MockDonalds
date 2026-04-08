@@ -37,10 +37,12 @@ class DomainLayerTest : BehaviorSpec({
         }
 
         Then("every abstract use case should have a matching Impl in domain") {
-            val abstractUseCases = Konsist.scopeFromSourceSet("commonMain", "features..", "api")
+            val abstractUseCases = Konsist.scopeFromProject()
                 .classes()
                 .filter {
-                    it.hasAbstractModifier && it.hasParent { p ->
+                    it.resideInPath("..api..") &&
+                        it.resideInPath("..commonMain..") &&
+                        it.hasAbstractModifier && it.hasParent { p ->
                         p.name == "CenterPostInteractor" || p.name == "CenterPostSubjectInteractor"
                     }
                 }

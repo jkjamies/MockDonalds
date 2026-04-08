@@ -38,49 +38,62 @@ A Kotlin Multiplatform (KMP) reference app showcasing a clean, scalable architec
 
 ### Feature Module Architecture
 
-Each feature follows a strict 4-layer modular architecture with unidirectional dependency flow:
+Each feature follows a strict modular architecture with unidirectional dependency flow. The `api` layer is split into `api/domain` (pure business contracts) and `api/navigation` (Circuit screen + UI test tags), keeping the domain layer free of UI framework dependencies:
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        Feature Module                               │
-│                                                                     │
-│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────────┐  │
-│  │   api    │◄───│  domain  │◄───│   data   │    │presentation  │  │
-│  │          │    │          │    │          │    │              │  │
-│  │ Models   │    │ UseCase  │    │ Repo     │    │ Presenter    │  │
-│  │ UseCase  │    │  Impl    │    │  Impl    │    │ UiState      │  │
-│  │Interface │    │ Repo     │    │          │    │ Events       │  │
-│  │ Screen   │    │Interface │    │          │    │ UI (Android) │  │
-│  └──────────┘    └──────────┘    └──────────┘    └──────┬───────┘  │
-│       ▲                                                 │          │
-│       └─────────────────────────────────────────────────┘          │
-│                    presentation depends on api only                 │
-└─────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────┐
+│                           Feature Module                                 │
+│                                                                          │
+│  ┌─────────────┐  ┌─────────────┐                                       │
+│  │ api/domain  │  │api/navigation│                                       │
+│  │             │  │             │                                        │
+│  │ Models      │  │ Screen      │                                        │
+│  │ UseCase     │  │ TestTags    │                                        │
+│  │ Interface   │  │ (@Parcelize)│                                        │
+│  └──────▲──────┘  └──────▲──────┘                                        │
+│         │                │                                               │
+│  ┌──────┴──────┐         │         ┌──────────┐    ┌──────────────────┐  │
+│  │   domain    │         │         │   data   │    │  presentation    │  │
+│  │             │         │         │          │    │                  │  │
+│  │ UseCase Impl│         │         │ Repo Impl│    │ Presenter        │  │
+│  │ Repo Iface  │         │         │          │    │ UiState/Events   │  │
+│  └──────▲──────┘         │         └──────────┘    │ UI (Android)     │  │
+│         │                │              │          └────────┬─────────┘  │
+│         └────── data ────┘              │                   │            │
+│                                         │                   │            │
+│    presentation depends on api/domain + api/navigation only              │
+└──────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Layer Responsibilities
 
 | Layer | Convention Plugin | Contains | Depends On |
 |-------|-------------------|----------|------------|
-| **api** | `mockdonalds.kmp.library` | Domain models, use case interfaces, Screen definition | Nothing (pure Kotlin) |
-| **domain** | `mockdonalds.kmp.domain` | Use case implementations, repository interfaces | `api` (transitive via `api()`) |
-| **data** | `mockdonalds.kmp.data` | Repository implementations, data sources | `domain` (gets `api` transitively) |
-| **presentation** | `mockdonalds.kmp.presentation` | Presenter, UiState, Events, Android Compose UI | `api` only (no domain/data access) |
+| **api/domain** | `mockdonalds.kmp.library` | Domain models, use case interfaces | `core:common`, `core:centerpost` (no Circuit) |
+| **api/navigation** | `mockdonalds.kmp.library` | Screen definition, TestTags | `circuit.runtime`, `core:common` |
+| **domain** | `mockdonalds.kmp.domain` | Use case implementations, repository interfaces | `api:domain` (transitive via `api()`) |
+| **data** | `mockdonalds.kmp.data` | Repository implementations, data sources | `domain` (gets `api:domain` transitively) |
+| **presentation** | `mockdonalds.kmp.presentation` | Presenter, UiState, Events, Android Compose UI | `api:domain` + `api:navigation` (no domain/data access) |
 
 ### Dependency Flow Diagram
 
 ```
-presentation ──► api ◄── domain ◄── data
-                  │         │         │
-                  │         │         └── Repository implementations
-                  │         ├── Use case implementations
-                  │         └── Repository interfaces
-                  ├── Domain models
-                  ├── Use case interfaces
-                  └── Screen definitions
+presentation ──► api/domain ◄── domain ◄── data
+     │               │            │
+     │               │            ├── Use case implementations
+     │               │            └── Repository interfaces
+     │               ├── Domain models
+     │               └── Use case interfaces
+     │
+     └──────────► api/navigation
+                     ├── Screen definitions
+                     └── TestTags
 ```
 
-Key constraint: **Presentation depends only on api** — it never sees domain or data. This enforces a clean separation where presenters interact with use case interfaces, not implementations. DI wiring happens at the `composeApp` level where all modules converge.
+Key constraints:
+- **Presentation depends only on api submodules** — it never sees domain or data
+- **Domain depends only on api/domain** — no Circuit dependency, pure business logic
+- **Cross-feature navigation** depends on `<other>:api:navigation` only
 
 ### Dependency Injection with Metro
 
@@ -508,13 +521,16 @@ MockDonalds/
 ├── composeApp/                         # Shared application module
 │   └── src/
 │       ├── commonMain/kotlin/
-│       │   ├── App.kt                  # Root Composable (CircuitCompositionLocals + NavigableCircuitContent)
 │       │   ├── AppGraph.kt             # Metro DI graph + Circuit wiring
 │       │   ├── MockDonaldsBottomNavigation.kt
 │       │   └── MockDonaldsIcons.kt
+│       ├── androidMain/kotlin/
+│       │   └── App.kt                  # NavigableCircuitContent + predictive back
 │       └── iosMain/kotlin/
 │           └── bridge/
-│               ├── IosApp.kt           # Creates Metro graph, exposes presenterBridge()
+│               ├── IosApp.kt           # Creates Metro graph, exposes presenterBridge() + BridgeNavigator
+│               ├── BridgeNavigator.kt  # Navigator impl → StateFlow<NavigationAction> for iOS
+│               ├── NavigationAction.kt # Sealed class — GoTo, Pop, ResetRoot, ShowBottomSheet, etc.
 │               └── CircuitPresenterKotlinBridge.kt  # Molecule + NativeCoroutines bridge
 │
 ├── core/
@@ -526,14 +542,17 @@ MockDonalds/
 │
 ├── features/
 │   ├── home/
-│   │   ├── api/                        # HomeScreen, HomeModels, GetHomeContent abstract class
+│   │   ├── api/
+│   │   │   ├── domain/                 # HomeModels, GetHomeContent abstract class (no Circuit)
+│   │   │   └── navigation/             # HomeScreen (@Parcelize), HomeTestTags
 │   │   ├── domain/                     # GetHomeContentImpl, HomeRepository interface
 │   │   ├── data/                       # HomeRepositoryImpl
 │   │   ├── test/                       # Feature-specific test fakes (FakeGetHomeContent)
 │   │   └── presentation/
 │   │       ├── commonMain/             # HomePresenter, HomeUiState, HomeEvent
-│   │       ├── androidMain/            # HomeUi (Compose) + TestTags
+│   │       ├── androidMain/            # HomeUi (Compose)
 │   │       └── androidDeviceTest/      # UI tests: StateRobot, UiRobot, UiTest
+│   ├── login/                          # Same structure: magic link + social sign-in
 │   ├── order/                          # Same structure: menu, featured items, cart
 │   ├── rewards/                        # Same structure: points, vault specials, history
 │   ├── scan/                           # Same structure: QR code, member info, progress
@@ -541,15 +560,16 @@ MockDonalds/
 │
 ├── iosApp/                             # iOS application (Xcode project)
 │   └── iosApp/
-│       ├── Circuit/                    # CircuitIos, CircuitView, CircuitContent, CircuitStack
+│       ├── Circuit/                    # CircuitIos, CircuitView, CircuitContent, CircuitStack, CircuitNavigator
 │       ├── Theme/                      # MockDonaldsTheme (light/dark colors, dimens, environment)
 │       ├── Features/
 │       │   ├── Home/HomeView.swift
+│       │   ├── Login/LoginView.swift
 │       │   ├── Order/OrderView.swift
 │       │   ├── Rewards/RewardsView.swift
 │       │   ├── Scan/ScanView.swift
 │       │   └── More/MoreView.swift
-│       ├── MockDonaldsApp.swift        # Tab bar + CircuitContent per tab
+│       ├── MockDonaldsApp.swift        # Tab bar + CircuitNavigator + CircuitContent per tab
 │       └── AppDelegate.swift           # UI factory registration
 │
 └── build-logic/convention/             # Gradle convention plugins
@@ -565,7 +585,7 @@ MockDonalds/
 Convention plugins eliminate boilerplate across the 20+ feature modules. Each layer has a dedicated plugin:
 
 ### `mockdonalds.kmp.library`
-Base KMP library plugin. Used by `api` modules. Provides:
+Base KMP library plugin. Used by `api:domain` and `api:navigation` modules. Provides:
 - KMP targets: Android (`com.android.kotlin.multiplatform.library`), iOS (x64, arm64, simulator)
 - Android host tests (`withHostTest { isReturnDefaultValues = true }`)
 - Kotest 6.1.11 + KSP for native test discovery (`io.kotest` Gradle plugin)
@@ -610,15 +630,11 @@ For presentation modules. Provides Compose runtime, Circuit, and Metro with buil
 
 ## How to Add a New Feature
 
-### 1. Create the api module
+### 1. Create the api:domain module
 
-`features/{feature}/api/src/commonMain/kotlin/.../`
+`features/{feature}/api/domain/src/commonMain/kotlin/.../domain/`
 
-**Screen definition:**
-```kotlin
-@Parcelize
-data object FeatureScreen : Screen
-```
+This module has **zero Circuit dependency** — pure domain contracts only.
 
 **Domain models:**
 ```kotlin
@@ -631,6 +647,26 @@ data class FeatureContent(
 **Use case (abstract class extending CenterPostSubjectInteractor):**
 ```kotlin
 abstract class GetFeatureContent : CenterPostSubjectInteractor<Unit, FeatureContent>()
+```
+
+### 1b. Create the api:navigation module
+
+`features/{feature}/api/navigation/src/commonMain/kotlin/.../navigation/`
+
+This module holds the Circuit `Screen` and shared test tags.
+
+**Screen definition:**
+```kotlin
+@Parcelize
+data object FeatureScreen : Screen
+```
+
+**Test tags** (`ui/` package):
+```kotlin
+object FeatureTestTags {
+    const val SECTION_A = "FeatureSectionA"
+    const val BUTTON_B = "FeatureButtonB"
+}
 ```
 
 ### 2. Create the domain module
@@ -739,11 +775,13 @@ ScreenUiFactory<FeatureScreen, FeatureUiState> { FeatureView(state: $0) },
 **composeApp/build.gradle.kts** — add module dependencies:
 ```kotlin
 // iOS framework exports:
-export(project(":features:{feature}:api"))
+export(project(":features:{feature}:api:domain"))
+export(project(":features:{feature}:api:navigation"))
 export(project(":features:{feature}:presentation"))
 
 // commonMain.dependencies:
-api(project(":features:{feature}:api"))
+api(project(":features:{feature}:api:domain"))
+api(project(":features:{feature}:api:navigation"))
 implementation(project(":features:{feature}:data"))
 implementation(project(":features:{feature}:domain"))
 api(project(":features:{feature}:presentation"))
@@ -759,9 +797,10 @@ CircuitContent(screen: FeatureScreen.shared)
 
 | What | Where | Why |
 |------|-------|-----|
-| Screen | `api/commonMain` | Shared navigation contract |
-| Domain Models | `api/commonMain` | Shared data types used by all layers |
-| Use Case Interface | `api/commonMain` | Contract for presentation layer |
+| Screen | `api/navigation/commonMain` | Shared navigation contract (Circuit dependency) |
+| TestTags | `api/navigation/commonMain` | Shared test tag constants (no Circuit import needed) |
+| Domain Models | `api/domain/commonMain` | Shared data types — no Circuit dependency |
+| Use Case Interface | `api/domain/commonMain` | Contract for presentation layer — no Circuit dependency |
 | Use Case Impl | `domain/commonMain` | Business logic, `@ContributesBinding` auto-wires |
 | Repository Interface | `domain/commonMain` | Contract for data layer |
 | Repository Impl | `data/commonMain` | Data source, `@ContributesBinding` auto-wires |
@@ -819,14 +858,24 @@ class FeaturePresenterTest : BehaviorSpec({
 
 ### 8. Wire remaining configuration
 
-**settings.gradle.kts** — add module includes:
+**settings.gradle.kts** — **automatic**. Feature modules are auto-discovered from `features/` directories. Each feature directory gets 6 architecture-enforced submodules included automatically:
 ```kotlin
-include(":features:{feature}:api")
-include(":features:{feature}:data")
-include(":features:{feature}:domain")
-include(":features:{feature}:presentation")
-include(":features:{feature}:test")
+// settings.gradle.kts — no manual includes needed per feature
+rootDir.resolve("features").listFiles()
+    ?.filter { it.isDirectory }
+    ?.map { it.name }
+    ?.sorted()
+    ?.forEach { feature ->
+        include(":features:$feature:api:domain")
+        include(":features:$feature:api:navigation")
+        include(":features:$feature:data")
+        include(":features:$feature:domain")
+        include(":features:$feature:presentation")
+        include(":features:$feature:test")
+    }
 ```
+
+**composeApp/build.gradle.kts** — also **automatic**. Feature deps use the same pattern with enforced wiring (api:domain + api:navigation as `api()`, data + domain as `implementation()`, presentation as `api()`). Just create the feature directory and both files wire it.
 
 **App.kt** — add screen to route mapping:
 ```kotlin
@@ -835,31 +884,26 @@ is FeatureScreen -> "feature"
 "feature" -> FeatureScreen
 ```
 
-**TestTags** (`api/ui/`) — shared test tag constants used by both platforms:
-```kotlin
-object FeatureTestTags {
-    const val SECTION_A = "FeatureSectionA"
-    const val BUTTON_B = "FeatureButtonB"
-}
-```
+**TestTags** — already created in Step 1b (`api/navigation/commonMain/.../ui/`).
 
 ### Quick Checklist
 
-1. `features/{name}/api` — Screen, TestTags, domain models, interactor
-2. `features/{name}/domain` — Repository interface, interactor impl (`@ContributesBinding`)
-3. `features/{name}/data` — Repository impl (`@ContributesBinding`)
-4. `features/{name}/presentation/commonMain` — UiState/Events, Presenter (`@CircuitInject`)
-5. `features/{name}/presentation/androidMain` — Compose UI (`@CircuitInject`)
-6. `features/{name}/test` — Fake interactor
-7. `features/{name}/presentation/commonTest` — Presenter test (Kotest)
-8. `features/{name}/presentation/androidDeviceTest` — StateRobot, UiRobot, UiTest
-9. `iosApp/Features/{Name}/` — SwiftUI view
-10. `iosApp/iosAppTests/{Name}/` — StateRobot, ViewRobot, ViewTest (Swift Testing)
-11. `settings.gradle.kts` — 5 include statements
-12. `composeApp/build.gradle.kts` — api, data, domain, presentation deps + iOS exports
-13. `App.kt` — screen route mapping
-14. `AppDelegate.swift` — `ScreenUiFactory` registration
-15. Verify — detekt, SwiftLint, konsist, Harmonize, all tests pass
+1. `features/{name}/api/domain` — Domain models, interactor abstract class (no Circuit)
+2. `features/{name}/api/navigation` — Screen (`@Parcelize`), TestTags
+3. `features/{name}/domain` — Repository interface, interactor impl (`@ContributesBinding`)
+4. `features/{name}/data` — Repository impl (`@ContributesBinding`)
+5. `features/{name}/presentation/commonMain` — UiState/Events, Presenter (`@CircuitInject`)
+6. `features/{name}/presentation/androidMain` — Compose UI (`@CircuitInject`)
+7. `features/{name}/test` — Fake interactor
+8. `features/{name}/presentation/commonTest` — Presenter test (Kotest)
+9. `features/{name}/presentation/androidDeviceTest` — StateRobot, UiRobot, UiTest
+10. `iosApp/Features/{Name}/` — SwiftUI view
+11. `iosApp/iosAppTests/{Name}/` — StateRobot, ViewRobot, ViewTest (Swift Testing)
+12. `settings.gradle.kts` — 6 include statements (api:domain + api:navigation + domain + data + presentation + test)
+13. `composeApp/build.gradle.kts` — api:domain, api:navigation, data, domain, presentation deps + iOS exports
+14. `App.kt` — screen route mapping
+15. `AppDelegate.swift` — `ScreenUiFactory` registration
+16. Verify — detekt, SwiftLint, konsist, Harmonize, all tests pass
 
 ## iOS Bridge Layer
 

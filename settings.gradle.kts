@@ -28,42 +28,19 @@ include(":core:theme")
 include(":core:network")
 include(":core:common")
 
-// Feature modules
-include(":features:home:api")
-include(":features:home:data")
-include(":features:home:domain")
-include(":features:home:presentation")
-include(":features:home:test")
-
-include(":features:order:api")
-include(":features:order:data")
-include(":features:order:domain")
-include(":features:order:presentation")
-include(":features:order:test")
-
-include(":features:rewards:api")
-include(":features:rewards:data")
-include(":features:rewards:domain")
-include(":features:rewards:presentation")
-include(":features:rewards:test")
-
-include(":features:scan:api")
-include(":features:scan:data")
-include(":features:scan:domain")
-include(":features:scan:presentation")
-include(":features:scan:test")
-
-include(":features:more:api")
-include(":features:more:data")
-include(":features:more:domain")
-include(":features:more:presentation")
-include(":features:more:test")
-
-include(":features:login:api")
-include(":features:login:data")
-include(":features:login:domain")
-include(":features:login:presentation")
-include(":features:login:test")
+// Feature modules — auto-discovered, architecture-enforced submodules
+rootDir.resolve("features").listFiles()
+    ?.filter { it.isDirectory }
+    ?.map { it.name }
+    ?.sorted()
+    ?.forEach { feature ->
+        include(":features:$feature:api:domain")
+        include(":features:$feature:api:navigation")
+        include(":features:$feature:data")
+        include(":features:$feature:domain")
+        include(":features:$feature:presentation")
+        include(":features:$feature:test")
+    }
 
 // Architecture tests
 include(":konsist")

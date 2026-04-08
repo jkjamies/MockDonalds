@@ -10,7 +10,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":features:scan:api"))
+            implementation(project(":features:scan:api:domain"))
+            implementation(project(":features:scan:api:navigation"))
             implementation(project(":core:centerpost"))
             implementation(project(":core:theme"))
             implementation(project(":core:common"))

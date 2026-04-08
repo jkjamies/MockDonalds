@@ -147,7 +147,7 @@ class UiTestConventionsTest : BehaviorSpec({
             val missing = uiFileNames.filter { it !in testTagObjects }
 
             assert(missing.isEmpty()) {
-                "UI composables missing TestTags object in api module:\n${missing.joinToString("\n") { "  ${it}Ui — expected ${it}TestTags in :features:${it.lowercase()}:api" }}"
+                "UI composables missing TestTags object in api:navigation module:\n${missing.joinToString("\n") { "  ${it}Ui — expected ${it}TestTags in :features:${it.lowercase()}:api:navigation" }}"
             }
         }
 
@@ -162,7 +162,7 @@ class UiTestConventionsTest : BehaviorSpec({
 
             assert(violators.isEmpty()) {
                 val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
-                "TestTags objects must live in the feature api module (ui package), not in presentation:\n$names"
+                "TestTags objects must live in the feature api:navigation module (ui package), not in presentation:\n$names"
             }
         }
     }

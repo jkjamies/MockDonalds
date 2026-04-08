@@ -68,23 +68,75 @@ class ApiLayerTest : BehaviorSpec({
     }
 
     Given("api module exports") {
-        Then("all feature api modules should import circuit.runtime for Screen types") {
-            val apiFiles = Konsist.scopeFromProject()
+        Then("all Screen files in api navigation should import circuit.runtime") {
+            val screenFiles = Konsist.scopeFromProject()
                 .files
                 .filter {
                     it.resideInPath("..features..") &&
                         it.resideInPath("..api..") &&
-                        it.resideInPath("..navigation..") &&
-                        it.resideInPath("..commonMain..")
+                        it.resideInPath("..commonMain..") &&
+                        it.name.endsWith("Screen.kt")
                 }
 
-            apiFiles.forEach { file ->
+            screenFiles.forEach { file ->
                 val hasCircuitImport = file.imports.any {
                     it.name.startsWith("com.slack.circuit.runtime")
                 }
                 assert(hasCircuitImport) {
-                    "Screen file '${file.name}' in api/navigation must import from com.slack.circuit.runtime"
+                    "Screen file '${file.name}' in api:navigation must import from com.slack.circuit.runtime"
                 }
+            }
+        }
+    }
+
+    Given("api:domain isolation") {
+        Then("files in api:domain must not import circuit.runtime") {
+            val violators = Konsist.scopeFromProject()
+                .files
+                .filter {
+                    it.resideInPath("..features..") &&
+                        it.resideInPath("..api/domain..") &&
+                        it.resideInPath("..commonMain..")
+                }
+                .filter { file ->
+                    file.imports.any { it.name.startsWith("com.slack.circuit") }
+                }
+
+            assert(violators.isEmpty()) {
+                val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
+                "api:domain must have no Circuit dependency — move Circuit-dependent code to api:navigation:\n$names"
+            }
+        }
+
+        Then("Screen files must reside in api:navigation, not api:domain") {
+            val violators = Konsist.scopeFromProject()
+                .files
+                .filter {
+                    it.resideInPath("..features..") &&
+                        it.resideInPath("..api/domain..") &&
+                        it.resideInPath("..commonMain..") &&
+                        it.name.endsWith("Screen.kt")
+                }
+
+            assert(violators.isEmpty()) {
+                val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
+                "Screen files belong in api:navigation, not api:domain:\n$names"
+            }
+        }
+
+        Then("TestTags files must reside in api:navigation, not api:domain") {
+            val violators = Konsist.scopeFromProject()
+                .files
+                .filter {
+                    it.resideInPath("..features..") &&
+                        it.resideInPath("..api/domain..") &&
+                        it.resideInPath("..commonMain..") &&
+                        it.name.endsWith("TestTags.kt")
+                }
+
+            assert(violators.isEmpty()) {
+                val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
+                "TestTags files belong in api:navigation, not api:domain:\n$names"
             }
         }
     }

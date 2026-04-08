@@ -118,6 +118,91 @@ Parse URI → `List<Screen>` in `commonMain`. Entry points:
 - Android: `Activity.intent` → seed back stack
 - iOS: `SceneDelegate.onOpenURL` → `bridge.deepLink(screens)` → `CircuitNavigator` seeds `NavigationStack` path
 
+## Module Structure
+
+Each feature follows this module layout:
+
+```
+features/<feature>/
+  api/
+    domain/     → Domain contracts: use case abstractions, models (no Circuit dependency)
+    navigation/ → Screen object (@Parcelize), TestTags object (Circuit dependency)
+  domain/       → Use case implementations (depends on api:domain only)
+  data/         → Repository implementations
+  presentation/ → Presenter + UI (depends on both api:domain + api:navigation)
+  test/         → Fakes/fixtures (depends on api:domain only)
+```
+
+This ensures the domain layer has zero UI framework awareness — Circuit stays in `api:navigation` and `presentation`.
+
+## Adding a New Feature/Screen
+
+### 1. Create `api:domain` module
+
+```
+features/<feature>/api/domain/build.gradle.kts  → mockdonalds.kmp.library plugin
+  dependencies: api(:core:common), api(:core:centerpost), api(kotlinx.coroutines.core)
+```
+
+Add domain contracts:
+- `Get<Feature>Content.kt` — abstract use case extending `CenterPostSubjectInteractor`
+- `<Feature>Models.kt` — data classes for domain models (immutable, val only)
+
+### 2. Create `api:navigation` module
+
+```
+features/<feature>/api/navigation/build.gradle.kts  → mockdonalds.kmp.library plugin
+  dependencies: api(circuit.runtime), api(:core:common)
+```
+
+Add:
+- `<Feature>Screen.kt` — `@Parcelize object <Feature>Screen : Screen` in the `navigation` package
+- `<Feature>TestTags.kt` — `object <Feature>TestTags` with const val tags in the `ui` package
+
+### 3. Create `domain` module
+
+- `Get<Feature>ContentImpl.kt` with `@ContributesBinding(AppScope::class)`
+- `<Feature>Repository.kt` interface
+- `Get<Feature>ContentImplTest.kt` in commonTest
+
+### 4. Create `data` module
+
+- `<Feature>RepositoryImpl.kt` with `@ContributesBinding(AppScope::class)`
+- `<Feature>RepositoryImplTest.kt` in commonTest
+
+### 5. Create `presentation` module
+
+- `<Feature>Presenter.kt` — `@CircuitInject @Inject @Composable` function
+- `<Feature>UiState.kt` — data class implementing `CircuitUiState` with `eventSink`
+- `<Feature>Ui.kt` (androidMain) — Compose UI with `@CircuitInject`
+- `<Feature>PresenterTest.kt` in commonTest
+- Android UI tests: `<Feature>UiTest.kt`, `<Feature>UiRobot.kt`, `<Feature>StateRobot.kt` in androidDeviceTest
+
+### 6. Create `test` module
+
+- `Fake<UseCase>.kt` — fake implementation of each abstract use case
+
+### 7. Create iOS view
+
+- `iosApp/iosApp/Features/<Feature>/<Feature>View.swift` — SwiftUI view consuming UiState
+- Add to Xcode project (project.pbxproj)
+- `CircuitContent` screen factory switch case
+
+### 8. Wire into the app
+
+- `settings.gradle.kts` — **automatic**: feature modules are auto-discovered from `features/` directories with architecture-enforced submodules (api:domain, api:navigation, data, domain, presentation, test)
+- `composeApp/build.gradle.kts` — **automatic**: feature deps are auto-discovered with enforced wiring (api:domain + api:navigation as `api()`, data + domain as `implementation()`, presentation as `api()`)
+- Cross-feature navigation: depend on `<other>:api:navigation` (not full api) in the feature's presentation build.gradle.kts
+
+### 9. Verify
+
+- `./gradlew assemble` — full build
+- `./gradlew testAndroidHostTest` — unit tests
+- `./gradlew :konsist:test` — architecture enforcement (96 tests)
+- `./gradlew detektMetadataCommonMain` — lint
+- `swiftlint lint iosApp` — Swift lint
+- `swift test --package-path iosApp/ArchitectureCheck` — Harmonize
+
 ## Key Files
 
 | File | Role |

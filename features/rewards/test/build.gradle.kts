@@ -9,7 +9,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            api(project(":features:rewards:api"))
+            api(project(":features:rewards:api:domain"))
             api(project(":core:test-fixtures"))
         }
     }
