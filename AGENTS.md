@@ -111,12 +111,15 @@ api ← impl/presentation
 > Full details: [`.agents/standards/verification.md`](.agents/standards/verification.md)
 
 ```bash
-./gradlew detektMetadataCommonMain          # 1. Lint
-./gradlew testAndroidHostTest               # 2. Unit tests
-./gradlew :architecture-check:test           # 3. Architecture enforcement
-swift test --package-path iosApp/ArchitectureCheck  # 4. iOS arch (if Swift changed)
-./gradlew :navint-tests:connectedAndroidDeviceTest  # 5. Nav/integration tests (emulator)
-./gradlew assemble                          # 6. Full build
+./gradlew detektMetadataCommonMain          # 1. Lint (Kotlin)
+swiftlint --config .swiftlint.yml           # 2. Lint (Swift)
+./gradlew testAndroidHostTest               # 3. Unit tests (Kotlin)
+xcodebuild test -scheme iOSApp -testPlan UnitTests -destination '...'  # 4. Unit tests (iOS, simulator)
+./gradlew :architecture-check:test           # 5. Architecture enforcement (Konsist)
+swift test --package-path iosApp/ArchitectureCheck  # 6. iOS arch (Harmonize)
+./gradlew :navint-tests:connectedAndroidDeviceTest  # 7. Android nav/int tests (emulator)
+xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination '...'  # 8. iOS nav/int tests (simulator)
+./gradlew assemble                          # 9. Full build
 ```
 
 ## Convention Plugins

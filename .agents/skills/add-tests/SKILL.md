@@ -41,12 +41,19 @@ Follow the `add-ui-tests` skill instructions:
 
 ### 4. Check navint-tests Coverage
 
-If `impl/presentation/src/androidMain/` or `api/navigation/` changed, check whether a corresponding test exists in `navint-tests/src/androidDeviceTest/kotlin/`:
+**Android navint-tests:** If `impl/presentation/src/androidMain/` or `api/navigation/` changed, check whether a corresponding test exists in `navint-tests/src/androidDeviceTest/kotlin/`:
 - Files end with `NavigationTest.kt` or `IntegrationTest.kt`
 - Tests use JUnit4 `@RunWith(AndroidJUnit4::class)` — NOT Kotest BehaviorSpec
 - Tests exercise real Circuit presenters with a fake data layer (fakes from `features/{name}/test/`)
 
 If a navigation flow or integration scenario lacks coverage, add the test in `navint-tests/`. See `.agents/standards/testing.md` for the navint-tests conventions.
+
+**iOS navint-tests:** If `iosApp/iosApp/Circuit/` changed, check whether corresponding tests exist in `iosApp/iosAppTests/NavInt/`:
+- Test suites: `NavigationStateManagerTest`, `TabSwitchingTest`, `DeepLinkNavigationTest`, `AuthFlowNavigationTest`
+- Tests use Swift Testing (`@Suite @MainActor struct`) — NOT XCTest
+- Tests exercise `NavigationStateManager` state transitions (no ViewInspector, state management only)
+
+If a navigation state change or new navigation flow lacks iOS coverage, add or update tests in `iosApp/iosAppTests/NavInt/`. See `.agents/standards/testing.md` for the iOS navint-tests conventions.
 
 ### 5. Post-Change Verification — MANDATORY
 

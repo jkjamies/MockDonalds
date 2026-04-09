@@ -21,26 +21,38 @@ Run in order. Stop and fix any failures before proceeding.
 swiftlint --config .swiftlint.yml
 ```
 
-### 3. Unit Tests
+### 3. Unit Tests (Kotlin)
 ```bash
 ./gradlew testAndroidHostTest
 ```
 
-### 4. Architecture Tests (Konsist)
+### 4. Unit Tests (iOS — requires simulator)
+```bash
+xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'
+```
+Runs 42 iOS unit tests (ViewTests with ViewInspector Robot pattern). Requires simulator. Skip if no simulator is available.
+
+### 5. Architecture Tests (Konsist)
 ```bash
 ./gradlew :architecture-check:test
 ```
 
-### 5. Architecture Tests (iOS — Harmonize)
+### 6. Architecture Tests (iOS — Harmonize)
 ```bash
 swift test --package-path iosApp/ArchitectureCheck
 ```
 
-### 6. Navigation & Integration Tests (requires emulator — optional)
+### 7. Navigation & Integration Tests (requires emulator — optional)
 ```bash
 ./gradlew :navint-tests:connectedAndroidDeviceTest
 ```
 Requires a connected Android emulator. Run this step when presentation or navigation modules have changed. Tests use real Circuit presenters with a fake data layer and JUnit4 `@RunWith(AndroidJUnit4::class)`. Skip if no emulator is available.
+
+### 8. iOS Navigation & Integration Tests (requires simulator — optional)
+```bash
+xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'
+```
+Requires an iOS Simulator. Run this step when Swift navigation files have changed (`iosApp/iosApp/Circuit/` or `iosApp/iosAppTests/NavInt/`). Tests use Swift Testing and exercise `NavigationStateManager` state transitions, tab switching, deep links, and auth flows. Skip if no simulator is available.
 
 ## When to Use
 

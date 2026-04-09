@@ -50,6 +50,11 @@
 		CC100001CCCC000100000001 /* ProfileStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC100001CCCC000000000001 /* ProfileStateRobot.swift */; };
 		CC100002CCCC000100000002 /* ProfileViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC100002CCCC000000000002 /* ProfileViewRobot.swift */; };
 		CC100003CCCC000100000003 /* ProfileViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC100003CCCC000000000003 /* ProfileViewTest.swift */; };
+		DD100001DDDD000100000001 /* NavigationStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD100001DDDD000000000001 /* NavigationStateManager.swift */; };
+		DD100002DDDD000100000002 /* NavigationStateManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD100002DDDD000000000002 /* NavigationStateManagerTest.swift */; };
+		DD100003DDDD000100000003 /* TabSwitchingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD100003DDDD000000000003 /* TabSwitchingTest.swift */; };
+		DD100004DDDD000100000004 /* DeepLinkNavigationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD100004DDDD000000000004 /* DeepLinkNavigationTest.swift */; };
+		DD100005DDDD000100000005 /* AuthFlowNavigationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD100005DDDD000000000005 /* AuthFlowNavigationTest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,6 +111,11 @@
 		CC100001CCCC000000000001 /* ProfileStateRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProfileStateRobot.swift; sourceTree = "<group>"; };
 		CC100002CCCC000000000002 /* ProfileViewRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProfileViewRobot.swift; sourceTree = "<group>"; };
 		CC100003CCCC000000000003 /* ProfileViewTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProfileViewTest.swift; sourceTree = "<group>"; };
+		DD100001DDDD000000000001 /* NavigationStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationStateManager.swift; sourceTree = "<group>"; };
+		DD100002DDDD000000000002 /* NavigationStateManagerTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NavigationStateManagerTest.swift; sourceTree = "<group>"; };
+		DD100003DDDD000000000003 /* TabSwitchingTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TabSwitchingTest.swift; sourceTree = "<group>"; };
+		DD100004DDDD000000000004 /* DeepLinkNavigationTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeepLinkNavigationTest.swift; sourceTree = "<group>"; };
+		DD100005DDDD000000000005 /* AuthFlowNavigationTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AuthFlowNavigationTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +161,7 @@
 				8791E5D3427617818943090D /* More */,
 				AA100007AAAA000000000007 /* Login */,
 				CC100004CCCC000000000004 /* Profile */,
+				DD100006DDDD000000000006 /* NavInt */,
 			);
 			path = iosAppTests;
 			sourceTree = "<group>";
@@ -173,6 +184,33 @@
 				CC100003CCCC000000000003 /* ProfileViewTest.swift */,
 			);
 			path = Profile;
+			sourceTree = "<group>";
+		};
+		DD100006DDDD000000000006 /* NavInt */ = {
+			isa = PBXGroup;
+			children = (
+				DD100007DDDD000000000007 /* Navigation */,
+				DD100008DDDD000000000008 /* Integration */,
+			);
+			path = NavInt;
+			sourceTree = "<group>";
+		};
+		DD100007DDDD000000000007 /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				DD100002DDDD000000000002 /* NavigationStateManagerTest.swift */,
+				DD100003DDDD000000000003 /* TabSwitchingTest.swift */,
+				DD100004DDDD000000000004 /* DeepLinkNavigationTest.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
+		DD100008DDDD000000000008 /* Integration */ = {
+			isa = PBXGroup;
+			children = (
+				DD100005DDDD000000000005 /* AuthFlowNavigationTest.swift */,
+			);
+			path = Integration;
 			sourceTree = "<group>";
 		};
 		2A1B6A772B0A000100123461 = {
@@ -216,6 +254,7 @@
 				2A1B6A8F2B0A00010012345D /* CircuitContent.swift */,
 				2A1B6A912B0A00010012345E /* CircuitStack.swift */,
 				AA100001AAAA000000000001 /* CircuitNavigator.swift */,
+				DD100001DDDD000000000001 /* NavigationStateManager.swift */,
 			);
 			path = Circuit;
 			sourceTree = "<group>";
@@ -497,6 +536,7 @@
 				3A1C7B0B2C0A000100100006 /* ScanView.swift in Sources */,
 				3A1C7B0D2C0A000100100007 /* MoreView.swift in Sources */,
 				AA100001AAAA000100000001 /* CircuitNavigator.swift in Sources */,
+				DD100001DDDD000100000001 /* NavigationStateManager.swift in Sources */,
 				AA100002AAAA000100000002 /* LoginView.swift in Sources */,
 				BB100001BBBB000100000001 /* ProfileView.swift in Sources */,
 			);
@@ -528,6 +568,10 @@
 				CC100001CCCC000100000001 /* ProfileStateRobot.swift in Sources */,
 				CC100002CCCC000100000002 /* ProfileViewRobot.swift in Sources */,
 				CC100003CCCC000100000003 /* ProfileViewTest.swift in Sources */,
+				DD100002DDDD000100000002 /* NavigationStateManagerTest.swift in Sources */,
+				DD100003DDDD000100000003 /* TabSwitchingTest.swift in Sources */,
+				DD100004DDDD000100000004 /* DeepLinkNavigationTest.swift in Sources */,
+				DD100005DDDD000100000005 /* AuthFlowNavigationTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

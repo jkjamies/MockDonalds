@@ -12,11 +12,13 @@ The iOS app is a thin SwiftUI shell that consumes shared KMP presenters from the
 
 ### Circuit Bridge (iosApp/Circuit/)
 
-Three SwiftUI components bridge Circuit to native UI:
+Four SwiftUI components bridge Circuit to native UI:
 
 | File | Purpose |
 |------|---------|
 | `CircuitStack.swift` | Root wrapper that injects `CircuitIos` as `@EnvironmentObject` and sets dark color scheme |
+| `CircuitNavigator.swift` | Observes `BridgeNavigator` navigation actions, delegates to `NavigationStateManager`, drives `NavigationStack` |
+| `NavigationStateManager.swift` | Testable navigation state: handles GoTo/Pop/ResetRoot/SwitchTab/DeepLink actions, manages `navigationPath` and `selectedTab` |
 | `CircuitView.swift` | Observes a `CircuitPresenterKotlinBridge` state flow via KMP-NativeCoroutines `asyncSequence`, renders content when state arrives |
 | `CircuitContent.swift` | Takes a Screen, resolves presenter and UI factory from `@EnvironmentObject CircuitIos`, renders via `CircuitView` |
 
@@ -37,6 +39,27 @@ Run Harmonize tests:
 ```bash
 cd iosApp/ArchitectureCheck && swift test
 ```
+
+## Navigation & Integration Tests (NavInt)
+
+Tests for iOS-native navigation infrastructure in `iosAppTests/NavInt/`. These test the `NavigationStateManager` which handles all navigation actions from Kotlin's `BridgeNavigator`.
+
+| Directory | Tests |
+|-----------|-------|
+| `NavInt/Navigation/` | `NavigationStateManagerTest` (push/pop/reset/batch), `TabSwitchingTest`, `DeepLinkNavigationTest` |
+| `NavInt/Integration/` | `AuthFlowNavigationTest` (auth redirect, post-login navigation) |
+
+Uses Swift Testing (`@Suite @MainActor struct`), same as unit tests. No ViewInspector needed — tests exercise the state manager directly.
+
+### Test Plans
+
+Tests are separately invokable via Xcode test plans:
+
+| Test Plan | Scope | Command |
+|-----------|-------|---------|
+| `AllTests` (default) | All tests | `xcodebuild test -scheme iOSApp -testPlan AllTests` |
+| `UnitTests` | Feature ViewTests only | `xcodebuild test -scheme iOSApp -testPlan UnitTests` |
+| `NavIntTests` | Navigation + integration | `xcodebuild test -scheme iOSApp -testPlan NavIntTests` |
 
 ## SwiftLint
 

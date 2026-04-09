@@ -32,7 +32,7 @@ git diff --name-only
 swiftlint --config .swiftlint.yml
 ```
 
-### 3. Unit Tests
+### 3. Unit Tests (Kotlin)
 
 Scope unit tests to affected modules:
 ```bash
@@ -44,6 +44,14 @@ Scope unit tests to affected modules:
 # If core/centerpost/ changed:
 ./gradlew :core:centerpost:testAndroidHostTest
 ```
+
+### 3b. Unit Tests (iOS — if Swift view files changed)
+
+**If `iosApp/iosApp/Features/` or `iosApp/iosAppTests/{Feature}/` changed:**
+```bash
+xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'
+```
+Requires simulator. Runs 42 iOS ViewTests with ViewInspector Robot pattern.
 
 ### 4. Architecture Tests
 
@@ -62,7 +70,15 @@ swift test --package-path iosApp/ArchitectureCheck
 ```
 Requires a connected Android emulator. Tests use real Circuit presenters with a fake data layer. Skip if no emulator is available but flag that navint-tests should be run before merge.
 
-### 6. Build (if build files changed)
+### 6. iOS Navigation & Integration Tests (if Swift navigation files changed)
+
+**If `iosApp/iosApp/Circuit/` or `iosApp/iosAppTests/NavInt/` changed:**
+```bash
+xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'
+```
+Requires an iOS Simulator. Tests exercise `NavigationStateManager` state transitions, tab switching, deep links, and auth flows. Skip if no simulator is available but flag that iOS navint-tests should be run before merge.
+
+### 7. Build (if build files changed)
 
 **If build.gradle.kts or settings.gradle.kts changed:**
 
@@ -86,6 +102,10 @@ No verification needed beyond architecture tests (which already ran in step 4).
 | `core/{module}/` | core module | `:core:{module}:testAndroidHostTest` |
 | `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` | navint-tests | `:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
 | `navint-tests/` | navint-tests | `:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
+| `iosApp/iosApp/Features/` | iOS unit tests | `xcodebuild test -scheme iOSApp -testPlan UnitTests ...` (requires simulator) |
+| `iosApp/iosAppTests/{Feature}/` | iOS unit tests | `xcodebuild test -scheme iOSApp -testPlan UnitTests ...` (requires simulator) |
+| `iosApp/iosApp/Circuit/` | iOS navint-tests | `xcodebuild test -scheme iOSApp -testPlan NavIntTests ...` (requires simulator) |
+| `iosApp/iosAppTests/NavInt/` | iOS navint-tests | `xcodebuild test -scheme iOSApp -testPlan NavIntTests ...` (requires simulator) |
 
 ## When to Use
 

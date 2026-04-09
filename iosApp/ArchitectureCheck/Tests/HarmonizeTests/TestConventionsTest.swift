@@ -330,4 +330,84 @@ final class TestConventionsTest: XCTestCase {
             strct.name.hasSuffix("Test")
         }
     }
+
+    // MARK: - NavInt Test Conventions
+
+    func testNavIntTestsAreSuiteStructs() {
+        let navIntTests = testScope.structs()
+            .filter { $0.name.hasSuffix("NavigationTest") || $0.name == "NavigationStateManagerTest" || $0.name == "TabSwitchingTest" || $0.name == "DeepLinkNavigationTest" }
+
+        guard navIntTests.isNotEmpty else { return }
+
+        let violators = navIntTests.filter { strct in
+            !strct.attributes.contains(where: { $0.name == "Suite" })
+        }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "NavInt test suites must have @Suite attribute:\n\(violators.map { $0.name }.joined(separator: "\n"))"
+        )
+    }
+
+    func testNavIntTestsAreMainActor() {
+        let navIntTests = testScope.structs()
+            .filter { $0.name.hasSuffix("NavigationTest") || $0.name == "NavigationStateManagerTest" || $0.name == "TabSwitchingTest" || $0.name == "DeepLinkNavigationTest" }
+
+        guard navIntTests.isNotEmpty else { return }
+
+        let violators = navIntTests.filter { strct in
+            !strct.attributes.contains(where: { $0.name == "MainActor" })
+        }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "NavInt test suites must be @MainActor:\n\(violators.map { $0.name }.joined(separator: "\n"))"
+        )
+    }
+
+    func testNavIntTestsDoNotImportViewInspector() {
+        let navIntSources = testScope.sources()
+            .filter { source in
+                source.structs().contains(where: {
+                    $0.name.hasSuffix("NavigationTest") ||
+                    $0.name == "NavigationStateManagerTest" ||
+                    $0.name == "TabSwitchingTest" ||
+                    $0.name == "DeepLinkNavigationTest"
+                })
+            }
+
+        let violators = navIntSources.filter { $0.source.contains("import ViewInspector") }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "NavInt tests must not import ViewInspector — they test navigation state, not view rendering:\n\(violators.map { $0.fileName ?? "unknown" }.joined(separator: "\n"))"
+        )
+    }
+
+    func testNavIntTestsDoNotImportFeatureRobots() {
+        let navIntSources = testScope.sources()
+            .filter { source in
+                source.structs().contains(where: {
+                    $0.name.hasSuffix("NavigationTest") ||
+                    $0.name == "NavigationStateManagerTest" ||
+                    $0.name == "TabSwitchingTest" ||
+                    $0.name == "DeepLinkNavigationTest"
+                })
+            }
+
+        let featureRobotNames = ["HomeViewRobot", "LoginViewRobot", "OrderViewRobot",
+                                 "RewardsViewRobot", "ScanViewRobot", "MoreViewRobot",
+                                 "ProfileViewRobot", "HomeStateRobot", "LoginStateRobot",
+                                 "OrderStateRobot", "RewardsStateRobot", "ScanStateRobot",
+                                 "MoreStateRobot", "ProfileStateRobot"]
+
+        let violators = navIntSources.filter { source in
+            featureRobotNames.contains(where: { source.source.contains($0) })
+        }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "NavInt tests must not use feature-level ViewRobot/StateRobot — define navint-specific robots instead:\n\(violators.map { $0.fileName ?? "unknown" }.joined(separator: "\n"))"
+        )
+    }
 }

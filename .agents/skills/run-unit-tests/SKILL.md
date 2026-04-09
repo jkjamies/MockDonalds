@@ -1,19 +1,26 @@
 ---
 name: run-unit-tests
-description: Run the Kotest unit test suite. Use to validate logic changes in domain, data, or presentation layers.
+description: Run unit tests for Kotlin (Kotest) and iOS (Swift Testing + ViewInspector). Use to validate logic and UI changes.
 ---
 
 # Run Unit Tests
 
 ## When to Use
 
-After modifying any Kotlin source files in `impl/domain`, `impl/data`, or `impl/presentation` modules.
+After modifying any Kotlin source files in `impl/domain`, `impl/data`, or `impl/presentation` modules, or Swift view files in `iosApp/iosApp/Features/`.
 
 ## Run All Unit Tests
 
+### Kotlin (runs on JVM host — no device needed)
 ```bash
 ./gradlew testAndroidHostTest
 ```
+
+### iOS (requires simulator)
+```bash
+xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'
+```
+Runs 42 iOS unit tests (ViewTests with ViewInspector Robot pattern).
 
 ## Run Tests for a Specific Feature
 

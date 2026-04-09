@@ -361,6 +361,65 @@ class HomeToOrderNavigationTest {
 | Data layer | Not involved | Fakes only |
 | File naming | `{Feature}UiTest.kt` | `{Flow}NavigationTest.kt` / `{Feature}IntegrationTest.kt` |
 
+## iOS Navigation & Integration Tests (iosAppTests/NavInt)
+
+### Purpose
+
+iOS navint-tests verify navigation state management on the iOS side using `NavigationStateManager` (extracted from `CircuitNavigator.swift`). Unlike iOS UI tests (which render SwiftUI views with ViewInspector), these tests exercise state transitions, tab switching, deep link routing, and auth flow navigation without rendering any views.
+
+### Test Plans
+
+Three Xcode test plans organize all 66 iOS tests:
+
+| Test Plan | Tests | Scope |
+|-----------|-------|-------|
+| `AllTests.xctestplan` | 66 | Default — runs all unit + navint tests |
+| `UnitTests.xctestplan` | 42 | Component-level tests (ViewTest, StateRobot-based) |
+| `NavIntTests.xctestplan` | 24 | Navigation & integration tests only |
+
+### Key Characteristics
+
+- **Framework**: Swift Testing (`@Suite @MainActor struct`) — NOT XCTest
+- **State under test**: `NavigationStateManager` — extracted, testable navigation state handling
+- **No ViewInspector**: These tests verify state management, not view rendering
+- **Location**: `iosApp/iosAppTests/NavInt/`
+- **Run command**: `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'`
+
+### Test Suites
+
+| Suite | Purpose |
+|-------|---------|
+| `NavigationStateManagerTest` | Core state manager behavior — initialization, state transitions |
+| `TabSwitchingTest` | Tab selection, tab state persistence |
+| `DeepLinkNavigationTest` | Deep link URL routing to correct screens/tabs |
+| `AuthFlowNavigationTest` | Auth-gated navigation, login/logout state transitions |
+
+### When to Add iOS navint-tests
+
+Add or update iOS navint-tests when:
+- `NavigationStateManager` logic changes (`iosApp/iosApp/Circuit/`)
+- New tabs or navigation destinations are added on iOS
+- Deep link handling is added or modified
+- Auth-gated navigation flows change on iOS
+
+### File Naming
+
+Test files in `iosApp/iosAppTests/NavInt/` end with `Test.swift` and use descriptive names matching the navigation concern being tested.
+
+### Distinction from iOS UI Tests
+
+| | iOS UI Tests (Robot pattern) | iOS navint-tests |
+|---|---|---|
+| Location | `iosAppTests/{Feature}/` | `iosAppTests/NavInt/` |
+| Scope | Single view, static state | Navigation state flows |
+| Framework | Swift Testing + ViewInspector | Swift Testing (no ViewInspector) |
+| State source | `StateRobot.defaultState()` | `NavigationStateManager` |
+| What they test | View rendering + interactions | State transitions + routing |
+
+### Enforcement
+
+4 Harmonize rules in `iosApp/ArchitectureCheck/` enforce navint test conventions (naming, location, structure, Swift Testing usage).
+
 ## Test Quality Standards
 
 1. **No change detectors** -- tests must verify behavior, not mirror implementation. Asserting a function returns the exact hardcoded value it was given is not a test. Test state transitions, error paths, boundary conditions.

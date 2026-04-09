@@ -19,21 +19,23 @@ struct ScreenEntry: Hashable, Identifiable {
 
 /// The iOS equivalent of Android's NavigableCircuitContent.
 /// Observes BridgeNavigator's batched navigation actions and drives native SwiftUI navigation.
+/// Navigation logic is delegated to `NavigationStateManager` for testability.
 struct CircuitNavigator<Content: View>: View {
     @EnvironmentObject var circuit: CircuitIos
 
-    @State private var navigationPath: [ScreenEntry] = []
+    @StateObject private var stateManager: NavigationStateManager
     @Binding var selectedTab: String
 
     let content: () -> Content
 
     init(selectedTab: Binding<String>, @ViewBuilder content: @escaping () -> Content) {
         self._selectedTab = selectedTab
+        self._stateManager = StateObject(wrappedValue: NavigationStateManager(initialTab: selectedTab.wrappedValue))
         self.content = content
     }
 
     var body: some View {
-        NavigationStack(path: $navigationPath) {
+        NavigationStack(path: $stateManager.navigationPath) {
             content()
                 .navigationDestination(for: ScreenEntry.self) { entry in
                     CircuitContent(screen: entry.screen)
@@ -44,6 +46,9 @@ struct CircuitNavigator<Content: View>: View {
         .task {
             await observeNavigation()
         }
+        .onReceive(stateManager.$selectedTab) { newValue in
+            selectedTab = newValue
+        }
     }
 
     // MARK: - Navigation Observation
@@ -52,40 +57,10 @@ struct CircuitNavigator<Content: View>: View {
         do {
             let sequence = asyncSequence(for: circuit.navigator.navigationActions)
             for try await actions in sequence {
-                handleActions(actions)
+                stateManager.handle(actions: actions)
             }
         } catch {
             print("Navigation observation ended: \(error)")
-        }
-    }
-
-    // MARK: - Action Handling
-
-    private func handleActions(_ actions: [NavigationAction]) {
-        for action in actions {
-            switch action {
-            case let goTo as NavigationAction.GoTo:
-                navigationPath.append(ScreenEntry(screen: goTo.screen))
-
-            case is NavigationAction.Pop:
-                if !navigationPath.isEmpty {
-                    navigationPath.removeLast()
-                }
-
-            case is NavigationAction.ResetRoot:
-                navigationPath.removeAll()
-
-            case let switchTab as NavigationAction.SwitchTab:
-                navigationPath.removeAll()
-                selectedTab = switchTab.tag
-
-            case let deepLink as NavigationAction.DeepLink:
-                let screens = deepLink.screens as [any Circuit_runtime_screenScreen]
-                navigationPath = screens.map { ScreenEntry(screen: $0) }
-
-            default:
-                break
-            }
         }
     }
 }

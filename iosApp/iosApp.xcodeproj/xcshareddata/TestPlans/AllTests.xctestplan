@@ -1,0 +1,28 @@
+{
+  "configurations" : [
+    {
+      "id" : "C3D4E5F6-A7B8-9012-CDEF-123456789012",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:iosApp.xcodeproj",
+      "identifier" : "2A1B6A7F2B0A000100123465",
+      "name" : "iosApp"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:iosApp.xcodeproj",
+        "identifier" : "7606691AADF7CFD9FE78635B",
+        "name" : "iosAppTests"
+      }
+    }
+  ],
+  "version" : 1
+}
