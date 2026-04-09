@@ -1,6 +1,6 @@
 # MockDonalds
 
-Kotlin Multiplatform reference app. Shared Kotlin business logic, Jetpack Compose Android UI, SwiftUI iOS UI bridged via Circuit.
+Kotlin Multiplatform reference app. Shared Kotlin business logic with native UI per platform: Jetpack Compose UI on Android, native SwiftUI on iOS. iOS uses the Compose _runtime_ (via Molecule) for state management only — not Compose UI for rendering. All iOS views are standard SwiftUI.
 
 ## Tech Stack
 
@@ -13,7 +13,9 @@ Kotlin Multiplatform reference app. Shared Kotlin business logic, Jetpack Compos
 | Kotest | Test framework (BehaviorSpec, property testing) |
 | Konsist | Kotlin architecture test enforcement (21 test classes in `architecture-check/`) |
 | Harmonize | iOS/Swift architecture test enforcement |
-| Compose Multiplatform | Shared UI toolkit (Android native, iOS via framework export) |
+| Compose Multiplatform | Android: Compose UI rendering. iOS: Compose runtime only (state via Molecule) — SwiftUI renders natively |
+| Molecule | Bridges `@Composable` presenter functions to `StateFlow` for iOS (Compose runtime, not UI) |
+| KMP-NativeCoroutines | Bridges Kotlin `StateFlow`/`Flow` to Swift `AsyncSequence` for SwiftUI observation |
 
 ## Module Structure
 

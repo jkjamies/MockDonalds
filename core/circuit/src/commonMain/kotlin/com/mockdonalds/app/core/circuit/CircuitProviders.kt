@@ -12,7 +12,9 @@ import dev.zacsweers.metro.SingleIn
 @ContributesTo(AppScope::class)
 interface CircuitProviders {
     @Multibinds fun presenterFactories(): Set<Presenter.Factory>
-    @Multibinds(allowEmpty = true) fun uiFactories(): Set<Ui.Factory>
+
+    @Multibinds(allowEmpty = true)
+    fun uiFactories(): Set<Ui.Factory>
 
     @Provides
     @SingleIn(AppScope::class)

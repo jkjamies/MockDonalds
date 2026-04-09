@@ -1,5 +1,87 @@
 # iOS Interop — KMP-to-Swift Contract
 
+## Compose Runtime, Not Compose UI
+
+**iOS uses the Compose _runtime_ for state management only — not Compose UI for rendering.**
+
+This is the most important architectural distinction in the project. On iOS, the entire UI is native SwiftUI. Compose is used solely as a reactive state engine via [Molecule](https://github.com/cashapp/molecule), which runs `@Composable` presenter functions and converts their output to `StateFlow`. SwiftUI views observe this flow and render natively.
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           ANDROID                                       │
+│                                                                         │
+│  Presenter.present()                                                    │
+│       │                                                                 │
+│       ▼                                                                 │
+│  ┌─────────────────────┐    ┌──────────────────────────────┐            │
+│  │   Compose Runtime   │───▶│      Compose UI (Jetpack)    │            │
+│  │  (state + recomp.)  │    │  TextField, Button, Column   │            │
+│  └─────────────────────┘    │  Material3, Canvas, Layout   │            │
+│                              └──────────────────────────────┘            │
+├─────────────────────────────────────────────────────────────────────────┤
+│                             iOS                                         │
+│                                                                         │
+│  Presenter.present()                                                    │
+│       │                                                                 │
+│       ▼                                                                 │
+│  ┌─────────────────────┐    ┌─────────────┐    ┌───────────────────┐    │
+│  │   Compose Runtime   │───▶│  Molecule    │───▶│    StateFlow      │    │
+│  │  (state + recomp.)  │    │ (bridge)     │    │                   │    │
+│  └─────────────────────┘    └─────────────┘    └────────┬──────────┘    │
+│                                                          │              │
+│                                              KMP-NativeCoroutines       │
+│                                                          │              │
+│                                                          ▼              │
+│                                                ┌─────────────────┐      │
+│                                                │  AsyncSequence   │      │
+│                                                └────────┬────────┘      │
+│                                                          │              │
+│                                                          ▼              │
+│                                                ┌─────────────────────┐  │
+│                                                │    SwiftUI View     │  │
+│                                                │  Text, Button, VStack│  │
+│                                                │  NavigationStack    │  │
+│                                                │  100% native Apple  │  │
+│                                                └─────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### What this means in practice
+
+| Aspect | Android | iOS |
+|--------|---------|-----|
+| **UI toolkit** | Compose UI (Jetpack) | SwiftUI (native Apple) |
+| **State engine** | Compose Runtime | Compose Runtime (via Molecule) |
+| **Rendering** | Compose render nodes | UIKit/SwiftUI render pipeline |
+| **Look & feel** | Material3 | Native iOS (UIKit conventions) |
+| **Animations** | Compose animation APIs | SwiftUI `.animation`, `.transition` |
+| **Accessibility** | Compose semantics | SwiftUI `.accessibilityIdentifier` |
+| **Navigation** | `NavigableCircuitContent` | `NavigationStack` (native) |
+| **Platform feel** | Android-native | iOS-native |
+
+### Why this matters
+
+- **iOS views are fully native.** They use SwiftUI layout, transitions, and platform conventions. There is no Compose UI rendering on iOS — no Compose Canvas, no Compose Layout, no Compose Modifier chains. An iOS developer sees standard SwiftUI code.
+- **Shared code is logic, not pixels.** Presenters, use cases, repositories, and models are shared. The Compose runtime runs presenter `@Composable` functions to produce state. Everything after that is platform-native.
+- **Both platforms get first-class UX.** Android gets Material3 with Compose UI. iOS gets native SwiftUI with iOS design language. Neither platform compromises its feel for the other.
+- **Molecule is the bridge, not a renderer.** Molecule takes a `@Composable () -> T` function and produces a `StateFlow<T>`. It uses the Compose runtime's recomposition engine for reactive state, but never touches rendering. Think of it as "Compose without the UI."
+
+### The data flow
+
+```
+Shared (Kotlin):  Repository → UseCase → Presenter.present() → UiState
+                                                    │
+                        ┌───────────────────────────┤
+                        │                           │
+Android:    Compose Runtime → Compose UI        Molecule → StateFlow
+                                                    │
+iOS:                                    KMP-NativeCoroutines → AsyncSequence
+                                                    │
+                                              SwiftUI View
+```
+
+The `@Composable present()` function is the same code on both platforms. The divergence happens at the output: Android feeds `UiState` into Compose UI nodes; iOS feeds it through Molecule → StateFlow → AsyncSequence into SwiftUI views.
+
 ## sealed class vs sealed interface
 
 Events MUST be `sealed class` (not `sealed interface`) for iOS interop. Kotlin sealed classes

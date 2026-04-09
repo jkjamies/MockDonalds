@@ -64,6 +64,7 @@ fun LoginUi(state: LoginUiState, modifier: Modifier = Modifier) {
     if (showSignInDialog) {
         AlertDialog(
             onDismissRequest = { showSignInDialog = false },
+            modifier = Modifier.testTag(LoginTestTags.SIGN_IN_DIALOG),
             title = { Text("Sign In") },
             text = {
                 Text(

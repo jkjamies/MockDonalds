@@ -23,7 +23,26 @@ A Kotlin Multiplatform (KMP) reference app showcasing a clean, scalable architec
 
 ## Architecture
 
-Shared Kotlin business logic with native UI per platform. Features follow a strict modular architecture:
+Shared Kotlin business logic with **native UI per platform** — Jetpack Compose on Android, SwiftUI on iOS.
+
+### Compose Runtime, Not Compose UI (iOS)
+
+iOS does **not** use Compose UI for rendering. The Compose _runtime_ runs presenter `@Composable` functions to produce state, then [Molecule](https://github.com/cashapp/molecule) converts that state to a `StateFlow`. SwiftUI views observe this flow via [KMP-NativeCoroutines](https://github.com/rickclephas/KMP-NativeCoroutines) and render natively. Every iOS view is standard SwiftUI — no Compose Canvas, no Compose Layout, no cross-platform UI compromise.
+
+```
+Shared:   Repository → UseCase → Presenter.present() → UiState
+                                          │
+              ┌───────────────────────────┤
+              │                           │
+Android:  Compose Runtime → Compose UI    │
+                                     Molecule → StateFlow → AsyncSequence → SwiftUI  :iOS
+```
+
+See [`.agents/standards/ios-interop.md`](.agents/standards/ios-interop.md) for the full bridge architecture.
+
+### Module Structure
+
+Features follow a strict modular architecture:
 
 ```
 features/{name}/
@@ -114,6 +133,32 @@ All test dependencies are provided automatically by convention plugins — no pe
 - **Fakes over mocks**: `mockk` is banned; fakes live in `features/{name}/test/src/commonMain/`
 
 Specs run concurrently (up to 4 in parallel) via `KotestProjectConfig` in `core:test-fixtures`.
+
+### Deep Link Testing
+
+The app supports deep links via `mockdonalds://app/{path}`. Auth-gated screens (e.g. `profile`) automatically redirect to login and return after authentication.
+
+**Android (requires emulator/device):**
+
+```bash
+# Navigate to More tab
+adb shell am start -a android.intent.action.VIEW -d "mockdonalds://app/more" com.mockdonalds.app
+
+# Navigate to Profile via More tab (auth-gated — redirects to Login if not authenticated)
+adb shell am start -a android.intent.action.VIEW -d "mockdonalds://app/more/profile" com.mockdonalds.app
+```
+
+**iOS (requires simulator):**
+
+```bash
+# Navigate to More tab
+xcrun simctl openurl booted "mockdonalds://app/more"
+
+# Navigate to Profile via More tab (auth-gated — redirects to Login if not authenticated)
+xcrun simctl openurl booted "mockdonalds://app/more/profile"
+```
+
+Available path segments: `home`, `order`, `rewards`, `scan`, `more`, `profile`, `login`. Segments can be chained (e.g. `more/profile`) to build a navigation stack.
 
 ## Build Profiling
 

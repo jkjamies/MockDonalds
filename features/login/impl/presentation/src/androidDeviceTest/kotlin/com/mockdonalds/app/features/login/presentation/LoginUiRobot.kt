@@ -97,7 +97,7 @@ class LoginUiRobot(private val rule: ComposeContentTestRule) {
     // --- Dialog Assertions ---
 
     fun assertSignInDialogDisplayed() {
-        rule.onNodeWithText("Sign In").assertIsDisplayed()
+        rule.onNodeWithTag(LoginTestTags.SIGN_IN_DIALOG).assertIsDisplayed()
         rule.onNodeWithText("Send Link").assertIsDisplayed()
         rule.onNodeWithText("Cancel").assertIsDisplayed()
     }
