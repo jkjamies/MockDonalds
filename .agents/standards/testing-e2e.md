@@ -14,13 +14,13 @@ E2E tests validate full user journeys against the **real app** — real Metro DI
 
 ```bash
 # All e2e tests (journeys + benchmarks)
-./gradlew :e2e-tests:connectedAndroidTest
+./gradlew :testing:e2e-tests:connectedAndroidTest
 
 # Journeys only (exclude benchmarks)
-./gradlew :e2e-tests:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.notClass=com.mockdonalds.app.e2e.benchmarks.StartupBenchmark
+./gradlew :testing:e2e-tests:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.notClass=com.mockdonalds.app.e2e.benchmarks.StartupBenchmark
 
 # Benchmarks only
-./gradlew :e2e-tests:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.mockdonalds.app.e2e.benchmarks.StartupBenchmark
+./gradlew :testing:e2e-tests:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.mockdonalds.app.e2e.benchmarks.StartupBenchmark
 ```
 
 Requires a connected Android device or running emulator.
@@ -32,7 +32,7 @@ Requires a connected Android device or running emulator.
 - **Data layer**: Real (no fakes, no test doubles)
 - **Element access**: UI Automator (`By.desc(testTag)`) — cross-process element identification
 - **Benchmarks**: Macrobenchmark (`MacrobenchmarkRule`) with Perfetto traces
-- **Location**: `e2e-tests/src/main/kotlin/`
+- **Location**: `testing/e2e-tests/src/main/kotlin/`
 
 ## Test Organization
 
@@ -134,7 +134,7 @@ Add or update e2e-tests when:
 
 | | Unit Tests | UI Component Tests | navint-tests | e2e-tests |
 |---|---|---|---|---|
-| Location | `impl/*/commonTest/` | `impl/presentation/androidDeviceTest/` | `navint-tests/` | `e2e-tests/` |
+| Location | `impl/*/commonTest/` | `impl/presentation/androidDeviceTest/` | `testing/navint-tests/` | `testing/e2e-tests/` |
 | Scope | Single class | Single screen | Multi-screen flows | Full user journeys |
 | Data | Fakes | Static state | Fakes | Real |
 | Presenters | Isolated | Not involved | Real | Real |

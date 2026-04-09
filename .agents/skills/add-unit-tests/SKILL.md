@@ -16,7 +16,7 @@ Identify changed/new production classes and create or update their unit tests.
 
 This skill covers Kotest `BehaviorSpec` unit tests in `commonTest/`. It does NOT cover:
 - Android UI tests (Robot pattern in `androidDeviceTest/` — use `add-ui-tests`)
-- Navigation and integration tests in `navint-tests/` (JUnit4, require emulator — use `add-tests` which handles navint-tests awareness)
+- Navigation and integration tests in `testing/navint-tests/` (JUnit4, require emulator — use `add-tests` which handles navint-tests awareness)
 
 ## Steps
 

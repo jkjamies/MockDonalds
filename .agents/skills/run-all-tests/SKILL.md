@@ -5,7 +5,7 @@ description: Run lint, unit tests, and architecture tests (excludes UI tests and
 
 # Run All Tests
 
-Runs lint, unit tests, and architecture tests sequentially. Does NOT include Android UI tests or navigation/integration tests (those require a connected device — use `run-ui-tests` or `:navint-tests:connectedAndroidDeviceTest` separately).
+Runs lint, unit tests, and architecture tests sequentially. Does NOT include Android UI tests or navigation/integration tests (those require a connected device — use `run-ui-tests` or `:testing:navint-tests:connectedAndroidDeviceTest` separately).
 
 ## Steps
 
@@ -34,7 +34,7 @@ Runs 42 iOS unit tests (ViewTests with ViewInspector Robot pattern). Requires si
 
 ### 5. Architecture Tests (Konsist)
 ```bash
-./gradlew :architecture-check:test
+./gradlew :testing:architecture-check:test
 ```
 
 ### 6. Architecture Tests (iOS — Harmonize)
@@ -44,7 +44,7 @@ swift test --package-path iosApp/ArchitectureCheck
 
 ### 7. Navigation & Integration Tests (requires emulator — optional)
 ```bash
-./gradlew :navint-tests:connectedAndroidDeviceTest
+./gradlew :testing:navint-tests:connectedAndroidDeviceTest
 ```
 Requires a connected Android emulator. Run this step when presentation or navigation modules have changed. Tests use real Circuit presenters with a fake data layer and JUnit4 `@RunWith(AndroidJUnit4::class)`. Skip if no emulator is available.
 
@@ -56,7 +56,7 @@ Requires an iOS Simulator. Run this step when Swift navigation files have change
 
 ### 9. E2E Tests (requires device/emulator — optional)
 ```bash
-./gradlew :e2e-tests:connectedAndroidTest
+./gradlew :testing:e2e-tests:connectedAndroidTest
 ```
 Requires a connected Android device/emulator. Runs full user journey tests and startup benchmarks against the real app via UI Automator. Journey tests end with `JourneyTest`, benchmarks end with `Benchmark`. Skip if no device/emulator is available.
 

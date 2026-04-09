@@ -103,7 +103,7 @@ MockDonalds/
 │   ├── scan/
 │   └── more/
 │
-├── architecture-check/                            # Architecture enforcement (Konsist test suite)
+├── testing/architecture-check/                     # Architecture enforcement (Konsist test suite)
 │
 ├── iosApp/                             # iOS application (Xcode project)
 │   └── iosApp/
@@ -319,7 +319,7 @@ iOS framework export loop separately exports `api:domain`, `api:navigation`, and
 
 ## Module Boundary Enforcement via Konsist
 
-Konsist tests (run via `./gradlew :architecture-check:test`) enforce all architectural boundaries:
+Konsist tests (run via `./gradlew :testing:architecture-check:test`) enforce all architectural boundaries:
 
 | Test Class | What It Enforces |
 |-----------|-----------------|

@@ -57,7 +57,7 @@ navint-tests does NOT depend on:
 ## Running
 
 ```bash
-./gradlew :navint-tests:connectedAndroidDeviceTest
+./gradlew :testing:navint-tests:connectedAndroidDeviceTest
 ```
 
 Requires a running Android emulator or connected device.

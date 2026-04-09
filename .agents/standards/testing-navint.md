@@ -16,7 +16,7 @@ Navigation/integration (navint) tests verify cross-screen navigation flows and s
 
 ```bash
 # All Android navint tests (requires emulator)
-./gradlew :navint-tests:connectedAndroidDeviceTest
+./gradlew :testing:navint-tests:connectedAndroidDeviceTest
 ```
 
 ### Key Characteristics
@@ -24,7 +24,7 @@ Navigation/integration (navint) tests verify cross-screen navigation flows and s
 - **Runner**: JUnit4 `@RunWith(AndroidJUnit4::class)` — instrumented tests, NOT Kotest BehaviorSpec
 - **Data layer**: Fake implementations only — no `impl/domain` or `impl/data` modules wired in
 - **Presenters**: Real Circuit presenters (same as production)
-- **Location**: `navint-tests/src/androidDeviceTest/kotlin/`
+- **Location**: `testing/navint-tests/src/androidDeviceTest/kotlin/`
 - **File naming**: ends with `NavigationTest.kt` or `IntegrationTest.kt`
 
 ### When to Add
@@ -119,7 +119,7 @@ Test files in `iosApp/iosAppTests/NavInt/` end with `Test.swift` and use descrip
 
 | | Unit Tests | UI Component Tests | navint-tests | e2e-tests |
 |---|---|---|---|---|
-| Location | `impl/*/commonTest/` | `impl/presentation/androidDeviceTest/` | `navint-tests/` or `iosAppTests/NavInt/` | `e2e-tests/` |
+| Location | `impl/*/commonTest/` | `impl/presentation/androidDeviceTest/` | `testing/navint-tests/` or `iosAppTests/NavInt/` | `testing/e2e-tests/` |
 | Scope | Single class | Single screen | Multi-screen flows | Full user journeys |
 | Data | Fakes | Static state | Fakes | Real |
 | Presenters | Isolated | Not involved | Real | Real |

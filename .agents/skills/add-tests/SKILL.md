@@ -41,12 +41,12 @@ Follow the `add-ui-tests` skill instructions:
 
 ### 4. Check navint-tests Coverage
 
-**Android navint-tests:** If `impl/presentation/src/androidMain/` or `api/navigation/` changed, check whether a corresponding test exists in `navint-tests/src/androidDeviceTest/kotlin/`:
+**Android navint-tests:** If `impl/presentation/src/androidMain/` or `api/navigation/` changed, check whether a corresponding test exists in `testing/navint-tests/src/androidDeviceTest/kotlin/`:
 - Files end with `NavigationTest.kt` or `IntegrationTest.kt`
 - Tests use JUnit4 `@RunWith(AndroidJUnit4::class)` — NOT Kotest BehaviorSpec
 - Tests exercise real Circuit presenters with a fake data layer (fakes from `features/{name}/test/`)
 
-If a navigation flow or integration scenario lacks coverage, add the test in `navint-tests/`. See `.agents/standards/testing-navint.md` for the navint-tests conventions.
+If a navigation flow or integration scenario lacks coverage, add the test in `testing/navint-tests/`. See `.agents/standards/testing-navint.md` for the navint-tests conventions.
 
 **iOS navint-tests:** If `iosApp/iosApp/Circuit/` changed, check whether corresponding tests exist in `iosApp/iosAppTests/NavInt/`:
 - Test suites: `NavigationStateManagerTest`, `TabSwitchingTest`, `DeepLinkNavigationTest`, `AuthFlowNavigationTest`
@@ -57,17 +57,17 @@ If a navigation state change or new navigation flow lacks iOS coverage, add or u
 
 ### 5. Check e2e-tests Coverage
 
-If a new user journey, deep link, or tab navigation flow was added, check whether a corresponding test exists in `e2e-tests/src/main/kotlin/.../suites/`:
+If a new user journey, deep link, or tab navigation flow was added, check whether a corresponding test exists in `testing/e2e-tests/src/main/kotlin/.../suites/`:
 - Journey test files end with `JourneyTest.kt`
 - Tests use JUnit4 `@RunWith(AndroidJUnit4::class)` and `AppRobot` for all interactions
 - Tests interact via UI Automator (`By.desc(testTag)`) — no direct code access
 - TestTags come from `features/*/api/navigation/`
 
-If a startup performance concern exists, check `e2e-tests/src/main/kotlin/.../benchmarks/`:
+If a startup performance concern exists, check `testing/e2e-tests/src/main/kotlin/.../benchmarks/`:
 - Benchmark files end with `Benchmark.kt`
 - Uses `MacrobenchmarkRule` with `StartupTimingMetric()`
 
-See `.agents/standards/testing-e2e.md` for e2e-tests conventions and `e2e-tests/AGENTS.md` for module details.
+See `.agents/standards/testing-e2e.md` for e2e-tests conventions and `testing/e2e-tests/AGENTS.md` for module details.
 
 ### 6. Post-Change Verification — MANDATORY
 
@@ -76,6 +76,6 @@ See `.agents/standards/testing-e2e.md` for e2e-tests conventions and `e2e-tests/
 - Detect which modules have new or changed test files
 - Run lint, unit tests, and architecture checks scoped to those modules
 - Catch test naming violations, Robot pattern issues, and convention problems
-- Trigger navint-tests (`./gradlew :navint-tests:connectedAndroidDeviceTest`) if presentation or navigation modules changed (requires emulator)
+- Trigger navint-tests (`./gradlew :testing:navint-tests:connectedAndroidDeviceTest`) if presentation or navigation modules changed (requires emulator)
 
 If ANY check fails, fix the issue and re-run. Do not declare the task complete until verification passes.

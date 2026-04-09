@@ -16,7 +16,7 @@ Identify changed/new Compose UI screens and create the full Robot pattern test s
 
 This skill covers Compose UI tests (Robot pattern) in `features/{name}/impl/presentation/src/androidDeviceTest/`. These tests render individual UI screens in isolation with a static `UiState`.
 
-This skill does NOT cover navigation and integration tests in `navint-tests/`. Those tests exercise full navigation flows and Circuit presenter wiring across screens, use JUnit4 `@RunWith(AndroidJUnit4::class)`, and live in `navint-tests/src/androidDeviceTest/kotlin/`. Use `add-tests` (step 4) to evaluate navint-tests coverage when presentation or navigation modules change.
+This skill does NOT cover navigation and integration tests in `testing/navint-tests/`. Those tests exercise full navigation flows and Circuit presenter wiring across screens, use JUnit4 `@RunWith(AndroidJUnit4::class)`, and live in `testing/navint-tests/src/androidDeviceTest/kotlin/`. Use `add-tests` (step 4) to evaluate navint-tests coverage when presentation or navigation modules change.
 
 This skill also does NOT cover iOS navigation/integration tests in `iosApp/iosAppTests/NavInt/`. Those tests exercise `NavigationStateManager` state transitions, tab switching, deep links, and auth flows using Swift Testing. They are separate from iOS UI tests (which live in `iosApp/iosAppTests/{Feature}/` and use ViewInspector). Use `add-tests` (step 4) to evaluate iOS navint-tests coverage when `iosApp/iosApp/Circuit/` changes.
 

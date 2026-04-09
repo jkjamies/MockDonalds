@@ -1,6 +1,6 @@
 # Testing Standards
 
-Comprehensive testing conventions for the MockDonalds KMP project. Testing is organized into 5 levels, each with its own standards document. All rules are enforced by Konsist architecture tests (`architecture-check/`) and Harmonize (`iosApp/ArchitectureCheck/`).
+Comprehensive testing conventions for the MockDonalds KMP project. Testing is organized into 5 levels, each with its own standards document. All rules are enforced by Konsist architecture tests (`testing/architecture-check/`) and Harmonize (`iosApp/ArchitectureCheck/`).
 
 ## Test Levels
 
@@ -8,15 +8,15 @@ Comprehensive testing conventions for the MockDonalds KMP project. Testing is or
 |-------|----------|-------|-------------|
 | Unit | [testing-unit.md](testing-unit.md) | Single class (use case, repository, presenter) | `./gradlew testAndroidHostTest` |
 | UI Component | [testing-ui-component.md](testing-ui-component.md) | Single screen rendering + interactions (Robot pattern) | `./gradlew connectedAndroidDeviceTest` / `xcodebuild test -testPlan UnitTests` |
-| Navigation & Integration | [testing-navint.md](testing-navint.md) | Multi-screen navigation flows, cross-feature state | `./gradlew :navint-tests:connectedAndroidDeviceTest` / `xcodebuild test -testPlan NavIntTests` |
-| End-to-End | [testing-e2e.md](testing-e2e.md) | Full user journeys against real app | `./gradlew :e2e-tests:connectedAndroidTest` |
-| Architecture | [testing-architecture.md](testing-architecture.md) | Source structure, imports, annotations, naming | `./gradlew :architecture-check:test` / `swift test --package-path iosApp/ArchitectureCheck` |
+| Navigation & Integration | [testing-navint.md](testing-navint.md) | Multi-screen navigation flows, cross-feature state | `./gradlew :testing:navint-tests:connectedAndroidDeviceTest` / `xcodebuild test -testPlan NavIntTests` |
+| End-to-End | [testing-e2e.md](testing-e2e.md) | Full user journeys against real app | `./gradlew :testing:e2e-tests:connectedAndroidTest` |
+| Architecture | [testing-architecture.md](testing-architecture.md) | Source structure, imports, annotations, naming | `./gradlew :testing:architecture-check:test` / `swift test --package-path iosApp/ArchitectureCheck` |
 
 ## Test Level Comparison
 
 | | Unit | UI Component | navint | e2e | Architecture |
 |---|---|---|---|---|---|
-| Location | `impl/*/commonTest/` | `impl/presentation/androidDeviceTest/` | `navint-tests/` or `iosAppTests/NavInt/` | `e2e-tests/` | `architecture-check/` or `ArchitectureCheck/` |
+| Location | `impl/*/commonTest/` | `impl/presentation/androidDeviceTest/` | `testing/navint-tests/` or `iosAppTests/NavInt/` | `testing/e2e-tests/` | `testing/architecture-check/` or `ArchitectureCheck/` |
 | Data | Fakes | Static state | Fakes | Real | N/A |
 | Presenters | Isolated | Not involved | Real | Real | N/A |
 | Navigation | Not involved | Not involved | Real | Real | N/A |

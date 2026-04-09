@@ -15,12 +15,12 @@ Run these steps in order after any code change. Stop and fix failures before pro
 
 1. **Detekt** (lint): `./gradlew detektMetadataCommonMain`
 2. **Unit tests** (Kotest): `./gradlew testAndroidHostTest`
-3. **Konsist** (Kotlin architecture): `./gradlew :architecture-check:test`
+3. **Konsist** (Kotlin architecture): `./gradlew :testing:architecture-check:test`
 4. **Harmonize** (iOS architecture): `swift test --package-path iosApp/ArchitectureCheck`
 5. **SwiftLint** (Swift style): `swiftlint --config .swiftlint.yml`
-6. **navint-tests** (navigation & integration, requires emulator): `./gradlew :navint-tests:connectedAndroidDeviceTest`
+6. **navint-tests** (navigation & integration, requires emulator): `./gradlew :testing:navint-tests:connectedAndroidDeviceTest`
 7. **iOS navint-tests** (iOS navigation & integration, requires simulator): `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'`
-8. **e2e-tests** (full user journeys, requires device/emulator): `./gradlew :e2e-tests:connectedAndroidTest`
+8. **e2e-tests** (full user journeys, requires device/emulator): `./gradlew :testing:e2e-tests:connectedAndroidTest`
 9. **Assemble** (full build): `./gradlew assemble`
 
 ## Scoped Verification (verify-smart)
@@ -44,21 +44,21 @@ git diff --name-only                       # uncommitted changes on main
 | `features/{name}/api/domain/` | `:features:{name}:api:domain:testAndroidHostTest` |
 | `features/{name}/test/` | Run tests for modules that consume the fakes |
 | `core/{module}/` | `:core:{module}:testAndroidHostTest` |
-| `architecture-check/` | `:architecture-check:test` |
-| `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` | `:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
-| `navint-tests/` | `:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
+| `testing/architecture-check/` | `:testing:architecture-check:test` |
+| `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` | `:testing:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
+| `testing/navint-tests/` | `:testing:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
 | `iosApp/iosApp/Circuit/` | `xcodebuild test -scheme iOSApp -testPlan NavIntTests ...` (requires simulator) |
 | `iosApp/iosAppTests/NavInt/` | `xcodebuild test -scheme iOSApp -testPlan NavIntTests ...` (requires simulator) |
-| `e2e-tests/` | `:e2e-tests:connectedAndroidTest` (requires device/emulator) |
+| `testing/e2e-tests/` | `:testing:e2e-tests:connectedAndroidTest` (requires device/emulator) |
 
 ### verify-smart Decision Logic
 
-1. Always run `:architecture-check:test` (fast, catches structural issues regardless of what changed).
+1. Always run `:testing:architecture-check:test` (fast, catches structural issues regardless of what changed).
 2. If Kotlin source files changed: run `detektMetadataCommonMain` + scoped unit tests.
 3. If Swift files changed: run `swift test --package-path iosApp/ArchitectureCheck` + `swiftlint --config .swiftlint.yml`.
-4. If `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` changed: run `./gradlew :navint-tests:connectedAndroidDeviceTest` (requires emulator; flag for pre-merge if emulator unavailable).
+4. If `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` changed: run `./gradlew :testing:navint-tests:connectedAndroidDeviceTest` (requires emulator; flag for pre-merge if emulator unavailable).
 5. If `iosApp/iosApp/Circuit/` or `iosApp/iosAppTests/NavInt/` changed: run `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'` (requires simulator; flag for pre-merge if simulator unavailable).
-6. If `e2e-tests/` changed: run `./gradlew :e2e-tests:connectedAndroidTest` (requires device/emulator; flag for pre-merge if unavailable).
+6. If `testing/e2e-tests/` changed: run `./gradlew :testing:e2e-tests:connectedAndroidTest` (requires device/emulator; flag for pre-merge if unavailable).
 7. If `build.gradle.kts` or `settings.gradle.kts` changed: run `./gradlew assemble`.
 8. If only markdown/documentation changed: architecture tests only (step 1).
 
@@ -92,8 +92,8 @@ git diff --name-only                       # uncommitted changes on main
 ### navint-tests (Navigation & Integration Tests)
 - Reports: JUnit4 test name + assertion/exception detail
 - Failures indicate broken navigation flows, incorrect Circuit presenter wiring, or missing fake setup
-- Test files in `navint-tests/src/androidDeviceTest/kotlin/` end with `NavigationTest` or `IntegrationTest`
-- Requires a connected Android emulator; run `./gradlew :navint-tests:connectedAndroidDeviceTest`
+- Test files in `testing/navint-tests/src/androidDeviceTest/kotlin/` end with `NavigationTest` or `IntegrationTest`
+- Requires a connected Android emulator; run `./gradlew :testing:navint-tests:connectedAndroidDeviceTest`
 - These tests use real Circuit presenters and fakes — check `features/{name}/test/` for fake implementations
 
 ### iOS navint-tests (iOS Navigation & Integration Tests)
@@ -106,8 +106,8 @@ git diff --name-only                       # uncommitted changes on main
 ### e2e-tests (End-to-End Tests)
 - Reports: JUnit4 test name + UI Automator assertion detail
 - Failures indicate broken user journeys — screen transitions, deep link handling, tab navigation, auth gating, or startup performance regression
-- Journey tests in `e2e-tests/src/main/kotlin/.../suites/` end with `JourneyTest`; benchmarks in `benchmarks/` end with `Benchmark`
-- Requires a connected Android device/emulator; run `./gradlew :e2e-tests:connectedAndroidTest`
+- Journey tests in `testing/e2e-tests/src/main/kotlin/.../suites/` end with `JourneyTest`; benchmarks in `benchmarks/` end with `Benchmark`
+- Requires a connected Android device/emulator; run `./gradlew :testing:e2e-tests:connectedAndroidTest`
 - Tests use UI Automator with `By.desc(testTag)` — check `AppRobot.kt` for the test helper and `features/*/api/navigation/` for TestTags
 - Benchmarks use `MacrobenchmarkRule` with Perfetto traces for startup timing
 
@@ -130,7 +130,7 @@ What changed?
   │
   ├── Only tests changed ──► Detekt + Unit Tests + Konsist
   │     │                    (skip Assemble — tests compile as part of test tasks)
-  │     └── navint-tests/ changed?
+  │     └── testing/navint-tests/ changed?
   │           └── Yes ──► run navint-tests (requires emulator)
   │
   ├── Only build.gradle.kts / settings.gradle.kts ──► Konsist + Assemble

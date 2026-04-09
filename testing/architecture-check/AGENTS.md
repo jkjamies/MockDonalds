@@ -35,7 +35,7 @@ All tests use Kotest BehaviorSpec (Given/Then style) and scan the project with `
 ## Running
 
 ```bash
-./gradlew :architecture-check:test
+./gradlew :testing:architecture-check:test
 ```
 
 ## Adding New Rules

@@ -22,7 +22,7 @@ Aligns naming with iOS `iosApp/ArchitectureCheck/`.
 
 ### Verification
 ```bash
-./gradlew :architecture-check:test
+./gradlew :testing:architecture-check:test
 ```
 
 ---
@@ -198,7 +198,7 @@ Alternative: provide `AuthManager` via `@Provides` in `TestAppGraph` to avoid mo
 
 ### Run command
 ```bash
-./gradlew :navint-tests:connectedAndroidDeviceTest
+./gradlew :testing:navint-tests:connectedAndroidDeviceTest
 ```
 
 ---
@@ -260,11 +260,11 @@ Journey tests can collect frame metrics alongside functional assertions -- same 
 ### Test organization
 - Kotest tags or JUnit `@Tag` per journey
 - Separate `benchmarks/` directory for pure perf tests
-- Run selectively: `./gradlew :e2e-tests:connectedAndroidTest -Pinclude-tags=auth`
+- Run selectively: `./gradlew :testing:e2e-tests:connectedAndroidTest -Pinclude-tags=auth`
 
 ### Run command
 ```bash
-./gradlew :e2e-tests:connectedAndroidDeviceTest
+./gradlew :testing:e2e-tests:connectedAndroidDeviceTest
 ```
 
 ---
@@ -411,7 +411,7 @@ Every new pattern must be enforced by Konsist (Kotlin) and Harmonize (Swift) to 
 2. Lint -- Detekt (`./gradlew detektMetadataCommonMain`)
 3. Lint -- SwiftLint (`swiftlint --config .swiftlint.yml`)
 4. Unit Tests (`./gradlew testAndroidHostTest`)
-5. Architecture Tests -- Konsist (`./gradlew :architecture-check:test`)
+5. Architecture Tests -- Konsist (`./gradlew :testing:architecture-check:test`)
 6. Architecture Tests -- Harmonize (`swift test --package-path iosApp/ArchitectureCheck`)
 
 SwiftLint moves from conditional step 6 to unconditional step 3 (after Detekt).
@@ -426,7 +426,7 @@ SwiftLint moves from conditional step 6 to unconditional step 3 (after Detekt).
 1. Lint -- Detekt (`./gradlew detektMetadataCommonMain`)
 2. Lint -- SwiftLint (`swiftlint --config .swiftlint.yml`)
 3. Unit Tests (`./gradlew testAndroidHostTest`)
-4. Architecture Tests -- Konsist (`./gradlew :architecture-check:test`)
+4. Architecture Tests -- Konsist (`./gradlew :testing:architecture-check:test`)
 5. Architecture Tests -- Harmonize (`swift test --package-path iosApp/ArchitectureCheck`)
 
 ### `run-ui-tests/SKILL.md` -- add iOS UI tests
@@ -441,13 +441,13 @@ xcodebuild test -project iosApp/iosApp.xcodeproj -scheme iosAppTests -destinatio
 ./gradlew detektMetadataCommonMain                    # 1. Kotlin lint
 swiftlint --config .swiftlint.yml                     # 2. Swift lint
 ./gradlew testAndroidHostTest                         # 3. Unit tests
-./gradlew :architecture-check:test                    # 4. Konsist
+./gradlew :testing:architecture-check:test                    # 4. Konsist
 swift test --package-path iosApp/ArchitectureCheck    # 5. Harmonize
 ./gradlew assemble                                    # 6. Full build
 ```
 
 ### `CLAUDE.md` -- update verification commands
-Same order as README. Update `:konsist:test` -> `:architecture-check:test`. Add SwiftLint. Add new test module commands.
+Same order as README. Update `:konsist:test` -> `:testing:architecture-check:test`. Add SwiftLint. Add new test module commands.
 
 ---
 
@@ -489,7 +489,7 @@ include(":e2e-tests")
 1. Rename `konsist/` -> `architecture-check/`, update all references
 2. Fix all skill files (verify, verify-smart, run-all-tests, run-ui-tests)
 3. Fix README.md and CLAUDE.md verification pipeline
-4. Verify: `./gradlew :architecture-check:test`
+4. Verify: `./gradlew :testing:architecture-check:test`
 
 ### Phase 2: Feature Test Module DI Wiring
 5. Switch 7 `test/` build files to `mockdonalds.kmp.domain`
@@ -498,21 +498,21 @@ include(":e2e-tests")
 
 ### Phase 3: New Konsist Rules
 8. Add `NavIntModuleIsolationTest`, `TestModuleDITest`, `DependencyGraphScopeTest`
-9. Verify: `./gradlew :architecture-check:test`
+9. Verify: `./gradlew :testing:architecture-check:test`
 
 ### Phase 4: Android navint-tests
 10. Create module structure, build.gradle.kts, TestAppGraph, TestApplication, TestRunner
 11. Add to settings.gradle.kts
 12. Write first navigation + integration test
 13. Create AGENTS.md
-14. Verify: `./gradlew :navint-tests:connectedAndroidDeviceTest`
+14. Verify: `./gradlew :testing:navint-tests:connectedAndroidDeviceTest`
 
 ### Phase 5: Android e2e-tests
 15. Create module structure, build.gradle.kts (with Perfetto/Macrobenchmark)
 16. Add to settings.gradle.kts
 17. Write smoke test + startup benchmark
 18. Create AGENTS.md
-19. Verify: `./gradlew :e2e-tests:connectedAndroidDeviceTest`
+19. Verify: `./gradlew :testing:e2e-tests:connectedAndroidDeviceTest`
 
 ### Phase 6: iOS navint tests
 20. Create `TestIosApp.kt` in `composeApp/src/iosMain/`

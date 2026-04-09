@@ -58,7 +58,7 @@ Requires simulator. Runs 42 iOS ViewTests with ViewInspector Robot pattern.
 Always run — these are fast and catch structural issues regardless of what changed:
 
 ```bash
-./gradlew :architecture-check:test
+./gradlew :testing:architecture-check:test
 swift test --package-path iosApp/ArchitectureCheck
 ```
 
@@ -66,7 +66,7 @@ swift test --package-path iosApp/ArchitectureCheck
 
 **If `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` changed:**
 ```bash
-./gradlew :navint-tests:connectedAndroidDeviceTest
+./gradlew :testing:navint-tests:connectedAndroidDeviceTest
 ```
 Requires a connected Android emulator. Tests use real Circuit presenters with a fake data layer. Skip if no emulator is available but flag that navint-tests should be run before merge.
 
@@ -100,13 +100,13 @@ No verification needed beyond architecture tests (which already ran in step 4).
 | `features/{name}/api/` | api | `:features:{name}:api:domain:testAndroidHostTest` |
 | `features/{name}/test/` | test fakes | Run tests for modules that use the fakes |
 | `core/{module}/` | core module | `:core:{module}:testAndroidHostTest` |
-| `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` | navint-tests | `:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
-| `navint-tests/` | navint-tests | `:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
+| `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` | navint-tests | `:testing:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
+| `testing/navint-tests/` | navint-tests | `:testing:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
 | `iosApp/iosApp/Features/` | iOS unit tests | `xcodebuild test -scheme iOSApp -testPlan UnitTests ...` (requires simulator) |
 | `iosApp/iosAppTests/{Feature}/` | iOS unit tests | `xcodebuild test -scheme iOSApp -testPlan UnitTests ...` (requires simulator) |
 | `iosApp/iosApp/Circuit/` | iOS navint-tests | `xcodebuild test -scheme iOSApp -testPlan NavIntTests ...` (requires simulator) |
 | `iosApp/iosAppTests/NavInt/` | iOS navint-tests | `xcodebuild test -scheme iOSApp -testPlan NavIntTests ...` (requires simulator) |
-| `e2e-tests/` | e2e-tests | `:e2e-tests:connectedAndroidTest` (requires device/emulator) |
+| `testing/e2e-tests/` | e2e-tests | `:testing:e2e-tests:connectedAndroidTest` (requires device/emulator) |
 
 ## When to Use
 

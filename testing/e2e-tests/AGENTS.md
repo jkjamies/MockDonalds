@@ -47,13 +47,13 @@ e2e-tests does NOT depend on:
 
 ```bash
 # All e2e tests (journeys + benchmarks)
-./gradlew :e2e-tests:connectedAndroidTest
+./gradlew :testing:e2e-tests:connectedAndroidTest
 
 # Just journey tests (exclude benchmarks)
-./gradlew :e2e-tests:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.notClass=com.mockdonalds.app.e2e.benchmarks.StartupBenchmark
+./gradlew :testing:e2e-tests:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.notClass=com.mockdonalds.app.e2e.benchmarks.StartupBenchmark
 
 # Just benchmarks
-./gradlew :e2e-tests:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.mockdonalds.app.e2e.benchmarks.StartupBenchmark
+./gradlew :testing:e2e-tests:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.mockdonalds.app.e2e.benchmarks.StartupBenchmark
 ```
 
 Requires a running Android emulator or connected device.

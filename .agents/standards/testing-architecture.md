@@ -14,7 +14,7 @@ Architecture tests enforce project conventions via static analysis. They prevent
 
 ```bash
 # Kotlin architecture tests (Konsist)
-./gradlew :architecture-check:test
+./gradlew :testing:architecture-check:test
 
 # iOS architecture tests (Harmonize)
 swift test --package-path iosApp/ArchitectureCheck
@@ -24,7 +24,7 @@ No emulator or simulator required. These are fast (~10s each) and should always 
 
 ## Konsist (Kotlin)
 
-22 architecture test classes in `architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/`. All use Kotest BehaviorSpec and scan the project with `Konsist.scopeFromProject()`.
+22 architecture test classes in `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/`. All use Kotest BehaviorSpec and scan the project with `Konsist.scopeFromProject()`.
 
 ### Test Categories
 
@@ -55,7 +55,7 @@ No emulator or simulator required. These are fast (~10s each) and should always 
 
 ### Adding Konsist Rules
 
-1. Create a new `BehaviorSpec` in the appropriate package under `architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/`
+1. Create a new `BehaviorSpec` in the appropriate package under `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/`
 2. Use `Konsist.scopeFromProject()` for project-wide checks
 3. Use `resideInPath("..impl/domain..")` for module-scoped checks
 4. Use `Konsist.scopeFromSourceSet("commonMain", "features..", "domain")` for source-set-scoped checks

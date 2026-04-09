@@ -11,7 +11,7 @@ Kotlin Multiplatform reference app. Shared Kotlin business logic with native UI 
 | CenterPost | Business logic framework (coroutine-based interactors) |
 | Ktor | HTTP networking |
 | Kotest | Test framework (BehaviorSpec, property testing) |
-| Konsist | Kotlin architecture test enforcement (22 test classes in `architecture-check/`) |
+| Konsist | Kotlin architecture test enforcement (22 test classes in `testing/architecture-check/`) |
 | Harmonize | iOS/Swift architecture test enforcement |
 | Compose Multiplatform | Android: Compose UI rendering. iOS: Compose runtime only (state via Molecule) — SwiftUI renders natively |
 | Molecule | Bridges `@Composable` presenter functions to `StateFlow` for iOS (Compose runtime, not UI) |
@@ -38,8 +38,8 @@ core/
   test-fixtures/       — TestCenterPostDispatchers, KotestProjectConfig, StateRobot base
 ```
 
-navint-tests/             — Navigation + integration tests (real presenters, fake data, real Circuit)
-e2e-tests/                — End-to-end journey tests + benchmarks (real everything, UI Automator)
+testing/navint-tests/         — Navigation + integration tests (real presenters, fake data, real Circuit)
+testing/e2e-tests/            — End-to-end journey tests + benchmarks (real everything, UI Automator)
 
 Features: home, login, more, order, profile, rewards, scan
 
@@ -116,11 +116,11 @@ api ← impl/presentation
 swiftlint --config .swiftlint.yml           # 2. Lint (Swift)
 ./gradlew testAndroidHostTest               # 3. Unit tests (Kotlin)
 xcodebuild test -scheme iOSApp -testPlan UnitTests -destination '...'  # 4. Unit tests (iOS, simulator)
-./gradlew :architecture-check:test           # 5. Architecture enforcement (Konsist)
+./gradlew :testing:architecture-check:test           # 5. Architecture enforcement (Konsist)
 swift test --package-path iosApp/ArchitectureCheck  # 6. iOS arch (Harmonize)
-./gradlew :navint-tests:connectedAndroidDeviceTest  # 7. Android nav/int tests (emulator)
+./gradlew :testing:navint-tests:connectedAndroidDeviceTest  # 7. Android nav/int tests (emulator)
 xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination '...'  # 8. iOS nav/int tests (simulator)
-./gradlew :e2e-tests:connectedAndroidTest   # 9. E2E tests (device/emulator)
+./gradlew :testing:e2e-tests:connectedAndroidTest   # 9. E2E tests (device/emulator)
 ./gradlew assemble                          # 10. Full build
 ```
 
@@ -191,9 +191,9 @@ Per-module AGENTS.md files load via JIT context when you access files in those d
 
 - `features/{name}/AGENTS.md` — feature business context, key types, cross-feature deps
 - `core/{module}/AGENTS.md` — module purpose, public API, usage patterns
-- `architecture-check/AGENTS.md` — architecture test categories and how to add rules
-- `navint-tests/AGENTS.md` — navigation + integration test infrastructure, NavIntAppGraph
-- `e2e-tests/AGENTS.md` — end-to-end journey tests, AppRobot, benchmarks
+- `testing/architecture-check/AGENTS.md` — architecture test categories and how to add rules
+- `testing/navint-tests/AGENTS.md` — navigation + integration test infrastructure, NavIntAppGraph
+- `testing/e2e-tests/AGENTS.md` — end-to-end journey tests, AppRobot, benchmarks
 - `iosApp/AGENTS.md` — Swift bridge patterns, Harmonize tests
 - `build-logic/AGENTS.md` — convention plugin details
 - `composeApp/AGENTS.md` — app entry points, navigation wiring, deep links

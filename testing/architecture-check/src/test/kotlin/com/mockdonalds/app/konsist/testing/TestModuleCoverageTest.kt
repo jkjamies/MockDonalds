@@ -119,7 +119,7 @@ class TestModuleCoverageTest : BehaviorSpec({
             }
 
             assert(uncovered.isEmpty()) {
-                "Feature TestTags not referenced in any e2e journey test:\n${uncovered.joinToString("\n") { "  $it — add assertions using its constants in e2e-tests/suites/" }}"
+                "Feature TestTags not referenced in any e2e journey test:\n${uncovered.joinToString("\n") { "  $it — add assertions using its constants in testing/e2e-tests/suites/" }}"
             }
         }
     }

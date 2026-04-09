@@ -45,11 +45,7 @@ rootDir.resolve("features").listFiles()
         include(":features:$feature:test")
     }
 
-// Architecture tests
-include(":architecture-check")
-
-// Navigation + integration tests
-include(":navint-tests")
-
-// End-to-end tests
-include(":e2e-tests")
+// Testing modules
+include(":testing:architecture-check")
+include(":testing:navint-tests")
+include(":testing:e2e-tests")
