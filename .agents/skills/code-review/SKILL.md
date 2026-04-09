@@ -14,7 +14,8 @@ Before reviewing, familiarize yourself with these standards:
 - Naming: `.agents/standards/naming-conventions.md`
 - DI: `.agents/standards/dependency-injection.md`
 - Forbidden patterns: `.agents/standards/forbidden-patterns.md`
-- Testing: `.agents/standards/testing.md`
+- Testing: `.agents/standards/testing.md` (overview + quality standards)
+- Test level details: `testing-unit.md`, `testing-ui-component.md`, `testing-navint.md`, `testing-e2e.md`, `testing-architecture.md`
 - Design system: `.agents/standards/design-system.md`
 - Convention plugins: `.agents/standards/convention-plugins.md`
 

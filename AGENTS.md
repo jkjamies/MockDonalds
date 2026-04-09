@@ -11,7 +11,7 @@ Kotlin Multiplatform reference app. Shared Kotlin business logic with native UI 
 | CenterPost | Business logic framework (coroutine-based interactors) |
 | Ktor | HTTP networking |
 | Kotest | Test framework (BehaviorSpec, property testing) |
-| Konsist | Kotlin architecture test enforcement (21 test classes in `architecture-check/`) |
+| Konsist | Kotlin architecture test enforcement (22 test classes in `architecture-check/`) |
 | Harmonize | iOS/Swift architecture test enforcement |
 | Compose Multiplatform | Android: Compose UI rendering. iOS: Compose runtime only (state via Molecule) — SwiftUI renders natively |
 | Molecule | Bridges `@Composable` presenter functions to `StateFlow` for iOS (Compose runtime, not UI) |
@@ -39,6 +39,7 @@ core/
 ```
 
 navint-tests/             — Navigation + integration tests (real presenters, fake data, real Circuit)
+e2e-tests/                — End-to-end journey tests + benchmarks (real everything, UI Automator)
 
 Features: home, login, more, order, profile, rewards, scan
 
@@ -119,7 +120,8 @@ xcodebuild test -scheme iOSApp -testPlan UnitTests -destination '...'  # 4. Unit
 swift test --package-path iosApp/ArchitectureCheck  # 6. iOS arch (Harmonize)
 ./gradlew :navint-tests:connectedAndroidDeviceTest  # 7. Android nav/int tests (emulator)
 xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination '...'  # 8. iOS nav/int tests (simulator)
-./gradlew assemble                          # 9. Full build
+./gradlew :e2e-tests:connectedAndroidTest   # 9. E2E tests (device/emulator)
+./gradlew assemble                          # 10. Full build
 ```
 
 ## Convention Plugins
@@ -161,7 +163,12 @@ Detailed reference documents in `.agents/standards/`:
 | [architecture.md](.agents/standards/architecture.md) | Layers, dependency flow, module structure, convention plugins, wiring |
 | [naming-conventions.md](.agents/standards/naming-conventions.md) | All naming patterns with rationale, visibility rules |
 | [dependency-injection.md](.agents/standards/dependency-injection.md) | Metro/DI patterns, presenter-domain contract |
-| [testing.md](.agents/standards/testing.md) | Unit/presenter/UI/iOS testing, quality standards, fakes |
+| [testing.md](.agents/standards/testing.md) | Test levels overview, quality standards, fakes, infrastructure |
+| [testing-unit.md](.agents/standards/testing-unit.md) | Unit tests: Kotest BehaviorSpec, presenter/use case/repo patterns |
+| [testing-ui-component.md](.agents/standards/testing-ui-component.md) | UI component tests: Robot pattern (Android + iOS), TestTags |
+| [testing-navint.md](.agents/standards/testing-navint.md) | Navigation/integration tests: Android navint + iOS navint |
+| [testing-e2e.md](.agents/standards/testing-e2e.md) | E2E tests: journeys, AppRobot, Macrobenchmark |
+| [testing-architecture.md](.agents/standards/testing-architecture.md) | Architecture tests: Konsist + Harmonize rules and categories |
 | [centerpost.md](.agents/standards/centerpost.md) | Interactor patterns, presenter integration, error handling |
 | [forbidden-patterns.md](.agents/standards/forbidden-patterns.md) | Every banned pattern with WHY and alternative |
 | [verification.md](.agents/standards/verification.md) | Pipeline steps, scoped verification, failure interpretation |
@@ -186,6 +193,7 @@ Per-module AGENTS.md files load via JIT context when you access files in those d
 - `core/{module}/AGENTS.md` — module purpose, public API, usage patterns
 - `architecture-check/AGENTS.md` — architecture test categories and how to add rules
 - `navint-tests/AGENTS.md` — navigation + integration test infrastructure, NavIntAppGraph
+- `e2e-tests/AGENTS.md` — end-to-end journey tests, AppRobot, benchmarks
 - `iosApp/AGENTS.md` — Swift bridge patterns, Harmonize tests
 - `build-logic/AGENTS.md` — convention plugin details
 - `composeApp/AGENTS.md` — app entry points, navigation wiring, deep links

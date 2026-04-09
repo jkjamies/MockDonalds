@@ -13,7 +13,8 @@ Add a new screen to an existing feature with all required files.
 
 - Naming: `.agents/standards/naming-conventions.md`
 - DI: `.agents/standards/dependency-injection.md`
-- Testing: `.agents/standards/testing.md`
+- Unit tests: `.agents/standards/testing-unit.md`
+- UI component tests: `.agents/standards/testing-ui-component.md`
 - Design system & adaptive layout: `.agents/standards/design-system.md`
 
 ## Reference Implementation

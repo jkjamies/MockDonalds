@@ -9,7 +9,8 @@ Identify changed/new Compose UI screens and create the full Robot pattern test s
 
 ## Reference Standards
 
-- Robot pattern, UI test conventions, and quality rules: `.agents/standards/testing.md`
+- Robot pattern and UI test conventions: `.agents/standards/testing-ui-component.md`
+- Quality rules and shared infrastructure: `.agents/standards/testing.md`
 
 ## Scope
 

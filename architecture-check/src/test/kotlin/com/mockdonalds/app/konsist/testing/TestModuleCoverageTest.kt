@@ -96,6 +96,34 @@ class TestModuleCoverageTest : BehaviorSpec({
         }
     }
 
+    Given("e2e test coverage") {
+        Then("every feature TestTags should be referenced in at least one e2e journey test") {
+            val testTagObjects = Konsist.scopeFromProject()
+                .objects()
+                .filter {
+                    it.resideInPath("..api/navigation..") &&
+                        it.resideInPath("..commonMain..") &&
+                        it.name.endsWith("TestTags")
+                }
+                .map { it.name }
+                .toSet()
+
+            val e2eFiles = Konsist.scopeFromProject()
+                .files
+                .filter { it.resideInPath("..e2e-tests..") }
+
+            val e2eContent = e2eFiles.joinToString("\n") { it.text }
+
+            val uncovered = testTagObjects.filter { tagObject ->
+                !e2eContent.contains(tagObject)
+            }
+
+            assert(uncovered.isEmpty()) {
+                "Feature TestTags not referenced in any e2e journey test:\n${uncovered.joinToString("\n") { "  $it — add assertions using its constants in e2e-tests/suites/" }}"
+            }
+        }
+    }
+
     Given("repository test coverage") {
         Then("every repository implementation should have a corresponding test file") {
             val repoImpls = Konsist.scopeFromProject()

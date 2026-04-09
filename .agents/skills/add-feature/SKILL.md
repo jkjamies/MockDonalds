@@ -15,7 +15,9 @@ Scaffold a complete feature with all layers, tests, and documentation.
 - Feature scaffolding guide: `.agents/standards/feature-scaffolding.md`
 - Naming conventions: `.agents/standards/naming-conventions.md`
 - DI patterns: `.agents/standards/dependency-injection.md`
-- Testing conventions: `.agents/standards/testing.md`
+- Testing conventions: `.agents/standards/testing.md` (overview)
+- Unit tests: `.agents/standards/testing-unit.md`
+- UI component tests: `.agents/standards/testing-ui-component.md`
 - CenterPost interactors: `.agents/standards/centerpost.md`
 - Design system & adaptive layout: `.agents/standards/design-system.md`
 - Convention plugins: `.agents/standards/convention-plugins.md`

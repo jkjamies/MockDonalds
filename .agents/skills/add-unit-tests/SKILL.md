@@ -9,7 +9,8 @@ Identify changed/new production classes and create or update their unit tests.
 
 ## Reference Standards
 
-- Testing conventions, quality rules, and tech stack: `.agents/standards/testing.md`
+- Testing conventions and quality rules: `.agents/standards/testing.md`
+- Unit test patterns (BehaviorSpec, presenter/use case/repo): `.agents/standards/testing-unit.md`
 
 ## Scope
 

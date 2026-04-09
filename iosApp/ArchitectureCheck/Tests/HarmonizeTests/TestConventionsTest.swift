@@ -331,6 +331,35 @@ final class TestConventionsTest: XCTestCase {
         }
     }
 
+    // MARK: - E2E Coverage
+
+    func testEveryViewIsReferencedInE2ETests() {
+        let viewNames = productionScope.sources().compactMap { source -> String? in
+            let fileName = source.fileName?.replacingOccurrences(of: ".swift", with: "")
+            guard let view = source.structs().first(where: { $0.name == fileName }) else { return nil }
+            return view.name
+        }
+
+        // Guard: skip until iOS e2e tests exist
+        let e2eScope = Harmonize.testCode().on("iosApp/iosAppE2ETests")
+        let e2eSources = e2eScope.sources()
+        guard e2eSources.isNotEmpty else { return }
+
+        let e2eContent = e2eSources.compactMap { $0.source }.joined(separator: "\n")
+
+        let uncovered = viewNames.filter { viewName in
+            // Check if the view's accessibility identifiers are referenced
+            // Views use TestTags from KMP, referenced as string constants in XCUITest queries
+            let featureName = viewName.replacingOccurrences(of: "View", with: "")
+            return !e2eContent.contains(featureName)
+        }
+
+        XCTAssertTrue(
+            uncovered.isEmpty,
+            "Views not referenced in any iOS e2e journey test:\n\(uncovered.map { "  \($0) — add assertions in iosAppE2ETests/" }.joined(separator: "\n"))"
+        )
+    }
+
     // MARK: - NavInt Test Conventions
 
     func testNavIntTestsAreSuiteStructs() {

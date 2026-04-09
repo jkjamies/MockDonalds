@@ -106,6 +106,7 @@ No verification needed beyond architecture tests (which already ran in step 4).
 | `iosApp/iosAppTests/{Feature}/` | iOS unit tests | `xcodebuild test -scheme iOSApp -testPlan UnitTests ...` (requires simulator) |
 | `iosApp/iosApp/Circuit/` | iOS navint-tests | `xcodebuild test -scheme iOSApp -testPlan NavIntTests ...` (requires simulator) |
 | `iosApp/iosAppTests/NavInt/` | iOS navint-tests | `xcodebuild test -scheme iOSApp -testPlan NavIntTests ...` (requires simulator) |
+| `e2e-tests/` | e2e-tests | `:e2e-tests:connectedAndroidTest` (requires device/emulator) |
 
 ## When to Use
 

@@ -50,3 +50,6 @@ include(":architecture-check")
 
 // Navigation + integration tests
 include(":navint-tests")
+
+// End-to-end tests
+include(":e2e-tests")
