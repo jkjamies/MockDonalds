@@ -5,10 +5,14 @@ import com.mockdonalds.app.features.home.api.domain.ExploreItem
 import com.mockdonalds.app.features.home.api.domain.GetHomeContent
 import com.mockdonalds.app.features.home.api.domain.HeroPromotion
 import com.mockdonalds.app.features.home.api.domain.HomeContent
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class FakeGetHomeContent(
+@ContributesBinding(AppScope::class)
+class FakeGetHomeContent @Inject constructor(
     initial: HomeContent = DEFAULT,
 ) : GetHomeContent() {
 

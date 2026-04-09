@@ -1,5 +1,5 @@
 plugins {
-    id("mockdonalds.kmp.library")
+    id("mockdonalds.kmp.domain")
 }
 
 kotlin {

@@ -2,10 +2,14 @@ package com.mockdonalds.app.features.login.test
 
 import com.mockdonalds.app.features.login.api.domain.GetLoginContent
 import com.mockdonalds.app.features.login.api.domain.LoginContent
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class FakeGetLoginContent(
+@ContributesBinding(AppScope::class)
+class FakeGetLoginContent @Inject constructor(
     initial: LoginContent = DEFAULT,
 ) : GetLoginContent() {
 

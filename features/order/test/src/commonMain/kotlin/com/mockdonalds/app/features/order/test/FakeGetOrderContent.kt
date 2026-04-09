@@ -5,10 +5,14 @@ import com.mockdonalds.app.features.order.api.domain.FeaturedItem
 import com.mockdonalds.app.features.order.api.domain.GetOrderContent
 import com.mockdonalds.app.features.order.api.domain.MenuCategory
 import com.mockdonalds.app.features.order.api.domain.OrderContent
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class FakeGetOrderContent(
+@ContributesBinding(AppScope::class)
+class FakeGetOrderContent @Inject constructor(
     initial: OrderContent = DEFAULT,
 ) : GetOrderContent() {
 

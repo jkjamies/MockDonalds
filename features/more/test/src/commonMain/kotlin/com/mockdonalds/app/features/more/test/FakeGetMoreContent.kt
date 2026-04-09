@@ -4,10 +4,14 @@ import com.mockdonalds.app.features.more.api.domain.GetMoreContent
 import com.mockdonalds.app.features.more.api.domain.MoreContent
 import com.mockdonalds.app.features.more.api.domain.MoreMenuItem
 import com.mockdonalds.app.features.more.api.domain.UserProfile
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class FakeGetMoreContent(
+@ContributesBinding(AppScope::class)
+class FakeGetMoreContent @Inject constructor(
     initial: MoreContent = DEFAULT,
 ) : GetMoreContent() {
 
