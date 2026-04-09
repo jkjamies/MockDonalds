@@ -12,6 +12,7 @@ Defines marker interfaces for tab-based navigation and authentication gating.
 | `TabScreen` | Interface extending Circuit `Screen`. Declares `val tag: String` used for tab identity in bottom navigation. |
 | `ProtectedScreen` | Marker interface extending Circuit `Screen`. Screens implementing this are auth-gated by `AuthInterceptor` in `composeApp`. |
 | `@Parcelize` | Expect/actual annotation (`@Target(CLASS)`) for KMP-compatible parcelization of screen data classes. |
+| `CircuitProviders` | `@ContributesTo(AppScope)` interface. Aggregates `Presenter.Factory` and `Ui.Factory` multibindings into a `Circuit` instance via `Circuit.Builder()`. |
 
 ## Usage
 

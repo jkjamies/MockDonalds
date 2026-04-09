@@ -16,7 +16,7 @@ This is enforced by Konsist's `CircuitConventionsTest`.
 │                        Kotlin (iosMain)                              │
 │                                                                      │
 │  IosApp                          CircuitPresenterKotlinBridge        │
-│  ├── createGraph<AppGraph>()     ├── Wraps @Composable present()    │
+│  ├── createGraph<ProdAppGraph>()     ├── Wraps @Composable present()    │
 │  ├── circuit: Circuit            ├── Molecule → StateFlow           │
 │  ├── navigator: BridgeNavigator  └── @NativeCoroutinesState         │
 │  └── presenterBridge(screen)                                        │
@@ -53,7 +53,7 @@ This is enforced by Konsist's `CircuitConventionsTest`.
 
 The iOS bridge lives in `composeApp/src/iosMain/kotlin/com/mockdonalds/app/bridge/`:
 
-1. **IosApp** — entry point. Creates `AppGraph`, `BridgeNavigator`, `InterceptingNavigator`
+1. **IosApp** — entry point. Creates `ProdAppGraph`, `BridgeNavigator`, `InterceptingNavigator`
    with `AuthInterceptor`. Exposes `presenterBridge(screen:)` and `deepLink(uri:)` to Swift.
 2. **BridgeNavigator** — `Navigator` implementation using `Channel<List<NavigationAction>>`,
    NOT StateFlow. Channel provides exactly-once, ordered delivery with no replay or conflation.

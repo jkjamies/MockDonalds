@@ -35,7 +35,7 @@ features/{name}/
   test/                — Fakes for testing
 ```
 
-Core modules: `auth`, `centerpost`, `circuit`, `network`, `theme`, `test-fixtures`
+Core modules: `auth`, `centerpost`, `circuit`, `metro`, `network`, `theme`, `test-fixtures`
 
 Features: `home`, `login`, `more`, `order`, `profile`, `rewards`, `scan`
 

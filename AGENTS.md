@@ -29,7 +29,8 @@ features/{name}/
 core/
   auth/                — AuthManager interface (api/) + InMemoryAuthManager (impl/)
   centerpost/          — CenterPostInteractor, CenterPostSubjectInteractor, CenterPostDispatchers
-  circuit/             — TabScreen, ProtectedScreen, Parcelize expect/actual
+  circuit/             — TabScreen, ProtectedScreen, Parcelize expect/actual, CircuitProviders
+  metro/               — AppGraph interface (shared DI contract)
   network/             — HttpClientProvider, Ktor engine
   theme/               — MockDonaldsTheme, colors, typography, dimens, AdaptiveLayout
   test-fixtures/       — TestCenterPostDispatchers, KotestProjectConfig, StateRobot base
@@ -117,7 +118,7 @@ swift test --package-path iosApp/ArchitectureCheck  # 4. iOS arch (if Swift chan
 
 | Plugin | Used By | Adds |
 |--------|---------|------|
-| `mockdonalds.kmp.library` | api modules, test modules | Base KMP setup, Kotest |
+| `mockdonalds.kmp.library` | api modules | Base KMP setup, Kotest |
 | `mockdonalds.kmp.domain` | impl/domain modules | Metro DI (`@ContributesBinding`) |
 | `mockdonalds.kmp.data` | impl/data modules | Metro DI + kotlinx.serialization |
 | `mockdonalds.kmp.presentation` | impl/presentation modules | Compose Multiplatform + Circuit codegen |

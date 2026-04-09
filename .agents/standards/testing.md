@@ -364,7 +364,8 @@ Enforced by: `TestDoubleConventionsTest`.
 ### Implementation Pattern
 
 ```kotlin
-class FakeGetOrderContent(
+@ContributesBinding(AppScope::class)
+class FakeGetOrderContent @Inject constructor(
     initial: OrderContent = DEFAULT,
 ) : GetOrderContent() {
 

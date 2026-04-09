@@ -137,7 +137,8 @@ If the test requires a fake that doesn't exist yet, create it in `features/{name
 Reference: `features/order/test/src/commonMain/.../FakeGetOrderContent.kt`
 
 ```kotlin
-class Fake{Name}(
+@ContributesBinding(AppScope::class)
+class Fake{Name} @Inject constructor(
     initial: {ContentType} = DEFAULT,
 ) : {AbstractClass}() {
 

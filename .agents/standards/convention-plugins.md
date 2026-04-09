@@ -15,7 +15,7 @@ mockdonalds.detekt (applied transitively via library)
 
 ## mockdonalds.kmp.library
 
-Base KMP library plugin. Used by `api/domain`, `api/navigation`, `test`, and `core/*` modules.
+Base KMP library plugin. Used by `api/domain`, `api/navigation`, and `core/*` modules.
 
 Provides:
 - KMP targets: Android (`com.android.kotlin.multiplatform.library`), iOS (x64, arm64, simulator)
@@ -38,7 +38,7 @@ plugins {
 }
 ```
 
-For `impl/domain` modules containing use case implementations and repository interfaces. `@ContributesBinding` wires implementations to their abstractions.
+For `impl/domain` and `test` modules. Use case implementations use `@ContributesBinding` to wire to their abstractions. Test modules use it so fakes can have `@ContributesBinding` for navint-tests DI auto-discovery.
 
 ## mockdonalds.kmp.data
 

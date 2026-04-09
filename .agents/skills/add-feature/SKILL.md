@@ -86,12 +86,12 @@ kotlin {
 
 **test/build.gradle.kts** — fakes for testing:
 ```kotlin
-plugins { id("mockdonalds.kmp.library") }
+plugins { id("mockdonalds.kmp.domain") }
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":features:{name}:api:domain"))
-            implementation(project(":core:test-fixtures"))
+            api(project(":features:{name}:api:domain"))
+            api(project(":core:test-fixtures"))
         }
     }
 }
@@ -217,7 +217,8 @@ import com.mockdonalds.app.features.{name}.api.domain.{Feature}Content
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class FakeGet{Feature}Content(
+@ContributesBinding(AppScope::class)
+class FakeGet{Feature}Content @Inject constructor(
     initial: {Feature}Content = DEFAULT,
 ) : Get{Feature}Content() {
 

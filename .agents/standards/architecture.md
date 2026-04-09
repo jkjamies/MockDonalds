@@ -5,7 +5,7 @@
 ```mermaid
 graph TB
     subgraph composeApp["composeApp (Shared Shell)"]
-        AppGraph["AppGraph (Metro DI)"]
+        AppGraph["ProdAppGraph (Metro DI)"]
         Circuit["Circuit Navigation"]
         Bridge["iOS Bridge Layer"]
     end
@@ -47,7 +47,7 @@ graph TB
 ```
                     ┌─────────────────────────────────────┐
                     │            composeApp               │
-                    │  AppGraph (Metro DI) + Circuit      │
+                    │  ProdAppGraph (Metro DI) + Circuit   │
                     │  Wires all feature modules together  │
                     └──────────┬──────────┬───────────────┘
                  Android       │          │          iOS
@@ -72,7 +72,7 @@ MockDonalds/
 ├── composeApp/                         # Shared application module
 │   └── src/
 │       ├── commonMain/kotlin/
-│       │   ├── AppGraph.kt             # Metro DI graph + Circuit wiring
+│       │   ├── AppGraph.kt             # ProdAppGraph — extends AppGraph (core:metro)
 │       │   ├── MockDonaldsBottomNavigation.kt
 │       │   └── MockDonaldsIcons.kt
 │       ├── androidMain/kotlin/
@@ -89,7 +89,8 @@ MockDonalds/
 │   │   ├── api/                        # AuthManager interface (public contract)
 │   │   └── impl/                       # InMemoryAuthManager (private implementation)
 │   ├── centerpost/                     # Business logic framework (interactors, result types)
-│   ├── circuit/                        # Shared Circuit types (TabScreen, ProtectedScreen)
+│   ├── circuit/                        # Shared Circuit types (TabScreen, ProtectedScreen, CircuitProviders)
+│   ├── metro/                          # AppGraph interface (DI contract)
 │   ├── network/                        # HTTP client (Ktor)
 │   ├── test-fixtures/                  # TestCenterPostDispatchers, KotestProjectConfig, StateRobot
 │   └── theme/                          # Design system (Colors, Theme, Dimens, Typography)
@@ -246,7 +247,7 @@ Key constraints:
 | `impl/domain` | UseCaseImpl classes, Repository interfaces | `mockdonalds.kmp.domain` |
 | `impl/data` | RepositoryImpl classes, DTOs, network/storage calls | `mockdonalds.kmp.data` |
 | `impl/presentation` | Presenter functions, UiState, Events, Compose UI | `mockdonalds.kmp.presentation` |
-| `test` | Fakes extending abstract use cases for testing | `mockdonalds.kmp.library` |
+| `test` | Fakes extending abstract use cases for testing | `mockdonalds.kmp.domain` |
 
 ## Cross-Feature Import Rules
 
@@ -275,7 +276,7 @@ Core modules (`core/*`) must NEVER import from feature modules (`features/*`). T
 
 | Plugin | Module Type | What It Adds |
 |--------|------------|-------------|
-| `mockdonalds.kmp.library` | api/*, test, core/* | Base KMP (Android SDK 36/min 26, iOS targets, JVM 17), Parcelize, KSP, Kotest, Detekt, auto `:core:test-fixtures` in commonTest |
+| `mockdonalds.kmp.library` | api/*, core/* | Base KMP (Android SDK 36/min 26, iOS targets, JVM 17), Parcelize, KSP, Kotest, Detekt, auto `:core:test-fixtures` in commonTest |
 | `mockdonalds.kmp.domain` | impl/domain | Everything in library + Metro DI (`@ContributesBinding` support) |
 | `mockdonalds.kmp.data` | impl/data | Everything in library + Metro DI + kotlinx.serialization |
 | `mockdonalds.kmp.presentation` | impl/presentation | Everything in library + Compose Multiplatform + Compose Compiler + Metro DI with Circuit codegen (`enableCircuitCodegen`), Circuit dependencies, Material3, Coil, androidDeviceTest support |

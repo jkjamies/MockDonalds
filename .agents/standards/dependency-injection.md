@@ -109,7 +109,7 @@ graph TB
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                    AppGraph (composeApp)                  │
+│                  ProdAppGraph (composeApp)                │
 │         @DependencyGraph(AppScope::class)                │
 │                                                          │
 │  Aggregates all contributed bindings from:               │
@@ -150,8 +150,9 @@ sequenceDiagram
     Presenter-->>Circuit: HomeUiState stream
 ```
 
-The root DI graph is defined in `composeApp/src/commonMain/kotlin/.../AppGraph.kt`:
+The DI graph is split across three modules:
 
+**`core/circuit/CircuitProviders.kt`** — aggregates Circuit factories:
 ```kotlin
 @ContributesTo(AppScope::class)
 interface CircuitProviders {
@@ -164,15 +165,23 @@ interface CircuitProviders {
         uiFactories: Set<Ui.Factory>,
     ): Circuit { ... }
 }
+```
 
-@DependencyGraph(AppScope::class)
+**`core/metro/AppGraph.kt`** — shared graph contract (annotation-free):
+```kotlin
 interface AppGraph {
     val circuit: Circuit
     val authManager: AuthManager
 }
 ```
 
-- `@DependencyGraph(AppScope::class)` marks `AppGraph` as the root graph
+**`composeApp/AppGraph.kt`** — production graph:
+```kotlin
+@DependencyGraph(AppScope::class)
+interface ProdAppGraph : AppGraph
+```
+
+- `@DependencyGraph(AppScope::class)` on `ProdAppGraph` marks it as the root graph
 - `@ContributesTo(AppScope::class)` on `CircuitProviders` merges it into the graph
 - `@Multibinds` collects all `Presenter.Factory` and `Ui.Factory` instances contributed by `@CircuitInject` across all feature modules
 - Every `@ContributesBinding(AppScope::class)` class is automatically included in the graph
@@ -261,4 +270,4 @@ fun HomePresenter(
 }
 ```
 
-The DI graph assembles this automatically: `AppGraph` creates `Circuit` from multibindings, Circuit matches `HomeScreen` to `HomePresenter` via `@CircuitInject`, Metro resolves `GetHomeContent` to `GetHomeContentImpl` via `@ContributesBinding`, and `HomeRepository` to `HomeRepositoryImpl` the same way.
+The DI graph assembles this automatically: `ProdAppGraph` creates `Circuit` from multibindings, Circuit matches `HomeScreen` to `HomePresenter` via `@CircuitInject`, Metro resolves `GetHomeContent` to `GetHomeContentImpl` via `@ContributesBinding`, and `HomeRepository` to `HomeRepositoryImpl` the same way.

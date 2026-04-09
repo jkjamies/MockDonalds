@@ -10,7 +10,7 @@ Application shell that wires all feature modules together. Contains platform ent
 
 | File | Purpose |
 |------|---------|
-| `AppGraph.kt` | Metro `@DependencyGraph(AppScope)` root. Provides `Circuit` (assembled from multibindings of Presenter.Factory and Ui.Factory) and `AuthManager`. `CircuitProviders` interface contributes the Circuit builder. |
+| `AppGraph.kt` | `ProdAppGraph` — extends `AppGraph` (from `core:metro`) with `@DependencyGraph(AppScope)`. The `AppGraph` interface and `CircuitProviders` live in `core:metro` and `core:circuit` respectively. |
 | `navigation/DeepLinkParser.kt` | Parses URI paths into Screen lists. `findTabByTag()` resolves tab screens. `createDeepLinkParser()` registers all tab screens plus profile/login routes. |
 | `navigation/NavigationInterceptor.kt` | `NavigationInterceptor` interface with `interceptGoTo`/`interceptResetRoot` returning `InterceptResult` (Skip or Rewrite). |
 | `navigation/AuthInterceptor.kt` | Redirects `ProtectedScreen` navigation to `LoginScreen` when user is not authenticated. |
@@ -20,7 +20,7 @@ Application shell that wires all feature modules together. Contains platform ent
 
 | File | Purpose |
 |------|---------|
-| `App.kt` | `MockDonaldsApp` composable -- creates `AppGraph`, sets up `rememberSaveableBackStack(root = HomeScreen)`, wires `InterceptingNavigator` with `AuthInterceptor`, handles deep link intents, renders `NavigableCircuitContent` with gesture navigation and `MockDonaldsBottomNavigation`. |
+| `App.kt` | `MockDonaldsApp` composable -- creates `ProdAppGraph`, sets up `rememberSaveableBackStack(root = HomeScreen)`, wires `InterceptingNavigator` with `AuthInterceptor`, handles deep link intents, renders `NavigableCircuitContent` with gesture navigation and `MockDonaldsBottomNavigation`. |
 | `MockDonaldsBottomNavigation.kt` | Custom bottom nav bar with glass effect. Uses `TabScreen.tag` for route matching. |
 | `MockDonaldsIcons.kt` | Custom `ImageVector` icons for bottom navigation tabs. |
 

@@ -61,4 +61,4 @@ Applied transitively via `mockdonalds.kmp.library`. Configures:
 | impl/data | `mockdonalds.kmp.data` | features/home/impl/data |
 | impl/presentation | `mockdonalds.kmp.presentation` | features/home/impl/presentation |
 | core/* | `mockdonalds.kmp.library` | core/circuit, core/theme |
-| test modules | `mockdonalds.kmp.library` | features/home/test |
+| test modules | `mockdonalds.kmp.domain` | features/home/test |
