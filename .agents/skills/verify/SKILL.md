@@ -47,7 +47,7 @@ Runs 42 iOS unit tests (ViewTests with ViewInspector Robot pattern). Skip if no 
 ```bash
 swift test --package-path iosApp/ArchitectureCheck
 ```
-33 tests enforce: Swift view conventions, test module organization, navint test conventions, iOS architectural patterns.
+40 tests enforce: Swift view conventions, test module organization, navint test conventions, E2E test conventions, iOS architectural patterns.
 
 ### 8. Navigation & Integration Tests (requires emulator)
 ```bash
@@ -67,6 +67,12 @@ xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS 
 ```
 Runs 24 navint tests on an iOS Simulator. Tests use Swift Testing (`@Suite @MainActor struct`) and exercise `NavigationStateManager` state transitions, tab switching, deep link navigation, and auth flow navigation. Skip this step if no simulator is available; run it before merge when Swift navigation files changed (`iosApp/iosApp/Circuit/` or `iosApp/iosAppTests/NavInt/`).
 
+### 11. iOS E2E Tests (requires simulator)
+```bash
+xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'
+```
+Runs process-isolated XCUITest journey tests and startup benchmarks against the real iOS app. Tests use `AppRobot` for launch, tab navigation, deep links, and element assertions via accessibility identifiers. Journey tests end with `JourneyTest`, benchmarks end with `PerformanceTest`. Skip this step if no simulator is available; run it before merge when user-facing flows or deep link handling changed.
+
 ## Interpreting Failures
 
 - **Build failure**: Check import paths, missing dependencies, or syntax errors
@@ -78,3 +84,4 @@ Runs 24 navint tests on an iOS Simulator. Tests use Swift Testing (`@Suite @Main
 - **navint-tests failure**: Navigation or integration contract broken — check Circuit presenter wiring, screen navigation flows, and fake data layer setup in `testing/navint-tests/src/androidDeviceTest/`
 - **e2e-tests failure**: User journey broken — check `AppRobot.kt` for test helper, journey tests in `testing/e2e-tests/src/main/kotlin/.../suites/`, and TestTags in `features/*/api/navigation/`
 - **iOS navint-tests failure**: iOS navigation state management broken — check `NavigationStateManager` logic in `iosApp/iosApp/Circuit/`, tab switching, deep link routing, or auth flow handling in `iosApp/iosAppTests/NavInt/`
+- **iOS e2e-tests failure**: iOS user journey broken — check `AppRobot.swift` in `iosApp/iosAppE2ETests/Robots/`, journey tests in `Suites/`, and accessibility identifiers matching KMP TestTags

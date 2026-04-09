@@ -5,12 +5,12 @@
 Run these steps in order after any code change. Stop and fix failures before proceeding.
 
 ```
- ┌─────────┐    ┌────────────┐    ┌─────────┐    ┌───────────┐    ┌───────────┐    ┌───────────┐    ┌───────────┐    ┌─────────┐    ┌──────────┐
- │ 1.Detekt│───►│2.Unit Tests│───►│3.Konsist│───►│4.Harmonize│───►│5.SwiftLint│───►│6.navint   │───►│7.iOS navi │───►│8.e2e-test│───►│9.Assemble│
- │  (lint) │    │  (Kotest)  │    │(Kt arch)│    │(iOS arch) │    │(iOS style)│    │  (emul.)  │    │  (sim.)   │    │ (device) │    │  (build) │
- └─────────┘    └────────────┘    └─────────┘    └───────────┘    └───────────┘    └───────────┘    └───────────┘    └─────────┘    └──────────┘
-   ~15s            ~30s              ~10s            ~10s             ~5s             ~varies          ~varies         ~varies          ~60s
-   Fix format     Fix logic        Fix structure   Fix iOS conv.   Fix iOS style   Fix nav flows    Fix iOS nav     Fix journeys     Fix compile
+ ┌─────────┐    ┌────────────┐    ┌─────────┐    ┌───────────┐    ┌───────────┐    ┌───────────┐    ┌───────────┐    ┌──────────┐    ┌──────────┐    ┌───────────┐
+ │ 1.Detekt│───►│2.Unit Tests│───►│3.Konsist│───►│4.Harmonize│───►│5.SwiftLint│───►│6.navint   │───►│7.iOS navi │───►│8.e2e-test│───►│9.iOS e2e │───►│10.Assembl│
+ │  (lint) │    │  (Kotest)  │    │(Kt arch)│    │(iOS arch) │    │(iOS style)│    │  (emul.)  │    │  (sim.)   │    │ (device) │    │  (sim.)  │    │  (build) │
+ └─────────┘    └────────────┘    └─────────┘    └───────────┘    └───────────┘    └───────────┘    └───────────┘    └──────────┘    └──────────┘    └───────────┘
+   ~15s            ~30s              ~10s            ~10s             ~5s             ~varies          ~varies         ~varies         ~varies          ~60s
+   Fix format     Fix logic        Fix structure   Fix iOS conv.   Fix iOS style   Fix nav flows    Fix iOS nav     Fix journeys    Fix iOS e2e      Fix compile
 ```
 
 1. **Detekt** (lint): `./gradlew detektMetadataCommonMain`
@@ -21,7 +21,8 @@ Run these steps in order after any code change. Stop and fix failures before pro
 6. **navint-tests** (navigation & integration, requires emulator): `./gradlew :testing:navint-tests:connectedAndroidDeviceTest`
 7. **iOS navint-tests** (iOS navigation & integration, requires simulator): `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'`
 8. **e2e-tests** (full user journeys, requires device/emulator): `./gradlew :testing:e2e-tests:connectedAndroidTest`
-9. **Assemble** (full build): `./gradlew assemble`
+9. **iOS e2e-tests** (iOS user journeys, requires simulator): `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'`
+10. **Assemble** (full build): `./gradlew assemble`
 
 ## Scoped Verification (verify-smart)
 
@@ -50,6 +51,7 @@ git diff --name-only                       # uncommitted changes on main
 | `iosApp/iosApp/Circuit/` | `xcodebuild test -scheme iOSApp -testPlan NavIntTests ...` (requires simulator) |
 | `iosApp/iosAppTests/NavInt/` | `xcodebuild test -scheme iOSApp -testPlan NavIntTests ...` (requires simulator) |
 | `testing/e2e-tests/` | `:testing:e2e-tests:connectedAndroidTest` (requires device/emulator) |
+| `iosApp/iosAppE2ETests/` | `xcodebuild test -scheme iOSApp -testPlan E2ETests ...` (requires simulator) |
 
 ### verify-smart Decision Logic
 
@@ -59,8 +61,9 @@ git diff --name-only                       # uncommitted changes on main
 4. If `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` changed: run `./gradlew :testing:navint-tests:connectedAndroidDeviceTest` (requires emulator; flag for pre-merge if emulator unavailable).
 5. If `iosApp/iosApp/Circuit/` or `iosApp/iosAppTests/NavInt/` changed: run `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'` (requires simulator; flag for pre-merge if simulator unavailable).
 6. If `testing/e2e-tests/` changed: run `./gradlew :testing:e2e-tests:connectedAndroidTest` (requires device/emulator; flag for pre-merge if unavailable).
-7. If `build.gradle.kts` or `settings.gradle.kts` changed: run `./gradlew assemble`.
-8. If only markdown/documentation changed: architecture tests only (step 1).
+7. If `iosApp/iosAppE2ETests/` changed: run `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'` (requires simulator; flag for pre-merge if unavailable).
+8. If `build.gradle.kts` or `settings.gradle.kts` changed: run `./gradlew assemble`.
+9. If only markdown/documentation changed: architecture tests only (step 1).
 
 ## Failure Interpretation
 
@@ -76,12 +79,12 @@ git diff --name-only                       # uncommitted changes on main
 
 ### Konsist (Architecture Tests)
 - Reports: rule name + violating class/file path
-- 18 test classes in 5 categories: architecture, circuit, core, layers, testing
+- 22 test classes in 5 categories: architecture, circuit, core, layers, testing
 - Message explains the specific convention violated (e.g., "Presenters must not depend on repositories directly")
 
 ### Harmonize (iOS Architecture Tests)
 - Reports: Swift convention + violating struct/class
-- 29 tests enforce view conventions and test module organization
+- 40 tests enforce view conventions, test module organization, and E2E test conventions
 - Run via: `swift test --package-path iosApp/ArchitectureCheck`
 
 ### SwiftLint
@@ -111,6 +114,14 @@ git diff --name-only                       # uncommitted changes on main
 - Tests use UI Automator with `By.desc(testTag)` — check `AppRobot.kt` for the test helper and `features/*/api/navigation/` for TestTags
 - Benchmarks use `MacrobenchmarkRule` with Perfetto traces for startup timing
 
+### iOS e2e-tests (iOS End-to-End Tests)
+- Reports: XCTest test name + XCUIElement assertion detail
+- Failures indicate broken iOS user journeys — tab navigation, deep link handling, auth gating, or startup performance regression
+- Journey tests in `iosApp/iosAppE2ETests/Suites/` end with `JourneyTest`; benchmarks in `Benchmarks/` end with `PerformanceTest`
+- Requires an iOS Simulator; run `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'`
+- Tests use XCUITest with accessibility identifiers matching KMP TestTags (raw string constants — process-isolated)
+- Uses `AppRobot` for all app interactions — check `iosApp/iosAppE2ETests/Robots/AppRobot.swift`
+
 ## Decision Tree — Skip Irrelevant Steps
 
 ```
@@ -126,7 +137,7 @@ What changed?
   │     └── iosApp/iosApp/Circuit/ or iosApp/iosAppTests/NavInt/ changed?
   │           └── Yes ──► also run iOS navint-tests (requires simulator)
   │
-  ├── Both Kotlin + Swift ──► Full pipeline (all 9 steps)
+  ├── Both Kotlin + Swift ──► Full pipeline (all 10 steps)
   │
   ├── Only tests changed ──► Detekt + Unit Tests + Konsist
   │     │                    (skip Assemble — tests compile as part of test tasks)

@@ -157,5 +157,45 @@ Add or update e2e-tests when:
 
 ### Harmonize
 
-1 coverage rule in `TestConventionsTest.swift` (active once iOS e2e tests exist):
-- Every `{Feature}View.swift` must be referenced in at least one iOS e2e journey test
+6 convention rules + 1 coverage rule in `TestConventionsTest.swift`:
+- E2E tests must extend `XCTestCase` (XCUITest process isolation)
+- Journey test files in `Suites/` must end with `JourneyTest`
+- Benchmark files in `Benchmarks/` must end with `PerformanceTest` or `Benchmark`
+- Journey tests must use `AppRobot` for app interactions
+- E2E tests must not import `ViewInspector` (wrong test level)
+- E2E tests must not import `Testing` (must use XCTest for XCUITest)
+- Every `{Feature}View.swift` must be referenced in at least one iOS e2e journey test (guarded — activates when coverage rule sees e2e content)
+
+## iOS E2E Tests
+
+iOS E2E tests live in `iosApp/iosAppE2ETests/` as a separate XCUITest target. They launch the real app in a separate process.
+
+### Run Commands
+
+```bash
+# All iOS e2e tests
+xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'
+```
+
+### Structure
+
+```
+iosAppE2ETests/
+  Robots/AppRobot.swift         — launch, navigate tabs, assert elements
+  Suites/
+    GuestJourneyTest.swift      — browse tabs, auth redirect
+    DeepLinkJourneyTest.swift   — cold start with URI
+    OrderJourneyTest.swift      — order browsing flow
+  Benchmarks/
+    StartupPerformanceTest.swift — XCTApplicationLaunchMetric
+```
+
+### Key Differences from Android E2E
+
+| | Android | iOS |
+|---|---|---|
+| Target | `com.android.test` APK | XCUITest target |
+| Framework | JUnit4 + UI Automator | XCTest + XCUIApplication |
+| Element access | `By.desc(testTag)` | `app.descendants[testTag]` |
+| TestTags | Import from KMP api modules | Raw string constants (process-isolated) |
+| Benchmarks | Macrobenchmark + Perfetto | XCTMetric + XCTApplicationLaunchMetric |

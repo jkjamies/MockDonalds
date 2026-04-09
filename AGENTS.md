@@ -120,8 +120,9 @@ xcodebuild test -scheme iOSApp -testPlan UnitTests -destination '...'  # 4. Unit
 swift test --package-path iosApp/ArchitectureCheck  # 6. iOS arch (Harmonize)
 ./gradlew :testing:navint-tests:connectedAndroidDeviceTest  # 7. Android nav/int tests (emulator)
 xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination '...'  # 8. iOS nav/int tests (simulator)
-./gradlew :testing:e2e-tests:connectedAndroidTest   # 9. E2E tests (device/emulator)
-./gradlew assemble                          # 10. Full build
+./gradlew :testing:e2e-tests:connectedAndroidTest   # 9. Android E2E tests (device/emulator)
+xcodebuild test -scheme iOSApp -testPlan E2ETests -destination '...'  # 10. iOS E2E tests (simulator)
+./gradlew assemble                          # 11. Full build
 ```
 
 ## Convention Plugins

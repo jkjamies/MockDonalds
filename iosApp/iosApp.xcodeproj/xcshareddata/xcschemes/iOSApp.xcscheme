@@ -37,6 +37,9 @@
          <TestPlanReference
             reference = "container:iosApp.xcodeproj/xcshareddata/TestPlans/NavIntTests.xctestplan">
          </TestPlanReference>
+         <TestPlanReference
+            reference = "container:iosApp.xcodeproj/xcshareddata/TestPlans/E2ETests.xctestplan">
+         </TestPlanReference>
       </TestPlans>
    </TestAction>
    <LaunchAction

@@ -24,15 +24,15 @@ After any changes that affect:
 ./gradlew :testing:architecture-check:test
 ```
 
-17 test classes organized in 5 categories:
+22 test classes organized in 5 categories:
 
 | Category | Tests | What They Enforce |
 |----------|-------|-------------------|
 | `architecture/` | LayerDependency, CircularDependency, ForbiddenPatterns | Import direction, no circular deps, banned API usage |
 | `circuit/` | CircuitConventions, NamingConventions | Screen/Presenter/Event naming, sealed class (not interface), placement |
-| `core/` | CodeHygiene, DependencyInjection, PackageConventions, VisibilityConventions | No wildcards, @ContributesBinding coverage, package naming, minimal visibility |
+| `core/` | CodeHygiene, DependencyInjection, PackageConventions, VisibilityConventions, DependencyGraphScope, CoreMetroConventions, AgentDocumentation | No wildcards, @ContributesBinding coverage, package naming, minimal visibility, graph placement, metro isolation, AGENTS.md coverage |
 | `layers/` | ApiLayer, DataLayer, DomainLayer, PresentationLayer | Immutable models, serialization placement, DI wiring, UiState conventions |
-| `testing/` | TestDoubleConventions, TestFileNaming, TestModuleCoverage, UiTestConventions | Fake naming, test file placement, Robot pattern compliance |
+| `testing/` | TestDoubleConventions, TestFileNaming, TestModuleCoverage, TestModuleDI, TestBoundary, UiTestConventions | Fake naming, test file placement, DI on fakes, module isolation, Robot pattern compliance |
 
 ## Harmonize (iOS/Swift)
 
@@ -40,7 +40,7 @@ After any changes that affect:
 swift test --package-path iosApp/ArchitectureCheck
 ```
 
-29 tests enforce Swift view conventions, test module organization, and iOS architectural patterns.
+40 tests enforce Swift view conventions, test module organization, navint test conventions, E2E test conventions, and iOS architectural patterns.
 
 ## Interpreting Failures
 

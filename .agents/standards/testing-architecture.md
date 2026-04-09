@@ -63,14 +63,14 @@ No emulator or simulator required. These are fast (~10s each) and should always 
 
 ## Harmonize (iOS/Swift)
 
-33 tests in `iosApp/ArchitectureCheck/Tests/HarmonizeTests/`. Uses Swift Testing via SPM package.
+40 tests in `iosApp/ArchitectureCheck/Tests/HarmonizeTests/`. Uses Swift Testing via SPM package.
 
 ### Test Files
 
 | File | What It Enforces |
 |------|-----------------|
 | `ViewConventionsTest.swift` | SwiftUI views follow naming patterns, use correct modifiers, proper accessibility identifiers |
-| `TestConventionsTest.swift` | Robot pattern (ViewTest/ViewRobot/StateRobot per View), encapsulation, landscape coverage, navint test conventions |
+| `TestConventionsTest.swift` | Robot pattern (ViewTest/ViewRobot/StateRobot per View), encapsulation, landscape coverage, navint test conventions, E2E test conventions |
 
 ### Adding Harmonize Rules
 

@@ -362,6 +362,101 @@ final class TestConventionsTest: XCTestCase {
 
     // MARK: - NavInt Test Conventions
 
+    // MARK: - E2E Test Conventions
+
+    func testE2ETestsAreXCTestCaseClasses() {
+        let e2eScope = Harmonize.testCode().on("iosApp/iosAppE2ETests")
+        let e2eSources = e2eScope.sources()
+        guard e2eSources.isNotEmpty else { return }
+
+        let testClasses = e2eScope.classes()
+            .filter { $0.name.hasSuffix("Test") }
+
+        let violators = testClasses.filter { cls in
+            !cls.inheritanceTypesNames.contains("XCTestCase")
+        }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "E2E tests must extend XCTestCase (process-isolated XCUITest):\n\(violators.map { $0.name }.joined(separator: "\n"))"
+        )
+    }
+
+    func testE2EJourneyTestsEndWithJourneyTest() {
+        let e2eScope = Harmonize.testCode().on("iosApp/iosAppE2ETests/Suites")
+        let e2eSources = e2eScope.sources()
+        guard e2eSources.isNotEmpty else { return }
+
+        let testClasses = e2eScope.classes()
+            .filter { $0.inheritanceTypesNames.contains("XCTestCase") }
+
+        let violators = testClasses.filter { !$0.name.hasSuffix("JourneyTest") }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "E2E journey test classes in Suites/ must end with 'JourneyTest':\n\(violators.map { $0.name }.joined(separator: "\n"))"
+        )
+    }
+
+    func testE2EBenchmarksEndWithPerformanceTest() {
+        let e2eScope = Harmonize.testCode().on("iosApp/iosAppE2ETests/Benchmarks")
+        let e2eSources = e2eScope.sources()
+        guard e2eSources.isNotEmpty else { return }
+
+        let testClasses = e2eScope.classes()
+            .filter { $0.inheritanceTypesNames.contains("XCTestCase") }
+
+        let violators = testClasses.filter {
+            !$0.name.hasSuffix("PerformanceTest") && !$0.name.hasSuffix("Benchmark")
+        }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "E2E benchmark classes in Benchmarks/ must end with 'PerformanceTest' or 'Benchmark':\n\(violators.map { $0.name }.joined(separator: "\n"))"
+        )
+    }
+
+    func testE2ETestsUseAppRobot() {
+        let e2eScope = Harmonize.testCode().on("iosApp/iosAppE2ETests/Suites")
+        let e2eSources = e2eScope.sources()
+        guard e2eSources.isNotEmpty else { return }
+
+        let violators = e2eSources.filter { !$0.source.contains("AppRobot") }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "E2E journey tests must use AppRobot for app interactions:\n\(violators.map { $0.fileName ?? "unknown" }.joined(separator: "\n"))"
+        )
+    }
+
+    func testE2ETestsDoNotImportViewInspector() {
+        let e2eScope = Harmonize.testCode().on("iosApp/iosAppE2ETests")
+        let e2eSources = e2eScope.sources()
+        guard e2eSources.isNotEmpty else { return }
+
+        let violators = e2eSources.filter { $0.source.contains("import ViewInspector") }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "E2E tests must not import ViewInspector — they use XCUITest for process-isolated testing:\n\(violators.map { $0.fileName ?? "unknown" }.joined(separator: "\n"))"
+        )
+    }
+
+    func testE2ETestsDoNotImportSwiftTesting() {
+        let e2eScope = Harmonize.testCode().on("iosApp/iosAppE2ETests")
+        let e2eSources = e2eScope.sources()
+        guard e2eSources.isNotEmpty else { return }
+
+        let violators = e2eSources.filter { $0.source.contains("import Testing") }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "E2E tests must use XCTest (not Swift Testing) for XCUITest process isolation:\n\(violators.map { $0.fileName ?? "unknown" }.joined(separator: "\n"))"
+        )
+    }
+
+    // MARK: - NavInt Test Conventions
+
     func testNavIntTestsAreSuiteStructs() {
         let navIntTests = testScope.structs()
             .filter { $0.name.hasSuffix("NavigationTest") || $0.name == "NavigationStateManagerTest" || $0.name == "TabSwitchingTest" || $0.name == "DeepLinkNavigationTest" }

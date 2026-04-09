@@ -60,6 +60,12 @@ Requires an iOS Simulator. Run this step when Swift navigation files have change
 ```
 Requires a connected Android device/emulator. Runs full user journey tests and startup benchmarks against the real app via UI Automator. Journey tests end with `JourneyTest`, benchmarks end with `Benchmark`. Skip if no device/emulator is available.
 
+### 10. iOS E2E Tests (requires simulator — optional)
+```bash
+xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'
+```
+Requires an iOS Simulator. Runs process-isolated XCUITest journey tests and startup benchmarks against the real iOS app. Journey tests end with `JourneyTest`, benchmarks end with `PerformanceTest`. Skip if no simulator is available.
+
 ## When to Use
 
 After any code changes as a quick validation before committing. For a more thorough check that includes the build step, use the `verify` skill instead. Navigation/integration tests (step 6) require an emulator and are optional during local development but should be run before merging changes to presentation or navigation modules.

@@ -48,7 +48,7 @@ class GuestJourneyTest {
 
         // Scan tab
         robot.tapTab("Scan")
-        robot.assertElementDisplayed(ScanTestTags.SCAN_BUTTON)
+        robot.assertElementDisplayed(ScanTestTags.QR_CODE)
 
         // More tab
         robot.tapTab("More")

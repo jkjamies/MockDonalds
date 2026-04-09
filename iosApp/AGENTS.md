@@ -33,7 +33,7 @@ Swift-side equivalent of Konsist. Located in `iosApp/ArchitectureCheck/` as a Sw
 | Test File | What It Enforces |
 |-----------|-----------------|
 | `ViewConventionsTest.swift` | Views conform to View protocol, import ComposeApp, have `state` property, use accessibilityIdentifier with shared TestTags, no UIKit/Combine/DispatchQueue, no force unwraps/casts/try, no print/TODO/FIXME |
-| `TestConventionsTest.swift` | Every View has ViewTest/ViewRobot/StateRobot. Robot pattern encapsulation (ViewTest only uses ViewRobot). StateRobots extend BaseStateRobot. ViewTests are `@Suite` structs with `@Test` methods (Swift Testing, not XCTest). ViewRobots are `@MainActor final` classes importing ViewInspector. Landscape test coverage required. |
+| `TestConventionsTest.swift` | Every View has ViewTest/ViewRobot/StateRobot. Robot pattern encapsulation (ViewTest only uses ViewRobot). StateRobots extend BaseStateRobot. ViewTests are `@Suite` structs with `@Test` methods (Swift Testing, not XCTest). ViewRobots are `@MainActor final` classes importing ViewInspector. Landscape test coverage required. NavInt tests must be `@Suite @MainActor struct`. E2E tests must extend XCTestCase, use AppRobot, journey files end with JourneyTest, benchmarks end with PerformanceTest. |
 
 Run Harmonize tests:
 ```bash
@@ -70,13 +70,34 @@ Tests are separately invokable via Xcode test plans:
 
 | Test Plan | Scope | Command |
 |-----------|-------|---------|
-| `AllTests` (default) | All tests | `xcodebuild test -scheme iOSApp -testPlan AllTests` |
+| `AllTests` (default) | All unit + navint tests | `xcodebuild test -scheme iOSApp -testPlan AllTests` |
 | `UnitTests` | Feature ViewTests only | `xcodebuild test -scheme iOSApp -testPlan UnitTests` |
 | `NavIntTests` | Navigation + integration | `xcodebuild test -scheme iOSApp -testPlan NavIntTests` |
+| `E2ETests` | End-to-end journeys + benchmarks | `xcodebuild test -scheme iOSApp -testPlan E2ETests` |
+
+## E2E Tests (XCUITest)
+
+Process-isolated end-to-end journey tests in `iosAppE2ETests/`. These launch the real app via XCUITest and interact through accessibility identifiers (shared TestTags from KMP).
+
+| Directory | Tests |
+|-----------|-------|
+| `Suites/` | `GuestJourneyTest`, `DeepLinkJourneyTest`, `OrderJourneyTest` |
+| `Benchmarks/` | `StartupPerformanceTest` (XCTApplicationLaunchMetric) |
+| `Robots/` | `AppRobot` — launch, navigate tabs, assert/tap elements |
+
+```bash
+xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'
+```
+
+Key conventions:
+- Uses XCTest (`XCTestCase`), NOT Swift Testing — XCUITest requires process isolation
+- All element queries use accessibility identifiers (string values matching KMP TestTags)
+- Journey tests use `AppRobot` exclusively for app interaction
+- No model construction — interact via UI only
 
 ## SwiftLint
 
-Config at project root `.swiftlint.yml`. Scoped to `iosApp/iosApp` and `iosApp/iosAppTests`. Excludes `Circuit/` directory (KMP interop bridging code). Opt-in rules: force_unwrapping, force_cast, force_try.
+Config at project root `.swiftlint.yml`. Scoped to `iosApp/iosApp`, `iosApp/iosAppTests`, and `iosApp/iosAppE2ETests`. Excludes `Circuit/` directory (KMP interop bridging code). Opt-in rules: force_unwrapping, force_cast, force_try.
 
 ```bash
 swiftlint --config .swiftlint.yml
