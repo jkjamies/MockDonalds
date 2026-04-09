@@ -25,7 +25,7 @@ git diff --name-only
 These are fast and catch structural issues regardless of what changed:
 
 ```bash
-./gradlew :konsist:test
+./gradlew :architecture-check:test
 ```
 
 ### 3. Scope Remaining Checks

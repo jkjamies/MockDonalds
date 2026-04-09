@@ -5,7 +5,7 @@
 1. **Branch** from `main` with a descriptive name (e.g., `feature/rewards-history`, `fix/login-redirect`)
 2. **Scaffold** using skills if adding structural elements (add-feature, add-screen, add-use-case, add-repository)
 3. **Implement** business logic, UI, and tests following architecture rules in root AGENTS.md
-4. **Verify** using the full 6-step pipeline: detekt, unit tests, konsist, harmonize, swiftlint, assemble
+4. **Verify** using the full 6-step pipeline: detekt, unit tests, architecture-check, harmonize, swiftlint, assemble
 5. **Code review** — run the code-review skill before opening a PR
 6. **Merge** to main after review approval and green verification
 
@@ -70,7 +70,7 @@ Agentic files (AGENTS.md, standards, skills) must stay in sync with the codebase
 - Did I introduce a new pattern? → Update the relevant `.agents/standards/*.md` file
 - Did I add a new module or feature? → Ensure its `AGENTS.md` exists and is accurate
 - Did I change a naming convention, DI pattern, or test approach? → Update root `AGENTS.md` and the relevant standard
-- Did I add a new Konsist rule? → Update `konsist/AGENTS.md` with the new test count and category
+- Did I add a new Konsist rule? → Update `architecture-check/AGENTS.md` with the new test count and category
 - Did I discover that existing documentation is wrong or outdated? → Fix it now
 
 Documentation that drifts from reality is worse than no documentation — it actively misleads. Treat agentic file updates as part of the definition of done, not optional cleanup.
@@ -83,19 +83,19 @@ Documentation that drifts from reality is worse than no documentation — it act
 | New project-wide convention | Root `AGENTS.md` + relevant `.agents/standards/*.md` |
 | New skill | `.agents/skills/{name}/SKILL.md` with YAML frontmatter |
 | New core module | `core/{module}/AGENTS.md` |
-| New architecture rule | `konsist/AGENTS.md` (update test count and category table) |
+| New architecture rule | `architecture-check/AGENTS.md` (update test count and category table) |
 
 ## How to Add a New Konsist Rule
 
 1. Create a new `BehaviorSpec` in the appropriate category under
-   `konsist/src/test/kotlin/com/mockdonalds/app/konsist/`
+   `architecture-check/src/test/kotlin/com/mockdonalds/app/architecture-check/`
 2. Use `Konsist.scopeFromProject()` for project-wide checks
 3. Use `resideInPath("..impl/domain..")` for module-scoped checks
 4. Use `Konsist.scopeFromSourceSet("commonMain", "features..", "domain")` for source-set-scoped checks
 5. Filter with `resideInPath("..commonMain..")` to exclude test code from production rules
 6. Follow the existing category structure: architecture, circuit, core, layers, testing
-7. Update test count in `konsist/AGENTS.md`
-8. Run `./gradlew :konsist:test` to validate the new rule passes
+7. Update test count in `architecture-check/AGENTS.md`
+8. Run `./gradlew :architecture-check:test` to validate the new rule passes
 
 ## Onboarding Checklist
 
@@ -105,4 +105,4 @@ Documentation that drifts from reality is worse than no documentation — it act
 4. Explore one feature module end-to-end: `api/domain` -> `api/navigation` -> `impl/domain` -> `impl/data` -> `impl/presentation` -> `test/`
 5. Read `composeApp/AGENTS.md` for navigation and bridge architecture
 6. Read `iosApp/AGENTS.md` for Swift-side conventions and Harmonize tests
-7. Check `konsist/AGENTS.md` for architecture enforcement categories
+7. Check `architecture-check/AGENTS.md` for architecture enforcement categories

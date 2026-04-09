@@ -57,7 +57,7 @@ Skills are invoked by name when an agent needs to perform a specific task. The `
 4. If the skill modifies code, include a Post-Change Verification section:
    ```
    ## Post-Change Verification
-   1. ./gradlew :konsist:test
+   1. ./gradlew :architecture-check:test
    2. ./gradlew testAndroidHostTest
    ```
 5. Reference existing code as templates rather than embedding full file contents

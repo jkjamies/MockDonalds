@@ -45,4 +45,4 @@ rootDir.resolve("features").listFiles()
     }
 
 // Architecture tests
-include(":konsist")
+include(":architecture-check")

@@ -1,6 +1,6 @@
 # Testing Standards
 
-Comprehensive testing conventions for the MockDonalds KMP project. All rules are enforced by Konsist architecture tests (`konsist/src/test/kotlin/.../testing/`) and Harmonize (iOS).
+Comprehensive testing conventions for the MockDonalds KMP project. All rules are enforced by Konsist architecture tests (`architecture-check/src/test/kotlin/.../testing/`) and Harmonize (iOS).
 
 ## Test Stack
 

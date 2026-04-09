@@ -31,12 +31,12 @@ All tests use Kotest BehaviorSpec (Given/Then style) and scan the project with `
 ## Running
 
 ```bash
-./gradlew :konsist:test
+./gradlew :architecture-check:test
 ```
 
 ## Adding New Rules
 
-1. Create a new `BehaviorSpec` in the appropriate package under `konsist/src/test/kotlin/com/mockdonalds/app/konsist/`
+1. Create a new `BehaviorSpec` in the appropriate package under `architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/`
 2. Use `Konsist.scopeFromProject()` for project-wide checks
 3. Use `resideInPath("..impl/domain..")` for module-scoped checks
 4. Use `Konsist.scopeFromSourceSet("commonMain", "features..", "domain")` for source-set-scoped checks

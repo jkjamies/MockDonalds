@@ -28,7 +28,7 @@ Run these commands in order. Stop and fix any failures before proceeding to the 
 
 ### 4. Architecture Tests (Konsist)
 ```bash
-./gradlew :konsist:test
+./gradlew :architecture-check:test
 ```
 17 test classes enforce: layer dependencies, naming conventions, DI annotations, forbidden patterns, test coverage requirements, and more.
 

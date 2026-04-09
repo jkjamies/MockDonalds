@@ -15,7 +15,7 @@ Run these steps in order after any code change. Stop and fix failures before pro
 
 1. **Detekt** (lint): `./gradlew detektMetadataCommonMain`
 2. **Unit tests** (Kotest): `./gradlew testAndroidHostTest`
-3. **Konsist** (Kotlin architecture): `./gradlew :konsist:test`
+3. **Konsist** (Kotlin architecture): `./gradlew :architecture-check:test`
 4. **Harmonize** (iOS architecture): `swift test --package-path iosApp/ArchitectureCheck`
 5. **SwiftLint** (Swift style): `swiftlint --config .swiftlint.yml`
 6. **Assemble** (full build): `./gradlew assemble`
@@ -41,11 +41,11 @@ git diff --name-only                       # uncommitted changes on main
 | `features/{name}/api/domain/` | `:features:{name}:api:domain:testAndroidHostTest` |
 | `features/{name}/test/` | Run tests for modules that consume the fakes |
 | `core/{module}/` | `:core:{module}:testAndroidHostTest` |
-| `konsist/` | `:konsist:test` |
+| `architecture-check/` | `:architecture-check:test` |
 
 ### verify-smart Decision Logic
 
-1. Always run `:konsist:test` (fast, catches structural issues regardless of what changed).
+1. Always run `:architecture-check:test` (fast, catches structural issues regardless of what changed).
 2. If Kotlin source files changed: run `detektMetadataCommonMain` + scoped unit tests.
 3. If Swift files changed: run `swift test --package-path iosApp/ArchitectureCheck` + `swiftlint --config .swiftlint.yml`.
 4. If `build.gradle.kts` or `settings.gradle.kts` changed: run `./gradlew assemble`.

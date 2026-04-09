@@ -23,7 +23,7 @@ Run in order. Stop and fix any failures before proceeding.
 
 ### 3. Architecture Tests (Konsist)
 ```bash
-./gradlew :konsist:test
+./gradlew :architecture-check:test
 ```
 
 ### 4. Architecture Tests (iOS — Harmonize)

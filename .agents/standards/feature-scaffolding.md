@@ -250,4 +250,4 @@ CircuitContent(screen: {Feature}Screen.shared)
 11. `iosApp/iosAppTests/{Name}/` -- StateRobot, ViewRobot, ViewTest (Swift Testing)
 12. `App.kt` -- screen route mapping
 13. `AppDelegate.swift` -- `ScreenUiFactory` registration
-14. Verify -- detekt, unit tests, konsist, harmonize, swiftlint, assemble
+14. Verify -- detekt, unit tests, architecture-check, harmonize, swiftlint, assemble

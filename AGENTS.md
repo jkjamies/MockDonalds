@@ -11,7 +11,7 @@ Kotlin Multiplatform reference app. Shared Kotlin business logic, Jetpack Compos
 | CenterPost | Business logic framework (coroutine-based interactors) |
 | Ktor | HTTP networking |
 | Kotest | Test framework (BehaviorSpec, property testing) |
-| Konsist | Kotlin architecture test enforcement (17 test classes) |
+| Konsist | Kotlin architecture test enforcement (18 test classes in `architecture-check/`) |
 | Harmonize | iOS/Swift architecture test enforcement |
 | Compose Multiplatform | Shared UI toolkit (Android native, iOS via framework export) |
 
@@ -108,7 +108,7 @@ api ← impl/presentation
 ```bash
 ./gradlew detektMetadataCommonMain          # 1. Lint
 ./gradlew testAndroidHostTest               # 2. Unit tests
-./gradlew :konsist:test                     # 3. Architecture enforcement
+./gradlew :architecture-check:test           # 3. Architecture enforcement
 swift test --package-path iosApp/ArchitectureCheck  # 4. iOS arch (if Swift changed)
 ./gradlew assemble                          # 5. Full build
 ```
@@ -175,7 +175,7 @@ Per-module AGENTS.md files load via JIT context when you access files in those d
 
 - `features/{name}/AGENTS.md` — feature business context, key types, cross-feature deps
 - `core/{module}/AGENTS.md` — module purpose, public API, usage patterns
-- `konsist/AGENTS.md` — architecture test categories and how to add rules
+- `architecture-check/AGENTS.md` — architecture test categories and how to add rules
 - `iosApp/AGENTS.md` — Swift bridge patterns, Harmonize tests
 - `build-logic/AGENTS.md` — convention plugin details
 - `composeApp/AGENTS.md` — app entry points, navigation wiring, deep links

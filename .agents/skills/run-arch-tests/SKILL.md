@@ -21,7 +21,7 @@ After any changes that affect:
 ## Konsist (Kotlin)
 
 ```bash
-./gradlew :konsist:test
+./gradlew :architecture-check:test
 ```
 
 17 test classes organized in 5 categories:

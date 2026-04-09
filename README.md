@@ -67,7 +67,7 @@ The Xcode project includes a "Compile Kotlin Framework" build phase that runs th
 |---------|-------|-------|
 | `./gradlew testAndroidHostTest` | All Android unit tests (JVM) | Fast, primary CI gate |
 | `./gradlew iosSimulatorArm64Test` | All iOS unit tests (K/Native) | Fast |
-| `./gradlew :konsist:test` | Architecture enforcement (Konsist) | Runs separately from unit tests |
+| `./gradlew :architecture-check:test` | Architecture enforcement (Konsist) | Runs separately from unit tests |
 | `swift test --package-path iosApp/ArchitectureCheck` | iOS architecture (Harmonize) | Runs separately |
 | `./gradlew connectedAndroidDeviceTest` | Android UI tests (emulator) | Requires device/emulator |
 | `./gradlew :features:{name}:impl:presentation:connectedAndroidDeviceTest` | Single feature UI tests | Faster for targeted testing |
@@ -82,7 +82,7 @@ After any code change, run in order:
 ```bash
 ./gradlew detektMetadataCommonMain          # 1. Lint
 ./gradlew testAndroidHostTest               # 2. Unit tests
-./gradlew :konsist:test                     # 3. Architecture enforcement
+./gradlew :architecture-check:test           # 3. Architecture enforcement
 swift test --package-path iosApp/ArchitectureCheck  # 4. iOS arch (if Swift changed)
 ./gradlew assemble                          # 5. Full build
 ```
