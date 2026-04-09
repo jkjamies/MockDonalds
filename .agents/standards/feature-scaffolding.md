@@ -46,7 +46,7 @@ features/{name}/
 Plus iOS files:
 ```
 iosApp/iosApp/Features/{Feature}/{Feature}View.swift
-iosApp/iosAppTests/{Feature}/
+iosApp/iosAppTests/Unit/{Feature}/
     ├── {Feature}StateRobot.swift
     ├── {Feature}ViewRobot.swift
     └── {Feature}ViewTest.swift
@@ -248,7 +248,7 @@ CircuitContent(screen: {Feature}Screen.shared)
 8. `features/{name}/impl/presentation/commonTest` -- Presenter test (Kotest)
 9. `features/{name}/impl/presentation/androidDeviceTest` -- StateRobot, UiRobot, UiTest
 10. `iosApp/Features/{Name}/` -- SwiftUI view
-11. `iosApp/iosAppTests/{Name}/` -- StateRobot, ViewRobot, ViewTest (Swift Testing)
+11. `iosApp/iosAppTests/Unit/{Name}/` -- StateRobot, ViewRobot, ViewTest (Swift Testing)
 12. `App.kt` -- screen route mapping
 13. `AppDelegate.swift` -- `ScreenUiFactory` registration
 14. Verify -- detekt, unit tests, architecture-check, harmonize, swiftlint, assemble

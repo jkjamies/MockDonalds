@@ -167,12 +167,15 @@ File structure:
 ```
 iosApp/
 ├── iosAppTests/
-│   ├── {Feature}/
-│   │   ├── {Feature}StateRobot.swift  # State construction with event capture
-│   │   ├── {Feature}ViewRobot.swift   # ViewInspector assertions + view creation (@MainActor)
-│   │   └── {Feature}ViewTest.swift    # @Suite struct with @Test methods (@MainActor)
-│   └── Base/
-│       └── BaseStateRobot.swift       # Shared event sink + last event capture
+│   ├── Unit/
+│   │   ├── {Feature}/
+│   │   │   ├── {Feature}StateRobot.swift  # State construction with event capture
+│   │   │   ├── {Feature}ViewRobot.swift   # ViewInspector assertions + view creation (@MainActor)
+│   │   │   └── {Feature}ViewTest.swift    # @Suite struct with @Test methods (@MainActor)
+│   │   └── StateRobot.swift               # Shared event sink + last event capture
+│   └── NavInt/                            # Navigation + integration tests
+│       ├── Navigation/
+│       └── Integration/
 ```
 
 | Layer | Type | Description |

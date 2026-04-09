@@ -44,8 +44,21 @@ cd iosApp/ArchitectureCheck && swift test
 
 Tests for iOS-native navigation infrastructure in `iosAppTests/NavInt/`. These test the `NavigationStateManager` which handles all navigation actions from Kotlin's `BridgeNavigator`.
 
+### Test Directory Organization
+
+```
+iosAppTests/
+  Unit/           — Feature view tests (Robot pattern)
+    Home/, Login/, More/, Order/, Profile/, Rewards/, Scan/
+    StateRobot.swift  — BaseStateRobot protocol
+  NavInt/         — Navigation + integration tests
+    Navigation/   — NavigationStateManagerTest, TabSwitchingTest, DeepLinkNavigationTest
+    Integration/  — AuthFlowNavigationTest
+```
+
 | Directory | Tests |
 |-----------|-------|
+| `Unit/{Feature}/` | `{Feature}ViewTest`, `{Feature}ViewRobot`, `{Feature}StateRobot` |
 | `NavInt/Navigation/` | `NavigationStateManagerTest` (push/pop/reset/batch), `TabSwitchingTest`, `DeepLinkNavigationTest` |
 | `NavInt/Integration/` | `AuthFlowNavigationTest` (auth redirect, post-login navigation) |
 

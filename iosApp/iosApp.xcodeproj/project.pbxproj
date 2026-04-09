@@ -153,6 +153,15 @@
 		18552AC73484C61F68B7E387 /* iosAppTests */ = {
 			isa = PBXGroup;
 			children = (
+				EE200001EEEE000000000001 /* Unit */,
+				DD100006DDDD000000000006 /* NavInt */,
+			);
+			path = iosAppTests;
+			sourceTree = "<group>";
+		};
+		EE200001EEEE000000000001 /* Unit */ = {
+			isa = PBXGroup;
+			children = (
 				C8D50DFB3665CC5598561B45 /* StateRobot.swift */,
 				F88212F5C61471C5C5481A64 /* Home */,
 				C137C0221B5ED4286E913D87 /* Order */,
@@ -161,9 +170,8 @@
 				8791E5D3427617818943090D /* More */,
 				AA100007AAAA000000000007 /* Login */,
 				CC100004CCCC000000000004 /* Profile */,
-				DD100006DDDD000000000006 /* NavInt */,
 			);
-			path = iosAppTests;
+			path = Unit;
 			sourceTree = "<group>";
 		};
 		AA100007AAAA000000000007 /* Login */ = {
