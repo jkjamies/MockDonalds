@@ -12,6 +12,9 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(libs.circuit.runtime)
+            api(libs.circuit.runtime.presenter)
+            api(libs.circuit.runtime.ui)
+            api(libs.circuit.foundation)
             implementation(compose.runtime)
         }
     }

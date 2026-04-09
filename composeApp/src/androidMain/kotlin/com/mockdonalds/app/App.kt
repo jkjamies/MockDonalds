@@ -28,7 +28,7 @@ import dev.zacsweers.metro.createGraph
 
 @Composable
 fun MockDonaldsApp(windowSizeClass: WindowSizeClass, deepLinkIntent: Intent? = null) {
-    val graph = remember { createGraph<AppGraph>() }
+    val graph = remember { createGraph<ProdAppGraph>() }
 
     val deepLinkParser = remember { createDeepLinkParser() }
 

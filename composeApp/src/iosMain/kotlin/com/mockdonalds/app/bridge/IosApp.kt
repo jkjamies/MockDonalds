@@ -1,6 +1,6 @@
 package com.mockdonalds.app.bridge
 
-import com.mockdonalds.app.AppGraph
+import com.mockdonalds.app.ProdAppGraph
 import com.mockdonalds.app.core.circuit.TabScreen
 import com.mockdonalds.app.features.login.api.navigation.LoginScreen
 import com.mockdonalds.app.navigation.AuthInterceptor
@@ -13,7 +13,7 @@ import com.slack.circuit.runtime.screen.Screen
 import dev.zacsweers.metro.createGraph
 
 class IosApp {
-    private val graph = createGraph<AppGraph>()
+    private val graph = createGraph<ProdAppGraph>()
 
     val circuit: Circuit get() = graph.circuit
 

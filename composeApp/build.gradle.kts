@@ -70,6 +70,7 @@ kotlin {
 
             // Core
             api(project(":core:circuit"))
+            api(project(":core:metro"))
             implementation(project(":core:auth:impl"))
             implementation(project(":core:centerpost"))
             implementation(project(":core:circuit"))
