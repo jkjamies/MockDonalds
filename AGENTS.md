@@ -11,7 +11,7 @@ Kotlin Multiplatform reference app. Shared Kotlin business logic, Jetpack Compos
 | CenterPost | Business logic framework (coroutine-based interactors) |
 | Ktor | HTTP networking |
 | Kotest | Test framework (BehaviorSpec, property testing) |
-| Konsist | Kotlin architecture test enforcement (18 test classes in `architecture-check/`) |
+| Konsist | Kotlin architecture test enforcement (21 test classes in `architecture-check/`) |
 | Harmonize | iOS/Swift architecture test enforcement |
 | Compose Multiplatform | Shared UI toolkit (Android native, iOS via framework export) |
 

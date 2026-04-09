@@ -2,7 +2,7 @@
 
 ## Purpose
 
-18 architecture test classes enforcing project conventions via Konsist compile-time static analysis.
+21 architecture test classes enforcing project conventions via Konsist compile-time static analysis.
 All tests use Kotest BehaviorSpec (Given/Then style) and scan the project with `Konsist.scopeFromProject()`.
 
 ## Test Categories
@@ -18,12 +18,15 @@ All tests use Kotest BehaviorSpec (Given/Then style) and scan the project with `
 | core/ | DependencyInjectionTest | Every Repository interface has a @ContributesBinding implementation. Every abstract use case has a @ContributesBinding Impl. @CircuitInject presenters also have @Inject. |
 | core/ | PackageConventionsTest | Feature files use com.mockdonalds.app.features.* packages. Core files use com.mockdonalds.app.core.* packages. Package segments match module path. |
 | core/ | VisibilityConventionsTest | @ContributesBinding classes are public. Domain modules expose only Repository interfaces and Impl classes. UiState classes are not internal. |
+| core/ | DependencyGraphScopeTest | @DependencyGraph only in consumer modules (composeApp, navint-tests). CircuitProviders only in core:circuit. AppGraph interface only in core:metro. |
+| core/ | CoreMetroConventionsTest | core:metro must not import from feature modules. core:metro must not import from impl modules. |
 | core/ | AgentDocumentationTest | Every feature and core module has AGENTS.md. Root AGENTS.md exists. .agents/skills/ directory exists with SKILL.md per skill. .gemini/settings.json references AGENTS.md. |
 | layers/ | ApiLayerTest | Data classes in api are immutable (val only). @Serializable only in api/data/network. No MutableStateFlow in public APIs. api:domain has no Circuit dependency. DTOs only in data/network modules. |
 | layers/ | DataLayerTest | Repository interfaces in domain modules. RepositoryImpl classes in data modules with @ContributesBinding. Repository functions return Flow, not suspend. |
 | layers/ | DomainLayerTest | Abstract use cases (CenterPostInteractor/CenterPostSubjectInteractor) in api modules. Impl classes in domain modules with @ContributesBinding, extending their abstract parent. |
 | layers/ | PresentationLayerTest | Presenters have @CircuitInject. One public function per presenter file. Presenters do not depend on repositories directly. UiState implements CircuitUiState with eventSink property. |
 | testing/ | TestDoubleConventionsTest | Fakes live in dedicated test modules (not commonTest). Every abstract use case has a Fake. Test doubles prefixed with Fake or Test. No mockk in commonTest. |
+| testing/ | TestModuleDITest | All Fake classes in feature test modules have @ContributesBinding(AppScope::class) and @Inject constructor. No @ContributesBinding in commonTest source sets. |
 | testing/ | TestFileNamingTest | Test classes end with Test/Tests. All specs extend BehaviorSpec. No runBlocking, runTest, or UnconfinedTestDispatcher in tests. |
 | testing/ | TestModuleCoverageTest | Every feature has a dedicated test module. Every use case Impl, presenter, and RepositoryImpl has a corresponding test file. |
 | testing/ | UiTestConventionsTest | Every *Ui.kt has a *UiTest in androidDeviceTest. Robot pattern: UiTest -> UiRobot -> StateRobot. UiRobots wrap in MockDonaldsTheme, provide LocalWindowSizeClass, have landscape methods. TestTags objects in api module. |
