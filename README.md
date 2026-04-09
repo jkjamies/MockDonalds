@@ -80,11 +80,12 @@ The Xcode project includes a "Compile Kotlin Framework" build phase that runs th
 After any code change, run in order:
 
 ```bash
-./gradlew detektMetadataCommonMain          # 1. Lint
-./gradlew testAndroidHostTest               # 2. Unit tests
-./gradlew :architecture-check:test           # 3. Architecture enforcement
-swift test --package-path iosApp/ArchitectureCheck  # 4. iOS arch (if Swift changed)
-./gradlew assemble                          # 5. Full build
+./gradlew detektMetadataCommonMain                    # 1. Kotlin lint
+swiftlint --config .swiftlint.yml                     # 2. Swift lint
+./gradlew testAndroidHostTest                         # 3. Unit tests
+./gradlew :architecture-check:test                    # 4. Konsist
+swift test --package-path iosApp/ArchitectureCheck    # 5. Harmonize
+./gradlew assemble                                    # 6. Full build
 ```
 
 ### Test Framework

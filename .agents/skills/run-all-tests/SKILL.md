@@ -11,22 +11,27 @@ Runs lint, unit tests, and architecture tests sequentially. Does NOT include And
 
 Run in order. Stop and fix any failures before proceeding.
 
-### 1. Lint
+### 1. Lint — Detekt
 ```bash
 ./gradlew detektMetadataCommonMain
 ```
 
-### 2. Unit Tests
+### 2. Lint — SwiftLint
+```bash
+swiftlint --config .swiftlint.yml
+```
+
+### 3. Unit Tests
 ```bash
 ./gradlew testAndroidHostTest
 ```
 
-### 3. Architecture Tests (Konsist)
+### 4. Architecture Tests (Konsist)
 ```bash
 ./gradlew :architecture-check:test
 ```
 
-### 4. Architecture Tests (iOS — Harmonize)
+### 5. Architecture Tests (iOS — Harmonize)
 ```bash
 swift test --package-path iosApp/ArchitectureCheck
 ```

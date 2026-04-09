@@ -20,21 +20,19 @@ If on `main` with uncommitted changes:
 git diff --name-only
 ```
 
-### 2. Always Run: Architecture Tests
-
-These are fast and catch structural issues regardless of what changed:
-
-```bash
-./gradlew :architecture-check:test
-```
-
-### 3. Scope Remaining Checks
+### 2. Lint
 
 **If Kotlin source files changed:**
-
 ```bash
 ./gradlew detektMetadataCommonMain
 ```
+
+**If Swift files changed:**
+```bash
+swiftlint --config .swiftlint.yml
+```
+
+### 3. Unit Tests
 
 Scope unit tests to affected modules:
 ```bash
@@ -47,12 +45,16 @@ Scope unit tests to affected modules:
 ./gradlew :core:centerpost:testAndroidHostTest
 ```
 
-**If Swift files changed:**
+### 4. Architecture Tests
+
+Always run — these are fast and catch structural issues regardless of what changed:
 
 ```bash
+./gradlew :architecture-check:test
 swift test --package-path iosApp/ArchitectureCheck
-swiftlint --config .swiftlint.yml
 ```
+
+### 5. Build (if build files changed)
 
 **If build.gradle.kts or settings.gradle.kts changed:**
 
@@ -62,9 +64,9 @@ swiftlint --config .swiftlint.yml
 
 **If only markdown/documentation changed:**
 
-No verification needed beyond architecture tests (which already ran in step 2).
+No verification needed beyond architecture tests (which already ran in step 4).
 
-### 4. Map Changed Files to Modules
+### Module Mapping Reference
 
 | Path Pattern | Module | Unit Test Task |
 |-------------|--------|----------------|

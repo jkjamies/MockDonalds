@@ -16,37 +16,38 @@ Run these commands in order. Stop and fix any failures before proceeding to the 
 ./gradlew assemble
 ```
 
-### 2. Lint
+### 2. Lint — Detekt
 ```bash
 ./gradlew detektMetadataCommonMain
 ```
 
-### 3. Unit Tests
+### 3. Lint — SwiftLint
+```bash
+swiftlint --config .swiftlint.yml
+```
+
+### 4. Unit Tests
 ```bash
 ./gradlew testAndroidHostTest
 ```
 
-### 4. Architecture Tests (Konsist)
+### 5. Architecture Tests (Konsist)
 ```bash
 ./gradlew :architecture-check:test
 ```
-17 test classes enforce: layer dependencies, naming conventions, DI annotations, forbidden patterns, test coverage requirements, and more.
+18 test classes enforce: layer dependencies, naming conventions, DI annotations, forbidden patterns, test coverage requirements, and more.
 
-### 5. Architecture Tests (iOS — Harmonize)
+### 6. Architecture Tests (iOS — Harmonize)
 ```bash
 swift test --package-path iosApp/ArchitectureCheck
 ```
 29 tests enforce: Swift view conventions, test module organization, iOS architectural patterns.
 
-### 6. Swift Lint (if Swift files changed)
-```bash
-swiftlint --config .swiftlint.yml
-```
-
 ## Interpreting Failures
 
 - **Build failure**: Check import paths, missing dependencies, or syntax errors
 - **Detekt failure**: Code style violation — check the reported rule and file:line
+- **SwiftLint failure**: Swift code style violation — check the reported rule and file:line
 - **Unit test failure**: Logic error in implementation or test setup
 - **Konsist failure**: Architecture rule violation — the error message names the specific rule (e.g., "Presenters must not depend on repositories directly")
 - **Harmonize failure**: iOS architecture convention violated — check Swift view/test naming patterns
