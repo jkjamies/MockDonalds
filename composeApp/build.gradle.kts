@@ -42,7 +42,7 @@ kotlin {
                     export(project(":features:$feature:api:navigation"))
                     export(project(":features:$feature:presentation"))
                 }
-            export(project(":core:common"))
+            export(project(":core:circuit"))
         }
     }
 
@@ -69,8 +69,10 @@ kotlin {
                 }
 
             // Core
-            api(project(":core:common"))
+            api(project(":core:circuit"))
+            implementation(project(":core:auth"))
             implementation(project(":core:centerpost"))
+            implementation(project(":core:circuit"))
             implementation(project(":core:theme"))
             implementation(project(":core:network"))
 
@@ -87,6 +89,11 @@ kotlin {
 
             // Kotlinx
             implementation(libs.kotlinx.coroutines.core)
+        }
+
+        commonTest.dependencies {
+            implementation(project(":core:test-fixtures"))
+            implementation(libs.circuit.test)
         }
 
         androidMain.dependencies {

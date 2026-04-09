@@ -1,7 +1,9 @@
 package com.mockdonalds.app.features.scan.api.navigation
 
-import com.mockdonalds.app.core.common.Parcelize
-import com.slack.circuit.runtime.screen.Screen
+import com.mockdonalds.app.core.circuit.Parcelize
+import com.mockdonalds.app.core.circuit.TabScreen
 
 @Parcelize
-data object ScanScreen : Screen
+data object ScanScreen : TabScreen {
+    override val tag: String = "scan"
+}

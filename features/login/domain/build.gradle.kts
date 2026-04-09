@@ -10,7 +10,6 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":features:login:api:domain"))
-            implementation(project(":core:common"))
         }
         commonTest.dependencies {
         }

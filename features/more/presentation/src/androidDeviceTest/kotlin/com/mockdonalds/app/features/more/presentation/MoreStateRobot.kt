@@ -17,7 +17,6 @@ class MoreStateRobot : StateRobot<MoreUiState, MoreEvent>() {
             MoreMenuItem(id = "1", icon = "📍", title = "Find a Restaurant"),
             MoreMenuItem(id = "2", icon = "⚙️", title = "Settings"),
         ),
-        loginSheet = null,
         eventSink = createEventSink(),
     )
 

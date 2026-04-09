@@ -1,5 +1,6 @@
 package com.mockdonalds.app
 
+import com.mockdonalds.app.core.auth.AuthManager
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
@@ -31,4 +32,5 @@ interface CircuitProviders {
 @DependencyGraph(AppScope::class)
 interface AppGraph {
     val circuit: Circuit
+    val authManager: AuthManager
 }

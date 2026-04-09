@@ -1,7 +1,9 @@
 package com.mockdonalds.app.features.more.api.navigation
 
-import com.mockdonalds.app.core.common.Parcelize
-import com.slack.circuit.runtime.screen.Screen
+import com.mockdonalds.app.core.circuit.Parcelize
+import com.mockdonalds.app.core.circuit.TabScreen
 
 @Parcelize
-data object MoreScreen : Screen
+data object MoreScreen : TabScreen {
+    override val tag: String = "more"
+}

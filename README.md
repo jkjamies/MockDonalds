@@ -69,8 +69,8 @@ Each feature follows a strict modular architecture with unidirectional dependenc
 
 | Layer | Convention Plugin | Contains | Depends On |
 |-------|-------------------|----------|------------|
-| **api/domain** | `mockdonalds.kmp.library` | Domain models, use case interfaces | `core:common`, `core:centerpost` (no Circuit) |
-| **api/navigation** | `mockdonalds.kmp.library` | Screen definition, TestTags | `circuit.runtime`, `core:common` |
+| **api/domain** | `mockdonalds.kmp.library` | Domain models, use case interfaces | `core:centerpost` (no Circuit) |
+| **api/navigation** | `mockdonalds.kmp.library` | Screen definition, TestTags | `core:circuit` (Circuit runtime + Parcelize) |
 | **domain** | `mockdonalds.kmp.domain` | Use case implementations, repository interfaces | `api:domain` (transitive via `api()`) |
 | **data** | `mockdonalds.kmp.data` | Repository implementations, data sources | `domain` (gets `api:domain` transitively) |
 | **presentation** | `mockdonalds.kmp.presentation` | Presenter, UiState, Events, Android Compose UI | `api:domain` + `api:navigation` (no domain/data access) |
@@ -1064,6 +1064,49 @@ open iosApp/iosApp.xcodeproj
 ```
 
 The Xcode project includes a "Compile Kotlin Framework" build phase that runs the Gradle task automatically.
+
+## Build Profiling
+
+### Gradle (Android / KMP)
+
+```bash
+# HTML report — outputs to build/reports/profile/
+./gradlew :androidApp:assembleDebug --profile
+
+# Gradle Build Scan — detailed timeline, task breakdown, cache analysis
+# Uploads to scans.gradle.com (link printed at end of build)
+./gradlew :androidApp:assembleDebug --scan
+
+# Configuration cache — verify cache hits (miss = slower build)
+./gradlew :androidApp:assembleDebug --configuration-cache
+```
+
+**`--profile`** generates a local HTML report showing task execution times, dependency resolution, and configuration phase duration. Good for quick local checks.
+
+**`--scan`** uploads a full build scan to Gradle Enterprise. Provides task-level timelines, build cache hit/miss rates, dependency resolution breakdown, and comparison between builds. Best for investigating regressions or optimizing CI.
+
+### Xcode (iOS)
+
+```bash
+# Build with timing summary (total per-phase times)
+xcodebuild build -project iosApp/iosApp.xcodeproj -target iosApp \
+  -destination 'generic/platform=iOS Simulator' \
+  -showBuildTimingSummary
+
+# Detailed per-file compile times (add to Other Swift Flags: -Xfrontend -debug-time-function-bodies)
+# Or use Xcode: Product → Perform Action → Build With Timing Summary
+```
+
+**Build Timing Summary** breaks down time spent in each build phase (compile, link, script phases). The "Compile Kotlin Framework" script phase is the KMP framework build — if it's slow, profile the Gradle side separately.
+
+### What to Look For
+
+| Symptom | Check | Fix |
+|---------|-------|-----|
+| Slow incremental builds | `--scan` → cache hit rate | Ensure configuration cache and build cache are enabled |
+| Slow clean builds | `--profile` → longest tasks | Identify heavy codegen tasks (Metro, Circuit KSP) |
+| iOS build slow | Xcode timing summary | Check if "Compile Kotlin Framework" dominates — profile Gradle separately |
+| CI slower than local | `--scan` comparison | Remote cache misses, different JVM args, missing daemon |
 
 ## Testing
 

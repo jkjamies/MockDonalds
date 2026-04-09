@@ -1,7 +1,9 @@
 package com.mockdonalds.app.features.login.api.navigation
 
-import com.mockdonalds.app.core.common.Parcelize
+import com.mockdonalds.app.core.circuit.Parcelize
 import com.slack.circuit.runtime.screen.Screen
 
 @Parcelize
-data object LoginScreen : Screen
+data class LoginScreen(
+    val returnTo: Screen? = null,
+) : Screen

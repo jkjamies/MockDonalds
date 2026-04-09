@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import com.mockdonalds.app.core.auth.AuthManager
 import com.mockdonalds.app.core.centerpost.CenterPostDispatchers
 import com.mockdonalds.app.core.centerpost.collectAsState
 import com.mockdonalds.app.core.centerpost.rememberCenterPost
@@ -19,7 +20,9 @@ import dev.zacsweers.metro.Inject
 @Inject
 @Composable
 fun LoginPresenter(
+    screen: LoginScreen,
     navigator: Navigator,
+    authManager: AuthManager,
     getLoginContent: GetLoginContent,
     dispatchers: CenterPostDispatchers,
 ): LoginUiState {
@@ -34,7 +37,11 @@ fun LoginPresenter(
         eventSink = { event ->
             when (event) {
                 is LoginEvent.EmailChanged -> email = event.value
-                is LoginEvent.SignInConfirmed -> navigator.pop()
+                is LoginEvent.SignInConfirmed -> {
+                    authManager.login()
+                    navigator.pop()
+                    screen.returnTo?.let { navigator.goTo(it) }
+                }
                 is LoginEvent.AppleSignInClicked -> centerPost { }
                 is LoginEvent.GoogleSignInClicked -> centerPost { }
             }

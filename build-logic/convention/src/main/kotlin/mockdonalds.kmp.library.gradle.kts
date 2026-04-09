@@ -49,7 +49,7 @@ kotlin {
                         freeCompilerArgs.addAll(
                             "-P",
                             "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=" +
-                                "com.mockdonalds.app.core.common.Parcelize",
+                                "com.mockdonalds.app.core.circuit.Parcelize",
                         )
                     }
                 }

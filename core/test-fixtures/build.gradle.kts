@@ -9,6 +9,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            api(project(":core:auth"))
             api(project(":core:centerpost"))
             api(libs.kotlinx.coroutines.test)
             api(libs.kotest.framework.engine)

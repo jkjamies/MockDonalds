@@ -7,7 +7,7 @@ final class CircuitIos: ObservableObject {
         func create(screen: any Circuit_runtime_screenScreen) -> ((any Circuit_runtimeCircuitUiState) -> AnyView)?
     }
 
-    private let iosApp: IosApp
+    let iosApp: IosApp
     private let uiFactories: [UiFactory]
 
     var navigator: BridgeNavigator { iosApp.navigator }

@@ -10,7 +10,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(libs.circuit.runtime)
-            api(project(":core:common"))
+            api(project(":core:circuit"))
         }
     }
 }

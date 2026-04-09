@@ -1,7 +1,9 @@
 package com.mockdonalds.app.features.rewards.api.navigation
 
-import com.mockdonalds.app.core.common.Parcelize
-import com.slack.circuit.runtime.screen.Screen
+import com.mockdonalds.app.core.circuit.Parcelize
+import com.mockdonalds.app.core.circuit.TabScreen
 
 @Parcelize
-data object RewardsScreen : Screen
+data object RewardsScreen : TabScreen {
+    override val tag: String = "rewards"
+}

@@ -18,15 +18,17 @@ struct ScreenEntry: Hashable, Identifiable {
 }
 
 /// The iOS equivalent of Android's NavigableCircuitContent.
-/// Observes BridgeNavigator's NavigationAction flow and drives native SwiftUI navigation.
+/// Observes BridgeNavigator's batched navigation actions and drives native SwiftUI navigation.
 struct CircuitNavigator<Content: View>: View {
     @EnvironmentObject var circuit: CircuitIos
 
     @State private var navigationPath: [ScreenEntry] = []
+    @Binding var selectedTab: String
 
     let content: () -> Content
 
-    init(@ViewBuilder content: @escaping () -> Content) {
+    init(selectedTab: Binding<String>, @ViewBuilder content: @escaping () -> Content) {
+        self._selectedTab = selectedTab
         self.content = content
     }
 
@@ -36,6 +38,7 @@ struct CircuitNavigator<Content: View>: View {
                 .navigationDestination(for: ScreenEntry.self) { entry in
                     CircuitContent(screen: entry.screen)
                         .mockDonaldsTheme()
+                        .id(entry.id)
                 }
         }
         .task {
@@ -47,9 +50,9 @@ struct CircuitNavigator<Content: View>: View {
 
     private func observeNavigation() async {
         do {
-            let sequence = asyncSequence(for: circuit.navigator.navigationActionFlow)
-            for try await action in sequence {
-                handleAction(action)
+            let sequence = asyncSequence(for: circuit.navigator.navigationActions)
+            for try await actions in sequence {
+                handleActions(actions)
             }
         } catch {
             print("Navigation observation ended: \(error)")
@@ -58,32 +61,31 @@ struct CircuitNavigator<Content: View>: View {
 
     // MARK: - Action Handling
 
-    private func handleAction(_ action: NavigationAction) {
-        switch action {
-        case is NavigationAction.Idle:
-            break
+    private func handleActions(_ actions: [NavigationAction]) {
+        for action in actions {
+            switch action {
+            case let goTo as NavigationAction.GoTo:
+                navigationPath.append(ScreenEntry(screen: goTo.screen))
 
-        case let goTo as NavigationAction.GoTo:
-            navigationPath.append(ScreenEntry(screen: goTo.screen))
-            circuit.navigator.consume()
+            case is NavigationAction.Pop:
+                if !navigationPath.isEmpty {
+                    navigationPath.removeLast()
+                }
 
-        case is NavigationAction.Pop:
-            if !navigationPath.isEmpty {
-                navigationPath.removeLast()
+            case is NavigationAction.ResetRoot:
+                navigationPath.removeAll()
+
+            case let switchTab as NavigationAction.SwitchTab:
+                navigationPath.removeAll()
+                selectedTab = switchTab.tag
+
+            case let deepLink as NavigationAction.DeepLink:
+                let screens = deepLink.screens as [any Circuit_runtime_screenScreen]
+                navigationPath = screens.map { ScreenEntry(screen: $0) }
+
+            default:
+                break
             }
-            circuit.navigator.consume()
-
-        case is NavigationAction.ResetRoot:
-            navigationPath.removeAll()
-            circuit.navigator.consume()
-
-        case let deepLink as NavigationAction.DeepLink:
-            let screens = deepLink.screens as? [any Circuit_runtime_screenScreen] ?? []
-            navigationPath = screens.map { ScreenEntry(screen: $0) }
-            circuit.navigator.consume()
-
-        default:
-            break
         }
     }
 }

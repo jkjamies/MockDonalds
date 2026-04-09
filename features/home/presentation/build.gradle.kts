@@ -14,7 +14,6 @@ kotlin {
             implementation(project(":features:home:api:navigation"))
             implementation(project(":core:centerpost"))
             implementation(project(":core:theme"))
-            implementation(project(":core:common"))
         }
         commonTest.dependencies {
             implementation(project(":features:home:test"))

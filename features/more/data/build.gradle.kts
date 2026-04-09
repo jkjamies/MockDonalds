@@ -10,7 +10,6 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":features:more:domain"))
-            implementation(project(":core:common"))
             implementation(project(":core:network"))
         }
     }

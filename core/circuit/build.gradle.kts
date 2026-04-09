@@ -11,7 +11,6 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            api(project(":core:common"))
             api(libs.circuit.runtime)
             implementation(compose.runtime)
         }

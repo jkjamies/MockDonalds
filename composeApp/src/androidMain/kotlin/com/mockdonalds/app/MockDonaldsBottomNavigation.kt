@@ -32,6 +32,11 @@ import androidx.compose.ui.unit.sp
 import com.mockdonalds.app.core.theme.adaptiveBottomNavHeight
 import com.mockdonalds.app.core.theme.isCompactHeight
 import com.mockdonalds.app.core.theme.glassEffect
+import com.mockdonalds.app.features.home.api.navigation.HomeScreen
+import com.mockdonalds.app.features.more.api.navigation.MoreScreen
+import com.mockdonalds.app.features.order.api.navigation.OrderScreen
+import com.mockdonalds.app.features.rewards.api.navigation.RewardsScreen
+import com.mockdonalds.app.features.scan.api.navigation.ScanScreen
 
 data class BottomNavItem(
     val label: String,
@@ -46,11 +51,11 @@ fun MockDonaldsBottomNavigation(
     modifier: Modifier = Modifier
 ) {
     val items = listOf(
-        BottomNavItem("HOME", HomeIcon, "home"),
-        BottomNavItem("ORDER", OrderIcon, "order"),
-        BottomNavItem("REWARDS", RewardsIcon, "rewards"),
-        BottomNavItem("SCAN", ScanIcon, "scan"),
-        BottomNavItem("MORE", MoreIcon, "more")
+        BottomNavItem("HOME", HomeIcon, HomeScreen.tag),
+        BottomNavItem("ORDER", OrderIcon, OrderScreen.tag),
+        BottomNavItem("REWARDS", RewardsIcon, RewardsScreen.tag),
+        BottomNavItem("SCAN", ScanIcon, ScanScreen.tag),
+        BottomNavItem("MORE", MoreIcon, MoreScreen.tag),
     )
 
     Box(

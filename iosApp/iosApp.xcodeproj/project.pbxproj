@@ -31,7 +31,7 @@
 		3A1C7B092C0A000100100005 /* RewardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B082C0A000100100005 /* RewardsView.swift */; };
 		3A1C7B0B2C0A000100100006 /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B0A2C0A000100100006 /* ScanView.swift */; };
 		3A1C7B0D2C0A000100100007 /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B0C2C0A000100100007 /* MoreView.swift */; };
-		3A1C7B0E2C0A000100100008 /* LoginSheetContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1C7B0F2C0A000100100008 /* LoginSheetContentView.swift */; };
+		BB100001BBBB000100000001 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB100001BBBB000000000001 /* ProfileView.swift */; };
 		3F7FE3C243EA2474EC5ED9B3 /* ScanViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE83391F0042238028012AF /* ScanViewRobot.swift */; };
 		5C96DF5D52D5AB8A8543BF47 /* MoreStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBDC98EE92C1069DBBF31E0 /* MoreStateRobot.swift */; };
 		6AB7311879DE457185285F19 /* RewardsStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F5BACDF6DC1E6C3703B84D2 /* RewardsStateRobot.swift */; };
@@ -47,6 +47,9 @@
 		AA100003AAAA000100000003 /* LoginStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100003AAAA000000000003 /* LoginStateRobot.swift */; };
 		AA100004AAAA000100000004 /* LoginViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100004AAAA000000000004 /* LoginViewRobot.swift */; };
 		AA100005AAAA000100000005 /* LoginViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100005AAAA000000000005 /* LoginViewTest.swift */; };
+		CC100001CCCC000100000001 /* ProfileStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC100001CCCC000000000001 /* ProfileStateRobot.swift */; };
+		CC100002CCCC000100000002 /* ProfileViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC100002CCCC000000000002 /* ProfileViewRobot.swift */; };
+		CC100003CCCC000100000003 /* ProfileViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC100003CCCC000000000003 /* ProfileViewTest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,7 +80,6 @@
 		3A1C7B082C0A000100100005 /* RewardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardsView.swift; sourceTree = "<group>"; };
 		3A1C7B0A2C0A000100100006 /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
 		3A1C7B0C2C0A000100100007 /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
-		3A1C7B0F2C0A000100100008 /* LoginSheetContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSheetContentView.swift; sourceTree = "<group>"; };
 		47030C030A9A404F3DB59815 /* ScanStateRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScanStateRobot.swift; sourceTree = "<group>"; };
 		4C2FECF2564C8AD2C98E0191 /* OrderViewRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OrderViewRobot.swift; sourceTree = "<group>"; };
 		4E8CF74CB8120042F7576C84 /* RewardsViewRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RewardsViewRobot.swift; sourceTree = "<group>"; };
@@ -97,9 +99,13 @@
 		FE6929F479ACC98EB6607900 /* HomeViewTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HomeViewTest.swift; sourceTree = "<group>"; };
 		AA100001AAAA000000000001 /* CircuitNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircuitNavigator.swift; sourceTree = "<group>"; };
 		AA100002AAAA000000000002 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		BB100001BBBB000000000001 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		AA100003AAAA000000000003 /* LoginStateRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginStateRobot.swift; sourceTree = "<group>"; };
 		AA100004AAAA000000000004 /* LoginViewRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginViewRobot.swift; sourceTree = "<group>"; };
 		AA100005AAAA000000000005 /* LoginViewTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginViewTest.swift; sourceTree = "<group>"; };
+		CC100001CCCC000000000001 /* ProfileStateRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProfileStateRobot.swift; sourceTree = "<group>"; };
+		CC100002CCCC000000000002 /* ProfileViewRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProfileViewRobot.swift; sourceTree = "<group>"; };
+		CC100003CCCC000000000003 /* ProfileViewTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProfileViewTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +150,7 @@
 				01E8709B2A09624D4A7D7595 /* Scan */,
 				8791E5D3427617818943090D /* More */,
 				AA100007AAAA000000000007 /* Login */,
+				CC100004CCCC000000000004 /* Profile */,
 			);
 			path = iosAppTests;
 			sourceTree = "<group>";
@@ -156,6 +163,16 @@
 				AA100005AAAA000000000005 /* LoginViewTest.swift */,
 			);
 			path = Login;
+			sourceTree = "<group>";
+		};
+		CC100004CCCC000000000004 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				CC100001CCCC000000000001 /* ProfileStateRobot.swift */,
+				CC100002CCCC000000000002 /* ProfileViewRobot.swift */,
+				CC100003CCCC000000000003 /* ProfileViewTest.swift */,
+			);
+			path = Profile;
 			sourceTree = "<group>";
 		};
 		2A1B6A772B0A000100123461 = {
@@ -221,6 +238,7 @@
 				3A1C7B162C0A000100100016 /* Scan */,
 				3A1C7B172C0A000100100017 /* More */,
 				AA100006AAAA000000000006 /* Login */,
+				BB100002BBBB000000000002 /* Profile */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -260,7 +278,6 @@
 		3A1C7B172C0A000100100017 /* More */ = {
 			isa = PBXGroup;
 			children = (
-				3A1C7B0F2C0A000100100008 /* LoginSheetContentView.swift */,
 				3A1C7B0C2C0A000100100007 /* MoreView.swift */,
 			);
 			path = More;
@@ -272,6 +289,14 @@
 				AA100002AAAA000000000002 /* LoginView.swift */,
 			);
 			path = Login;
+			sourceTree = "<group>";
+		};
+		BB100002BBBB000000000002 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				BB100001BBBB000000000001 /* ProfileView.swift */,
+			);
+			path = Profile;
 			sourceTree = "<group>";
 		};
 		8138BF1707098B060884A036 /* Rewards */ = {
@@ -470,10 +495,10 @@
 				3A1C7B072C0A000100100004 /* OrderView.swift in Sources */,
 				3A1C7B092C0A000100100005 /* RewardsView.swift in Sources */,
 				3A1C7B0B2C0A000100100006 /* ScanView.swift in Sources */,
-				3A1C7B0E2C0A000100100008 /* LoginSheetContentView.swift in Sources */,
 				3A1C7B0D2C0A000100100007 /* MoreView.swift in Sources */,
 				AA100001AAAA000100000001 /* CircuitNavigator.swift in Sources */,
 				AA100002AAAA000100000002 /* LoginView.swift in Sources */,
+				BB100001BBBB000100000001 /* ProfileView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -500,6 +525,9 @@
 				AA100003AAAA000100000003 /* LoginStateRobot.swift in Sources */,
 				AA100004AAAA000100000004 /* LoginViewRobot.swift in Sources */,
 				AA100005AAAA000100000005 /* LoginViewTest.swift in Sources */,
+				CC100001CCCC000100000001 /* ProfileStateRobot.swift in Sources */,
+				CC100002CCCC000100000002 /* ProfileViewRobot.swift in Sources */,
+				CC100003CCCC000100000003 /* ProfileViewTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
