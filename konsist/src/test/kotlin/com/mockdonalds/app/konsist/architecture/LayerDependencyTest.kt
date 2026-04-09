@@ -40,7 +40,7 @@ class LayerDependencyTest : BehaviorSpec({
     Given("domain layer isolation") {
         val domainFiles = Konsist.scopeFromProject()
             .files
-            .filter { it.resideInPath("..features..") && it.resideInPath("..domain..") && it.resideInPath("..commonMain..") && !it.resideInPath("..api..") }
+            .filter { it.resideInPath("..features..") && it.resideInPath("..impl/domain..") && it.resideInPath("..commonMain..") && !it.resideInPath("..api..") }
 
         Then("domain modules should not import from data packages") {
             domainFiles.assertTrue { file ->
@@ -63,7 +63,7 @@ class LayerDependencyTest : BehaviorSpec({
         Then("data modules should not import from presentation packages") {
             Konsist.scopeFromProject()
                 .files
-                .filter { it.resideInPath("..features..") && it.resideInPath("..data..") && it.resideInPath("..commonMain..") }
+                .filter { it.resideInPath("..features..") && it.resideInPath("..impl/data..") && it.resideInPath("..commonMain..") }
                 .assertTrue { file ->
                     file.imports.none { import ->
                         import.name.contains(".presentation.")
@@ -76,7 +76,7 @@ class LayerDependencyTest : BehaviorSpec({
         Then("presentation modules should not import from data packages") {
             Konsist.scopeFromProject()
                 .files
-                .filter { it.resideInPath("..features..") && it.resideInPath("..presentation..") && it.resideInPath("..commonMain..") }
+                .filter { it.resideInPath("..features..") && it.resideInPath("..impl/presentation..") && it.resideInPath("..commonMain..") }
                 .assertTrue { file ->
                     file.imports.none { import ->
                         import.name.contains(".data.")

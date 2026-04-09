@@ -29,7 +29,7 @@ class VisibilityConventionsTest : BehaviorSpec({
             val domainDeclarations = Konsist.scopeFromProject()
                 .classes()
                 .filter {
-                    it.resideInPath("..domain..") &&
+                    it.resideInPath("..impl/domain..") &&
                         it.resideInPath("..commonMain..") &&
                         !it.resideInPath("..api..") &&
                         it.hasPublicOrDefaultModifier &&
@@ -52,7 +52,7 @@ class VisibilityConventionsTest : BehaviorSpec({
             val publicFunctions = Konsist.scopeFromProject()
                 .functions()
                 .filter {
-                    it.resideInPath("..domain..") &&
+                    it.resideInPath("..impl/domain..") &&
                         it.resideInPath("..commonMain..") &&
                         !it.resideInPath("..api..") &&
                         !it.hasPrivateModifier &&

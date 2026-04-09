@@ -33,7 +33,7 @@ class CircuitConventionsTest : BehaviorSpec({
                 .classes()
                 .withNameEndingWith("Event")
                 .filter { it.hasSealedModifier }
-                .assertTrue { it.resideInPath("..presentation..") }
+                .assertTrue { it.resideInPath("..impl/presentation..") }
         }
     }
 

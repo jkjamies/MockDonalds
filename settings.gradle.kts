@@ -27,7 +27,8 @@ include(":core:test-fixtures")
 include(":core:theme")
 include(":core:network")
 include(":core:circuit")
-include(":core:auth")
+include(":core:auth:api")
+include(":core:auth:impl")
 
 // Feature modules — auto-discovered, architecture-enforced submodules
 rootDir.resolve("features").listFiles()
@@ -37,9 +38,9 @@ rootDir.resolve("features").listFiles()
     ?.forEach { feature ->
         include(":features:$feature:api:domain")
         include(":features:$feature:api:navigation")
-        include(":features:$feature:data")
-        include(":features:$feature:domain")
-        include(":features:$feature:presentation")
+        include(":features:$feature:impl:data")
+        include(":features:$feature:impl:domain")
+        include(":features:$feature:impl:presentation")
         include(":features:$feature:test")
     }
 

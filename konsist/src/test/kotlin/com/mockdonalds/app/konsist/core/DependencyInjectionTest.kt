@@ -18,7 +18,7 @@ class DependencyInjectionTest : BehaviorSpec({
             val repoInterfaces = Konsist.scopeFromProject()
                 .interfaces()
                 .withNameEndingWith("Repository")
-                .filter { it.resideInPath("..domain..") && it.resideInPath("..commonMain..") }
+                .filter { it.resideInPath("..impl/domain..") && it.resideInPath("..commonMain..") }
                 .map { it.name }
                 .toSet()
 

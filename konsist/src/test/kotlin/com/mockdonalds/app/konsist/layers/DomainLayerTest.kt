@@ -33,7 +33,7 @@ class DomainLayerTest : BehaviorSpec({
                 .classes()
                 .withNameEndingWith("Impl")
                 .filter { !it.name.endsWith("RepositoryImpl") }
-                .assertTrue { it.resideInPath("..domain..") }
+                .assertTrue { it.resideInPath("..impl/domain..") }
         }
 
         Then("every abstract use case should have a matching Impl in domain") {

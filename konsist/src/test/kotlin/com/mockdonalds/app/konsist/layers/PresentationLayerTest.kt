@@ -28,7 +28,7 @@ class PresentationLayerTest : BehaviorSpec({
             val presenterFiles = Konsist.scopeFromProject()
                 .files
                 .filter {
-                    it.resideInPath("..presentation..") &&
+                    it.resideInPath("..impl/presentation..") &&
                         it.resideInPath("..commonMain..") &&
                         it.name.endsWith("Presenter.kt")
                 }
@@ -53,7 +53,7 @@ class PresentationLayerTest : BehaviorSpec({
             val presenterFiles = Konsist.scopeFromProject()
                 .files
                 .filter {
-                    it.resideInPath("..presentation..") &&
+                    it.resideInPath("..impl/presentation..") &&
                         it.resideInPath("..commonMain..") &&
                         it.name.endsWith("Presenter.kt")
                 }
@@ -87,7 +87,7 @@ class PresentationLayerTest : BehaviorSpec({
             val presenterFiles = Konsist.scopeFromProject()
                 .files
                 .filter {
-                    it.resideInPath("..presentation..") &&
+                    it.resideInPath("..impl/presentation..") &&
                         it.resideInPath("..commonMain..") &&
                         it.name.endsWith("Presenter.kt")
                 }
@@ -129,7 +129,7 @@ class PresentationLayerTest : BehaviorSpec({
             Konsist.scopeFromProject()
                 .classes()
                 .withNameEndingWith("UiState")
-                .assertTrue { it.resideInPath("..presentation..") }
+                .assertTrue { it.resideInPath("..impl/presentation..") }
         }
     }
 })

@@ -26,7 +26,7 @@ class NamingConventionsTest : BehaviorSpec({
             Konsist.scopeFromProject()
                 .classes()
                 .filter { it.hasSealedModifier }
-                .filter { it.resideInPath("..presentation..") }
+                .filter { it.resideInPath("..impl/presentation..") }
                 .filter {
                     // Has subclasses that look like events (data objects or data classes inside)
                     it.name.endsWith("Event")
@@ -67,7 +67,7 @@ class NamingConventionsTest : BehaviorSpec({
                 .classes()
                 .filter {
                     !it.hasAbstractModifier &&
-                        it.resideInPath("..domain..") &&
+                        it.resideInPath("..impl/domain..") &&
                         it.resideInPath("..commonMain..") &&
                         it.hasParent { p -> p.name != "BehaviorSpec" && p.name != "Any" }
                 }
@@ -78,14 +78,14 @@ class NamingConventionsTest : BehaviorSpec({
         Then("all repository interfaces should end with 'Repository'") {
             Konsist.scopeFromProject()
                 .interfaces()
-                .filter { it.resideInPath("..domain..") && it.resideInPath("..commonMain..") }
+                .filter { it.resideInPath("..impl/domain..") && it.resideInPath("..commonMain..") }
                 .assertTrue { it.name.endsWith("Repository") }
         }
 
         Then("all repository implementations should end with 'RepositoryImpl'") {
             Konsist.scopeFromProject()
                 .classes()
-                .filter { it.resideInPath("..data..") && it.resideInPath("..commonMain..") }
+                .filter { it.resideInPath("..impl/data..") && it.resideInPath("..commonMain..") }
                 .withNameEndingWith("Impl")
                 .assertTrue { it.name.endsWith("RepositoryImpl") }
         }

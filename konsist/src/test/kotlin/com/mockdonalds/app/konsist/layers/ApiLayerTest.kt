@@ -34,7 +34,7 @@ class ApiLayerTest : BehaviorSpec({
                 .filter { it.hasAnnotation { a -> a.name == "Serializable" } }
                 .filter {
                     !it.resideInPath("..api..") &&
-                        !it.resideInPath("..data..") &&
+                        !it.resideInPath("..impl/data..") &&
                         !it.resideInPath("..network..")
                 }
 
@@ -147,7 +147,7 @@ class ApiLayerTest : BehaviorSpec({
                 .classes()
                 .filter { it.name.endsWith("Dto") || it.name.endsWith("DTO") || it.name.endsWith("Response") || it.name.endsWith("Request") }
                 .filter {
-                    !it.resideInPath("..data..") &&
+                    !it.resideInPath("..impl/data..") &&
                         !it.resideInPath("..network..")
                 }
 

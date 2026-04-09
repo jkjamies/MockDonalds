@@ -44,7 +44,7 @@ class TestModuleCoverageTest : BehaviorSpec({
             val implClasses = Konsist.scopeFromProject()
                 .classes()
                 .filter {
-                    it.resideInPath("..domain..") &&
+                    it.resideInPath("..impl/domain..") &&
                         it.resideInPath("..commonMain..") &&
                         !it.resideInPath("..api..")
                 }
@@ -101,7 +101,7 @@ class TestModuleCoverageTest : BehaviorSpec({
             val repoImpls = Konsist.scopeFromProject()
                 .classes()
                 .filter {
-                    it.resideInPath("..data..") &&
+                    it.resideInPath("..impl/data..") &&
                         it.resideInPath("..commonMain..")
                 }
                 .withNameEndingWith("RepositoryImpl")

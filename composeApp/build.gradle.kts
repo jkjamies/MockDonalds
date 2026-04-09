@@ -40,7 +40,7 @@ kotlin {
                 ?.forEach { feature ->
                     export(project(":features:$feature:api:domain"))
                     export(project(":features:$feature:api:navigation"))
-                    export(project(":features:$feature:presentation"))
+                    export(project(":features:$feature:impl:presentation"))
                 }
             export(project(":core:circuit"))
         }
@@ -63,14 +63,14 @@ kotlin {
                 ?.forEach { feature ->
                     api(project(":features:$feature:api:domain"))
                     api(project(":features:$feature:api:navigation"))
-                    implementation(project(":features:$feature:data"))
-                    implementation(project(":features:$feature:domain"))
-                    api(project(":features:$feature:presentation"))
+                    implementation(project(":features:$feature:impl:data"))
+                    implementation(project(":features:$feature:impl:domain"))
+                    api(project(":features:$feature:impl:presentation"))
                 }
 
             // Core
             api(project(":core:circuit"))
-            implementation(project(":core:auth"))
+            implementation(project(":core:auth:impl"))
             implementation(project(":core:centerpost"))
             implementation(project(":core:circuit"))
             implementation(project(":core:theme"))

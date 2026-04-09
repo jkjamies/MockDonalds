@@ -607,17 +607,17 @@ The `loginScreenFactory` lambda decouples the interceptor from `LoginScreen` —
 
 ### core:auth Module
 
-Auth state is a cross-cutting concern — multiple features and the interceptor need to check/modify it. Interface and implementation live in `core:auth`.
+Auth state is a cross-cutting concern — multiple features and the interceptor need to check/modify it. The interface lives in `core:auth:api` and the implementation in `core:auth:impl`.
 
 ```kotlin
-// core/auth/.../AuthManager.kt
+// core/auth/api/.../AuthManager.kt
 interface AuthManager {
     val isAuthenticated: Boolean
     fun login()
     fun logout()
 }
 
-// core/auth/.../InMemoryAuthManager.kt
+// core/auth/impl/.../InMemoryAuthManager.kt
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
 class InMemoryAuthManager @Inject constructor() : AuthManager {
@@ -975,13 +975,14 @@ features/<feature>/
   api/
     domain/     → Domain contracts: use case abstractions, models (no Circuit dependency)
     navigation/ → Screen object (@Parcelize), TestTags object (Circuit dependency)
-  domain/       → Use case implementations (depends on api:domain only)
-  data/         → Repository implementations
-  presentation/ → Presenter + UI (depends on both api:domain + api:navigation)
+  impl/
+    domain/       → Use case implementations (depends on api:domain only)
+    data/         → Repository implementations
+    presentation/ → Presenter + UI (depends on both api:domain + api:navigation)
   test/         → Fakes/fixtures (depends on api:domain only)
 ```
 
-This ensures the domain layer has zero UI framework awareness — Circuit stays in `api:navigation` and `presentation`.
+This ensures the domain layer has zero UI framework awareness — Circuit stays in `api:navigation` and `impl:presentation`.
 
 ## Adding a New Feature/Screen
 
@@ -1010,18 +1011,18 @@ Add:
   - If the screen requires authentication: extend `ProtectedScreen` instead of `Screen` and add `core:circuit` dependency
 - `<Feature>TestTags.kt` — `object <Feature>TestTags` with const val tags in the `ui` package
 
-### 3. Create `domain` module
+### 3. Create `impl:domain` module
 
 - `Get<Feature>ContentImpl.kt` with `@ContributesBinding(AppScope::class)`
 - `<Feature>Repository.kt` interface
 - `Get<Feature>ContentImplTest.kt` in commonTest
 
-### 4. Create `data` module
+### 4. Create `impl:data` module
 
 - `<Feature>RepositoryImpl.kt` with `@ContributesBinding(AppScope::class)`
 - `<Feature>RepositoryImplTest.kt` in commonTest
 
-### 5. Create `presentation` module
+### 5. Create `impl:presentation` module
 
 - `<Feature>Presenter.kt` — `@CircuitInject @Inject @Composable` function
 - `<Feature>UiState.kt` — data class implementing `CircuitUiState` with `eventSink`
@@ -1041,9 +1042,9 @@ Add:
 
 ### 8. Wire into the app
 
-- `settings.gradle.kts` — **automatic**: feature modules are auto-discovered from `features/` directories with architecture-enforced submodules (api:domain, api:navigation, data, domain, presentation, test)
-- `composeApp/build.gradle.kts` — **automatic**: feature deps are auto-discovered with enforced wiring (api:domain + api:navigation as `api()`, data + domain as `implementation()`, presentation as `api()`)
-- Cross-feature navigation: depend on `<other>:api:navigation` (not full api) in the feature's presentation build.gradle.kts
+- `settings.gradle.kts` — **automatic**: feature modules are auto-discovered from `features/` directories with architecture-enforced submodules (api:domain, api:navigation, impl:data, impl:domain, impl:presentation, test)
+- `composeApp/build.gradle.kts` — **automatic**: feature deps are auto-discovered with enforced wiring (api:domain + api:navigation as `api()`, impl:data + impl:domain as `implementation()`, impl:presentation as `api()`)
+- Cross-feature navigation: depend on `<other>:api:navigation` (not full api) in the feature's impl:presentation build.gradle.kts
 
 ### 9. Verify
 
@@ -1097,8 +1098,8 @@ iOS view tests enforce that every feature view (including `ProfileView`) has a c
 | `composeApp/src/commonMain/.../navigation/AuthInterceptor.kt` | Redirects `ProtectedScreen` to login when unauthenticated |
 | `composeApp/src/commonMain/.../navigation/DeepLinkParser.kt` | URI → `List<Screen>` parser |
 | `core/circuit/src/commonMain/.../core/circuit/ProtectedScreen.kt` | Marker interface for auth-gated screens |
-| `core/auth/src/commonMain/.../core/auth/AuthManager.kt` | Auth state interface |
-| `core/auth/src/commonMain/.../core/auth/InMemoryAuthManager.kt` | In-memory auth implementation |
+| `core/auth/api/src/commonMain/.../core/auth/AuthManager.kt` | Auth state interface |
+| `core/auth/impl/src/commonMain/.../core/auth/InMemoryAuthManager.kt` | In-memory auth implementation |
 
 ### Deep Link Entry Points
 

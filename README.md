@@ -38,14 +38,14 @@ A Kotlin Multiplatform (KMP) reference app showcasing a clean, scalable architec
 
 ### Feature Module Architecture
 
-Each feature follows a strict modular architecture with unidirectional dependency flow. The `api` layer is split into `api/domain` (pure business contracts) and `api/navigation` (Circuit screen + UI test tags), keeping the domain layer free of UI framework dependencies:
+Each feature follows a strict modular architecture with unidirectional dependency flow. Modules are organized into three top-level directories that make the architecture self-documenting: `api/` contains public contracts, `impl/` contains private implementations, and `test/` provides fakes. The `api` layer is split into `api/domain` (pure business contracts) and `api/navigation` (Circuit screen + UI test tags), keeping the domain layer free of UI framework dependencies. The `impl` layer nests `domain`, `data`, and `presentation` under `impl/` to clearly signal these are internal implementation details:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
 │                           Feature Module                                 │
 │                                                                          │
 │  ┌─────────────┐  ┌─────────────┐                                       │
-│  │ api/domain  │  │api/navigation│                                       │
+│  │ api/domain  │  │api/navigation│   ◄── Public contracts (api/)        │
 │  │             │  │             │                                        │
 │  │ Models      │  │ Screen      │                                        │
 │  │ UseCase     │  │ TestTags    │                                        │
@@ -53,15 +53,15 @@ Each feature follows a strict modular architecture with unidirectional dependenc
 │  └──────▲──────┘  └──────▲──────┘                                        │
 │         │                │                                               │
 │  ┌──────┴──────┐         │         ┌──────────┐    ┌──────────────────┐  │
-│  │   domain    │         │         │   data   │    │  presentation    │  │
+│  │ impl/domain │         │         │impl/data │    │impl/presentation │  │
 │  │             │         │         │          │    │                  │  │
 │  │ UseCase Impl│         │         │ Repo Impl│    │ Presenter        │  │
 │  │ Repo Iface  │         │         │          │    │ UiState/Events   │  │
 │  └──────▲──────┘         │         └──────────┘    │ UI (Android)     │  │
 │         │                │              │          └────────┬─────────┘  │
-│         └────── data ────┘              │                   │            │
+│         └── impl/data ───┘              │                   │            │
 │                                         │                   │            │
-│    presentation depends on api/domain + api/navigation only              │
+│    impl/presentation depends on api/domain + api/navigation only         │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -71,28 +71,28 @@ Each feature follows a strict modular architecture with unidirectional dependenc
 |-------|-------------------|----------|------------|
 | **api/domain** | `mockdonalds.kmp.library` | Domain models, use case interfaces | `core:centerpost` (no Circuit) |
 | **api/navigation** | `mockdonalds.kmp.library` | Screen definition, TestTags | `core:circuit` (Circuit runtime + Parcelize) |
-| **domain** | `mockdonalds.kmp.domain` | Use case implementations, repository interfaces | `api:domain` (transitive via `api()`) |
-| **data** | `mockdonalds.kmp.data` | Repository implementations, data sources | `domain` (gets `api:domain` transitively) |
-| **presentation** | `mockdonalds.kmp.presentation` | Presenter, UiState, Events, Android Compose UI | `api:domain` + `api:navigation` (no domain/data access) |
+| **impl/domain** | `mockdonalds.kmp.domain` | Use case implementations, repository interfaces | `api:domain` (transitive via `api()`) |
+| **impl/data** | `mockdonalds.kmp.data` | Repository implementations, data sources | `impl:domain` (gets `api:domain` transitively) |
+| **impl/presentation** | `mockdonalds.kmp.presentation` | Presenter, UiState, Events, Android Compose UI | `api:domain` + `api:navigation` (no impl/domain or impl/data access) |
 
 ### Dependency Flow Diagram
 
 ```
-presentation ──► api/domain ◄── domain ◄── data
-     │               │            │
-     │               │            ├── Use case implementations
-     │               │            └── Repository interfaces
-     │               ├── Domain models
-     │               └── Use case interfaces
-     │
-     └──────────► api/navigation
-                     ├── Screen definitions
-                     └── TestTags
+impl/presentation ──► api/domain ◄── impl/domain ◄── impl/data
+       │                  │               │
+       │                  │               ├── Use case implementations
+       │                  │               └── Repository interfaces
+       │                  ├── Domain models
+       │                  └── Use case interfaces
+       │
+       └──────────────► api/navigation
+                           ├── Screen definitions
+                           └── TestTags
 ```
 
 Key constraints:
-- **Presentation depends only on api submodules** — it never sees domain or data
-- **Domain depends only on api/domain** — no Circuit dependency, pure business logic
+- **impl/presentation depends only on api submodules** — it never sees impl/domain or impl/data
+- **impl/domain depends only on api/domain** — no Circuit dependency, pure business logic
 - **Cross-feature navigation** depends on `<other>:api:navigation` only
 
 ### Dependency Injection with Metro
@@ -106,7 +106,7 @@ Metro is a compile-time DI framework for Kotlin Multiplatform. It uses a Kotlin 
 │                                                          │
 │  Aggregates all contributed bindings from:               │
 │  ┌──────────┐  ┌──────────┐  ┌──────────────────────┐   │
-│  │  domain   │  │   data   │  │    presentation      │   │
+│  │impl/domain│  │impl/data │  │  impl/presentation   │   │
 │  │ modules   │  │ modules  │  │     modules          │   │
 │  │           │  │          │  │                      │   │
 │  │@Contributes│  │@Contributes│  │ @CircuitInject      │   │
@@ -125,9 +125,9 @@ Metro is a compile-time DI framework for Kotlin Multiplatform. It uses a Kotlin 
 
 | Annotation | Used In | Purpose |
 |------------|---------|---------|
-| `@ContributesBinding(AppScope::class)` | domain, data | Binds implementation to its interface. Implies `@Inject`. |
-| `@CircuitInject(Screen, AppScope)` | presentation | Generates `Presenter.Factory` / `Ui.Factory` contributed to the DI graph |
-| `@Inject` | presentation | Required on `@CircuitInject` function-based presenters and UIs for Metro circuit codegen |
+| `@ContributesBinding(AppScope::class)` | impl/domain, impl/data | Binds implementation to its interface. Implies `@Inject`. |
+| `@CircuitInject(Screen, AppScope)` | impl/presentation | Generates `Presenter.Factory` / `Ui.Factory` contributed to the DI graph |
+| `@Inject` | impl/presentation | Required on `@CircuitInject` function-based presenters and UIs for Metro circuit codegen |
 | `@DependencyGraph(AppScope)` | composeApp | Root DI graph that merges all contributions |
 | `@ContributesTo(AppScope)` | composeApp | Contributes interface bindings (e.g., Circuit providers) |
 | `@Multibinds` | composeApp | Declares set multibindings for `Presenter.Factory` and `Ui.Factory` |
@@ -641,6 +641,9 @@ MockDonalds/
 │               └── CircuitPresenterKotlinBridge.kt  # Molecule + NativeCoroutines bridge
 │
 ├── core/
+│   ├── auth/
+│   │   ├── api/                        # AuthManager interface (public contract)
+│   │   └── impl/                       # InMemoryAuthManager (private implementation)
 │   ├── centerpost/                     # Business logic framework (interactors, result types, launcher)
 │   ├── common/                         # Shared utilities (Parcelize, ResultWrapper)
 │   ├── network/                        # HTTP client (Ktor)
@@ -652,18 +655,19 @@ MockDonalds/
 │   │   ├── api/
 │   │   │   ├── domain/                 # HomeModels, GetHomeContent abstract class (no Circuit)
 │   │   │   └── navigation/             # HomeScreen (@Parcelize), HomeTestTags
-│   │   ├── domain/                     # GetHomeContentImpl, HomeRepository interface
-│   │   ├── data/                       # HomeRepositoryImpl
-│   │   ├── test/                       # Feature-specific test fakes (FakeGetHomeContent)
-│   │   └── presentation/
-│   │       ├── commonMain/             # HomePresenter, HomeUiState, HomeEvent
-│   │       ├── androidMain/            # HomeUi (Compose)
-│   │       └── androidDeviceTest/      # UI tests: StateRobot, UiRobot, UiTest
-│   ├── login/                          # Same structure: magic link + social sign-in
-│   ├── order/                          # Same structure: menu, featured items, cart
-│   ├── rewards/                        # Same structure: points, vault specials, history
-│   ├── scan/                           # Same structure: QR code, member info, progress
-│   └── more/                           # Same structure: profile, menu items
+│   │   ├── impl/
+│   │   │   ├── domain/                 # GetHomeContentImpl, HomeRepository interface
+│   │   │   ├── data/                   # HomeRepositoryImpl
+│   │   │   └── presentation/
+│   │   │       ├── commonMain/         # HomePresenter, HomeUiState, HomeEvent
+│   │   │       ├── androidMain/        # HomeUi (Compose)
+│   │   │       └── androidDeviceTest/  # UI tests: StateRobot, UiRobot, UiTest
+│   │   └── test/                       # Feature-specific test fakes (FakeGetHomeContent)
+│   ├── login/                          # Same structure: api/ + impl/ + test/
+│   ├── order/                          # Same structure: api/ + impl/ + test/
+│   ├── rewards/                        # Same structure: api/ + impl/ + test/
+│   ├── scan/                           # Same structure: api/ + impl/ + test/
+│   └── more/                           # Same structure: api/ + impl/ + test/
 │
 ├── iosApp/                             # iOS application (Xcode project)
 │   └── iosApp/
@@ -692,7 +696,7 @@ MockDonalds/
 Convention plugins eliminate boilerplate across the 20+ feature modules. Each layer has a dedicated plugin:
 
 ### `mockdonalds.kmp.library`
-Base KMP library plugin. Used by `api:domain` and `api:navigation` modules. Provides:
+Base KMP library plugin. Used by `api:domain`, `api:navigation`, and `test` modules. Provides:
 - KMP targets: Android (`com.android.kotlin.multiplatform.library`), iOS (x64, arm64, simulator)
 - Android host tests (`withHostTest { isReturnDefaultValues = true }`)
 - Kotest 6.1.11 + KSP for native test discovery (`io.kotest` Gradle plugin)
@@ -708,7 +712,7 @@ plugins {
     id("dev.zacsweers.metro")           // Compile-time DI
 }
 ```
-For domain modules containing use case implementations and repository interfaces.
+For `impl/domain` modules containing use case implementations and repository interfaces.
 
 ### `mockdonalds.kmp.data`
 ```kotlin
@@ -718,7 +722,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")  // JSON serialization
 }
 ```
-For data modules containing repository implementations and data sources.
+For `impl/data` modules containing repository implementations and data sources.
 
 ### `mockdonalds.kmp.presentation`
 ```kotlin
@@ -733,7 +737,7 @@ metro {
     enableCircuitCodegen.set(true)      // Metro's built-in Circuit codegen
 }
 ```
-For presentation modules. Provides Compose runtime, Circuit, and Metro with built-in Circuit factory generation. The `circuit-codegen-annotations` artifact is added automatically by Metro. Provides Coil for image loading on Android. Configures `androidDeviceTest` with `compose-ui-test-junit4`, `core:test-fixtures`, and `AndroidJUnitRunner` for instrumented UI tests.
+For `impl/presentation` modules. Provides Compose runtime, Circuit, and Metro with built-in Circuit factory generation. The `circuit-codegen-annotations` artifact is added automatically by Metro. Provides Coil for image loading on Android. Configures `androidDeviceTest` with `compose-ui-test-junit4`, `core:test-fixtures`, and `AndroidJUnitRunner` for instrumented UI tests.
 
 ## How to Add a New Feature
 
@@ -776,7 +780,7 @@ object FeatureTestTags {
 }
 ```
 
-### 2. Create the domain module
+### 2. Create the impl/domain module
 
 **Repository interface:**
 ```kotlin
@@ -799,7 +803,7 @@ class GetFeatureContentImpl(
 
 `@ContributesBinding` binds this class to `GetFeatureContent` in the DI graph and implies `@Inject` — no separate `@Inject` annotation needed. Extending the abstract class enforces that all use cases go through `CenterPostSubjectInteractor`'s `flow`/`flatMapLatest`/`distinctUntilChanged` pipeline.
 
-### 3. Create the data module
+### 3. Create the impl/data module
 
 ```kotlin
 @ContributesBinding(AppScope::class)
@@ -808,7 +812,7 @@ class FeatureRepositoryImpl : FeatureRepository {
 }
 ```
 
-### 4. Create the presentation module
+### 4. Create the impl/presentation module
 
 **UiState & Events (commonMain):**
 ```kotlin
@@ -891,14 +895,14 @@ ScreenUiFactory<FeatureScreen, FeatureUiState> { FeatureView(state: $0) },
 // iOS framework exports:
 export(project(":features:{feature}:api:domain"))
 export(project(":features:{feature}:api:navigation"))
-export(project(":features:{feature}:presentation"))
+export(project(":features:{feature}:impl:presentation"))
 
 // commonMain.dependencies:
 api(project(":features:{feature}:api:domain"))
 api(project(":features:{feature}:api:navigation"))
-implementation(project(":features:{feature}:data"))
-implementation(project(":features:{feature}:domain"))
-api(project(":features:{feature}:presentation"))
+implementation(project(":features:{feature}:impl:data"))
+implementation(project(":features:{feature}:impl:domain"))
+api(project(":features:{feature}:impl:presentation"))
 ```
 
 **Tab navigation** — add to `MockDonaldsApp.swift`:
@@ -915,12 +919,12 @@ CircuitContent(screen: FeatureScreen.shared)
 | TestTags | `api/navigation/commonMain` | Shared test tag constants (no Circuit import needed) |
 | Domain Models | `api/domain/commonMain` | Shared data types — no Circuit dependency |
 | Use Case Interface | `api/domain/commonMain` | Contract for presentation layer — no Circuit dependency |
-| Use Case Impl | `domain/commonMain` | Business logic, `@ContributesBinding` auto-wires |
-| Repository Interface | `domain/commonMain` | Contract for data layer |
-| Repository Impl | `data/commonMain` | Data source, `@ContributesBinding` auto-wires |
-| Presenter | `presentation/commonMain` | Shared logic, `@CircuitInject` + `@Inject` generates factory |
-| UiState/Events | `presentation/commonMain` | Shared state contract |
-| Compose UI | `presentation/androidMain` | Android-only, `@CircuitInject` + `@Inject` generates factory |
+| Use Case Impl | `impl/domain/commonMain` | Business logic, `@ContributesBinding` auto-wires |
+| Repository Interface | `impl/domain/commonMain` | Contract for data layer |
+| Repository Impl | `impl/data/commonMain` | Data source, `@ContributesBinding` auto-wires |
+| Presenter | `impl/presentation/commonMain` | Shared logic, `@CircuitInject` + `@Inject` generates factory |
+| UiState/Events | `impl/presentation/commonMain` | Shared state contract |
+| Compose UI | `impl/presentation/androidMain` | Android-only, `@CircuitInject` + `@Inject` generates factory |
 | SwiftUI View | `iosApp/Features/` | iOS-only, pure state function |
 | UI Registration | `AppDelegate.swift` | One-liner per screen via `ScreenUiFactory` |
 
@@ -937,7 +941,7 @@ class FakeGetFeatureContent(
 }
 ```
 
-**Presenter test** (`presentation/commonTest/`) — Kotest BehaviorSpec:
+**Presenter test** (`impl/presentation/commonTest/`) — Kotest BehaviorSpec:
 ```kotlin
 class FeaturePresenterTest : BehaviorSpec({
     Given("a feature presenter") {
@@ -960,7 +964,7 @@ class FeaturePresenterTest : BehaviorSpec({
 })
 ```
 
-**Android device tests** (`presentation/androidDeviceTest/`) — Robot pattern:
+**Android device tests** (`impl/presentation/androidDeviceTest/`) — Robot pattern:
 - `FeatureStateRobot` extends `StateRobot<FeatureUiState, FeatureEvent>` — creates test states
 - `FeatureUiRobot` — sets content, asserts UI elements by test tag, performs actions
 - `FeatureUiTest` — JUnit4 tests using `createComposeRule()` + robot
@@ -982,14 +986,14 @@ rootDir.resolve("features").listFiles()
     ?.forEach { feature ->
         include(":features:$feature:api:domain")
         include(":features:$feature:api:navigation")
-        include(":features:$feature:data")
-        include(":features:$feature:domain")
-        include(":features:$feature:presentation")
+        include(":features:$feature:impl:data")
+        include(":features:$feature:impl:domain")
+        include(":features:$feature:impl:presentation")
         include(":features:$feature:test")
     }
 ```
 
-**composeApp/build.gradle.kts** — also **automatic**. Feature deps use the same pattern with enforced wiring (api:domain + api:navigation as `api()`, data + domain as `implementation()`, presentation as `api()`). Just create the feature directory and both files wire it.
+**composeApp/build.gradle.kts** — also **automatic**. Feature deps use the same pattern with enforced wiring (api:domain + api:navigation as `api()`, impl:data + impl:domain as `implementation()`, impl:presentation as `api()`). Just create the feature directory and both files wire it.
 
 **App.kt** — add screen to route mapping:
 ```kotlin
@@ -1004,16 +1008,16 @@ is FeatureScreen -> "feature"
 
 1. `features/{name}/api/domain` — Domain models, interactor abstract class (no Circuit)
 2. `features/{name}/api/navigation` — Screen (`@Parcelize`), TestTags
-3. `features/{name}/domain` — Repository interface, interactor impl (`@ContributesBinding`)
-4. `features/{name}/data` — Repository impl (`@ContributesBinding`)
-5. `features/{name}/presentation/commonMain` — UiState/Events, Presenter (`@CircuitInject`)
-6. `features/{name}/presentation/androidMain` — Compose UI (`@CircuitInject`)
+3. `features/{name}/impl/domain` — Repository interface, interactor impl (`@ContributesBinding`)
+4. `features/{name}/impl/data` — Repository impl (`@ContributesBinding`)
+5. `features/{name}/impl/presentation/commonMain` — UiState/Events, Presenter (`@CircuitInject`)
+6. `features/{name}/impl/presentation/androidMain` — Compose UI (`@CircuitInject`)
 7. `features/{name}/test` — Fake interactor
-8. `features/{name}/presentation/commonTest` — Presenter test (Kotest)
-9. `features/{name}/presentation/androidDeviceTest` — StateRobot, UiRobot, UiTest
+8. `features/{name}/impl/presentation/commonTest` — Presenter test (Kotest)
+9. `features/{name}/impl/presentation/androidDeviceTest` — StateRobot, UiRobot, UiTest
 10. `iosApp/Features/{Name}/` — SwiftUI view
 11. `iosApp/iosAppTests/{Name}/` — StateRobot, ViewRobot, ViewTest (Swift Testing)
-12. `settings.gradle.kts` — **automatic** (feature directory auto-discovered with 6 enforced submodules)
+12. `settings.gradle.kts` — **automatic** (feature directory auto-discovered with 6 enforced submodules: api/domain, api/navigation, impl/domain, impl/data, impl/presentation, test)
 13. `composeApp/build.gradle.kts` — **automatic** (feature deps auto-discovered with enforced wiring)
 14. `App.kt` — screen route mapping
 15. `AppDelegate.swift` — `ScreenUiFactory` registration
@@ -1136,7 +1140,7 @@ Component-level UI tests run on a real device/emulator via `androidDeviceTest` (
 ./gradlew connectedAndroidDeviceTest
 
 # Run a single feature's UI tests
-./gradlew :features:home:presentation:connectedAndroidDeviceTest
+./gradlew :features:home:impl:presentation:connectedAndroidDeviceTest
 ```
 
 #### Infrastructure
@@ -1251,13 +1255,13 @@ class HomeUiTest {
 
 | Convention | Rule |
 |------------|------|
-| **Test tags** | `<Feature>TestTags` object in the feature's api module (`api/ui` package), shared across Android, iOS, and navigation tests |
+| **Test tags** | `<Feature>TestTags` object in the feature's api/navigation module (`api/navigation/ui` package), shared across Android, iOS, and navigation tests |
 | **Tag naming** | PascalCase: `HomeHeroBanner`, `OrderCategoryChip`. List items get ID suffix: `HomeCravingCard-{id}` |
 | **Theme** | All `setContent` calls wrap content in `MockDonaldsTheme` for accurate rendering |
 | **WindowSizeClass** | All `setContent` calls provide `LocalWindowSizeClass` via `CompositionLocalProvider` — required for landscape detection |
 | **Landscape** | UiRobots expose `setLandscapeContent()` using `DpSize(800, 400)` and `assertLandscapeScreen()`; UiTests include `rendersLandscapeLayout` |
 | **Scrolling** | Robot handles `performScrollTo()` internally — tests don't worry about viewport position |
-| **File naming** | `*StateRobot.kt`, `*UiRobot.kt`, `*UiTest.kt` — all in `androidDeviceTest` source set |
+| **File naming** | `*StateRobot.kt`, `*UiRobot.kt`, `*UiTest.kt` — all in `impl/presentation/androidDeviceTest` source set |
 | **Visibility** | Element assertions are `private` in the robot; only screen-level assertions and actions are `public` |
 
 #### File Structure
@@ -1266,7 +1270,7 @@ class HomeUiTest {
 features/{feature}/
 ├── api/src/commonMain/kotlin/.../ui/
 │   └── {Feature}TestTags.kt          # Shared test tag constants (Android + iOS)
-├── presentation/
+├── impl/presentation/
 │   ├── src/androidMain/kotlin/.../
 │   │   └── {Feature}Ui.kt            # Compose UI (imports TestTags from api)
 │   ├── src/androidDeviceTest/
@@ -1495,7 +1499,7 @@ plugins { id("mockdonalds.kmp.library") }
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(project(":features:home:api"))
+            api(project(":features:home:api:domain"))
             api(project(":core:test-fixtures"))
         }
     }
@@ -1504,7 +1508,7 @@ kotlin {
 
 Presentation modules pull feature test fakes for presenter testing:
 ```kotlin
-// features/home/presentation/build.gradle.kts
+// features/home/impl/presentation/build.gradle.kts
 commonTest.dependencies {
     implementation(project(":features:home:test"))
 }
@@ -1579,11 +1583,11 @@ The `:konsist` module enforces architectural conventions via [Konsist](https://d
 
 | Category | Tests | What It Checks |
 |----------|-------|----------------|
-| **Layer Dependency** | 7 | api/domain/data/presentation isolation, cross-feature only via api, core can't import features |
+| **Layer Dependency** | 7 | api/impl isolation, cross-feature only via api, core can't import features |
 | **Circuit Conventions** | 4 | Events must be `sealed class` (not interface, for iOS interop), Screens in api with `@Parcelize` |
 | **Naming Conventions** | 7 | `*Screen`, `*Event`, `*Presenter`, `*Ui`, `*UiState`, `*Repository`, `*RepositoryImpl` suffixes |
-| **Domain Layer** | 5 | Abstract use cases in api (CenterPostInteractor/SubjectInteractor), Impl classes in domain, Impls extend their abstract use case, matching pairs, `@ContributesBinding` |
-| **Data Layer** | 6 | Repo interfaces in domain, impls in data, matching pairs, DI annotations, no `suspend` (use Flow) |
+| **Domain Layer** | 5 | Abstract use cases in api (CenterPostInteractor/SubjectInteractor), Impl classes in impl/domain, Impls extend their abstract use case, matching pairs, `@ContributesBinding` |
+| **Data Layer** | 6 | Repo interfaces in impl/domain, impls in impl/data, matching pairs, DI annotations, no `suspend` (use Flow) |
 | **Presentation Layer** | 5 | `@CircuitInject` on presenters, UiState implements `CircuitUiState`, has `eventSink`, no direct model construction |
 | **Api Layer** | 5 | Immutable data classes (val only), `@Serializable` placement, no public MutableFlow, DTOs in data only, circuit.runtime exports |
 | **Dependency Injection** | 4 | All interfaces have `@ContributesBinding` impls, `@Inject` on presenters |

@@ -20,14 +20,14 @@ class DataLayerTest : BehaviorSpec({
             Konsist.scopeFromProject()
                 .interfaces()
                 .withNameEndingWith("Repository")
-                .assertTrue { it.resideInPath("..domain..") }
+                .assertTrue { it.resideInPath("..impl/domain..") }
         }
 
         Then("repository interface functions should return Flow, not use suspend") {
             val violators = Konsist.scopeFromProject()
                 .interfaces()
                 .withNameEndingWith("Repository")
-                .filter { it.resideInPath("..domain..") && it.resideInPath("..commonMain..") }
+                .filter { it.resideInPath("..impl/domain..") && it.resideInPath("..commonMain..") }
                 .flatMap { iface ->
                     iface.functions().filter { fn ->
                         fn.text.trimStart().startsWith("suspend ")
@@ -46,7 +46,7 @@ class DataLayerTest : BehaviorSpec({
             Konsist.scopeFromProject()
                 .classes()
                 .withNameEndingWith("RepositoryImpl")
-                .assertTrue { it.resideInPath("..data..") }
+                .assertTrue { it.resideInPath("..impl/data..") }
         }
 
         Then("every Repository interface should have a corresponding RepositoryImpl") {
