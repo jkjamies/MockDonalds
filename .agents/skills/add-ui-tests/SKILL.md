@@ -11,6 +11,12 @@ Identify changed/new Compose UI screens and create the full Robot pattern test s
 
 - Robot pattern, UI test conventions, and quality rules: `.agents/standards/testing.md`
 
+## Scope
+
+This skill covers Compose UI tests (Robot pattern) in `features/{name}/impl/presentation/src/androidDeviceTest/`. These tests render individual UI screens in isolation with a static `UiState`.
+
+This skill does NOT cover navigation and integration tests in `navint-tests/`. Those tests exercise full navigation flows and Circuit presenter wiring across screens, use JUnit4 `@RunWith(AndroidJUnit4::class)`, and live in `navint-tests/src/androidDeviceTest/kotlin/`. Use `add-tests` (step 4) to evaluate navint-tests coverage when presentation or navigation modules change.
+
 ## Steps
 
 ### 1. Identify Test Gaps

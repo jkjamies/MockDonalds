@@ -309,6 +309,58 @@ Enforced by: Harmonize `TestConventionsTest.swift` -- validates every View has V
 
 iOS tests use Swift Testing (`@Suite`, `@Test`), not XCTest. ViewRobots use ViewInspector for SwiftUI inspection. SwiftLint applies to test files (config at `.swiftlint.yml`).
 
+## Navigation & Integration Tests (navint-tests)
+
+### Purpose
+
+`navint-tests` verifies end-to-end navigation flows and cross-screen integration using real Circuit presenters backed by a fake data layer. Unlike unit tests (which test individual classes in isolation) and UI tests (which render a single screen with a static state), navint-tests exercise the full presenter-navigation contract across multiple screens.
+
+### Key Characteristics
+
+- **Runner**: JUnit4 `@RunWith(AndroidJUnit4::class)` — instrumented tests, NOT Kotest BehaviorSpec
+- **Data layer**: Fake implementations only — no `impl/domain` or `impl/data` modules wired in
+- **Presenters**: Real Circuit presenters (same as production)
+- **Location**: `navint-tests/src/androidDeviceTest/kotlin/`
+- **File naming**: ends with `NavigationTest.kt` or `IntegrationTest.kt`
+- **Run command**: `./gradlew :navint-tests:connectedAndroidDeviceTest` (requires connected emulator)
+
+### When to Add navint-tests
+
+Add or update navint-tests when:
+- A new navigation flow is introduced between screens
+- An existing screen's navigation events change (`api/navigation/`)
+- A presenter starts navigating to a new destination
+- An auth-gated flow (`ProtectedScreen`) is added or modified
+
+### Test Structure
+
+```kotlin
+@RunWith(AndroidJUnit4::class)
+class HomeToOrderNavigationTest {
+
+    @get:Rule
+    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+
+    @Test
+    fun navigatingFromHomeToOrder_showsOrderScreen() {
+        // Set up fake use cases and Circuit presenter
+        // Drive navigation event
+        // Assert destination screen is shown
+    }
+}
+```
+
+### Distinction from UI Tests
+
+| | UI Tests (Robot pattern) | navint-tests |
+|---|---|---|
+| Location | `impl/presentation/src/androidDeviceTest/` | `navint-tests/src/androidDeviceTest/` |
+| Scope | Single screen, static UiState | Multi-screen navigation flows |
+| Runner | JUnit4 (Compose UI test) | JUnit4 `@RunWith(AndroidJUnit4::class)` |
+| Presenters | Not involved (state injected directly) | Real Circuit presenters |
+| Data layer | Not involved | Fakes only |
+| File naming | `{Feature}UiTest.kt` | `{Flow}NavigationTest.kt` / `{Feature}IntegrationTest.kt` |
+
 ## Test Quality Standards
 
 1. **No change detectors** -- tests must verify behavior, not mirror implementation. Asserting a function returns the exact hardcoded value it was given is not a test. Test state transitions, error paths, boundary conditions.

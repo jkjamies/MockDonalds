@@ -5,12 +5,12 @@
 Run these steps in order after any code change. Stop and fix failures before proceeding.
 
 ```
- ┌─────────┐    ┌────────────┐    ┌─────────┐    ┌───────────┐    ┌───────────┐    ┌──────────┐
- │ 1.Detekt│───►│2.Unit Tests│───►│3.Konsist│───►│4.Harmonize│───►│5.SwiftLint│───►│6.Assemble│
- │  (lint) │    │  (Kotest)  │    │(Kt arch)│    │(iOS arch) │    │(iOS style)│    │  (build) │
- └─────────┘    └────────────┘    └─────────┘    └───────────┘    └───────────┘    └──────────┘
-   ~15s            ~30s              ~10s            ~10s             ~5s             ~60s
-   Fix format     Fix logic        Fix structure   Fix iOS conv.   Fix iOS style   Fix compile
+ ┌─────────┐    ┌────────────┐    ┌─────────┐    ┌───────────┐    ┌───────────┐    ┌───────────┐    ┌──────────┐
+ │ 1.Detekt│───►│2.Unit Tests│───►│3.Konsist│───►│4.Harmonize│───►│5.SwiftLint│───►│6.navint   │───►│7.Assemble│
+ │  (lint) │    │  (Kotest)  │    │(Kt arch)│    │(iOS arch) │    │(iOS style)│    │  (emul.)  │    │  (build) │
+ └─────────┘    └────────────┘    └─────────┘    └───────────┘    └───────────┘    └───────────┘    └──────────┘
+   ~15s            ~30s              ~10s            ~10s             ~5s             ~varies          ~60s
+   Fix format     Fix logic        Fix structure   Fix iOS conv.   Fix iOS style   Fix nav flows    Fix compile
 ```
 
 1. **Detekt** (lint): `./gradlew detektMetadataCommonMain`
@@ -18,7 +18,8 @@ Run these steps in order after any code change. Stop and fix failures before pro
 3. **Konsist** (Kotlin architecture): `./gradlew :architecture-check:test`
 4. **Harmonize** (iOS architecture): `swift test --package-path iosApp/ArchitectureCheck`
 5. **SwiftLint** (Swift style): `swiftlint --config .swiftlint.yml`
-6. **Assemble** (full build): `./gradlew assemble`
+6. **navint-tests** (navigation & integration, requires emulator): `./gradlew :navint-tests:connectedAndroidDeviceTest`
+7. **Assemble** (full build): `./gradlew assemble`
 
 ## Scoped Verification (verify-smart)
 
@@ -42,14 +43,17 @@ git diff --name-only                       # uncommitted changes on main
 | `features/{name}/test/` | Run tests for modules that consume the fakes |
 | `core/{module}/` | `:core:{module}:testAndroidHostTest` |
 | `architecture-check/` | `:architecture-check:test` |
+| `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` | `:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
+| `navint-tests/` | `:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
 
 ### verify-smart Decision Logic
 
 1. Always run `:architecture-check:test` (fast, catches structural issues regardless of what changed).
 2. If Kotlin source files changed: run `detektMetadataCommonMain` + scoped unit tests.
 3. If Swift files changed: run `swift test --package-path iosApp/ArchitectureCheck` + `swiftlint --config .swiftlint.yml`.
-4. If `build.gradle.kts` or `settings.gradle.kts` changed: run `./gradlew assemble`.
-5. If only markdown/documentation changed: architecture tests only (step 1).
+4. If `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` changed: run `./gradlew :navint-tests:connectedAndroidDeviceTest` (requires emulator; flag for pre-merge if emulator unavailable).
+5. If `build.gradle.kts` or `settings.gradle.kts` changed: run `./gradlew assemble`.
+6. If only markdown/documentation changed: architecture tests only (step 1).
 
 ## Failure Interpretation
 
@@ -78,21 +82,32 @@ git diff --name-only                       # uncommitted changes on main
 - Auto-fix available: `swiftlint --fix --config .swiftlint.yml`
 - Excludes `Circuit/` bridge code (force casts required for KMP interop)
 
+### navint-tests (Navigation & Integration Tests)
+- Reports: JUnit4 test name + assertion/exception detail
+- Failures indicate broken navigation flows, incorrect Circuit presenter wiring, or missing fake setup
+- Test files in `navint-tests/src/androidDeviceTest/kotlin/` end with `NavigationTest` or `IntegrationTest`
+- Requires a connected Android emulator; run `./gradlew :navint-tests:connectedAndroidDeviceTest`
+- These tests use real Circuit presenters and fakes — check `features/{name}/test/` for fake implementations
+
 ## Decision Tree — Skip Irrelevant Steps
 
 ```
 What changed?
   │
   ├── Only Kotlin source ──► Detekt + Unit Tests + Konsist + Assemble
-  │                          (skip Harmonize, SwiftLint)
+  │     │                    (skip Harmonize, SwiftLint)
+  │     └── presentation/ or api/navigation/ changed?
+  │           └── Yes ──► also run navint-tests (requires emulator)
   │
   ├── Only Swift source ──► Harmonize + SwiftLint
   │                         (skip Detekt, Kotest, Konsist)
   │
-  ├── Both Kotlin + Swift ──► Full pipeline (all 6 steps)
+  ├── Both Kotlin + Swift ──► Full pipeline (all 7 steps)
   │
   ├── Only tests changed ──► Detekt + Unit Tests + Konsist
-  │                          (skip Assemble — tests compile as part of test tasks)
+  │     │                    (skip Assemble — tests compile as part of test tasks)
+  │     └── navint-tests/ changed?
+  │           └── Yes ──► run navint-tests (requires emulator)
   │
   ├── Only build.gradle.kts / settings.gradle.kts ──► Konsist + Assemble
   │
@@ -105,3 +120,4 @@ Summary:
 - Only Swift changed: skip Konsist, Detekt, and Kotlin unit tests
 - Only tests changed: skip `./gradlew assemble` (tests compile as part of test tasks)
 - Only documentation changed: run Konsist only (AgentDocumentationTest checks AGENTS.md files)
+- presentation/ or api/navigation/ changed: also run navint-tests on emulator (flag for pre-merge if unavailable)

@@ -54,7 +54,15 @@ Always run — these are fast and catch structural issues regardless of what cha
 swift test --package-path iosApp/ArchitectureCheck
 ```
 
-### 5. Build (if build files changed)
+### 5. Navigation & Integration Tests (if presentation or navigation changed)
+
+**If `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` changed:**
+```bash
+./gradlew :navint-tests:connectedAndroidDeviceTest
+```
+Requires a connected Android emulator. Tests use real Circuit presenters with a fake data layer. Skip if no emulator is available but flag that navint-tests should be run before merge.
+
+### 6. Build (if build files changed)
 
 **If build.gradle.kts or settings.gradle.kts changed:**
 
@@ -76,6 +84,8 @@ No verification needed beyond architecture tests (which already ran in step 4).
 | `features/{name}/api/` | api | `:features:{name}:api:domain:testAndroidHostTest` |
 | `features/{name}/test/` | test fakes | Run tests for modules that use the fakes |
 | `core/{module}/` | core module | `:core:{module}:testAndroidHostTest` |
+| `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` | navint-tests | `:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
+| `navint-tests/` | navint-tests | `:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
 
 ## When to Use
 

@@ -47,3 +47,6 @@ rootDir.resolve("features").listFiles()
 
 // Architecture tests
 include(":architecture-check")
+
+// Navigation + integration tests
+include(":navint-tests")

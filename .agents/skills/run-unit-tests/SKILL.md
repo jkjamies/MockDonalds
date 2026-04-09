@@ -44,3 +44,7 @@ Valid core modules: `auth:api`, `auth:impl`, `centerpost`, `circuit`, `network`,
 - Test failures show the spec name and assertion that failed
 - All tests use `TestCenterPostDispatchers` for deterministic coroutine execution
 - Tests use fakes (not mocks) — check `features/{name}/test/` for fake implementations
+
+## Out of Scope
+
+Navigation and integration tests in `navint-tests/` are **not** unit tests. They run on a connected Android emulator via `./gradlew :navint-tests:connectedAndroidDeviceTest` and use JUnit4 `@RunWith(AndroidJUnit4::class)` rather than Kotest BehaviorSpec. Do not include them in the unit test run.

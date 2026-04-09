@@ -1,6 +1,6 @@
 ---
 name: verify
-description: Run the full verification pipeline — build, lint, unit tests, architecture tests, and iOS architecture tests. Use after any code changes to ensure nothing is broken.
+description: Run the full verification pipeline — build, lint, unit tests, architecture tests, iOS architecture tests, and navigation/integration tests. Use after any code changes to ensure nothing is broken.
 ---
 
 # Verify
@@ -43,6 +43,12 @@ swift test --package-path iosApp/ArchitectureCheck
 ```
 29 tests enforce: Swift view conventions, test module organization, iOS architectural patterns.
 
+### 7. Navigation & Integration Tests (requires emulator)
+```bash
+./gradlew :navint-tests:connectedAndroidDeviceTest
+```
+Runs on a connected Android emulator. Tests use real Circuit presenters with a fake data layer (no impl/domain or impl/data). Test files end with `NavigationTest` or `IntegrationTest` and use JUnit4 `@RunWith(AndroidJUnit4::class)`. Skip this step if no emulator is available; run it before merge when presentation or navigation modules changed.
+
 ## Interpreting Failures
 
 - **Build failure**: Check import paths, missing dependencies, or syntax errors
@@ -51,3 +57,4 @@ swift test --package-path iosApp/ArchitectureCheck
 - **Unit test failure**: Logic error in implementation or test setup
 - **Konsist failure**: Architecture rule violation — the error message names the specific rule (e.g., "Presenters must not depend on repositories directly")
 - **Harmonize failure**: iOS architecture convention violated — check Swift view/test naming patterns
+- **navint-tests failure**: Navigation or integration contract broken — check Circuit presenter wiring, screen navigation flows, and fake data layer setup in `navint-tests/src/androidDeviceTest/`

@@ -38,6 +38,8 @@ core/
   test-fixtures/       — TestCenterPostDispatchers, KotestProjectConfig, StateRobot base
 ```
 
+navint-tests/             — Navigation + integration tests (real presenters, fake data, real Circuit)
+
 Features: home, login, more, order, profile, rewards, scan
 
 ## Architecture Rules
@@ -113,7 +115,8 @@ api ← impl/presentation
 ./gradlew testAndroidHostTest               # 2. Unit tests
 ./gradlew :architecture-check:test           # 3. Architecture enforcement
 swift test --package-path iosApp/ArchitectureCheck  # 4. iOS arch (if Swift changed)
-./gradlew assemble                          # 5. Full build
+./gradlew :navint-tests:connectedAndroidDeviceTest  # 5. Nav/integration tests (emulator)
+./gradlew assemble                          # 6. Full build
 ```
 
 ## Convention Plugins
@@ -179,6 +182,7 @@ Per-module AGENTS.md files load via JIT context when you access files in those d
 - `features/{name}/AGENTS.md` — feature business context, key types, cross-feature deps
 - `core/{module}/AGENTS.md` — module purpose, public API, usage patterns
 - `architecture-check/AGENTS.md` — architecture test categories and how to add rules
+- `navint-tests/AGENTS.md` — navigation + integration test infrastructure, NavIntAppGraph
 - `iosApp/AGENTS.md` — Swift bridge patterns, Harmonize tests
 - `build-logic/AGENTS.md` — convention plugin details
 - `composeApp/AGENTS.md` — app entry points, navigation wiring, deep links
