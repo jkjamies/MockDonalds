@@ -30,6 +30,7 @@ include(":core:circuit")
 include(":core:auth:api")
 include(":core:auth:impl")
 include(":core:metro")
+include(":core:build-config")
 
 // Feature modules — auto-discovered, architecture-enforced submodules
 rootDir.resolve("features").listFiles()

@@ -22,6 +22,7 @@ androidx-compose-material3-windowsizeclass = "1.3.2"
 androidx-test-runner = "1.6.2"
 androidx-benchmark-macro = "1.3.4"
 androidx-uiautomator = "2.3.0"
+buildkonfig = "0.18.0"
 
 [libraries]
 # Circuit
@@ -93,3 +94,4 @@ metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
 kotest = { id = "io.kotest", version.ref = "kotest" }
 kmp-nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version.ref = "kmp-nativecoroutines" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }

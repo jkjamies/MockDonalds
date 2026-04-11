@@ -1,87 +1,93 @@
 ---
 name: verify
-description: Run the full verification pipeline — build, lint, unit tests, architecture tests, navigation/integration tests, and e2e tests. Use after any code changes to ensure nothing is broken.
+description: Fast local verification pipeline — lint, unit tests, architecture checks, SwiftLint, and one debug build per platform. Use after any code change to prove correctness on both platforms without paying CI-scale build costs.
 ---
 
 # Verify
 
-Run the complete verification pipeline. Every step must pass before work is considered complete.
+Prove the code is correct and compiles on both platforms. Fast, local, no market matrix, no release variants.
+
+Target runtime: under ~60s warm, under ~2 min cold.
+
+See `.agents/standards/verification.md` for the full local-vs-CI rationale and what the slower CI pipeline covers on top of this. For the full pre-merge pipeline (every target, every variant, every market combo), use the `verify-ci` skill.
+
+## Parameters
+
+- `market` (optional, default `us`) — which market to build (`us`, `de`, ...).
+- `env` (optional, default `dev`) — which env to build (`dev`, `prod`, ...).
+
+If the user says something like "verify with de/prod" or "verify market=de", use those values for steps 6 and 7. Otherwise build `us-dev`. This lets someone who's specifically iterating on a market change prove that one combo without running the whole matrix — and everyone else stays on the fast default.
+
+The iOS configuration name is `{MARKET-uppercase}-{Env-titlecase}` — `us` + `dev` → `US-Dev`, `de` + `prod` → `DE-Prod`.
 
 ## Steps
 
-Run these commands in order. Stop and fix any failures before proceeding to the next step.
+Run in order. Stop and fix failures before proceeding.
 
-### 1. Build
-```bash
-./gradlew assemble
-```
-
-### 2. Lint — Detekt
+### 1. Detekt (Kotlin lint)
 ```bash
 ./gradlew detektMetadataCommonMain
 ```
 
-### 3. Lint — SwiftLint
-```bash
-swiftlint --config .swiftlint.yml
-```
-
-### 4. Unit Tests (Kotlin)
+### 2. Unit Tests (Kotest)
 ```bash
 ./gradlew testAndroidHostTest
 ```
 
-### 5. Unit Tests (iOS — requires simulator)
-```bash
-xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'
-```
-Runs 42 iOS unit tests (ViewTests with ViewInspector Robot pattern). Skip if no simulator is available.
-
-### 6. Architecture Tests (Konsist)
+### 3. Konsist (Kotlin architecture)
 ```bash
 ./gradlew :testing:architecture-check:test
 ```
-22 test classes enforce: layer dependencies, naming conventions, DI annotations, forbidden patterns, test coverage requirements, and more.
 
-### 7. Architecture Tests (iOS — Harmonize)
+### 4. Harmonize (iOS architecture)
 ```bash
 swift test --package-path iosApp/ArchitectureCheck
 ```
-40 tests enforce: Swift view conventions, test module organization, navint test conventions, E2E test conventions, iOS architectural patterns.
 
-### 8. Navigation & Integration Tests (requires emulator)
+### 5. SwiftLint (iOS style)
 ```bash
-./gradlew :testing:navint-tests:connectedAndroidDeviceTest
+swiftlint --config .swiftlint.yml
 ```
-Runs on a connected Android emulator. Tests use real Circuit presenters with a fake data layer (no impl/domain or impl/data). Test files end with `NavigationTest` or `IntegrationTest` and use JUnit4 `@RunWith(AndroidJUnit4::class)`. Skip this step if no emulator is available; run it before merge when presentation or navigation modules changed.
 
-### 9. E2E Tests (requires device/emulator)
+### 6. Android debug build
 ```bash
-./gradlew :testing:e2e-tests:connectedAndroidTest
+./gradlew :androidApp:assembleDebug -Pmarket=$MARKET -Penv=$ENV
 ```
-Runs full user journey tests and startup benchmarks against the real app via UI Automator. Tests use `AppRobot` for launch, tab navigation, deep links, and element assertions. Journey tests end with `JourneyTest`, benchmarks end with `Benchmark`. Skip this step if no device/emulator is available; run it before merge when user-facing flows or deep link handling changed.
 
-### 10. iOS Navigation & Integration Tests (requires simulator)
-```bash
-xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'
-```
-Runs 24 navint tests on an iOS Simulator. Tests use Swift Testing (`@Suite @MainActor struct`) and exercise `NavigationStateManager` state transitions, tab switching, deep link navigation, and auth flow navigation. Skip this step if no simulator is available; run it before merge when Swift navigation files changed (`iosApp/iosApp/Circuit/` or `iosApp/iosAppTests/NavInt/`).
+Builds one combo, one build type. Default `us-dev`. Proves the shared Kotlin compiles for Android and the app links. No market matrix — this is only the combo the user asked about (or the default).
 
-### 11. iOS E2E Tests (requires simulator)
+### 7. iOS debug build (simulator-arm64 only)
 ```bash
-xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'
+xcodebuild build \
+  -scheme iOSApp \
+  -configuration ${MARKET_UPPER}-${ENV_TITLE} \
+  -destination 'platform=iOS Simulator,name=iPhone 16' \
+  -sdk iphonesimulator \
+  | tail -20
 ```
-Runs process-isolated XCUITest journey tests and startup benchmarks against the real iOS app. Tests use `AppRobot` for launch, tab navigation, deep links, and element assertions via accessibility identifiers. Journey tests end with `JourneyTest`, benchmarks end with `PerformanceTest`. Skip this step if no simulator is available; run it before merge when user-facing flows or deep link handling changed.
+
+Simulator-arm64 only. Skips `iosArm64` (device) and `iosX64` (legacy Intel sim) — those are CI's job. Configuration name is derived from the parameters: `us` + `dev` → `US-Dev`, `de` + `prod` → `DE-Prod`, etc.
+
+## What this skill deliberately does NOT run
+
+- `./gradlew assemble` — 5+ minutes, builds every target × every variant on every module.
+- Market matrix — building every combo separately.
+- Release builds — R8/minify on Android, LLVM-opt on iOS.
+- `iosArm64` (device target) and `iosX64` (Intel sim).
+- Navint tests, E2E tests — they need a running device/sim/emulator and are slow. Run them when the change warrants it (navigation, Circuit wiring, journey flows).
+
+All of the above belong in CI. Pay that cost once per PR, not once per save. If you need the full pipeline locally, invoke `verify-ci` instead.
+
+## When to escalate to verify-ci locally
+
+Only when the change specifically touches:
+- R8/Proguard keep-rules → `./gradlew :androidApp:assembleRelease`
+- `expect`/`actual` source-set splits → build both platforms explicitly
+- cinterop definitions or `.def` files → build `iosArm64` too
+- Market config schema or combo files → build a second combo (`-Pmarket=de -Penv=prod`), not the whole matrix
+
+For anything else, the 7 steps above are enough.
 
 ## Interpreting Failures
 
-- **Build failure**: Check import paths, missing dependencies, or syntax errors
-- **Detekt failure**: Code style violation — check the reported rule and file:line
-- **SwiftLint failure**: Swift code style violation — check the reported rule and file:line
-- **Unit test failure**: Logic error in implementation or test setup
-- **Konsist failure**: Architecture rule violation — the error message names the specific rule (e.g., "Presenters must not depend on repositories directly")
-- **Harmonize failure**: iOS architecture convention violated — check Swift view/test naming patterns
-- **navint-tests failure**: Navigation or integration contract broken — check Circuit presenter wiring, screen navigation flows, and fake data layer setup in `testing/navint-tests/src/androidDeviceTest/`
-- **e2e-tests failure**: User journey broken — check `AppRobot.kt` for test helper, journey tests in `testing/e2e-tests/src/main/kotlin/.../suites/`, and TestTags in `features/*/api/navigation/`
-- **iOS navint-tests failure**: iOS navigation state management broken — check `NavigationStateManager` logic in `iosApp/iosApp/Circuit/`, tab switching, deep link routing, or auth flow handling in `iosApp/iosAppTests/NavInt/`
-- **iOS e2e-tests failure**: iOS user journey broken — check `AppRobot.swift` in `iosApp/iosAppE2ETests/Robots/`, journey tests in `Suites/`, and accessibility identifiers matching KMP TestTags
+See `.agents/standards/verification.md` — "Failure Interpretation" section — for the full list of failure modes and how to diagnose each tool's output.

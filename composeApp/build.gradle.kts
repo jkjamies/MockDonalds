@@ -76,6 +76,7 @@ kotlin {
             implementation(project(":core:circuit"))
             implementation(project(":core:theme"))
             implementation(project(":core:network"))
+            implementation(project(":core:build-config"))
 
             // Circuit
             implementation(libs.circuit.foundation)

@@ -134,6 +134,11 @@
 		EE200013EEEE000000000013 /* OrderJourneyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderJourneyTest.swift; sourceTree = "<group>"; };
 		EE200014EEEE000000000014 /* StartupPerformanceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupPerformanceTest.swift; sourceTree = "<group>"; };
 		EE200015EEEE000000000015 /* iosAppE2ETests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iosAppE2ETests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC00000000000000000000B0 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+		BC00000000000000000000B1 /* US-Dev.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "US-Dev.xcconfig"; sourceTree = "<group>"; };
+		BC00000000000000000000B2 /* US-Prod.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "US-Prod.xcconfig"; sourceTree = "<group>"; };
+		BC00000000000000000000B3 /* DE-Dev.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "DE-Dev.xcconfig"; sourceTree = "<group>"; };
+		BC00000000000000000000B4 /* DE-Prod.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "DE-Prod.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -287,11 +292,24 @@
 			children = (
 				2DAB47242F82D91200717705 /* Assets.xcassets */,
 				2A1B6A822B0A000100123462 /* iosApp */,
+				BC00000000000000000000C0 /* Configuration */,
 				2A1B6A812B0A000100123463 /* Products */,
 				D28B52E10DDCFDA65FC0ACBF /* Frameworks */,
 				18552AC73484C61F68B7E387 /* iosAppTests */,
 				EE200030EEEE000000000030 /* iosAppE2ETests */,
 			);
+			sourceTree = "<group>";
+		};
+		BC00000000000000000000C0 /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				BC00000000000000000000B0 /* Base.xcconfig */,
+				BC00000000000000000000B1 /* US-Dev.xcconfig */,
+				BC00000000000000000000B2 /* US-Prod.xcconfig */,
+				BC00000000000000000000B3 /* DE-Dev.xcconfig */,
+				BC00000000000000000000B4 /* DE-Prod.xcconfig */,
+			);
+			path = Configuration;
 			sourceTree = "<group>";
 		};
 		2A1B6A812B0A000100123463 /* Products */ = {
@@ -614,7 +632,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\ncd \"$SRCROOT/..\"\n./gradlew :composeApp:embedAndSignAppleFrameworkForXcode";
+			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\nif [ -z \"${MARKET:-}\" ] || [ -z \"${ENV:-}\" ]; then\n  echo \"error: MARKET and ENV must be set by the active xcconfig (e.g. US-Dev, DE-Prod)\" >&2\n  exit 1\nfi\ncd \"$SRCROOT/..\"\n./gradlew :composeApp:embedAndSignAppleFrameworkForXcode -Pmarket=\"$MARKET\" -Penv=\"$ENV\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -706,8 +724,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		2A1B6A9B2B0A00010012346B /* Debug */ = {
+		2A1B6A9B2B0A00010012346B /* US-Dev */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BC00000000000000000000B1 /* US-Dev.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -767,10 +786,11 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
-			name = Debug;
+			name = "US-Dev";
 		};
-		2A1B6A9C2B0A00010012346C /* Release */ = {
+		2A1B6A9C2B0A00010012346C /* US-Prod */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BC00000000000000000000B2 /* US-Prod.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -823,10 +843,11 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = "US-Prod";
 		};
-		2A1B6A9F2B0A00010012346D /* Debug */ = {
+		2A1B6A9F2B0A00010012346D /* US-Dev */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BC00000000000000000000B1 /* US-Dev.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -853,16 +874,16 @@
 					"-framework",
 					ComposeApp,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = Debug;
+			name = "US-Dev";
 		};
-		2A1B6AA02B0A00010012346E /* Release */ = {
+		2A1B6AA02B0A00010012346E /* US-Prod */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BC00000000000000000000B2 /* US-Prod.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -889,15 +910,14 @@
 					"-framework",
 					ComposeApp,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = Release;
+			name = "US-Prod";
 		};
-		6C229A7AB97B19CAE342E766 /* Debug */ = {
+		6C229A7AB97B19CAE342E766 /* US-Dev */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -921,9 +941,9 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
 			};
-			name = Debug;
+			name = "US-Dev";
 		};
-		E09D7FCB049B7033A7AFC5A6 /* Release */ = {
+		E09D7FCB049B7033A7AFC5A6 /* US-Prod */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -948,9 +968,9 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
 				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = "US-Prod";
 		};
-		EE200070EEEE000000000070 /* Debug */ = {
+		EE200070EEEE000000000070 /* US-Dev */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -964,9 +984,9 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
 			};
-			name = Debug;
+			name = "US-Dev";
 		};
-		EE200071EEEE000000000071 /* Release */ = {
+		EE200071EEEE000000000071 /* US-Prod */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -981,7 +1001,217 @@
 				TEST_TARGET_NAME = iosApp;
 				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = "US-Prod";
+		};
+		BC00000000000000000000D0 /* DE-Dev */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BC00000000000000000000B3 /* DE-Dev.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = "DE-Dev";
+		};
+		BC00000000000000000000D1 /* DE-Prod */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BC00000000000000000000B4 /* DE-Prod.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "DE-Prod";
+		};
+		BC00000000000000000000D2 /* DE-Dev */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BC00000000000000000000B3 /* DE-Dev.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../composeApp/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					ComposeApp,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "DE-Dev";
+		};
+		BC00000000000000000000D3 /* DE-Prod */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BC00000000000000000000B4 /* DE-Prod.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../composeApp/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					ComposeApp,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "DE-Prod";
+		};
+		BC00000000000000000000D4 /* DE-Dev */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../composeApp/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					ComposeApp,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
+			};
+			name = "DE-Dev";
+		};
+		BC00000000000000000000D5 /* DE-Prod */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../composeApp/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					ComposeApp,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "DE-Prod";
+		};
+		BC00000000000000000000D6 /* DE-Dev */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "DE-Dev";
+		};
+		BC00000000000000000000D7 /* DE-Prod */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "DE-Prod";
 		};
 /* End XCBuildConfiguration section */
 
@@ -989,38 +1219,46 @@
 		2A1B6A7B2B0A00010012346A /* Build configuration list for PBXProject "iosApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2A1B6A9B2B0A00010012346B /* Debug */,
-				2A1B6A9C2B0A00010012346C /* Release */,
+				2A1B6A9B2B0A00010012346B /* US-Dev */,
+				2A1B6A9C2B0A00010012346C /* US-Prod */,
+				BC00000000000000000000D0 /* DE-Dev */,
+				BC00000000000000000000D1 /* DE-Prod */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = "US-Prod";
 		};
 		2A1B6A9E2B0A000100123466 /* Build configuration list for PBXNativeTarget "iosApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2A1B6A9F2B0A00010012346D /* Debug */,
-				2A1B6AA02B0A00010012346E /* Release */,
+				2A1B6A9F2B0A00010012346D /* US-Dev */,
+				2A1B6AA02B0A00010012346E /* US-Prod */,
+				BC00000000000000000000D2 /* DE-Dev */,
+				BC00000000000000000000D3 /* DE-Prod */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = "US-Prod";
 		};
 		3F9CD0B3C5273A912B844B3B /* Build configuration list for PBXNativeTarget "iosAppTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E09D7FCB049B7033A7AFC5A6 /* Release */,
-				6C229A7AB97B19CAE342E766 /* Debug */,
+				E09D7FCB049B7033A7AFC5A6 /* US-Prod */,
+				6C229A7AB97B19CAE342E766 /* US-Dev */,
+				BC00000000000000000000D4 /* DE-Dev */,
+				BC00000000000000000000D5 /* DE-Prod */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = "US-Prod";
 		};
 		EE200072EEEE000000000072 /* Build configuration list for PBXNativeTarget "iosAppE2ETests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EE200071EEEE000000000071 /* Release */,
-				EE200070EEEE000000000070 /* Debug */,
+				EE200071EEEE000000000071 /* US-Prod */,
+				EE200070EEEE000000000070 /* US-Dev */,
+				BC00000000000000000000D6 /* DE-Dev */,
+				BC00000000000000000000D7 /* DE-Prod */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = "US-Prod";
 		};
 /* End XCConfigurationList section */
 

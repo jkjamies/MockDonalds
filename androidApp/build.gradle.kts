@@ -4,12 +4,16 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
+val market: String = providers.gradleProperty("market").getOrElse("us")
+
+logger.lifecycle("androidApp → market=$market")
+
 android {
     namespace = "com.mockdonalds.app"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.mockdonalds.app"
+        applicationId = "com.mockdonalds.app.$market"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

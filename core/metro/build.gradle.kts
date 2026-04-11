@@ -11,6 +11,7 @@ kotlin {
         commonMain.dependencies {
             api(project(":core:circuit"))
             api(project(":core:auth:api"))
+            api(project(":core:build-config"))
         }
     }
 }

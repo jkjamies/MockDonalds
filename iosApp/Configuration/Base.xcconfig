@@ -1,0 +1,9 @@
+// Shared iOS build settings inherited by every market+env combo.
+// MARKET and ENV are set by the combo xcconfigs that #include this file.
+
+IPHONEOS_DEPLOYMENT_TARGET = 16.0
+SWIFT_VERSION = 5.0
+ENABLE_USER_SCRIPT_SANDBOXING = NO
+
+// Bundle ID derived from MARKET. Each combo sets MARKET to "us", "de", etc.
+PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.$(MARKET)

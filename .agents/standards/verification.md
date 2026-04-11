@@ -1,6 +1,26 @@
 # Verification Pipeline
 
-## Full Pipeline
+## Local vs. CI — what each level gates
+
+Verification comes in two shapes, and they exist for different reasons.
+
+**Local (the `verify` skill):** prove the code you just wrote is correct and compiles on both platforms, *fast*. Lint, unit tests, architecture checks, SwiftLint, and one debug build per platform against the default market (`us-dev`). Target: under ~60s warm, under ~2 min cold. Run this on every iteration.
+
+**CI (the full pipeline below, including `./gradlew assemble`):** prove the code ships. Every market × env combo, both platforms, both build types, release-optimized where it matters. Target: thorough, not fast. Runs once per PR.
+
+**What `./gradlew assemble` actually does** — and why it's CI-only:
+
+- Builds **every** Gradle module (40+) for **every** KMP target. Android (debug + release), `iosArm64`, `iosSimulatorArm64`, `iosX64` all get their own compile + link passes. Linking Kotlin/Native frameworks is single-threaded LLVM work and accounts for most of the wall time.
+- Runs R8/minify on `:androidApp:assembleRelease` and the equivalent optimization passes for iOS release frameworks. These are real failure modes (obfuscation strips a reflected symbol, optimizer trips on a cinterop edge case) but they trigger in <5% of changes.
+- Typically fires **~1800 tasks** on a warm cache. By contrast, `:androidApp:assembleDebug` fires ~60. The 30× task delta is the 5-minute gap.
+
+Locally you almost never need any of that. If your change didn't touch R8 rules, Proguard keep-rules, cinterop, or `expect`/`actual` splits, debug builds prove correctness just as well as release. Pay the `assemble` cost in CI, where wall time doesn't block the dev loop.
+
+**On iOS targets specifically:** `iosArm64` is the App Store binary, `iosSimulatorArm64` is what devs and CI run tests on, `iosX64` is the legacy Intel simulator. Local verify only needs `iosSimulatorArm64`. CI should cover `iosArm64` + `iosSimulatorArm64`. `iosX64` is vestigial — Apple has been Apple-Silicon-default since 2020 and KMP compile bugs almost never hit x64 uniquely. Drop it unless someone's actively developing on an Intel Mac.
+
+**On the market matrix:** every market compiles the same Kotlin source; the only thing that changes is which `.properties` file gets merged into BuildKonfig. Building every combo locally proves something real (parse + merge + downstream recompile) but it's CI's job, not the dev loop's. A Phase 2 `validateAllMarkets` Gradle task — just parse every combo file through the schema, no compile — will be the cheap gate that belongs in local verify once it exists.
+
+## Full Pipeline (CI)
 
 Run these steps in order after any code change. Stop and fix failures before proceeding.
 
