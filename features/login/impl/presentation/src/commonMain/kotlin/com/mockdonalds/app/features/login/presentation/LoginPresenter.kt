@@ -44,6 +44,7 @@ fun LoginPresenter(
                 }
                 is LoginEvent.AppleSignInClicked -> centerPost { }
                 is LoginEvent.GoogleSignInClicked -> centerPost { }
+                is LoginEvent.DismissClicked -> navigator.pop()
             }
         },
     )

@@ -43,6 +43,23 @@ struct CircuitNavigator<Content: View>: View {
                         .id(entry.id)
                 }
         }
+        .fullScreenCover(isPresented: Binding(
+            get: { stateManager.isFlowActive },
+            set: { if !$0 { stateManager.flowRootScreen = nil; stateManager.flowPath = [] } }
+        )) {
+            if let rootScreen = stateManager.flowRootScreen {
+                NavigationStack(path: $stateManager.flowPath) {
+                    CircuitContent(screen: rootScreen)
+                        .mockDonaldsTheme()
+                        .navigationDestination(for: ScreenEntry.self) { entry in
+                            CircuitContent(screen: entry.screen)
+                                .mockDonaldsTheme()
+                                .id(entry.id)
+                        }
+                }
+                .interactiveDismissDisabled()
+            }
+        }
         .task {
             await observeNavigation()
         }

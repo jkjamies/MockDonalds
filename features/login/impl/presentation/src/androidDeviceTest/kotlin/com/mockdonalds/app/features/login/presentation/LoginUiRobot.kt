@@ -48,6 +48,7 @@ class LoginUiRobot(private val rule: ComposeContentTestRule) {
     // --- Screen Assertions ---
 
     fun assertDefaultScreen() {
+        assertCloseButtonDisplayed()
         assertBrandingDisplayed()
         assertEmailInputDisplayed()
         assertSignInButtonDisplayed()
@@ -55,6 +56,7 @@ class LoginUiRobot(private val rule: ComposeContentTestRule) {
     }
 
     fun assertLandscapeScreen() {
+        assertCloseButtonDisplayed()
         assertBrandingDisplayed()
         assertEmailInputDisplayed()
         assertSignInButtonDisplayed()
@@ -62,6 +64,10 @@ class LoginUiRobot(private val rule: ComposeContentTestRule) {
     }
 
     // --- Element Assertions ---
+
+    private fun assertCloseButtonDisplayed() {
+        rule.onNodeWithTag(LoginTestTags.CLOSE_BUTTON).assertIsDisplayed()
+    }
 
     private fun assertBrandingDisplayed() {
         rule.onNodeWithTag(LoginTestTags.BRANDING).assertIsDisplayed()
@@ -81,6 +87,10 @@ class LoginUiRobot(private val rule: ComposeContentTestRule) {
     }
 
     // --- Actions ---
+
+    fun tapCloseButton() {
+        rule.onNodeWithTag(LoginTestTags.CLOSE_BUTTON).performClick()
+    }
 
     fun tapSignInButton() {
         rule.onNodeWithTag(LoginTestTags.SIGN_IN_BUTTON).performScrollTo().performClick()

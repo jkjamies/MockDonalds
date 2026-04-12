@@ -17,8 +17,8 @@ Four SwiftUI components bridge Circuit to native UI:
 | File | Purpose |
 |------|---------|
 | `CircuitStack.swift` | Root wrapper that injects `CircuitIos` as `@EnvironmentObject` and sets dark color scheme |
-| `CircuitNavigator.swift` | Observes `BridgeNavigator` navigation actions, delegates to `NavigationStateManager`, drives `NavigationStack` |
-| `NavigationStateManager.swift` | Testable navigation state: handles GoTo/Pop/ResetRoot/SwitchTab/DeepLink actions, manages `navigationPath` and `selectedTab` |
+| `CircuitNavigator.swift` | Observes `BridgeNavigator` navigation actions, delegates to `NavigationStateManager`, drives `NavigationStack`. Presents `FlowScreen` destinations via `.fullScreenCover` with an inner `NavigationStack` for nested flow navigation. |
+| `NavigationStateManager.swift` | Testable navigation state: handles GoTo/Pop/ResetRoot/SwitchTab/DeepLink/PresentFlow/DismissFlow actions. Manages `navigationPath`, `selectedTab`, and flow state (`flowRootScreen`, `flowPath`, `isFlowActive`). When a flow is active, GoTo/Pop route to the flow's inner path. |
 | `CircuitView.swift` | Observes a `CircuitPresenterKotlinBridge` state flow via KMP-NativeCoroutines `asyncSequence`, renders content when state arrives |
 | `CircuitContent.swift` | Takes a Screen, resolves presenter and UI factory from `@EnvironmentObject CircuitIos`, renders via `CircuitView` |
 

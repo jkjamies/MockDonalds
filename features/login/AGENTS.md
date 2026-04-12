@@ -7,7 +7,7 @@ The login screen handles user authentication via email, Apple Sign-In, or Google
 
 | Type | Location | Notes |
 |------|----------|-------|
-| LoginScreen | api/navigation | Screen (data class, not TabScreen), has `returnTo: Screen?` parameter |
+| LoginScreen | api/navigation | `FlowScreen` (data class). Has `returnTo: Screen?` parameter. iOS presents as `.fullScreenCover` with inner NavigationStack; Android pushes normally with nested Circuit navigation. |
 | LoginContent | api/domain | logoUrl |
 | LoginResult | api/domain | success, errorMessage? |
 | GetLoginContent | api/domain -> impl/domain | Streaming use case via CenterPostSubjectInteractor<Unit, LoginContent> |
@@ -23,6 +23,7 @@ The login screen handles user authentication via email, Apple Sign-In, or Google
 - Core deps: core:auth:api (AuthManager), core:centerpost, core:theme
 
 ## Feature-Specific Patterns
+- LoginScreen implements `FlowScreen` (from `core:circuit`). On iOS, `BridgeNavigator` detects `FlowScreen` and emits `PresentFlow` instead of `GoTo`, causing `NavigationStateManager` to present it as a `.fullScreenCover` with an inner `NavigationStack`. On Android, `FlowScreen` has no special navigation effect — the screen is pushed normally and uses Circuit's nested `CircuitContent(onNavEvent)` for inner flow navigation.
 - LoginScreen is a `data class` (not data object) because it accepts an optional `returnTo: Screen?` parameter for post-login navigation.
 - On SignInConfirmed, the presenter calls `authManager.login()`, pops the login screen, then navigates to `returnTo` if provided.
 - The presenter uses `rememberSaveable` for email state to survive configuration changes.

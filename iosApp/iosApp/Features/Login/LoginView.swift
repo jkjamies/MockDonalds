@@ -13,6 +13,7 @@ struct LoginView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
+                closeButton
                 dragHandle
 
                 if isLandscape {
@@ -47,6 +48,25 @@ struct LoginView: View {
         } message: {
             Text("Send a magic link to \(state.email.isEmpty ? "your email" : state.email)?")
         }
+    }
+
+    private var closeButton: some View {
+        HStack {
+            Spacer()
+            Button(
+                action: { state.eventSink(LoginEvent.DismissClicked()) },
+                label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(colors.onSurface.opacity(0.6))
+                        .frame(width: 32, height: 32)
+                        .background(colors.surfaceContainerHighest)
+                        .clipShape(Circle())
+                }
+            )
+            .accessibilityIdentifier(tags.CLOSE_BUTTON)
+        }
+        .padding(.top, MockDimens.spacingMd)
     }
 
     private var dragHandle: some View {

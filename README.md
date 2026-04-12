@@ -165,10 +165,10 @@ The app supports deep links via `mockdonalds://app/{path}`. Auth-gated screens (
 
 ```bash
 # Navigate to More tab
-adb shell am start -a android.intent.action.VIEW -d "mockdonalds://app/more" com.mockdonalds.app
+adb shell am start -a android.intent.action.VIEW -d "mockdonalds://app/more"
 
 # Navigate to Profile via More tab (auth-gated — redirects to Login if not authenticated)
-adb shell am start -a android.intent.action.VIEW -d "mockdonalds://app/more/profile" com.mockdonalds.app
+adb shell am start -a android.intent.action.VIEW -d "mockdonalds://app/more/profile"
 ```
 
 **iOS (requires simulator):**
@@ -207,7 +207,7 @@ xcodebuild build -project iosApp/iosApp.xcodeproj -target iosApp \
 | **Rewards** | Points progress, vault specials gallery, transaction history |
 | **Scan** | QR code display, member info, rewards progress bar |
 | **More** | Settings menu items, profile navigation |
-| **Login** | Email sign-in, social auth (Google, Apple), return-after-auth flow |
+| **Login** | Email sign-in, social auth (Google, Apple), return-after-auth flow. Implements `FlowScreen` — presented as `.fullScreenCover` on iOS with inner NavigationStack for multi-step auth flows. |
 | **Profile** | User profile (auth-gated via ProtectedScreen) |
 
 ## Agentic Automation

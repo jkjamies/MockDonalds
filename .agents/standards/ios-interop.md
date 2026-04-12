@@ -106,10 +106,12 @@ This is enforced by Konsist's `CircuitConventionsTest`.
 │  NavigationAction (sealed)       ├── Implements Circuit Navigator   │
 │  ├── Idle                        ├── Channel<List<NavigationAction>> │
 │  ├── GoTo(screen)                ├── @NativeCoroutines              │
-│  ├── Pop                         └── Run-loop batching via          │
-│  ├── ResetRoot(screen)                dispatch_async(main_queue)    │
-│  ├── SwitchTab(tag)                                                 │
-│  └── DeepLink(screens)                                              │
+│  ├── Pop                         ├── Run-loop batching via          │
+│  ├── ResetRoot(screen)           │    dispatch_async(main_queue)    │
+│  ├── SwitchTab(tag)              └── Detects FlowScreen in goTo()  │
+│  ├── DeepLink(screens)                → emits PresentFlow           │
+│  ├── PresentFlow(screen)                                            │
+│  └── DismissFlow                                                    │
 └──────────────────────┬───────────────────────┬───────────────────────┘
                        │                       │
 ┌──────────────────────▼───────────────────────▼───────────────────────┐
@@ -126,6 +128,7 @@ This is enforced by Konsist's `CircuitConventionsTest`.
 │  ├── Drives NavigationStack (GoTo → push, Pop → pop)               │
 │  ├── Processes batched actions sequentially in one update cycle     │
 │  ├── ScreenEntry wrapper (Hashable + Identifiable)                  │
+│  ├── Presents FlowScreen as .fullScreenCover with inner NavStack   │
 │  └── Calls consume() after handling each batch                      │
 │                                                                      │
 │  ScreenUiFactory<S, State> { view }   ← One-liner per screen       │
@@ -144,7 +147,7 @@ The iOS bridge lives in `composeApp/src/iosMain/kotlin/com/mockdonalds/app/bridg
    a `pending` list. The first call schedules `dispatch_async(dispatch_get_main_queue())` to
    flush on the next main run loop tick. All actions arrive as a single
    `List<NavigationAction>` batch, processed in one SwiftUI update cycle.
-4. **NavigationAction** — sealed class with GoTo, Pop, ResetRoot, SwitchTab, DeepLink subtypes.
+4. **NavigationAction** — sealed class with GoTo, Pop, ResetRoot, SwitchTab, DeepLink, PresentFlow, DismissFlow subtypes.
 5. **CircuitPresenterKotlinBridge** — wraps a Circuit `Presenter` into a `StateFlow` via
    Molecule's `launchMolecule(RecompositionMode.Immediate)`.
 
@@ -168,6 +171,19 @@ CircuitNavigator (.task)
 ```
 
 Task cancellation is automatic when the view disappears.
+
+## Flow Navigation (Nested Flows)
+
+Screens implementing `FlowScreen` (from `core:circuit`) are presented as modal flows on iOS. When `BridgeNavigator.goTo()` receives a `FlowScreen`, it emits `PresentFlow` instead of `GoTo`. `NavigationStateManager` handles this by:
+- Setting `flowRootScreen` and presenting a `.fullScreenCover`
+- Routing subsequent `GoTo`/`Pop` actions to `flowPath` (the flow's inner NavigationStack)
+- Dismissing the flow when `Pop` is called on an empty `flowPath`
+
+Inner flow screens are regular Circuit screens with their own presenters — no special handling needed. Their `navigator.goTo()`/`pop()` calls go through the main `BridgeNavigator` and get routed to the flow's inner path because `isFlowActive` is true.
+
+On Android, `FlowScreen` has no special navigation behavior. The flow screen is pushed onto the main backstack normally, and its Compose UI uses Circuit's nested `CircuitContent(onNavEvent)` to manage inner screen navigation — a purely UI-layer concern.
+
+`ResetRoot`, `SwitchTab`, and `DeepLink` actions dismiss any active flow as a safety measure.
 
 ## @NativeCoroutinesState for StateFlow Bridging
 

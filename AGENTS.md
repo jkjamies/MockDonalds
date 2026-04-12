@@ -32,7 +32,7 @@ core/
   auth/                — AuthManager interface (api/) + InMemoryAuthManager (impl/)
   build-config/        — Compile-time market/env config (BuildKonfig-backed AppBuildConfig facade; -Pmarket/-Penv)
   centerpost/          — CenterPostInteractor, CenterPostSubjectInteractor, CenterPostDispatchers
-  circuit/             — TabScreen, ProtectedScreen, Parcelize expect/actual, CircuitProviders
+  circuit/             — TabScreen, ProtectedScreen, FlowScreen, Parcelize expect/actual, CircuitProviders
   metro/               — AppGraph interface (shared DI contract)
   network/             — HttpClientProvider, Ktor engine
   theme/               — MockDonaldsTheme, colors, typography, dimens, AdaptiveLayout

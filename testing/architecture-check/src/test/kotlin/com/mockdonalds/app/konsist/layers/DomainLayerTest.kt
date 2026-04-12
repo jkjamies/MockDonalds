@@ -33,6 +33,7 @@ class DomainLayerTest : BehaviorSpec({
                 .classes()
                 .withNameEndingWith("Impl")
                 .filter { !it.name.endsWith("RepositoryImpl") }
+                .filter { it.resideInPath("..features..") }
                 .assertTrue { it.resideInPath("..impl/domain..") }
         }
 

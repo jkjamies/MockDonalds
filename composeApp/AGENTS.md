@@ -29,8 +29,8 @@ Application shell that wires all feature modules together. Contains platform ent
 | File | Purpose |
 |------|---------|
 | `bridge/IosApp.kt` | iOS entry point. Creates `AppGraph`, `BridgeNavigator`, `InterceptingNavigator` with `AuthInterceptor`. Exposes `presenterBridge(screen)` for Swift and `deepLink(uri)` with tab-aware routing. |
-| `bridge/BridgeNavigator.kt` | iOS `Navigator` implementation using `Channel<List<NavigationAction>>`. Batches synchronous navigator calls via `dispatch_async(dispatch_get_main_queue())` to avoid SwiftUI animation artifacts. |
-| `bridge/NavigationAction.kt` | Sealed class: GoTo, Pop, ResetRoot, SwitchTab, DeepLink. Actions are batched into lists for single-frame SwiftUI updates. |
+| `bridge/BridgeNavigator.kt` | iOS `Navigator` implementation using `Channel<List<NavigationAction>>`. Batches synchronous navigator calls via `dispatch_async(dispatch_get_main_queue())` to avoid SwiftUI animation artifacts. Detects `FlowScreen` in `goTo()` and emits `PresentFlow` instead of `GoTo`. |
+| `bridge/NavigationAction.kt` | Sealed class: GoTo, Pop, ResetRoot, SwitchTab, DeepLink, PresentFlow, DismissFlow. Actions are batched into lists for single-frame SwiftUI updates. |
 | `bridge/CircuitPresenterKotlinBridge.kt` | Bridges Circuit presenters to `StateFlow` via Molecule (`launchMolecule`). Annotated with `@NativeCoroutinesState` for Swift async observation. |
 
 ## Auto-Discovery in build.gradle.kts
@@ -49,6 +49,7 @@ Adding a new feature module to `features/` automatically wires it into the app -
 2. iOS: `IosApp` -> `BridgeNavigator` -> Channel -> Swift `CircuitNavigator` observes actions -> SwiftUI TabView/NavigationStack
 3. Deep links: URI -> `DeepLinkParser.parse()` -> `InterceptingNavigator.deepLink()` (applies auth interceptor) -> push screens
 4. Auth guard: `ProtectedScreen` navigation -> `AuthInterceptor` rewrites to `LoginScreen(returnTo = originalScreen)`
+5. Flow presentation (iOS): `LoginScreen` implements `FlowScreen` -> `BridgeNavigator.goTo()` detects `FlowScreen` -> emits `PresentFlow` -> `NavigationStateManager` shows `.fullScreenCover` with inner `NavigationStack` -> inner screens' `GoTo`/`Pop` route to the flow's path. On Android, `FlowScreen` is a regular screen — nested navigation is handled by Circuit's `CircuitContent(onNavEvent)` in the Compose UI layer.
 
 ## Future: Feature Flag Interceptor
 

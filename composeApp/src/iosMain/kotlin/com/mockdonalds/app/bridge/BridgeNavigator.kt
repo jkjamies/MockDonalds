@@ -1,5 +1,6 @@
 package com.mockdonalds.app.bridge
 
+import com.mockdonalds.app.core.circuit.FlowScreen
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavStackList
@@ -79,8 +80,16 @@ class BridgeNavigator : Navigator {
     }
 
     override fun goTo(screen: Screen): Boolean {
-        enqueue(NavigationAction.GoTo(screen))
+        if (screen is FlowScreen) {
+            enqueue(NavigationAction.PresentFlow(screen))
+        } else {
+            enqueue(NavigationAction.GoTo(screen))
+        }
         return true
+    }
+
+    fun dismissFlow() {
+        enqueue(NavigationAction.DismissFlow)
     }
 
     override fun pop(result: PopResult?): Screen? {

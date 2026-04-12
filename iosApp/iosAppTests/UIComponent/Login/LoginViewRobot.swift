@@ -34,6 +34,7 @@ final class LoginViewRobot {
     func assertDefaultScreen() throws {
         let view = createDefaultView()
         let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.CLOSE_BUTTON)
         try body.find(viewWithAccessibilityIdentifier: tags.BRANDING)
         try body.find(viewWithAccessibilityIdentifier: tags.EMAIL_INPUT)
         try body.find(viewWithAccessibilityIdentifier: tags.SIGN_IN_BUTTON)
@@ -43,6 +44,7 @@ final class LoginViewRobot {
     func assertLandscapeScreen() throws {
         let view = createLandscapeView()
         let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.CLOSE_BUTTON)
         try body.find(viewWithAccessibilityIdentifier: tags.BRANDING)
         try body.find(viewWithAccessibilityIdentifier: tags.EMAIL_INPUT)
         try body.find(viewWithAccessibilityIdentifier: tags.SIGN_IN_BUTTON)
@@ -72,6 +74,11 @@ final class LoginViewRobot {
     func simulateGoogleSignInTap() {
         let state = stateRobot.defaultState()
         state.eventSink(LoginEvent.GoogleSignInClicked())
+    }
+
+    func simulateDismissTap() {
+        let state = stateRobot.defaultState()
+        state.eventSink(LoginEvent.DismissClicked())
     }
 
     func assertLastEvent(_ expected: LoginEvent) {

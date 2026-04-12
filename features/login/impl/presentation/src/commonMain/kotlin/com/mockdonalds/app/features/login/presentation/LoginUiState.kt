@@ -15,4 +15,5 @@ sealed class LoginEvent {
     data object SignInConfirmed : LoginEvent()
     data object AppleSignInClicked : LoginEvent()
     data object GoogleSignInClicked : LoginEvent()
+    data object DismissClicked : LoginEvent()
 }

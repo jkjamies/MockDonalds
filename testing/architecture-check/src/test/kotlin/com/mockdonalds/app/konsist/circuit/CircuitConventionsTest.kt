@@ -42,7 +42,8 @@ class CircuitConventionsTest : BehaviorSpec({
             .objects()
             .filter {
                 it.hasParent { p ->
-                    p.name == "Screen" || p.name == "ProtectedScreen" || p.name == "TabScreen"
+                    p.name == "Screen" || p.name == "ProtectedScreen" || p.name == "TabScreen" ||
+                        p.name == "FlowScreen"
                 }
             }
             .filter {
@@ -103,5 +104,32 @@ class CircuitConventionsTest : BehaviorSpec({
         }
     }
 
+    Given("FlowScreen declarations") {
+        val flowScreenClasses = Konsist.scopeFromProject()
+            .classes()
+            .filter { it.hasParent { p -> p.name == "FlowScreen" } }
+            .filter {
+                !it.resideInPath("..test..") &&
+                    !it.resideInPath("..Test..") &&
+                    !it.resideInPath("..commonTest..") &&
+                    !it.resideInPath("..androidTest..") &&
+                    !it.resideInPath("..androidDeviceTest..")
+            }
+
+        Then("FlowScreen implementations should reside in api navigation packages") {
+            flowScreenClasses.assertTrue(
+                additionalMessage = "FlowScreen classes must reside in api/navigation packages. " +
+                    "FlowScreen marks the root of a multi-screen flow — on iOS it is presented as a " +
+                    ".fullScreenCover with its own inner NavigationStack.",
+            ) { it.resideInPath("..api..") }
+        }
+
+        Then("FlowScreen implementations should have @Parcelize annotation") {
+            flowScreenClasses.assertTrue(
+                additionalMessage = "FlowScreen classes must have @Parcelize — " +
+                    "they are Screen types and need state restoration support.",
+            ) { it.hasAnnotation { a -> a.name == "Parcelize" } }
+        }
+    }
 
 })

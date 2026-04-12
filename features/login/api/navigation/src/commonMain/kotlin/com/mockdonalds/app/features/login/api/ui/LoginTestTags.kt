@@ -8,4 +8,5 @@ object LoginTestTags {
     const val APPLE_BUTTON = "LoginAppleButton"
     const val GOOGLE_BUTTON = "LoginGoogleButton"
     const val SIGN_IN_DIALOG = "LoginSignInDialog"
+    const val CLOSE_BUTTON = "LoginCloseButton"
 }

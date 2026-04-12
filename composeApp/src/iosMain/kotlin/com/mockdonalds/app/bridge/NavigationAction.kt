@@ -15,4 +15,6 @@ sealed class NavigationAction {
     data class ResetRoot(val screen: Screen) : NavigationAction()
     data class SwitchTab(val tag: String) : NavigationAction()
     data class DeepLink(val screens: List<Screen>) : NavigationAction()
+    data class PresentFlow(val screen: Screen) : NavigationAction()
+    data object DismissFlow : NavigationAction()
 }

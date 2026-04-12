@@ -10,29 +10,55 @@ import ComposeApp
 /// complementing the Android navint-tests which test the same flows with real presenters.
 @Suite @MainActor struct AuthFlowNavigationTest {
 
-    @Test func authRedirectPushesLoginScreen() {
+    // MARK: - Flow Presentation
+
+    @Test func authRedirectPresentsFlow() {
         let manager = NavigationStateManager()
 
-        // AuthInterceptor redirects to LoginScreen when unauthenticated
-        manager.handle(actions: [NavigationAction.GoTo(screen: LoginScreen(returnTo: nil))])
+        // AuthInterceptor redirects to LoginScreen (FlowScreen) — BridgeNavigator emits PresentFlow
+        manager.handle(actions: [NavigationAction.PresentFlow(screen: LoginScreen(returnTo: nil))])
 
-        #expect(manager.navigationPath.count == 1)
-        #expect(manager.navigationPath[0].screen is LoginScreen)
+        #expect(manager.isFlowActive)
+        #expect(manager.flowRootScreen is LoginScreen)
+        #expect(manager.navigationPath.isEmpty)
     }
 
-    @Test func successfulAuthPopsThenNavigates() {
+    @Test func successfulAuthDismissesFlowAndNavigates() {
         let manager = NavigationStateManager()
-        // Auth redirect pushed login
-        manager.handle(actions: [NavigationAction.GoTo(screen: LoginScreen(returnTo: nil))])
+        manager.handle(actions: [NavigationAction.PresentFlow(screen: LoginScreen(returnTo: nil))])
 
-        // After successful login: pop login, navigate to original destination
+        // After successful login: pop dismisses flow, goTo routes to main path
         manager.handle(actions: [
             NavigationAction.Pop(),
             NavigationAction.GoTo(screen: ProfileScreen.shared),
         ])
 
+        #expect(!manager.isFlowActive)
         #expect(manager.navigationPath.count == 1)
         #expect(manager.navigationPath[0].screen is ProfileScreen)
+    }
+
+    @Test func multiScreenAuthFlowNavigatesWithinFlow() {
+        let manager = NavigationStateManager()
+        manager.handle(actions: [NavigationAction.PresentFlow(screen: LoginScreen(returnTo: nil))])
+
+        // Inner auth screens push onto flow path
+        manager.handle(actions: [NavigationAction.GoTo(screen: OrderScreen.shared)])
+
+        #expect(manager.isFlowActive)
+        #expect(manager.flowPath.count == 1)
+        #expect(manager.navigationPath.isEmpty)
+    }
+
+    @Test func authFlowBackWithinFlowPopsFlowPath() {
+        let manager = NavigationStateManager()
+        manager.handle(actions: [NavigationAction.PresentFlow(screen: LoginScreen(returnTo: nil))])
+        manager.handle(actions: [NavigationAction.GoTo(screen: OrderScreen.shared)])
+
+        manager.handle(actions: [NavigationAction.Pop()])
+
+        #expect(manager.isFlowActive)
+        #expect(manager.flowPath.isEmpty)
     }
 
     @Test func authRedirectFromDeepLinkFlow() {
@@ -40,16 +66,19 @@ import ComposeApp
 
         // Deep link to profile (protected) while unauthenticated:
         // 1. Switch to more tab
-        // 2. Auth interceptor redirects to login instead of profile
+        // 2. Auth interceptor redirects to login (FlowScreen) — BridgeNavigator emits PresentFlow
         manager.handle(actions: [
             NavigationAction.SwitchTab(tag: MoreScreen.shared.tag),
-            NavigationAction.GoTo(screen: LoginScreen(returnTo: nil)),
+            NavigationAction.PresentFlow(screen: LoginScreen(returnTo: nil)),
         ])
 
         #expect(manager.selectedTab == MoreScreen.shared.tag)
-        #expect(manager.navigationPath.count == 1)
-        #expect(manager.navigationPath[0].screen is LoginScreen)
+        #expect(manager.isFlowActive)
+        #expect(manager.flowRootScreen is LoginScreen)
+        #expect(manager.navigationPath.isEmpty)
     }
+
+    // MARK: - Non-Flow (Authenticated)
 
     @Test func navigateToProtectedScreenWhenAuthenticated() {
         let manager = NavigationStateManager(initialTab: "more")

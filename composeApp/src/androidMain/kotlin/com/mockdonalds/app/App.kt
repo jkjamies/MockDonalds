@@ -96,12 +96,14 @@ fun MockDonaldsApp(windowSizeClass: WindowSizeClass, deepLinkIntent: Intent? = n
                             )
                         },
                     )
-                    Text(
-                        text = "${graph.appBuildConfig.market.uppercase()}/${graph.appBuildConfig.env}",
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .statusBarsPadding(),
-                    )
+                    if (currentRoute.isNotEmpty()) {
+                        Text(
+                            text = "${graph.appBuildConfig.market.uppercase()}/${graph.appBuildConfig.env}",
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .statusBarsPadding(),
+                        )
+                    }
                 }
             }
 

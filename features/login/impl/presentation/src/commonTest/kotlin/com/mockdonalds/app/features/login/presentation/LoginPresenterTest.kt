@@ -114,5 +114,28 @@ class LoginPresenterTest : BehaviorSpec({
                 }
             }
         }
+        When("the user clicks dismiss") {
+            Then("it should pop without logging in") {
+                val navForTest = FakeNavigator(LoginScreen())
+                val authForTest = FakeAuthManager()
+                presenterTestOf(
+                    presentFunction = {
+                        LoginPresenter(
+                            screen = LoginScreen(),
+                            navigator = navForTest,
+                            authManager = authForTest,
+                            getLoginContent = fakeGetLoginContent,
+                            dispatchers = dispatchers,
+                        )
+                    },
+                ) {
+                    val state = awaitItem()
+                    state.eventSink(LoginEvent.DismissClicked)
+                    authForTest.isAuthenticated shouldBe false
+                    navForTest.awaitPop()
+                    cancelAndIgnoreRemainingEvents()
+                }
+            }
+        }
     }
 })
