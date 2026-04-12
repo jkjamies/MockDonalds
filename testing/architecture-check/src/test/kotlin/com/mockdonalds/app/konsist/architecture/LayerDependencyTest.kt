@@ -112,6 +112,21 @@ class LayerDependencyTest : BehaviorSpec({
             }
         }
 
+        Then("feature modules should not import from core impl packages") {
+            val violators = Konsist.scopeFromProject()
+                .files
+                .filter { it.resideInPath("..features..") && it.resideInPath("..commonMain..") }
+                .flatMap { file ->
+                    file.imports
+                        .filter { it.name.contains(".core.") && it.name.contains(".impl.") }
+                        .map { "  ${file.name}: ${it.name}" }
+                }
+
+            assert(violators.isEmpty()) {
+                "Feature modules must only depend on core api packages, never core impl:\n${violators.joinToString("\n")}"
+            }
+        }
+
         Then("core modules should not import from feature modules") {
             val violators = Konsist.scopeFromProject()
                 .files

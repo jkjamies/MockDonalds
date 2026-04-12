@@ -72,6 +72,7 @@ kotlin {
             api(project(":core:circuit"))
             api(project(":core:metro"))
             implementation(project(":core:auth:impl"))
+            implementation(project(":core:feature-flag:impl"))
             implementation(project(":core:centerpost"))
             implementation(project(":core:circuit"))
             implementation(project(":core:theme"))
