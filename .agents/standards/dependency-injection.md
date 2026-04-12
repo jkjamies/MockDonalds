@@ -1,5 +1,7 @@
 # Dependency Injection Reference
 
+> Companion: [centerpost.md](centerpost.md) — covers how presenters consume the use cases that Metro injects (the consumer side of every binding documented here).
+
 ## Metro DI Overview
 
 Metro is an Anvil-compatible, compile-time dependency injection framework. It generates the DI graph at compile time with no runtime reflection. KSP is used for code generation but Metro itself does not require separate KSP configuration -- the convention plugins handle this.

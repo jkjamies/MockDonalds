@@ -18,31 +18,109 @@ Locally you almost never need any of that. If your change didn't touch R8 rules,
 
 **On iOS targets specifically:** `iosArm64` is the App Store binary, `iosSimulatorArm64` is what devs and CI run tests on, `iosX64` is the legacy Intel simulator. Local verify only needs `iosSimulatorArm64`. CI should cover `iosArm64` + `iosSimulatorArm64`. `iosX64` is vestigial — Apple has been Apple-Silicon-default since 2020 and KMP compile bugs almost never hit x64 uniquely. Drop it unless someone's actively developing on an Intel Mac.
 
-**On the market matrix:** every market compiles the same Kotlin source; the only thing that changes is which `.properties` file gets merged into BuildKonfig. Building every combo locally proves something real (parse + merge + downstream recompile) but it's CI's job, not the dev loop's. A Phase 2 `validateAllMarkets` Gradle task — just parse every combo file through the schema, no compile — will be the cheap gate that belongs in local verify once it exists.
+**On the market matrix:** every market compiles the same Kotlin source; the only thing that changes is which `.properties` file gets merged into BuildKonfig. Building every combo locally proves something real (parse + merge + downstream recompile) but it's CI's job, not the dev loop's. The cheap gate that catches schema/format drift across every combo without compiling is `./gradlew :core:build-config:validateAllMarkets` (driven by the `validate-all-markets` skill) — a lightweight configuration-cache-friendly Gradle task that runs as a pre-flight check in both `verify` and `verify-ci`.
+
+## Local (the `verify` skill)
+
+Eight steps, symmetric across both platforms: lint → unit → architecture → debug build, plus a pre-flight market-config check. Parameterized by `market` (default `us`) and `env` (default `dev`); only the two debug build steps use those parameters. Stop and fix failures before proceeding.
+
+**Pre-flight — `validate-all-markets`:**
+```bash
+./gradlew :core:build-config:validateAllMarkets
+```
+Gradle task on `:core:build-config`. Parses every `core/build-config/markets/*.properties` against `Defaults.properties` and enforces the rules in [build-config.md → Validation rules](build-config.md#validation-rules). Aggregates every violation in one pass and fails the build with the full list. Configuration-cache compatible; executes every invocation (no `upToDateWhen` skip) because the validation logic itself isn't an input to the task — if rules in `build.gradle.kts` change but no `.properties` file does, we still need the new rules to fire against existing files. Warm runs complete in under a second. Owned by the [`validate-all-markets`](../skills/validate-all-markets/SKILL.md) skill. Runs before step 1 because if a combo file is malformed, every downstream step builds against stale or wrong config.
+
+
+```
+  lint          unit          architecture    build
+ ┌─────────┐   ┌─────────┐   ┌─────────┐    ┌─────────┐
+ │1.Detekt │   │3.Kotest │   │5.Konsist│    │7.Android│
+ │2.SwiftL.│   │4.iOSUnit│   │6.Harmon.│    │ 8.iOS   │
+ └─────────┘   └─────────┘   └─────────┘    └─────────┘
+   ~20s          ~60s          ~20s           ~50s
+```
+
+1. **Detekt** (Kotlin lint): `./gradlew detektMetadataCommonMain`
+2. **SwiftLint** (Swift style): `swiftlint --config .swiftlint.yml`
+3. **Kotest** (Kotlin pure-logic unit tests, Android host — all shared business logic runs here): `./gradlew testAndroidHostTest`
+4. **iOS unit tests** (`UnitTests` test plan — Swift Testing pure-logic tests in `iosApp/iosAppTests/Unit/`, requires simulator):
+   ```bash
+   xcodebuild test \
+     -scheme iOSApp \
+     -testPlan UnitTests \
+     -destination 'platform=iOS Simulator,name=iPhone 16'
+   ```
+   Currently a single `PlaceholderUnitTest` (`1 + 1 == 2`) — the plumbing is wired so real iOS-side pure-logic tests drop into `iosApp/iosAppTests/Unit/` without any build-system work. Most shared business logic lives in KMP Kotlin and is covered by Kotest (step 3); this slot is reserved for Swift-only helpers (e.g. `NavigationStateManager` pure-state transforms, format helpers) as iOS-only code grows.
+5. **Konsist** (Kotlin architecture): `./gradlew :testing:architecture-check:test`
+6. **Harmonize** (iOS architecture): `swift test --package-path iosApp/ArchitectureCheck`
+7. **Android debug build** (one combo, from `market`/`env` params):
+   ```bash
+   ./gradlew :androidApp:assembleDebug -Pmarket=$MARKET -Penv=$ENV
+   ```
+   Default `us-dev`. One combo, one build type. Proves the shared Kotlin compiles for Android and the app links. No market matrix.
+8. **iOS debug build** (simulator-arm64 only, from `market`/`env` params):
+   ```bash
+   xcodebuild build \
+     -scheme iOSApp \
+     -configuration ${MARKET_UPPER}-${ENV_TITLE} \
+     -destination 'platform=iOS Simulator,name=iPhone 16' \
+     -sdk iphonesimulator
+   ```
+   Simulator-arm64 only. Skips `iosArm64` (device) and `iosX64` (legacy Intel sim) — those are CI's job. Configuration name: `us` + `dev` → `US-Dev`, `de` + `prod` → `DE-Prod`.
+
+### What the local pipeline deliberately does NOT run
+
+- `./gradlew assemble` — 5+ min, every target × every variant on every module.
+- Market matrix — every combo separately.
+- Release builds — R8/minify on Android, LLVM-opt on iOS release frameworks.
+- `iosArm64` (device) and `iosX64` (Intel sim).
+- **UI component tests** on either platform — Android `connectedAndroidDeviceTest` (emulator) and iOS `UIComponentTests` plan (ViewInspector Robot-pattern view tests, simulator). Both run in `verify-ci`.
+- navint-tests, e2e-tests — require a running device/emulator/simulator and are slower still.
+
+### When to escalate to `verify-ci` locally
+
+Only when the change specifically touches:
+- R8/Proguard keep-rules → `./gradlew :androidApp:assembleRelease`
+- `expect`/`actual` source-set splits → build both platforms explicitly
+- cinterop `.def` files → build `iosArm64` too
+- `core:build-config` schema, combo files, or a new market → build at least one non-default combo (`-Pmarket=de -Penv=prod`)
+- Circuit navigation wiring, deep links, or presenter graph changes → also run navint-tests
+- Full user journeys or startup performance work → also run e2e-tests
+
+For anything else, the 8 steps above are enough.
 
 ## Full Pipeline (CI)
 
 Run these steps in order after any code change. Stop and fix failures before proceeding.
 
+Fully symmetric across both platforms, organized by concern: lint → unit → architecture → UI component → nav/int → e2e → build. Every box has one Android + one iOS step. A pre-flight `validate-all-markets` check runs before step 1.
+
+**Pre-flight — `validate-all-markets`:** `./gradlew :core:build-config:validateAllMarkets` — see [build-config.md → Validation rules](build-config.md#validation-rules) and the [`validate-all-markets`](../skills/validate-all-markets/SKILL.md) skill. Gates the entire pipeline; fails fast if any combo file drifts from the schema.
+
+
 ```
- ┌─────────┐    ┌────────────┐    ┌─────────┐    ┌───────────┐    ┌───────────┐    ┌───────────┐    ┌───────────┐    ┌──────────┐    ┌──────────┐    ┌───────────┐
- │ 1.Detekt│───►│2.Unit Tests│───►│3.Konsist│───►│4.Harmonize│───►│5.SwiftLint│───►│6.navint   │───►│7.iOS navi │───►│8.e2e-test│───►│9.iOS e2e │───►│10.Assembl│
- │  (lint) │    │  (Kotest)  │    │(Kt arch)│    │(iOS arch) │    │(iOS style)│    │  (emul.)  │    │  (sim.)   │    │ (device) │    │  (sim.)  │    │  (build) │
- └─────────┘    └────────────┘    └─────────┘    └───────────┘    └───────────┘    └───────────┘    └───────────┘    └──────────┘    └──────────┘    └───────────┘
-   ~15s            ~30s              ~10s            ~10s             ~5s             ~varies          ~varies         ~varies         ~varies          ~60s
-   Fix format     Fix logic        Fix structure   Fix iOS conv.   Fix iOS style   Fix nav flows    Fix iOS nav     Fix journeys    Fix iOS e2e      Fix compile
+  lint          unit          arch          ui-component   nav/int       e2e           build
+ ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐    ┌─────────┐   ┌─────────┐   ┌─────────┐
+ │1.Detekt │   │3.Kotest │   │5.Konsist│   │7.Androd │    │9.AndNvi │   │11.AndE2E│   │13.asmbl │
+ │2.SwiftL.│   │4.iOSUnit│   │6.Harmon.│   │8.iOSUI  │    │10.iOSNvi│   │12.iOSE2E│   │  every  │
+ └─────────┘   └─────────┘   └─────────┘   └─────────┘    └─────────┘   └─────────┘   └─────────┘
+   ~20s          ~60s          ~20s         ~varies        ~varies       ~varies        ~5min
+                                             (device)      (device)      (device)
 ```
 
-1. **Detekt** (lint): `./gradlew detektMetadataCommonMain`
-2. **Unit tests** (Kotest): `./gradlew testAndroidHostTest`
-3. **Konsist** (Kotlin architecture): `./gradlew :testing:architecture-check:test`
-4. **Harmonize** (iOS architecture): `swift test --package-path iosApp/ArchitectureCheck`
-5. **SwiftLint** (Swift style): `swiftlint --config .swiftlint.yml`
-6. **navint-tests** (navigation & integration, requires emulator): `./gradlew :testing:navint-tests:connectedAndroidDeviceTest`
-7. **iOS navint-tests** (iOS navigation & integration, requires simulator): `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'`
-8. **e2e-tests** (full user journeys, requires device/emulator): `./gradlew :testing:e2e-tests:connectedAndroidTest`
-9. **iOS e2e-tests** (iOS user journeys, requires simulator): `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'`
-10. **Assemble** (full build): `./gradlew assemble`
+1. **Detekt** (Kotlin lint): `./gradlew detektMetadataCommonMain`
+2. **SwiftLint** (Swift style): `swiftlint --config .swiftlint.yml`
+3. **Kotest** (Kotlin pure-logic unit tests, Android host — all shared logic): `./gradlew testAndroidHostTest`
+4. **iOS unit tests** (`UnitTests` test plan — Swift Testing pure-logic tests in `iosApp/iosAppTests/Unit/`, requires simulator): `xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'`
+5. **Konsist** (Kotlin architecture): `./gradlew :testing:architecture-check:test`
+6. **Harmonize** (iOS architecture): `swift test --package-path iosApp/ArchitectureCheck`
+7. **Android UI component tests** (Compose Robot pattern on per-feature presentation modules, requires emulator): `./gradlew connectedAndroidDeviceTest`
+8. **iOS UI component tests** (`UIComponentTests` test plan — ViewInspector Robot-pattern view tests in `iosApp/iosAppTests/UIComponent/`, requires simulator): `xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 16'`
+9. **Android navint-tests** (navigation & integration, requires emulator): `./gradlew :testing:navint-tests:connectedAndroidDeviceTest`
+10. **iOS navint-tests** (`NavIntTests` test plan, requires simulator): `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'`
+11. **Android e2e-tests** (full user journeys, requires device/emulator): `./gradlew :testing:e2e-tests:connectedAndroidTest`
+12. **iOS e2e-tests** (`E2ETests` test plan, requires simulator): `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'`
+13. **Assemble** (every target × every variant): `./gradlew assemble`
 
 ## Scoped Verification (verify-smart)
 
@@ -65,6 +143,10 @@ git diff --name-only                       # uncommitted changes on main
 | `features/{name}/api/domain/` | `:features:{name}:api:domain:testAndroidHostTest` |
 | `features/{name}/test/` | Run tests for modules that consume the fakes |
 | `core/{module}/` | `:core:{module}:testAndroidHostTest` |
+| `features/{name}/impl/presentation/src/androidMain/` or `androidDeviceTest/` | `:features:{name}:impl:presentation:connectedAndroidDeviceTest` (Android UI component tests, requires emulator) |
+| `iosApp/iosApp/Features/` | `xcodebuild test -scheme iOSApp -testPlan UIComponentTests ...` (iOS UI component tests = ViewInspector view tests, requires simulator) |
+| `iosApp/iosAppTests/UIComponent/` | `xcodebuild test -scheme iOSApp -testPlan UIComponentTests ...` (iOS UI component tests = ViewInspector view tests, requires simulator) |
+| `iosApp/iosAppTests/Unit/` | `xcodebuild test -scheme iOSApp -testPlan UnitTests ...` (iOS pure-logic unit tests, requires simulator) |
 | `testing/architecture-check/` | `:testing:architecture-check:test` |
 | `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` | `:testing:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
 | `testing/navint-tests/` | `:testing:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
@@ -77,13 +159,16 @@ git diff --name-only                       # uncommitted changes on main
 
 1. Always run `:testing:architecture-check:test` (fast, catches structural issues regardless of what changed).
 2. If Kotlin source files changed: run `detektMetadataCommonMain` + scoped unit tests.
-3. If Swift files changed: run `swift test --package-path iosApp/ArchitectureCheck` + `swiftlint --config .swiftlint.yml`.
-4. If `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` changed: run `./gradlew :testing:navint-tests:connectedAndroidDeviceTest` (requires emulator; flag for pre-merge if emulator unavailable).
-5. If `iosApp/iosApp/Circuit/` or `iosApp/iosAppTests/NavInt/` changed: run `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'` (requires simulator; flag for pre-merge if simulator unavailable).
-6. If `testing/e2e-tests/` changed: run `./gradlew :testing:e2e-tests:connectedAndroidTest` (requires device/emulator; flag for pre-merge if unavailable).
-7. If `iosApp/iosAppE2ETests/` changed: run `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'` (requires simulator; flag for pre-merge if unavailable).
-8. If `build.gradle.kts` or `settings.gradle.kts` changed: run `./gradlew assemble`.
-9. If only markdown/documentation changed: architecture tests only (step 1).
+3. If Swift files changed: run `swiftlint --config .swiftlint.yml` + `swift test --package-path iosApp/ArchitectureCheck`.
+4. If `features/{name}/impl/presentation/src/androidMain/` or `androidDeviceTest/` changed: run `./gradlew :features:{name}:impl:presentation:connectedAndroidDeviceTest` (Android UI component tests, requires emulator; flag for pre-merge if emulator unavailable).
+5. If `iosApp/iosApp/Features/` or `iosApp/iosAppTests/UIComponent/` changed: run `xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 16'` (iOS UI component tests = ViewInspector view tests, requires simulator; flag for pre-merge if simulator unavailable).
+5a. If `iosApp/iosAppTests/Unit/` changed: run `xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'` (iOS pure-logic unit tests, requires simulator).
+6. If `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` changed: run `./gradlew :testing:navint-tests:connectedAndroidDeviceTest` (requires emulator; flag for pre-merge if emulator unavailable).
+7. If `iosApp/iosApp/Circuit/` or `iosApp/iosAppTests/NavInt/` changed: run `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'` (requires simulator; flag for pre-merge if simulator unavailable).
+8. If `testing/e2e-tests/` changed: run `./gradlew :testing:e2e-tests:connectedAndroidTest` (requires device/emulator; flag for pre-merge if unavailable).
+9. If `iosApp/iosAppE2ETests/` changed: run `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'` (requires simulator; flag for pre-merge if unavailable).
+10. If `build.gradle.kts` or `settings.gradle.kts` changed: run `./gradlew assemble`.
+11. If only markdown/documentation changed: architecture tests only (step 1).
 
 ## Failure Interpretation
 
@@ -96,6 +181,20 @@ git diff --name-only                       # uncommitted changes on main
 - Reports: spec name + assertion message (e.g., `HomePresenterTest - Given content loaded - Then state has items`)
 - Failures indicate logic errors in implementation or test setup
 - Uses BehaviorSpec Given/When/Then structure
+
+### iOS Unit Tests (Swift Testing, pure-logic)
+- Reports: Swift Testing suite/test name + assertion detail
+- Failures indicate broken Swift-side pure logic (helpers, formatters, state transforms)
+- Test files live in `iosApp/iosAppTests/Unit/` and use `struct` with `@Test` functions (Swift Testing, not XCTest). No ViewInspector, no SwiftUI rendering.
+- Requires an iOS Simulator; run `xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'`
+- Currently holds a single `PlaceholderUnitTest` (`1 + 1 == 2`) until real Swift-side pure logic grows. Most business logic lives in KMP Kotlin and is covered by Kotest.
+
+### iOS UI Component Tests (Swift Testing + ViewInspector)
+- Reports: Swift Testing suite/test name + assertion detail
+- Failures indicate broken SwiftUI view rendering, state binding, or interaction handling
+- Test files in `iosApp/iosAppTests/UIComponent/` use `@Suite @MainActor struct` (Swift Testing) and the Robot pattern (`UiTest` → `UiRobot` → `StateRobot`)
+- Requires an iOS Simulator; run `xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 16'`
+- Uses ViewInspector to walk the SwiftUI view tree; check the matching view in `iosApp/iosApp/Features/`
 
 ### Konsist (Architecture Tests)
 - Reports: rule name + violating class/file path
@@ -147,32 +246,34 @@ git diff --name-only                       # uncommitted changes on main
 ```
 What changed?
   │
-  ├── Only Kotlin source ──► Detekt + Unit Tests + Konsist + Assemble
-  │     │                    (skip Harmonize, SwiftLint)
+  ├── Only Kotlin source ──► Detekt + Kotest + Konsist + Android debug build
+  │     │                    (skip SwiftLint, iOS unit tests, Harmonize, iOS debug build)
   │     └── presentation/ or api/navigation/ changed?
   │           └── Yes ──► also run navint-tests (requires emulator)
   │
-  ├── Only Swift source ──► Harmonize + SwiftLint
-  │     │                    (skip Detekt, Kotest, Konsist)
+  ├── Only Swift source ──► SwiftLint + iOS unit tests + Harmonize + iOS debug build
+  │     │                    (skip Detekt, Kotest, Konsist, Android debug build)
   │     └── iosApp/iosApp/Circuit/ or iosApp/iosAppTests/NavInt/ changed?
   │           └── Yes ──► also run iOS navint-tests (requires simulator)
   │
-  ├── Both Kotlin + Swift ──► Full pipeline (all 10 steps)
+  ├── Both Kotlin + Swift ──► Full local verify (all 8 steps)
   │
-  ├── Only tests changed ──► Detekt + Unit Tests + Konsist
-  │     │                    (skip Assemble — tests compile as part of test tasks)
+  ├── Only tests changed ──► Detekt + Kotest + Konsist (or SwiftLint + iOS unit tests + Harmonize)
+  │     │                    (skip debug builds — tests compile as part of test tasks)
   │     └── testing/navint-tests/ changed?
   │           └── Yes ──► run navint-tests (requires emulator)
   │
-  ├── Only build.gradle.kts / settings.gradle.kts ──► Konsist + Assemble
+  ├── Only build.gradle.kts / settings.gradle.kts ──► Konsist + `./gradlew assemble`
   │
   └── Only markdown / docs ──► Konsist only
                                (AgentDocumentationTest checks AGENTS.md files)
 ```
 
 Summary:
-- Only Kotlin changed: skip Harmonize and SwiftLint
-- Only Swift changed: skip Konsist, Detekt, and Kotlin unit tests; run iOS navint-tests if Circuit/ or NavInt/ changed
-- Only tests changed: skip `./gradlew assemble` (tests compile as part of test tasks)
+- Only Kotlin changed: skip SwiftLint, iOS unit tests, Harmonize, iOS debug build
+- Only Swift changed: skip Detekt, Kotest, Konsist, Android debug build; run iOS navint-tests if Circuit/ or NavInt/ changed
+- Only tests changed: skip debug builds (tests compile as part of test tasks)
 - Only documentation changed: run Konsist only (AgentDocumentationTest checks AGENTS.md files)
 - presentation/ or api/navigation/ changed: also run navint-tests on emulator (flag for pre-merge if unavailable)
+- `iosApp/iosApp/Features/` or `iosApp/iosAppTests/UIComponent/` changed: also run iOS UI component tests (requires simulator)
+- `iosApp/iosAppTests/Unit/` changed: also run iOS pure-logic unit tests (requires simulator)

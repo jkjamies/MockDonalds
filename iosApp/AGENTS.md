@@ -70,9 +70,10 @@ Tests are separately invokable via Xcode test plans:
 
 | Test Plan | Scope | Command |
 |-----------|-------|---------|
-| `AllTests` (default) | All unit + navint tests | `xcodebuild test -scheme iOSApp -testPlan AllTests` |
-| `UnitTests` | Feature ViewTests only | `xcodebuild test -scheme iOSApp -testPlan UnitTests` |
-| `NavIntTests` | Navigation + integration | `xcodebuild test -scheme iOSApp -testPlan NavIntTests` |
+| `AllTests` (default) | Every test in `iosAppTests` | `xcodebuild test -scheme iOSApp -testPlan AllTests` |
+| `UnitTests` | Pure-logic Swift Testing tests in `iosAppTests/Unit/` (PlaceholderUnitTest today; reserved for Swift-only helpers) | `xcodebuild test -scheme iOSApp -testPlan UnitTests` |
+| `UIComponentTests` | ViewInspector Robot-pattern view tests in `iosAppTests/UIComponent/` | `xcodebuild test -scheme iOSApp -testPlan UIComponentTests` |
+| `NavIntTests` | Navigation + integration tests in `iosAppTests/NavInt/` | `xcodebuild test -scheme iOSApp -testPlan NavIntTests` |
 | `E2ETests` | End-to-end journeys + benchmarks | `xcodebuild test -scheme iOSApp -testPlan E2ETests` |
 
 ## E2E Tests (XCUITest)

@@ -30,6 +30,7 @@ features/{name}/
 
 core/
   auth/                — AuthManager interface (api/) + InMemoryAuthManager (impl/)
+  build-config/        — Compile-time market/env config (BuildKonfig-backed AppBuildConfig facade; -Pmarket/-Penv)
   centerpost/          — CenterPostInteractor, CenterPostSubjectInteractor, CenterPostDispatchers
   circuit/             — TabScreen, ProtectedScreen, Parcelize expect/actual, CircuitProviders
   metro/               — AppGraph interface (shared DI contract)
@@ -112,17 +113,19 @@ api ← impl/presentation
 > Full details: [`.agents/standards/verification.md`](.agents/standards/verification.md)
 
 ```bash
-./gradlew detektMetadataCommonMain          # 1. Lint (Kotlin)
-swiftlint --config .swiftlint.yml           # 2. Lint (Swift)
-./gradlew testAndroidHostTest               # 3. Unit tests (Kotlin)
-xcodebuild test -scheme iOSApp -testPlan UnitTests -destination '...'  # 4. Unit tests (iOS, simulator)
-./gradlew :testing:architecture-check:test           # 5. Architecture enforcement (Konsist)
-swift test --package-path iosApp/ArchitectureCheck  # 6. iOS arch (Harmonize)
-./gradlew :testing:navint-tests:connectedAndroidDeviceTest  # 7. Android nav/int tests (emulator)
-xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination '...'  # 8. iOS nav/int tests (simulator)
-./gradlew :testing:e2e-tests:connectedAndroidTest   # 9. Android E2E tests (device/emulator)
-xcodebuild test -scheme iOSApp -testPlan E2ETests -destination '...'  # 10. iOS E2E tests (simulator)
-./gradlew assemble                          # 11. Full build
+./gradlew detektMetadataCommonMain                            # 1.  Lint (Kotlin)
+swiftlint --config .swiftlint.yml                             # 2.  Lint (Swift)
+./gradlew testAndroidHostTest                                 # 3.  Unit tests (Kotlin, host)
+xcodebuild test -scheme iOSApp -testPlan UnitTests -destination '...'           # 4.  Unit tests (iOS, simulator — pure-logic)
+./gradlew :testing:architecture-check:test                    # 5.  Architecture (Konsist)
+swift test --package-path iosApp/ArchitectureCheck            # 6.  Architecture (Harmonize)
+./gradlew connectedAndroidDeviceTest                          # 7.  UI component tests (Android, emulator)
+xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination '...'    # 8.  UI component tests (iOS, simulator — ViewInspector)
+./gradlew :testing:navint-tests:connectedAndroidDeviceTest    # 9.  Nav/int tests (Android, emulator)
+xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination '...'         # 10. Nav/int tests (iOS, simulator)
+./gradlew :testing:e2e-tests:connectedAndroidTest             # 11. E2E tests (Android, device/emulator)
+xcodebuild test -scheme iOSApp -testPlan E2ETests -destination '...'            # 12. E2E tests (iOS, simulator)
+./gradlew assemble                                            # 13. Full build
 ```
 
 ## Convention Plugins
@@ -154,6 +157,10 @@ Available automation in `.agents/skills/`:
 | `add-screen` | Add a new screen to an existing feature (9+ files) |
 | `add-use-case` | Add interactor (abstract + impl + fake + test) |
 | `add-repository` | Add repository (interface + impl + test) |
+| `add-config-field` | Add a compile-time field to `core:build-config` (Defaults + every combo + facade + smoke test) |
+| `validate-all-markets` | Gradle task on `:core:build-config`: parse every `markets/*.properties` against `Defaults.properties`, enforce schema/format rules. Pre-flight gate for `verify` and `verify-ci`. |
+| `lint-branch` | Fast pre-commit lint: Detekt on commonMain + SwiftLint on changed `.swift` files only. ~5s. For thorough diff-scoped checks, use `verify-smart`. |
+| `find-dead-code` | Surface unused Kotlin declarations (full Detekt across all source sets) + dead TestTags / Screens / Fakes via targeted greps. Reports only; never deletes. |
 
 ## Standards Reference
 
@@ -179,6 +186,7 @@ Detailed reference documents in `.agents/standards/`:
 | [design-system.md](.agents/standards/design-system.md) | Theme, colors, tokens, adaptive layout, landscape |
 | [convention-plugins.md](.agents/standards/convention-plugins.md) | Plugin hierarchy, what each plugin provides, auto-wiring |
 | [feature-scaffolding.md](.agents/standards/feature-scaffolding.md) | Step-by-step guide to add a new feature, checklist |
+| [build-config.md](.agents/standards/build-config.md) | Compile-time market/env config (`core:build-config`): BuildKonfig schema, `AppBuildConfig` facade, Harness boundary, add-a-field workflow |
 
 ## Self-Updating Documentation
 

@@ -5,89 +5,42 @@ description: Fast local verification pipeline — lint, unit tests, architecture
 
 # Verify
 
-Prove the code is correct and compiles on both platforms. Fast, local, no market matrix, no release variants.
+Prove the code you just wrote is correct and compiles on both platforms, fast. No market matrix, no release variants, no device/simulator-only tests.
 
 Target runtime: under ~60s warm, under ~2 min cold.
 
-See `.agents/standards/verification.md` for the full local-vs-CI rationale and what the slower CI pipeline covers on top of this. For the full pre-merge pipeline (every target, every variant, every market combo), use the `verify-ci` skill.
+**The authoritative command list, rationale, and failure interpretation live in `.agents/standards/verification.md`** — specifically the "Local (the `verify` skill)" section and "Failure Interpretation". This skill is a thin driver; keep the standard as the single source of truth.
+
+For the full pre-merge pipeline (every target, every variant, every market combo), use the `verify-ci` skill. For diff-scoped runs during iterative work, use `verify-smart`.
 
 ## Parameters
 
 - `market` (optional, default `us`) — which market to build (`us`, `de`, ...).
 - `env` (optional, default `dev`) — which env to build (`dev`, `prod`, ...).
 
-If the user says something like "verify with de/prod" or "verify market=de", use those values for steps 6 and 7. Otherwise build `us-dev`. This lets someone who's specifically iterating on a market change prove that one combo without running the whole matrix — and everyone else stays on the fast default.
+If the user says "verify with de/prod" or "verify market=de", use those values for the per-platform debug builds. Otherwise build `us-dev`. Lets someone iterating on a market change prove that one combo without running the whole matrix.
 
-The iOS configuration name is `{MARKET-uppercase}-{Env-titlecase}` — `us` + `dev` → `US-Dev`, `de` + `prod` → `DE-Prod`.
+iOS configuration name is `{MARKET-uppercase}-{Env-titlecase}` — `us` + `dev` → `US-Dev`, `de` + `prod` → `DE-Prod`.
 
 ## Steps
 
-Run in order. Stop and fix failures before proceeding.
+Run the steps listed in `.agents/standards/verification.md` → "Local (the `verify` skill)" section, in order. Stop and fix failures before proceeding.
 
-### 1. Detekt (Kotlin lint)
-```bash
-./gradlew detektMetadataCommonMain
-```
+Summary (see the standard for exact commands — pre-flight market-config check, then symmetric lint → unit → architecture → build across both platforms):
 
-### 2. Unit Tests (Kotest)
-```bash
-./gradlew testAndroidHostTest
-```
+0. **Pre-flight: `./gradlew :core:build-config:validateAllMarkets`** — owned by the `validate-all-markets` skill. Runs first because malformed combo files invalidate every downstream step.
 
-### 3. Konsist (Kotlin architecture)
-```bash
-./gradlew :testing:architecture-check:test
-```
+1. Detekt — Kotlin lint
+2. SwiftLint — Swift style
+3. Kotest — Kotlin pure-logic unit tests (Android host)
+4. iOS unit tests — Swift Testing pure-logic, `UnitTests` plan, `iosAppTests/Unit/` (requires simulator)
+5. Konsist — Kotlin architecture
+6. Harmonize — iOS architecture
+7. Android debug build for `$MARKET-$ENV`
+8. iOS debug build for `$MARKET-$ENV` on simulator-arm64
 
-### 4. Harmonize (iOS architecture)
-```bash
-swift test --package-path iosApp/ArchitectureCheck
-```
+UI component tests (Android `connectedAndroidDeviceTest`, iOS `UIComponentTests` plan) are **not** in local verify — they need a device/simulator and belong to `verify-ci`.
 
-### 5. SwiftLint (iOS style)
-```bash
-swiftlint --config .swiftlint.yml
-```
+## When to escalate
 
-### 6. Android debug build
-```bash
-./gradlew :androidApp:assembleDebug -Pmarket=$MARKET -Penv=$ENV
-```
-
-Builds one combo, one build type. Default `us-dev`. Proves the shared Kotlin compiles for Android and the app links. No market matrix — this is only the combo the user asked about (or the default).
-
-### 7. iOS debug build (simulator-arm64 only)
-```bash
-xcodebuild build \
-  -scheme iOSApp \
-  -configuration ${MARKET_UPPER}-${ENV_TITLE} \
-  -destination 'platform=iOS Simulator,name=iPhone 16' \
-  -sdk iphonesimulator \
-  | tail -20
-```
-
-Simulator-arm64 only. Skips `iosArm64` (device) and `iosX64` (legacy Intel sim) — those are CI's job. Configuration name is derived from the parameters: `us` + `dev` → `US-Dev`, `de` + `prod` → `DE-Prod`, etc.
-
-## What this skill deliberately does NOT run
-
-- `./gradlew assemble` — 5+ minutes, builds every target × every variant on every module.
-- Market matrix — building every combo separately.
-- Release builds — R8/minify on Android, LLVM-opt on iOS.
-- `iosArm64` (device target) and `iosX64` (Intel sim).
-- Navint tests, E2E tests — they need a running device/sim/emulator and are slow. Run them when the change warrants it (navigation, Circuit wiring, journey flows).
-
-All of the above belong in CI. Pay that cost once per PR, not once per save. If you need the full pipeline locally, invoke `verify-ci` instead.
-
-## When to escalate to verify-ci locally
-
-Only when the change specifically touches:
-- R8/Proguard keep-rules → `./gradlew :androidApp:assembleRelease`
-- `expect`/`actual` source-set splits → build both platforms explicitly
-- cinterop definitions or `.def` files → build `iosArm64` too
-- Market config schema or combo files → build a second combo (`-Pmarket=de -Penv=prod`), not the whole matrix
-
-For anything else, the 7 steps above are enough.
-
-## Interpreting Failures
-
-See `.agents/standards/verification.md` — "Failure Interpretation" section — for the full list of failure modes and how to diagnose each tool's output.
+See `.agents/standards/verification.md` → "When to escalate to verify-ci locally" for the short list of changes that warrant the full pipeline (R8/Proguard, `expect`/`actual` splits, cinterop, market config schema).

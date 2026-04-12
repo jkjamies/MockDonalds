@@ -17,6 +17,9 @@ class IosApp {
 
     val circuit: Circuit get() = graph.circuit
 
+    val market: String get() = graph.appBuildConfig.market
+    val env: String get() = graph.appBuildConfig.env
+
     private val bridgeNavigator = BridgeNavigator()
 
     private val interceptingNavigator = InterceptingNavigator(

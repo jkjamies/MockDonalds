@@ -5,114 +5,29 @@ description: Diff-aware verification that scopes checks to changed modules. Fast
 
 # Verify Smart
 
-Scoped verification based on what actually changed. Faster than full `verify` but still catches architecture violations.
+Scoped verification based on what actually changed on the current branch. Faster than `verify` when you've only touched 1–2 modules, but still catches architecture violations.
+
+**The authoritative module-to-Gradle-task mapping, decision logic, and failure interpretation live in `.agents/standards/verification.md` → "Scoped Verification (verify-smart)".** This skill is a thin driver; keep the standard as the single source of truth.
+
+## When to use
+
+- During iterative development when `verify` is too slow.
+- After targeted changes to 1–2 features or modules.
+- For documentation-only changes (architecture tests catch stale AGENTS.md references).
+
+For broader validation, use `verify`. For pre-merge / pre-PR, use `verify-ci`.
 
 ## Steps
 
-### 1. Detect Changed Files
+1. Detect changed files:
+   ```bash
+   git diff origin/main...HEAD --name-only    # branch changes
+   git diff --name-only                        # uncommitted on main
+   ```
+2. Look up each changed path in the "Module-to-Gradle-Task Mapping" table in `.agents/standards/verification.md`.
+3. Apply the "verify-smart Decision Logic" section of the same standard to choose which steps to run.
+4. Always run `:testing:architecture-check:test` (fast, catches structural issues regardless of what changed).
 
-```bash
-git diff origin/main...HEAD --name-only
-```
+## Escalation
 
-If on `main` with uncommitted changes:
-```bash
-git diff --name-only
-```
-
-### 2. Lint
-
-**If Kotlin source files changed:**
-```bash
-./gradlew detektMetadataCommonMain
-```
-
-**If Swift files changed:**
-```bash
-swiftlint --config .swiftlint.yml
-```
-
-### 3. Unit Tests (Kotlin)
-
-Scope unit tests to affected modules:
-```bash
-# If features/home/ changed:
-./gradlew :features:home:impl:domain:testAndroidHostTest
-./gradlew :features:home:impl:data:testAndroidHostTest
-./gradlew :features:home:impl:presentation:testAndroidHostTest
-
-# If core/centerpost/ changed:
-./gradlew :core:centerpost:testAndroidHostTest
-```
-
-### 3b. Unit Tests (iOS — if Swift view files changed)
-
-**If `iosApp/iosApp/Features/` or `iosApp/iosAppTests/{Feature}/` changed:**
-```bash
-xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'
-```
-Requires simulator. Runs 42 iOS ViewTests with ViewInspector Robot pattern.
-
-### 4. Architecture Tests
-
-Always run — these are fast and catch structural issues regardless of what changed:
-
-```bash
-./gradlew :testing:architecture-check:test
-swift test --package-path iosApp/ArchitectureCheck
-```
-
-### 5. Navigation & Integration Tests (if presentation or navigation changed)
-
-**If `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` changed:**
-```bash
-./gradlew :testing:navint-tests:connectedAndroidDeviceTest
-```
-Requires a connected Android emulator. Tests use real Circuit presenters with a fake data layer. Skip if no emulator is available but flag that navint-tests should be run before merge.
-
-### 6. iOS Navigation & Integration Tests (if Swift navigation files changed)
-
-**If `iosApp/iosApp/Circuit/` or `iosApp/iosAppTests/NavInt/` changed:**
-```bash
-xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'
-```
-Requires an iOS Simulator. Tests exercise `NavigationStateManager` state transitions, tab switching, deep links, and auth flows. Skip if no simulator is available but flag that iOS navint-tests should be run before merge.
-
-### 7. Build (if build files changed)
-
-**If build.gradle.kts or settings.gradle.kts changed:**
-
-```bash
-./gradlew assemble
-```
-
-**If only markdown/documentation changed:**
-
-No verification needed beyond architecture tests (which already ran in step 4).
-
-### Module Mapping Reference
-
-| Path Pattern | Module | Unit Test Task |
-|-------------|--------|----------------|
-| `features/{name}/impl/domain/` | impl:domain | `:features:{name}:impl:domain:testAndroidHostTest` |
-| `features/{name}/impl/data/` | impl:data | `:features:{name}:impl:data:testAndroidHostTest` |
-| `features/{name}/impl/presentation/` | impl:presentation | `:features:{name}:impl:presentation:testAndroidHostTest` |
-| `features/{name}/api/` | api | `:features:{name}:api:domain:testAndroidHostTest` |
-| `features/{name}/test/` | test fakes | Run tests for modules that use the fakes |
-| `core/{module}/` | core module | `:core:{module}:testAndroidHostTest` |
-| `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` | navint-tests | `:testing:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
-| `testing/navint-tests/` | navint-tests | `:testing:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
-| `iosApp/iosApp/Features/` | iOS unit tests | `xcodebuild test -scheme iOSApp -testPlan UnitTests ...` (requires simulator) |
-| `iosApp/iosAppTests/{Feature}/` | iOS unit tests | `xcodebuild test -scheme iOSApp -testPlan UnitTests ...` (requires simulator) |
-| `iosApp/iosApp/Circuit/` | iOS navint-tests | `xcodebuild test -scheme iOSApp -testPlan NavIntTests ...` (requires simulator) |
-| `iosApp/iosAppTests/NavInt/` | iOS navint-tests | `xcodebuild test -scheme iOSApp -testPlan NavIntTests ...` (requires simulator) |
-| `testing/e2e-tests/` | e2e-tests | `:testing:e2e-tests:connectedAndroidTest` (requires device/emulator) |
-| `iosApp/iosAppE2ETests/` | iOS e2e-tests | `xcodebuild test -scheme iOSApp -testPlan E2ETests ...` (requires simulator) |
-
-## When to Use
-
-- After targeted changes to 1-2 features or modules
-- During iterative development when full verify is too slow
-- For documentation-only changes (architecture tests catch stale references)
-
-For comprehensive validation (pre-merge, post-scaffolding), use `verify` instead.
+If `verify-smart` passes but the change touches anything in `.agents/standards/verification.md` → "When to escalate to verify-ci locally" (R8/Proguard, `expect`/`actual`, cinterop, `core:build-config` schema), run `verify-ci` before merging.

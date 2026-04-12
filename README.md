@@ -15,6 +15,7 @@ A Kotlin Multiplatform (KMP) reference app showcasing a clean, scalable architec
 | [KMP-NativeCoroutines](https://github.com/rickclephas/KMP-NativeCoroutines) | 1.0.2 | Bridges Kotlin `StateFlow` to Swift `AsyncSequence` |
 | [Coil](https://coil-kt.github.io/coil/) | 3.1.0 | Image loading (Compose) |
 | [Ktor](https://ktor.io/) | 3.1.1 | HTTP client (KMP) |
+| [BuildKonfig](https://github.com/yshrsmz/BuildKonfig) | — | Compile-time `AppBuildConfig` generation for market/env variants |
 | [Kotest](https://kotest.io/) | 6.1.11 | Test framework (BehaviorSpec, assertions, KMP) |
 | [Turbine](https://github.com/cashapp/turbine) | 1.2.0 | Flow testing |
 | [Circuit Test](https://slackhq.github.io/circuit/) | 0.33.1 | Presenter testing (`presenterTestOf`, `FakeNavigator`) |
@@ -54,7 +55,18 @@ features/{name}/
   test/                — Fakes for testing
 ```
 
-Core modules: `auth`, `centerpost`, `circuit`, `metro`, `network`, `theme`, `test-fixtures`
+Core modules: `auth`, `build-config`, `centerpost`, `circuit`, `metro`, `network`, `theme`, `test-fixtures`
+
+### Compile-Time Market & Environment Variants
+
+`core:build-config` exposes a typed `AppBuildConfig` facade backed by [BuildKonfig](https://github.com/yshrsmz/BuildKonfig). Per-build inputs live in `core/build-config/src/commonMain/buildkonfig/markets/{market}.properties` (merged over `Defaults.properties`) and are selected at build time via `-Pmarket=` / `-Penv=` Gradle properties. Android's `applicationId` is derived per market (`com.mockdonalds.app.{market}`); iOS uses per-combo xcconfigs (`US-Dev`, `US-Prod`, `DE-Dev`, `DE-Prod`) driving `PRODUCT_BUNDLE_IDENTIFIER` from the `MARKET` variable.
+
+```bash
+./gradlew :androidApp:assembleDebug                                 # Default us/dev
+./gradlew :androidApp:assembleRelease -Pmarket=de -Penv=prod        # Germany production build
+```
+
+See [`.agents/standards/build-config.md`](.agents/standards/build-config.md) for the full schema, Harness boundary, and "adding a field" workflow. Runtime feature flags / kill switches / experiments belong in Harness, **not** here.
 
 Features: `home`, `login`, `more`, `order`, `profile`, `rewards`, `scan`
 
@@ -84,28 +96,38 @@ The Xcode project includes a "Compile Kotlin Framework" build phase that runs th
 
 | Command | Scope | Notes |
 |---------|-------|-------|
-| `./gradlew testAndroidHostTest` | All Android unit tests (JVM) | Fast, primary CI gate |
-| `./gradlew iosSimulatorArm64Test` | All iOS unit tests (K/Native) | Fast |
-| `./gradlew :testing:architecture-check:test` | Architecture enforcement (Konsist) | Runs separately from unit tests |
-| `swift test --package-path iosApp/ArchitectureCheck` | iOS architecture (Harmonize) | Runs separately |
-| `./gradlew connectedAndroidDeviceTest` | Android UI tests (emulator) | Requires device/emulator |
-| `./gradlew :features:{name}:impl:presentation:connectedAndroidDeviceTest` | Single feature UI tests | Faster for targeted testing |
-| `./gradlew allTests` | All targets (Android + iOS) | Full suite |
+| `./gradlew testAndroidHostTest` | Kotlin pure-logic unit tests (JVM host) | Fast, primary CI gate — all shared KMP logic |
+| `xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'` | iOS pure-logic unit tests (Swift Testing, `iosAppTests/Unit/`) | Simulator required |
+| `./gradlew connectedAndroidDeviceTest` | Android UI component tests (Compose Robot pattern) | Emulator required |
+| `xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 16'` | iOS UI component tests (ViewInspector Robot, `iosAppTests/UIComponent/`) | Simulator required |
+| `./gradlew :testing:navint-tests:connectedAndroidDeviceTest` | Android navigation & integration tests | Emulator required |
+| `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'` | iOS navigation & integration tests | Simulator required |
+| `./gradlew :testing:e2e-tests:connectedAndroidTest` | Android E2E journey + benchmark tests | Device/emulator required |
+| `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'` | iOS E2E journey + benchmark tests | Simulator required |
+| `./gradlew :testing:architecture-check:test` | Kotlin architecture (Konsist) | Host, runs separately from unit tests |
+| `swift test --package-path iosApp/ArchitectureCheck` | iOS architecture (Harmonize) | Host, runs separately |
+| `./gradlew :features:{name}:impl:presentation:connectedAndroidDeviceTest` | Single-feature Android UI component tests | Faster for targeted iteration |
 | `./gradlew detektMetadataCommonMain` | Kotlin linting (detekt + ktlint) | `--auto-correct` for fixable violations |
 | `swiftlint --config .swiftlint.yml` | Swift linting | `--fix` for auto-corrections |
 
 ### Verification Pipeline
 
-After any code change, run in order:
+Two shapes — full details in [`.agents/standards/verification.md`](.agents/standards/verification.md).
+
+**Local (fast inner loop, ~2 min cold)** — lint + pure-logic unit tests + architecture + one debug build per platform. Run after every iteration:
 
 ```bash
-./gradlew detektMetadataCommonMain                    # 1. Kotlin lint
-swiftlint --config .swiftlint.yml                     # 2. Swift lint
-./gradlew testAndroidHostTest                         # 3. Unit tests
-./gradlew :testing:architecture-check:test                    # 4. Konsist
-swift test --package-path iosApp/ArchitectureCheck    # 5. Harmonize
-./gradlew assemble                                    # 6. Full build
+./gradlew detektMetadataCommonMain                                                              # 1. Detekt (Kotlin lint)
+swiftlint --config .swiftlint.yml                                                               # 2. SwiftLint
+./gradlew testAndroidHostTest                                                                   # 3. Kotest (Kotlin unit, host)
+xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'        # 4. iOS unit (Swift Testing, pure-logic)
+./gradlew :testing:architecture-check:test                                                      # 5. Konsist (Kotlin arch)
+swift test --package-path iosApp/ArchitectureCheck                                              # 6. Harmonize (iOS arch)
+./gradlew :androidApp:assembleDebug                                                             # 7. Android debug build (one combo)
+xcodebuild build -scheme iOSApp -configuration US-Dev -destination 'platform=iOS Simulator,name=iPhone 16'     # 8. iOS debug build
 ```
+
+**Pre-merge / CI (thorough, ~5+ min)** — adds UI component, navint, and e2e test levels on both platforms plus a full `./gradlew assemble` across every market × env. See [`verification.md`](.agents/standards/verification.md) → "Full Pipeline (CI)" for the 13-step list. Use the `verify-ci` skill to run it locally.
 
 ### Test Framework
 
@@ -127,8 +149,9 @@ All test dependencies are provided automatically by convention plugins — no pe
 
 - **Unit tests** (commonTest): Kotest BehaviorSpec + fakes + `TestCenterPostDispatchers`
 - **Presenter tests**: `presenterTestOf` + `FakeNavigator` + fake use cases + Turbine
-- **UI tests** (androidDeviceTest): Robot pattern — `UiTest` → `UiRobot` → `StateRobot`
-- **iOS view tests** (iosAppTests): Swift Testing + ViewInspector — `ViewTest` → `ViewRobot` → `StateRobot`
+- **UI component tests** (Android, `impl/presentation/androidDeviceTest/`): Robot pattern — `UiTest` → `UiRobot` → `StateRobot`
+- **UI component tests** (iOS, `iosAppTests/UIComponent/`): Swift Testing + ViewInspector — `ViewTest` → `ViewRobot` → `StateRobot`
+- **iOS pure-logic unit tests** (`iosAppTests/Unit/`): Swift Testing, no ViewInspector — reserved for Swift-only helpers as iOS-side code grows
 - **Architecture tests**: Konsist (Kotlin) + Harmonize (Swift) — enforce conventions statically
 - **Fakes over mocks**: `mockk` is banned; fakes live in `features/{name}/test/src/commonMain/`
 
@@ -192,7 +215,7 @@ xcodebuild build -project iosApp/iosApp.xcodeproj -target iosApp \
 This codebase is fully agentic — AI agents discover conventions, scaffold features, review code, and fill test gaps via standardized files:
 
 - **`AGENTS.md`** files in every module provide JIT context (architecture rules, naming, DI, testing standards)
-- **`.agents/skills/`** directory contains 14 automation skills (verify, test, scaffold, review)
+- **`.agents/skills/`** directory contains 16 automation skills (verify, test, scaffold, review, config)
 - **`.gemini/settings.json`** configures Gemini CLI to discover `AGENTS.md` files automatically
 - **Konsist enforces** that all features, core modules, and skills have their agentic files
 

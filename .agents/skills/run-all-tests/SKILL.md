@@ -1,71 +1,91 @@
 ---
 name: run-all-tests
-description: Run lint, unit tests, and architecture tests (excludes UI tests and navint-tests which require a device). Use as a quick full check after code changes.
+description: Run the full test pipeline (lint + all 5 test levels on both platforms). Mirrors the CI pipeline in verification.md minus the final `./gradlew assemble` step. Device/simulator/emulator required for steps 4+.
 ---
 
 # Run All Tests
 
-Runs lint, unit tests, and architecture tests sequentially. Does NOT include Android UI tests or navigation/integration tests (those require a connected device — use `run-ui-tests` or `:testing:navint-tests:connectedAndroidDeviceTest` separately).
+Runs every test step from `verification.md` → "Full Pipeline (CI)", in order, on both platforms. Stop and fix failures before proceeding to the next step. The only thing this skill omits from the full CI pipeline is the final `./gradlew assemble` — use the `verify-ci` skill if you need that too.
+
+For a fast local inner loop that skips device-gated steps, use the `verify` skill. For diff-scoped runs, use `verify-smart`.
+
+## Prerequisites
+
+- Steps 1–6 run on host only (no device required).
+- Step 4 (iOS unit tests) needs an iOS Simulator.
+- Steps 7–12 need either a connected Android emulator/device or an iOS Simulator depending on platform. Skip individual steps if the required host is unavailable; flag them for pre-merge.
 
 ## Steps
 
-Run in order. Stop and fix any failures before proceeding.
-
-### 1. Lint — Detekt
+### 1. Detekt (Kotlin lint)
 ```bash
 ./gradlew detektMetadataCommonMain
 ```
 
-### 2. Lint — SwiftLint
+### 2. SwiftLint (Swift style)
 ```bash
 swiftlint --config .swiftlint.yml
 ```
 
-### 3. Unit Tests (Kotlin)
+### 3. Kotest (Kotlin pure-logic unit tests, Android host)
 ```bash
 ./gradlew testAndroidHostTest
 ```
 
-### 4. Unit Tests (iOS — requires simulator)
+### 4. iOS unit tests (Swift Testing, pure-logic — requires simulator)
 ```bash
 xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'
 ```
-Runs 42 iOS unit tests (ViewTests with ViewInspector Robot pattern). Requires simulator. Skip if no simulator is available.
+Runs the `UnitTests` test plan (`iosApp/iosAppTests/Unit/`). Currently a single `PlaceholderUnitTest`; real iOS-side pure-logic tests drop into that directory without any plumbing work.
 
-### 5. Architecture Tests (Konsist)
+### 5. Konsist (Kotlin architecture)
 ```bash
 ./gradlew :testing:architecture-check:test
 ```
 
-### 6. Architecture Tests (iOS — Harmonize)
+### 6. Harmonize (iOS architecture)
 ```bash
 swift test --package-path iosApp/ArchitectureCheck
 ```
 
-### 7. Navigation & Integration Tests (requires emulator — optional)
+### 7. Android UI component tests (requires emulator)
+```bash
+./gradlew connectedAndroidDeviceTest
+```
+Compose Robot-pattern tests on per-feature presentation modules. Skip if no emulator is available.
+
+### 8. iOS UI component tests (ViewInspector, requires simulator)
+```bash
+xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 16'
+```
+Runs the `UIComponentTests` test plan (`iosApp/iosAppTests/UIComponent/` — ViewInspector Robot pattern, same conceptual level as Android Compose UI component tests). Skip if no simulator is available.
+
+### 9. Android navint-tests (requires emulator)
 ```bash
 ./gradlew :testing:navint-tests:connectedAndroidDeviceTest
 ```
-Requires a connected Android emulator. Run this step when presentation or navigation modules have changed. Tests use real Circuit presenters with a fake data layer and JUnit4 `@RunWith(AndroidJUnit4::class)`. Skip if no emulator is available.
+Navigation & integration tests using real Circuit presenters + fake data layer. Skip if no emulator is available.
 
-### 8. iOS Navigation & Integration Tests (requires simulator — optional)
+### 10. iOS navint-tests (requires simulator)
 ```bash
 xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'
 ```
-Requires an iOS Simulator. Run this step when Swift navigation files have changed (`iosApp/iosApp/Circuit/` or `iosApp/iosAppTests/NavInt/`). Tests use Swift Testing and exercise `NavigationStateManager` state transitions, tab switching, deep links, and auth flows. Skip if no simulator is available.
+Swift Testing navigation state transitions, tab switching, deep links, auth flows. Skip if no simulator is available.
 
-### 9. E2E Tests (requires device/emulator — optional)
+### 11. Android e2e-tests (requires device/emulator)
 ```bash
 ./gradlew :testing:e2e-tests:connectedAndroidTest
 ```
-Requires a connected Android device/emulator. Runs full user journey tests and startup benchmarks against the real app via UI Automator. Journey tests end with `JourneyTest`, benchmarks end with `Benchmark`. Skip if no device/emulator is available.
+Full user journeys + startup benchmarks via UI Automator. Skip if no device/emulator is available.
 
-### 10. iOS E2E Tests (requires simulator — optional)
+### 12. iOS e2e-tests (requires simulator)
 ```bash
 xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'
 ```
-Requires an iOS Simulator. Runs process-isolated XCUITest journey tests and startup benchmarks against the real iOS app. Journey tests end with `JourneyTest`, benchmarks end with `PerformanceTest`. Skip if no simulator is available.
+Process-isolated XCUITest journey tests + startup benchmarks. Skip if no simulator is available.
 
 ## When to Use
 
-After any code changes as a quick validation before committing. For a more thorough check that includes the build step, use the `verify` skill instead. Navigation/integration tests (step 6) require an emulator and are optional during local development but should be run before merging changes to presentation or navigation modules.
+- Before opening a PR as a thorough pre-merge check when you don't also need `./gradlew assemble`.
+- When validating that every test level passes on a specific change.
+- For just the fast inner loop, prefer the `verify` skill instead.

@@ -18,7 +18,7 @@ UI component tests verify individual screen rendering and user interactions usin
 ./gradlew connectedAndroidDeviceTest                                      # All features
 
 # iOS UI tests (requires simulator)
-xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'
+xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 16'
 ```
 
 ## Android Robot Pattern
@@ -167,7 +167,8 @@ File structure:
 ```
 iosApp/
 ├── iosAppTests/
-│   ├── Unit/
+│   ├── Unit/                              # Swift Testing pure-logic tests (PlaceholderUnitTest today)
+│   ├── UIComponent/                       # ViewInspector Robot-pattern view tests (UIComponentTests plan)
 │   │   ├── {Feature}/
 │   │   │   ├── {Feature}StateRobot.swift  # State construction with event capture
 │   │   │   ├── {Feature}ViewRobot.swift   # ViewInspector assertions + view creation (@MainActor)

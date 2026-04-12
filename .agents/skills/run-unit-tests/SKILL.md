@@ -1,13 +1,15 @@
 ---
 name: run-unit-tests
-description: Run unit tests for Kotlin (Kotest) and iOS (Swift Testing + ViewInspector). Use to validate logic and UI changes.
+description: Run pure-logic unit tests — Kotlin (Kotest on JVM host) and Swift (Swift Testing in iosAppTests/Unit/). Use to validate non-UI logic changes. For iOS view tests, use run-ui-tests instead.
 ---
 
 # Run Unit Tests
 
 ## When to Use
 
-After modifying any Kotlin source files in `impl/domain`, `impl/data`, or `impl/presentation` modules, or Swift view files in `iosApp/iosApp/Features/`.
+After modifying any Kotlin source files in `impl/domain`, `impl/data`, or `impl/presentation` modules, or Swift pure-logic files (helpers, formatters, `NavigationStateManager` state transforms) in `iosApp/iosApp/`.
+
+**Not for iOS view tests** — those live in `iosApp/iosAppTests/UIComponent/` and are run via the `run-ui-tests` skill against the `UIComponentTests` test plan.
 
 ## Run All Unit Tests
 
@@ -16,11 +18,11 @@ After modifying any Kotlin source files in `impl/domain`, `impl/data`, or `impl/
 ./gradlew testAndroidHostTest
 ```
 
-### iOS (requires simulator)
+### iOS pure-logic (requires simulator)
 ```bash
 xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'
 ```
-Runs 42 iOS unit tests (ViewTests with ViewInspector Robot pattern).
+Runs the Swift Testing tests in `iosApp/iosAppTests/Unit/`. Currently holds a single `PlaceholderUnitTest` (`1 + 1 == 2`) — the plumbing is wired so real iOS-side pure-logic tests drop into that directory without any build-system work. Most business logic lives in KMP Kotlin and is covered by Kotest above.
 
 ## Run Tests for a Specific Feature
 

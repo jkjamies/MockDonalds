@@ -86,13 +86,14 @@ xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS 
 
 ### Test Plans
 
-Three Xcode test plans organize all 66 iOS tests:
+Four Xcode test plans organize iOS tests by level:
 
-| Test Plan | Tests | Scope |
-|-----------|-------|-------|
-| `AllTests.xctestplan` | 66 | Default — runs all unit + navint tests |
-| `UnitTests.xctestplan` | 42 | Component-level tests (ViewTest, StateRobot-based) |
-| `NavIntTests.xctestplan` | 24 | Navigation & integration tests only |
+| Test Plan | Scope |
+|-----------|-------|
+| `AllTests.xctestplan` | Default — runs every test in `iosAppTests` |
+| `UnitTests.xctestplan` | Pure-logic Swift Testing tests in `iosAppTests/Unit/` (PlaceholderUnitTest today; reserved for Swift-only helpers) |
+| `UIComponentTests.xctestplan` | ViewInspector Robot-pattern view tests in `iosAppTests/UIComponent/` (feature ViewTests) |
+| `NavIntTests.xctestplan` | Navigation & integration tests in `iosAppTests/NavInt/` |
 
 ### Test Suites
 

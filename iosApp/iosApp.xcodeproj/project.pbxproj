@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FF100003FFFF000000000003 /* PlaceholderUnitTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF100002FFFF000000000002 /* PlaceholderUnitTest.swift */; };
 		0B9261D306E8E87AD74C059C /* HomeViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE6929F479ACC98EB6607900 /* HomeViewTest.swift */; };
 		1A615F2852C7AA7D40C278AB /* OrderViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D1D15903213C7D13E2ED8DE /* OrderViewTest.swift */; };
 		2736A061DCC173B812508CC4 /* RewardsViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8CF74CB8120042F7576C84 /* RewardsViewRobot.swift */; };
@@ -114,6 +115,7 @@
 		F6173708533DBC5267F31A2C /* MoreViewTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MoreViewTest.swift; sourceTree = "<group>"; };
 		FDBDC98EE92C1069DBBF31E0 /* MoreStateRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MoreStateRobot.swift; sourceTree = "<group>"; };
 		FE6929F479ACC98EB6607900 /* HomeViewTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HomeViewTest.swift; sourceTree = "<group>"; };
+		FF100002FFFF000000000002 /* PlaceholderUnitTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlaceholderUnitTest.swift; sourceTree = "<group>"; };
 		AA100001AAAA000000000001 /* CircuitNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircuitNavigator.swift; sourceTree = "<group>"; };
 		AA100002AAAA000000000002 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		BB100001BBBB000000000001 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
@@ -183,13 +185,22 @@
 		18552AC73484C61F68B7E387 /* iosAppTests */ = {
 			isa = PBXGroup;
 			children = (
-				EE200001EEEE000000000001 /* Unit */,
+				FF100001FFFF000000000001 /* Unit */,
+				EE200001EEEE000000000001 /* UIComponent */,
 				DD100006DDDD000000000006 /* NavInt */,
 			);
 			path = iosAppTests;
 			sourceTree = "<group>";
 		};
-		EE200001EEEE000000000001 /* Unit */ = {
+		FF100001FFFF000000000001 /* Unit */ = {
+			isa = PBXGroup;
+			children = (
+				FF100002FFFF000000000002 /* PlaceholderUnitTest.swift */,
+			);
+			path = Unit;
+			sourceTree = "<group>";
+		};
+		EE200001EEEE000000000001 /* UIComponent */ = {
 			isa = PBXGroup;
 			children = (
 				C8D50DFB3665CC5598561B45 /* StateRobot.swift */,
@@ -201,7 +212,7 @@
 				AA100007AAAA000000000007 /* Login */,
 				CC100004CCCC000000000004 /* Profile */,
 			);
-			path = Unit;
+			path = UIComponent;
 			sourceTree = "<group>";
 		};
 		AA100007AAAA000000000007 /* Login */ = {
@@ -665,6 +676,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF100003FFFF000000000003 /* PlaceholderUnitTest.swift in Sources */,
 				AC0607E1D3E5CCDD97B13DE7 /* StateRobot.swift in Sources */,
 				BF222A235485A03E839543DB /* HomeStateRobot.swift in Sources */,
 				6C5CEAD5CE6711C2489C47DF /* HomeViewRobot.swift in Sources */,

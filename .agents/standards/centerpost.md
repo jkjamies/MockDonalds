@@ -1,6 +1,6 @@
 # CenterPost Consumer Guide
 
-How features USE the CenterPost framework. For API internals, see `core/centerpost/AGENTS.md`.
+How features USE the CenterPost framework. For API internals, see `core/centerpost/AGENTS.md`. For how interactors are bound into the Metro graph and injected into presenters, see [dependency-injection.md](dependency-injection.md).
 
 ## Framework Philosophy
 

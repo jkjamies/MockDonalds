@@ -31,6 +31,12 @@ struct MockDonaldsApp: App {
                     .mockDonaldsTheme()
                 }
             }
+            .overlay(alignment: .topTrailing) {
+                Text("\(delegate.circuit.iosApp.market.uppercased())/\(delegate.circuit.iosApp.env)")
+                    .padding(.top, 4)
+                    .padding(.trailing, 8)
+                    .allowsHitTesting(false)
+            }
             .onOpenURL { url in
                 delegate.handleDeepLink(url: url)
             }

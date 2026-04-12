@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
@@ -99,7 +100,7 @@ fun MockDonaldsApp(windowSizeClass: WindowSizeClass, deepLinkIntent: Intent? = n
                         text = "${graph.appBuildConfig.market.uppercase()}/${graph.appBuildConfig.env}",
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(8.dp),
+                            .statusBarsPadding(),
                     )
                 }
             }

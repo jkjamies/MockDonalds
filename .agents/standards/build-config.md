@@ -117,6 +117,40 @@ Same shape as adding a market, but new `*-{env}.properties` files for every exis
 4. **Module must not depend on any feature module.** Enforced by existing core-isolation rules.
 5. **AGENTS.md** exists per module — `core:build-config/AGENTS.md` is required and Konsist-enforced.
 
+## Validation rules
+
+These are the rules the `validate-all-markets` skill enforces by parsing every `markets/*.properties` file against `Defaults.properties` — without compiling the module. Cheap enough to run in `verify` and as a CI gate before any market-scoped build.
+
+**Structural rules (parser-only, no domain knowledge required):**
+
+1. **File naming** — every file in `markets/` must match `{market}-{env}.properties` exactly. Lowercase market and env. No other files (no `.DS_Store`, no `README.md`, no orphans).
+2. **Defaults exists** — `Defaults.properties` must exist and be non-empty. It is the schema.
+3. **Required keys present** — every key in `Defaults.properties` must resolve to a non-empty value in every combo file after merge (combo overrides default; if default is blank, combo must supply). Empty string counts as missing.
+4. **No unknown keys** — combo files must not introduce keys absent from `Defaults.properties`. Catches typos (`baseUrl` vs `baseURL`) and dead keys left after a rename.
+5. **No duplicate keys within a file** — `.properties` parsers silently take the last value; duplicates almost always indicate a merge mistake.
+6. **Every market has every env** — if `us-dev.properties` exists, `us-prod.properties` must also exist (and `us-stg` once Phase 2 lands). Asymmetric markets fail.
+
+**Format rules (per-field type checks):**
+
+7. **`market`** — 2-letter lowercase ISO 3166-1 alpha-2; must equal the market segment of the filename (`us-dev.properties` → `market=us`).
+8. **`env`** — must be one of the known envs (`dev`, `stg`, `prod`); must equal the env segment of the filename.
+9. **`locale`** — BCP 47 form `xx-XX` (`en-US`, `de-DE`). Reject bare `en` or `EN_us`.
+10. **`currency`** — exactly 3 uppercase letters (ISO 4217). `USD`, `EUR`, not `usd` or `US$`.
+11. **URL fields** (`baseUrl`, `cdnUrl`, any `*Url`) — must parse as an absolute URL with `https://` scheme. No trailing slash. No interpolation tokens (`$market`) — substitution happens at file-write time, not at runtime.
+12. **`appName`** — non-empty, no leading/trailing whitespace.
+13. **Numeric fields** (e.g. `minimumAge`) — must parse as the declared type; reject `"13 "` or `"thirteen"`.
+
+**What stays Konsist's job (not validate-all-markets):**
+
+- Facade coverage (`AppBuildConfig` interface property → `AppBuildConfigTest` reference) — needs the JVM and reflection
+- No direct `BuildConfig` imports outside `core:build-config` — needs Kotlin source parsing
+- No feature-flag-shaped field names — needs Kotlin source parsing
+- Module isolation — needs the Gradle dependency graph
+
+The split is deliberate: `validate-all-markets` runs in milliseconds against `.properties` files only, so it can sit in front of every build. Konsist runs against compiled metadata and is heavier; it owns the rules that need a typed view of the code.
+
+**Failure output shape:** the skill aggregates every violation across every file and reports them in one pass — `markets/de-prod.properties: missing required key 'cdnUrl'` / `markets/us-dev.properties: unknown key 'baseURL' (did you mean 'baseUrl'?)`. Never fail-fast on the first error; the whole point is to fix a market in one edit cycle.
+
 ## Reference files
 
 - `core/build-config/build.gradle.kts` — the merge + BuildKonfig wiring
