@@ -77,6 +77,13 @@ class AppRobot {
         device.waitForIdle()
     }
 
+    fun tapText(text: String) {
+        val element = device.wait(Until.findObject(By.text(text)), elementTimeout)
+        assert(element != null) { "Expected text '$text' to be displayed" }
+        element.click()
+        device.waitForIdle()
+    }
+
     fun typeText(testTag: String, text: String) {
         assertElementDisplayed(testTag)
         val element = device.findObject(By.desc(testTag))

@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mockdonalds.app.e2e.robots.AppRobot
 import com.mockdonalds.app.features.home.api.ui.HomeTestTags
 import com.mockdonalds.app.features.login.api.ui.LoginTestTags
+import com.mockdonalds.app.features.login.api.ui.WelcomeTestTags
 import com.mockdonalds.app.features.more.api.ui.MoreTestTags
 import com.mockdonalds.app.features.order.api.ui.OrderTestTags
 import com.mockdonalds.app.features.rewards.api.ui.RewardsTestTags
@@ -68,5 +69,29 @@ class GuestJourneyTest {
         // Auth interception should redirect to login
         robot.assertElementDisplayed(LoginTestTags.BRANDING)
         robot.assertElementDisplayed(LoginTestTags.SIGN_IN_BUTTON)
+    }
+
+    @Test
+    fun signInFlowShowsWelcomeScreenThenCompletes() {
+        robot.tapTab("More")
+        robot.tapElement(MoreTestTags.PROFILE_SECTION)
+
+        // Login screen appears via auth interception
+        robot.assertElementDisplayed(LoginTestTags.SIGN_IN_BUTTON)
+
+        // Trigger sign-in flow
+        robot.tapElement(LoginTestTags.SIGN_IN_BUTTON)
+        robot.tapText("Send Link")
+
+        // WelcomeScreen should appear
+        robot.assertElementDisplayed(WelcomeTestTags.LOGO)
+        robot.assertElementDisplayed(WelcomeTestTags.TITLE)
+        robot.assertElementDisplayed(WelcomeTestTags.CONTINUE_BUTTON)
+
+        // Tap continue to complete flow
+        robot.tapElement(WelcomeTestTags.CONTINUE_BUTTON)
+
+        // Should navigate to profile after flow completes
+        robot.assertElementDisplayed(MoreTestTags.PROFILE_SECTION)
     }
 }

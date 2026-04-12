@@ -4,6 +4,7 @@ import com.mockdonalds.app.core.circuit.Parcelize
 import com.mockdonalds.app.core.test.FakeAuthManager
 import com.mockdonalds.app.core.test.TestCenterPostDispatchers
 import com.mockdonalds.app.features.login.api.navigation.LoginScreen
+import com.mockdonalds.app.features.login.api.navigation.WelcomeScreen
 import com.mockdonalds.app.features.login.test.FakeGetLoginContent
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.test.FakeNavigator
@@ -67,7 +68,7 @@ class LoginPresenterTest : BehaviorSpec({
         }
 
         When("the user confirms sign in without returnTo") {
-            Then("it should log in and pop") {
+            Then("it should log in and navigate to welcome screen") {
                 val navForTest = FakeNavigator(LoginScreen())
                 val authForTest = FakeAuthManager()
                 presenterTestOf(
@@ -84,14 +85,14 @@ class LoginPresenterTest : BehaviorSpec({
                     val state = awaitItem()
                     state.eventSink(LoginEvent.SignInConfirmed)
                     authForTest.isAuthenticated shouldBe true
-                    navForTest.awaitPop()
+                    navForTest.awaitNextScreen() shouldBe WelcomeScreen()
                     cancelAndIgnoreRemainingEvents()
                 }
             }
         }
 
         When("the user confirms sign in with returnTo") {
-            Then("it should log in, pop, and navigate to returnTo") {
+            Then("it should log in and navigate to welcome screen with returnTo") {
                 val navForTest = FakeNavigator(LoginScreen(returnTo = ReturnToScreen))
                 val authForTest = FakeAuthManager()
                 presenterTestOf(
@@ -108,8 +109,7 @@ class LoginPresenterTest : BehaviorSpec({
                     val state = awaitItem()
                     state.eventSink(LoginEvent.SignInConfirmed)
                     authForTest.isAuthenticated shouldBe true
-                    navForTest.awaitPop()
-                    navForTest.awaitNextScreen() shouldBe ReturnToScreen
+                    navForTest.awaitNextScreen() shouldBe WelcomeScreen(returnTo = ReturnToScreen)
                     cancelAndIgnoreRemainingEvents()
                 }
             }

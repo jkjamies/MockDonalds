@@ -11,6 +11,7 @@ import com.mockdonalds.app.core.centerpost.collectAsState
 import com.mockdonalds.app.core.centerpost.rememberCenterPost
 import com.mockdonalds.app.features.login.api.domain.GetLoginContent
 import com.mockdonalds.app.features.login.api.navigation.LoginScreen
+import com.mockdonalds.app.features.login.api.navigation.WelcomeScreen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.Navigator
 import dev.zacsweers.metro.AppScope
@@ -39,8 +40,7 @@ fun LoginPresenter(
                 is LoginEvent.EmailChanged -> email = event.value
                 is LoginEvent.SignInConfirmed -> {
                     authManager.login()
-                    navigator.pop()
-                    screen.returnTo?.let { navigator.goTo(it) }
+                    navigator.goTo(WelcomeScreen(returnTo = screen.returnTo))
                 }
                 is LoginEvent.AppleSignInClicked -> centerPost { }
                 is LoginEvent.GoogleSignInClicked -> centerPost { }

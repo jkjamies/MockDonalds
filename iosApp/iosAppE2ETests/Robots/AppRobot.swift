@@ -60,6 +60,35 @@ final class AppRobot {
         element.tap()
     }
 
+    func tapText(_ text: String) {
+        let element = app.staticTexts[text]
+        XCTAssertTrue(
+            element.waitForExistence(timeout: elementTimeout),
+            "Expected text '\(text)' to be displayed before tapping"
+        )
+        element.tap()
+    }
+
+    func tapButton(_ label: String) {
+        let element = app.buttons[label]
+        XCTAssertTrue(
+            element.waitForExistence(timeout: elementTimeout),
+            "Expected button '\(label)' to be displayed before tapping"
+        )
+        element.tap()
+    }
+
+    func tapAlertButton(_ label: String) {
+        let alert = app.alerts.firstMatch
+        XCTAssertTrue(
+            alert.waitForExistence(timeout: elementTimeout),
+            "Expected alert to be displayed"
+        )
+        let button = alert.buttons[label]
+        XCTAssertTrue(button.exists, "Expected alert button '\(label)' to exist")
+        button.tap()
+    }
+
     func typeText(_ testTag: String, text: String) {
         let element = app.descendants(matching: .any)[testTag]
         XCTAssertTrue(

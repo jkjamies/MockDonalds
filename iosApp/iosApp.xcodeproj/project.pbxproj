@@ -45,6 +45,10 @@
 		D83025297EF110A52CB99ACB /* RewardsViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B327F071FB5FB234E9888D1A /* RewardsViewTest.swift */; };
 		AA100001AAAA000100000001 /* CircuitNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100001AAAA000000000001 /* CircuitNavigator.swift */; };
 		AA100002AAAA000100000002 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100002AAAA000000000002 /* LoginView.swift */; };
+		EE100001EEEE000100000001 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE100001EEEE000000000001 /* WelcomeView.swift */; };
+		EE100002EEEE000100000002 /* WelcomeStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE100002EEEE000000000002 /* WelcomeStateRobot.swift */; };
+		EE100003EEEE000100000003 /* WelcomeViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE100003EEEE000000000003 /* WelcomeViewRobot.swift */; };
+		EE100004EEEE000100000004 /* WelcomeViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE100004EEEE000000000004 /* WelcomeViewTest.swift */; };
 		AA100003AAAA000100000003 /* LoginStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100003AAAA000000000003 /* LoginStateRobot.swift */; };
 		AA100004AAAA000100000004 /* LoginViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100004AAAA000000000004 /* LoginViewRobot.swift */; };
 		AA100005AAAA000100000005 /* LoginViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100005AAAA000000000005 /* LoginViewTest.swift */; };
@@ -118,6 +122,10 @@
 		FF100002FFFF000000000002 /* PlaceholderUnitTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlaceholderUnitTest.swift; sourceTree = "<group>"; };
 		AA100001AAAA000000000001 /* CircuitNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircuitNavigator.swift; sourceTree = "<group>"; };
 		AA100002AAAA000000000002 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		EE100001EEEE000000000001 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		EE100002EEEE000000000002 /* WelcomeStateRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WelcomeStateRobot.swift; sourceTree = "<group>"; };
+		EE100003EEEE000000000003 /* WelcomeViewRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WelcomeViewRobot.swift; sourceTree = "<group>"; };
+		EE100004EEEE000000000004 /* WelcomeViewTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WelcomeViewTest.swift; sourceTree = "<group>"; };
 		BB100001BBBB000000000001 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		AA100003AAAA000000000003 /* LoginStateRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginStateRobot.swift; sourceTree = "<group>"; };
 		AA100004AAAA000000000004 /* LoginViewRobot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginViewRobot.swift; sourceTree = "<group>"; };
@@ -221,6 +229,9 @@
 				AA100003AAAA000000000003 /* LoginStateRobot.swift */,
 				AA100004AAAA000000000004 /* LoginViewRobot.swift */,
 				AA100005AAAA000000000005 /* LoginViewTest.swift */,
+				EE100002EEEE000000000002 /* WelcomeStateRobot.swift */,
+				EE100003EEEE000000000003 /* WelcomeViewRobot.swift */,
+				EE100004EEEE000000000004 /* WelcomeViewTest.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -426,6 +437,7 @@
 			isa = PBXGroup;
 			children = (
 				AA100002AAAA000000000002 /* LoginView.swift */,
+				EE100001EEEE000000000001 /* WelcomeView.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -668,6 +680,7 @@
 				AA100001AAAA000100000001 /* CircuitNavigator.swift in Sources */,
 				DD100001DDDD000100000001 /* NavigationStateManager.swift in Sources */,
 				AA100002AAAA000100000002 /* LoginView.swift in Sources */,
+				EE100001EEEE000100000001 /* WelcomeView.swift in Sources */,
 				BB100001BBBB000100000001 /* ProfileView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -696,6 +709,9 @@
 				AA100003AAAA000100000003 /* LoginStateRobot.swift in Sources */,
 				AA100004AAAA000100000004 /* LoginViewRobot.swift in Sources */,
 				AA100005AAAA000100000005 /* LoginViewTest.swift in Sources */,
+				EE100002EEEE000100000002 /* WelcomeStateRobot.swift in Sources */,
+				EE100003EEEE000100000003 /* WelcomeViewRobot.swift in Sources */,
+				EE100004EEEE000100000004 /* WelcomeViewTest.swift in Sources */,
 				CC100001CCCC000100000001 /* ProfileStateRobot.swift in Sources */,
 				CC100002CCCC000100000002 /* ProfileViewRobot.swift in Sources */,
 				CC100003CCCC000100000003 /* ProfileViewTest.swift in Sources */,

@@ -15,6 +15,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
                 ScreenUiFactory<MoreScreen, MoreUiState> { MoreView(state: $0) },
                 ScreenUiFactory<LoginScreen, LoginUiState> { LoginView(state: $0) },
                 ScreenUiFactory<ProfileScreen, ProfileUiState> { ProfileView(state: $0) },
+                ScreenUiFactory<WelcomeScreen, WelcomeUiState> { WelcomeView(state: $0) },
             ]
         )
     }()

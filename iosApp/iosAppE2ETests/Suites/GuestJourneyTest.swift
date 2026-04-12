@@ -52,4 +52,27 @@ final class GuestJourneyTest: XCTestCase {
         robot.assertElementDisplayed("LoginBranding")
         robot.assertElementDisplayed("LoginSignInButton")
     }
+
+    func testSignInFlowShowsWelcomeScreenThenCompletes() {
+        robot.tapTab("More")
+        robot.tapElement("MoreProfileSection")
+
+        // Login screen appears via auth interception
+        robot.assertElementDisplayed("LoginSignInButton")
+
+        // Trigger sign-in flow
+        robot.tapElement("LoginSignInButton")
+        robot.tapAlertButton("Send Link")
+
+        // WelcomeScreen should appear
+        robot.assertElementDisplayed("WelcomeLogo")
+        robot.assertElementDisplayed("WelcomeTitle")
+        robot.assertElementDisplayed("WelcomeContinueButton")
+
+        // Tap continue to complete flow
+        robot.tapElement("WelcomeContinueButton")
+
+        // Should navigate back to More tab after flow completes
+        robot.assertElementDisplayed("MoreProfileSection")
+    }
 }

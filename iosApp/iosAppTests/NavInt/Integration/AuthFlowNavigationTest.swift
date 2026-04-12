@@ -78,6 +78,55 @@ import ComposeApp
         #expect(manager.navigationPath.isEmpty)
     }
 
+    // MARK: - Welcome Screen Inner Flow
+
+    @Test func welcomeScreenPushesOntoFlowPath() {
+        let manager = NavigationStateManager()
+        manager.handle(actions: [NavigationAction.PresentFlow(screen: LoginScreen(returnTo: nil))])
+
+        // SignInConfirmed navigates to WelcomeScreen within the flow
+        manager.handle(actions: [NavigationAction.GoTo(screen: WelcomeScreen(returnTo: nil))])
+
+        #expect(manager.isFlowActive)
+        #expect(manager.flowPath.count == 1)
+        #expect(manager.flowPath[0].screen is WelcomeScreen)
+        #expect(manager.navigationPath.isEmpty)
+    }
+
+    @Test func welcomeContinueDismissesFlowAndNavigatesToReturnTo() {
+        let manager = NavigationStateManager()
+        manager.handle(actions: [NavigationAction.PresentFlow(screen: LoginScreen(returnTo: nil))])
+        manager.handle(actions: [NavigationAction.GoTo(screen: WelcomeScreen(returnTo: nil))])
+
+        // ContinueClicked: pop WelcomeScreen, pop dismisses flow, goTo routes to main
+        manager.handle(actions: [
+            NavigationAction.Pop(),
+            NavigationAction.Pop(),
+            NavigationAction.GoTo(screen: ProfileScreen.shared),
+        ])
+
+        #expect(!manager.isFlowActive)
+        #expect(manager.flowPath.isEmpty)
+        #expect(manager.navigationPath.count == 1)
+        #expect(manager.navigationPath[0].screen is ProfileScreen)
+    }
+
+    @Test func welcomeContinueWithoutReturnToDismissesFlow() {
+        let manager = NavigationStateManager()
+        manager.handle(actions: [NavigationAction.PresentFlow(screen: LoginScreen(returnTo: nil))])
+        manager.handle(actions: [NavigationAction.GoTo(screen: WelcomeScreen(returnTo: nil))])
+
+        // ContinueClicked without returnTo: just two pops, no goTo
+        manager.handle(actions: [
+            NavigationAction.Pop(),
+            NavigationAction.Pop(),
+        ])
+
+        #expect(!manager.isFlowActive)
+        #expect(manager.flowPath.isEmpty)
+        #expect(manager.navigationPath.isEmpty)
+    }
+
     // MARK: - Non-Flow (Authenticated)
 
     @Test func navigateToProtectedScreenWhenAuthenticated() {

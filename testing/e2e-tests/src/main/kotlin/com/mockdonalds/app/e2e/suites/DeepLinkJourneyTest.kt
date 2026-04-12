@@ -3,6 +3,7 @@ package com.mockdonalds.app.e2e.suites
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mockdonalds.app.e2e.robots.AppRobot
 import com.mockdonalds.app.features.login.api.ui.LoginTestTags
+import com.mockdonalds.app.features.login.api.ui.WelcomeTestTags
 import com.mockdonalds.app.features.more.api.ui.MoreTestTags
 import com.mockdonalds.app.features.order.api.ui.OrderTestTags
 import com.mockdonalds.app.features.profile.api.ui.ProfileTestTags
@@ -38,5 +39,22 @@ class DeepLinkJourneyTest {
         // Profile screen (ProfileTestTags.AVATAR, NAME, etc.) requires authentication
         robot.assertElementNotDisplayed(ProfileTestTags.AVATAR)
         robot.assertElementDisplayed(LoginTestTags.BRANDING)
+    }
+
+    @Test
+    fun deepLinkToProfileSignInFlowShowsWelcomeScreen() {
+        robot.launchWithDeepLink("mockdonalds://app/more/profile")
+
+        // Login screen appears via auth interception
+        robot.assertElementDisplayed(LoginTestTags.SIGN_IN_BUTTON)
+
+        // Trigger sign-in flow
+        robot.tapElement(LoginTestTags.SIGN_IN_BUTTON)
+        robot.tapText("Send Link")
+
+        // WelcomeScreen should appear within the flow
+        robot.assertElementDisplayed(WelcomeTestTags.LOGO)
+        robot.assertElementDisplayed(WelcomeTestTags.TITLE)
+        robot.assertElementDisplayed(WelcomeTestTags.CONTINUE_BUTTON)
     }
 }

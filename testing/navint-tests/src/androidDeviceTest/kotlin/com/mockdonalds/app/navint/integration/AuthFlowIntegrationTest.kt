@@ -8,7 +8,9 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.mockdonalds.app.features.home.api.navigation.HomeScreen
 import com.mockdonalds.app.features.home.api.ui.HomeTestTags
 import com.mockdonalds.app.features.login.api.navigation.LoginScreen
+import com.mockdonalds.app.features.login.api.navigation.WelcomeScreen
 import com.mockdonalds.app.features.login.api.ui.LoginTestTags
+import com.mockdonalds.app.features.login.api.ui.WelcomeTestTags
 import com.mockdonalds.app.features.more.api.navigation.MoreScreen
 import com.mockdonalds.app.features.more.api.ui.MoreTestTags
 import com.mockdonalds.app.features.profile.api.navigation.ProfileScreen
@@ -84,6 +86,55 @@ class AuthFlowIntegrationTest {
 
         // Clean up
         graph.authManager.logout()
+    }
+
+    @Test
+    fun signInNavigatesToWelcomeScreen() {
+        var testNavigator: com.slack.circuit.runtime.Navigator? = null
+
+        rule.setNavIntContent(
+            circuit = graph.circuit,
+            root = LoginScreen(),
+            onNavigator = { testNavigator = it },
+        )
+
+        rule.onNodeWithTag(LoginTestTags.BRANDING).assertIsDisplayed()
+
+        rule.runOnUiThread {
+            graph.authManager.login()
+            testNavigator!!.goTo(WelcomeScreen())
+        }
+
+        rule.waitForIdle()
+        rule.onNodeWithTag(WelcomeTestTags.LOGO).assertIsDisplayed()
+        rule.onNodeWithTag(WelcomeTestTags.TITLE).assertIsDisplayed()
+        rule.onNodeWithTag(WelcomeTestTags.CONTINUE_BUTTON).assertIsDisplayed()
+    }
+
+    @Test
+    fun welcomeScreenContinueNavigatesBack() {
+        var testNavigator: com.slack.circuit.runtime.Navigator? = null
+
+        rule.setNavIntContent(
+            circuit = graph.circuit,
+            root = LoginScreen(),
+            onNavigator = { testNavigator = it },
+        )
+
+        rule.runOnUiThread {
+            graph.authManager.login()
+            testNavigator!!.goTo(WelcomeScreen())
+        }
+
+        rule.waitForIdle()
+        rule.onNodeWithTag(WelcomeTestTags.CONTINUE_BUTTON).assertIsDisplayed()
+
+        rule.runOnUiThread {
+            testNavigator!!.pop()
+        }
+
+        rule.waitForIdle()
+        rule.onNodeWithTag(LoginTestTags.BRANDING).assertIsDisplayed()
     }
 
     @Test

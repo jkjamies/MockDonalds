@@ -28,4 +28,20 @@ final class DeepLinkJourneyTest: XCTestCase {
         robot.assertElementNotDisplayed("ProfileAvatar")
         robot.assertElementDisplayed("LoginBranding")
     }
+
+    func testDeepLinkToProfileSignInFlowShowsWelcomeScreen() {
+        robot.launchWithDeepLink("mockdonalds://app/more/profile")
+
+        // Login screen appears via auth interception
+        robot.assertElementDisplayed("LoginSignInButton")
+
+        // Trigger sign-in flow
+        robot.tapElement("LoginSignInButton")
+        robot.tapAlertButton("Send Link")
+
+        // WelcomeScreen should appear within the flow
+        robot.assertElementDisplayed("WelcomeLogo")
+        robot.assertElementDisplayed("WelcomeTitle")
+        robot.assertElementDisplayed("WelcomeContinueButton")
+    }
 }

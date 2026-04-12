@@ -241,6 +241,20 @@ git diff --name-only                       # uncommitted changes on main
 - Tests use XCUITest with accessibility identifiers matching KMP TestTags (raw string constants — process-isolated)
 - Uses `AppRobot` for all app interactions — check `iosApp/iosAppE2ETests/Robots/AppRobot.swift`
 
+## IDE Troubleshooting
+
+### Android Studio: `Cannot find 'X' in scope` on iOS build
+
+After adding new Swift files that reference KMP types (e.g., new `ScreenUiFactory` entries in `AppDelegate.swift`, new views importing `ComposeApp`), Android Studio's iOS build may fail with `Cannot find 'X' in scope` even though `xcodebuild` from the command line succeeds. This happens because Android Studio's embedded SPM resolver has a stale cache of the ComposeApp framework.
+
+**Fix:** Tools → Swift Package Manager → Update Dependencies. Or from the command line:
+```bash
+xcodebuild -resolvePackageDependencies -project iosApp/iosApp.xcodeproj -scheme iOSApp
+```
+This forces re-resolution of the KMP framework and picks up newly exported types.
+
+This does not affect the `verify` pipeline (which uses `xcodebuild` directly) or Xcode (which manages its own SPM resolution).
+
 ## Decision Tree — Skip Irrelevant Steps
 
 ```
