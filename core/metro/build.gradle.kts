@@ -10,6 +10,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":core:circuit"))
+            api(project(":core:analytics:api"))
             api(project(":core:auth:api"))
             api(project(":core:build-config"))
         }

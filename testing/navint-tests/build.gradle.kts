@@ -33,6 +33,7 @@ kotlin {
             // Core
             api(project(":core:metro"))
             api(project(":core:circuit"))
+            api(project(":core:analytics:test"))
             api(project(":core:auth:api"))
             implementation(project(":core:centerpost"))
             implementation(project(":core:theme"))

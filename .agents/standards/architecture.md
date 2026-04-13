@@ -27,9 +27,11 @@ graph TB
     end
 
     subgraph core["core/* (Shared Infrastructure)"]
+        Analytics["analytics (api/impl/test)"]
         Auth["auth (api/impl)"]
         CenterPost["centerpost"]
         CircuitCore["circuit"]
+        FeatureFlag["feature-flag (api/impl/test)"]
         Network["network"]
         Theme["theme"]
         TestFixtures["test-fixtures"]
@@ -271,6 +273,19 @@ import com.mockdonalds.app.features.home.presentation.HomeUiState   // impl/pres
 ## Core Module Isolation
 
 Core modules (`core/*`) must NEVER import from feature modules (`features/*`). This ensures core remains a stable foundation that all features depend on without circular dependencies. Enforced by `LayerDependencyTest` ("core modules should not import from feature modules").
+
+## Core Module Consumption Patterns
+
+**Rule: Presenters always use CenterPost interactors. Domain/data always use the provider interface directly.** This applies to all core modules with api/impl — no exceptions.
+
+| Core Module | Presenter Layer | Domain/Data Layer |
+|-------------|----------------|-------------------|
+| `core:feature-flag` | `ObserveFeatureFlag` (CenterPostSubjectInteractor) | `FeatureFlagProvider` (interface) |
+| `core:analytics` | `TrackAnalyticsEvent` (CenterPostInteractor) | `AnalyticsDispatcher` (interface) |
+
+For fire-and-forget interactors (analytics), the `inProgress` loading state goes uncollected — zero overhead. The value: structured execution, error handling, timeout protection, dispatcher correctness. Keeping the rule absolute means no exceptions to remember.
+
+Note: `core:auth` currently exposes only `AuthManager` (interface) with no interactor — auth is consumed by `AuthInterceptor` (infrastructure in composeApp), not by presenters directly. If presenters need auth state reactively in the future, an interactor should be added.
 
 ## Convention Plugin Mapping
 

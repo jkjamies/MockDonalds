@@ -40,9 +40,12 @@ class CodeHygieneTest : BehaviorSpec({
                 }
 
             // Also check for direct println usage in source text (no import needed for top-level println)
+            // Exempt core:analytics:impl — logging dispatcher is the shell impl until a real SDK ships
             val textViolators = productionFiles
                 .filter { file ->
-                    file.text.contains("println(") && !file.name.endsWith("Test.kt")
+                    file.text.contains("println(") &&
+                        !file.name.endsWith("Test.kt") &&
+                        !file.resideInPath("..core/analytics/impl..")
                 }
 
             val all = (violators + textViolators).distinctBy { it.path }

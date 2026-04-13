@@ -71,6 +71,7 @@ kotlin {
             // Core
             api(project(":core:circuit"))
             api(project(":core:metro"))
+            implementation(project(":core:analytics:impl"))
             implementation(project(":core:auth:impl"))
             implementation(project(":core:feature-flag:impl"))
             implementation(project(":core:centerpost"))
@@ -95,6 +96,7 @@ kotlin {
         }
 
         commonTest.dependencies {
+            implementation(project(":core:analytics:test"))
             implementation(project(":core:test-fixtures"))
             implementation(libs.circuit.test)
         }

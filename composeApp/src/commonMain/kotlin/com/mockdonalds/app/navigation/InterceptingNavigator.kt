@@ -6,11 +6,16 @@ import com.slack.circuit.runtime.screen.Screen
 class InterceptingNavigator(
     private val delegate: Navigator,
     private val interceptors: List<NavigationInterceptor>,
+    private val listeners: List<NavigationEventListener> = emptyList(),
 ) : Navigator by delegate {
 
     override fun goTo(screen: Screen): Boolean {
         val resolved = applyInterceptors(screen) { interceptGoTo(it) }
-        return delegate.goTo(resolved)
+        val success = delegate.goTo(resolved)
+        if (success) {
+            listeners.forEach { it.onGoTo(resolved) }
+        }
+        return success
     }
 
     override fun resetRoot(
@@ -18,7 +23,9 @@ class InterceptingNavigator(
         options: Navigator.StateOptions,
     ): List<Screen> {
         val resolved = applyInterceptors(newRoot) { interceptResetRoot(it) }
-        return delegate.resetRoot(resolved, options)
+        val popped = delegate.resetRoot(resolved, options)
+        listeners.forEach { it.onResetRoot(resolved) }
+        return popped
     }
 
     fun deepLink(screens: List<Screen>): List<Screen> {

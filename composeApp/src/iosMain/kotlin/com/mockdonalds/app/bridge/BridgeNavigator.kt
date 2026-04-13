@@ -47,7 +47,9 @@ import platform.darwin.dispatch_get_main_queue
  * delivers them. A capacity of 5 provides headroom for burst scenarios while still failing fast
  * ([trySend] check) if the consumer falls behind — which would indicate a real bug, not normal load.
  */
-class BridgeNavigator : Navigator {
+class BridgeNavigator(
+    private val onSwitchTab: ((tag: String) -> Unit)? = null,
+) : Navigator {
     private val _navigationActions = Channel<List<NavigationAction>>(capacity = 5)
 
     @NativeCoroutines
@@ -118,8 +120,19 @@ class BridgeNavigator : Navigator {
 
     override fun peekNavStack(): NavStackList<Screen>? = null
 
+    private var suppressTabCallback = false
+
     fun switchTab(tag: String) {
+        suppressTabCallback = true
         enqueue(NavigationAction.SwitchTab(tag))
+    }
+
+    fun notifyTabSelected(tag: String) {
+        if (suppressTabCallback) {
+            suppressTabCallback = false
+            return
+        }
+        onSwitchTab?.invoke(tag)
     }
 
     fun deepLink(screens: List<Screen>) {

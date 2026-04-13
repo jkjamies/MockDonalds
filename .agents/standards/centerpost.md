@@ -290,6 +290,43 @@ fun HomePresenter(
 }
 ```
 
+## Core Module Interactor Guidance
+
+All core modules with api/impl MUST expose CenterPost interactors for presenter consumption. This rule is absolute — even fire-and-forget operations go through interactors from presenters.
+
+**Choose the interactor type based on the operation:**
+
+| Operation Type | Interactor | Example |
+|---------------|-----------|---------|
+| Streaming / observable state | `CenterPostSubjectInteractor` | `ObserveFeatureFlag` — presenters react to flag changes |
+| One-shot async or fire-and-forget | `CenterPostInteractor` | `TrackAnalyticsEvent` — structured execution for event tracking |
+
+**Why even fire-and-forget?** The value isn't loading state (which goes uncollected — opt-in, zero overhead). It's:
+- Structured error handling — if the real SDK throws, `CenterPostResult.Failure` catches it
+- Timeout protection — a hung SDK call doesn't block forever
+- Dispatcher correctness — work runs on the right dispatcher
+- Consistency — presenters always use interactors, no exceptions to remember
+
+**Domain and data layers always inject the provider interface directly** — never the interactor. Interactors are a presenter-layer concern. Domain/data use the synchronous provider API.
+
+```kotlin
+// STREAMING: core:feature-flag
+// Presenter — uses CenterPostSubjectInteractor
+observeFeatureFlag(MyFlags.NEW_FEATURE)
+val enabled by observeFeatureFlag.flow.collectAsState(initial = false)
+
+// Repository — uses provider directly
+val endpoint = if (featureFlags.isEnabled(MyFlags.NEW_API)) "/v2" else "/v1"
+
+// FIRE-AND-FORGET: core:analytics
+// Presenter — uses CenterPostInteractor (ignores loading state)
+val centerPost = rememberCenterPost(dispatchers)
+centerPost { trackAnalyticsEvent(MyEvent.ButtonTapped) }
+
+// Repository — uses dispatcher directly
+analyticsDispatcher.track(MyEvent.DataFetched)
+```
+
 ## Anti-Patterns
 
 | Banned | Why | Use Instead |

@@ -8,12 +8,14 @@ Shared Metro DI graph contract. Defines the `AppGraph` interface that both produ
 
 | Type | Role |
 |------|------|
-| `AppGraph` | Interface declaring DI graph outputs (`circuit`, `authManager`). Consumer modules extend this with `@DependencyGraph(AppScope::class)` |
+| `AppGraph` | Interface declaring DI graph outputs (`circuit`, `analyticsDispatcher`, `authManager`, `appBuildConfig`). Consumer modules extend this with `@DependencyGraph(AppScope::class)` |
 
 ## Dependencies
 
 - `core:circuit` — provides `Circuit` type and `CircuitProviders` (factory aggregation)
+- `core:analytics:api` — provides `AnalyticsDispatcher` interface
 - `core:auth:api` — provides `AuthManager` interface
+- `core:build-config` — provides `AppBuildConfig` (market/env configuration)
 
 ## Design
 

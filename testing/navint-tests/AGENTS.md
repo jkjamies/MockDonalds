@@ -42,6 +42,7 @@ navint-tests depends on:
   core/metro                   — AppGraph interface
   core/circuit                 — CircuitProviders, TabScreen, ProtectedScreen
   core/auth/api                — AuthManager interface
+  core/analytics/test          — FakeAnalyticsDispatcher, FakeTrackAnalyticsEvent
   core/centerpost              — CenterPost interactors
   core/theme                   — MockDonaldsTheme, design tokens
   core/test-fixtures           — FakeAuthManager, TestCenterPostDispatchers

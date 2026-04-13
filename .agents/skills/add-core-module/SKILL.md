@@ -110,6 +110,17 @@ Place public interfaces, abstract interactors, and data types here. Package: `co
 - Abstract interactors extend `CenterPostInteractor` or `CenterPostSubjectInteractor`
 - Data classes use `@Serializable` if they cross module boundaries
 
+#### CenterPost Interactor Requirement
+
+All core modules with api/impl MUST expose CenterPost interactors for presenter consumption. Domain/data layers always inject the provider interface directly. This rule is absolute — no exceptions.
+
+| Core Module Characteristic | Presenter Consumption | Domain/Data Consumption | Example |
+|---------------------------|----------------------|------------------------|---------|
+| Produces **observable state** (Flow/StateFlow) | `CenterPostSubjectInteractor` | Provider interface | `core:feature-flag`: `ObserveFeatureFlag` / `FeatureFlagProvider` |
+| Produces **one-shot result or fire-and-forget** | `CenterPostInteractor` | Provider interface | `core:analytics`: `TrackAnalyticsEvent` / `AnalyticsDispatcher` |
+
+For fire-and-forget interactors, the `inProgress` loading state simply goes uncollected — it's opt-in with zero overhead. The value of wrapping even void operations in CenterPost: structured execution, error handling, timeout protection, dispatcher correctness.
+
 **impl/** — `src/commonMain/kotlin/com/mockdonalds/app/core/{name}/impl/`
 
 Place concrete implementations here. Package: `com.mockdonalds.app.core.{name}.impl`.
@@ -172,20 +183,44 @@ core/{name}/test  -> Fakes for consumer tests
 | `{Interface}` | api | Description |
 | `{Interactor}` | api | Abstract CenterPost interactor for ... |
 
+## Consumption Pattern
+
+| Layer | What to inject | Why |
+|-------|---------------|-----|
+| Presenters | CenterPost interactor from api | Reactive, lifecycle-aware, structured execution |
+| Domain/Data | Provider interface from api | Direct, synchronous access |
+
 ## Usage
 
-Features inject interfaces from api only:
+**Presenters** use the CenterPost interactor:
 
 \```kotlin
-class MyPresenter(
-    private val myInteractor: {Interactor},
-) : ...
+@CircuitInject(MyScreen::class, AppScope::class)
+@Composable
+fun MyPresenter(
+    myInteractor: {Interactor},
+): MyUiState {
+    // Use interactor for reactive/one-shot access
+}
+\```
+
+**Domain/data** inject the provider interface:
+
+\```kotlin
+@ContributesBinding(AppScope::class)
+class MyRepositoryImpl(
+    private val myProvider: {Provider},
+) : MyRepository {
+    // Use provider for direct access
+}
 \```
 
 ## Rules
 
 - Core modules never import from features
 - Features MUST depend on `core:{name}:api` only, never `core:{name}:impl`
+- **Presenters** must use CenterPost interactors, never provider interfaces directly (Konsist-enforced)
+- **Domain/data** must use provider interfaces, never CenterPost interactors (Konsist-enforced)
 - `impl` is wired exclusively through Metro `@ContributesBinding` in `AppScope`
 - Test code should use fakes from `core:{name}:test`
 ```

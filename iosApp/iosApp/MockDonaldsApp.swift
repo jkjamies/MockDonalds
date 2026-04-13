@@ -37,6 +37,9 @@ struct MockDonaldsApp: App {
                     .padding(.trailing, 8)
                     .allowsHitTesting(false)
             }
+            .onChange(of: selectedTab) { newTab in
+                delegate.circuit.iosApp.navigator.notifyTabSelected(tag: newTab)
+            }
             .onOpenURL { url in
                 delegate.handleDeepLink(url: url)
             }

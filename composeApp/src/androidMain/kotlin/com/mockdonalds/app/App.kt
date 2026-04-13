@@ -20,6 +20,7 @@ import com.mockdonalds.app.core.theme.MockDonaldsTheme
 import com.mockdonalds.app.core.circuit.TabScreen
 import com.mockdonalds.app.features.home.api.navigation.HomeScreen
 import com.mockdonalds.app.features.login.api.navigation.LoginScreen
+import com.mockdonalds.app.navigation.AnalyticsNavigationListener
 import com.mockdonalds.app.navigation.AuthInterceptor
 import com.mockdonalds.app.navigation.InterceptingNavigator
 import com.mockdonalds.app.navigation.createDeepLinkParser
@@ -46,6 +47,7 @@ fun MockDonaldsApp(windowSizeClass: WindowSizeClass, deepLinkIntent: Intent? = n
             backStack = backStack,
             onRootPop = { },
         )
+        val analyticsListener = remember { AnalyticsNavigationListener(graph.analyticsDispatcher) }
         val navigator = remember(circuitNavigator) {
             InterceptingNavigator(
                 delegate = circuitNavigator,
@@ -54,7 +56,12 @@ fun MockDonaldsApp(windowSizeClass: WindowSizeClass, deepLinkIntent: Intent? = n
                         LoginScreen(returnTo = returnTo)
                     },
                 ),
+                listeners = listOf(analyticsListener),
             )
+        }
+
+        LaunchedEffect(Unit) {
+            analyticsListener.onResetRoot(HomeScreen)
         }
 
         LaunchedEffect(deepLinkIntent) {
@@ -63,7 +70,12 @@ fun MockDonaldsApp(windowSizeClass: WindowSizeClass, deepLinkIntent: Intent? = n
             val intercepted = navigator.deepLink(screens)
             if (intercepted.isNotEmpty()) {
                 circuitNavigator.resetRoot(intercepted.first())
-                intercepted.drop(1).forEach { navigator.goTo(it) }
+                intercepted.drop(1).forEach { circuitNavigator.goTo(it) }
+                if (intercepted.size == 1) {
+                    analyticsListener.onResetRoot(intercepted.first())
+                } else {
+                    analyticsListener.onGoTo(intercepted.last())
+                }
             }
         }
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-22 architecture test classes enforcing project conventions via Konsist compile-time static analysis.
+25 architecture test classes enforcing project conventions via Konsist compile-time static analysis.
 All tests use Kotest BehaviorSpec (Given/Then style) and scan the project with `Konsist.scopeFromProject()`.
 
 ## Test Categories
@@ -20,6 +20,9 @@ All tests use Kotest BehaviorSpec (Given/Then style) and scan the project with `
 | core/ | VisibilityConventionsTest | @ContributesBinding classes are public. Domain modules expose only Repository interfaces and Impl classes. UiState classes are not internal. |
 | core/ | DependencyGraphScopeTest | @DependencyGraph only in consumer modules (composeApp, navint-tests). CircuitProviders only in core:circuit. AppGraph interface only in core:metro. |
 | core/ | CoreMetroConventionsTest | core:metro must not import from feature modules. core:metro must not import from impl modules. |
+| core/ | AnalyticsConventionsTest | Presenters must use `TrackAnalyticsEvent` interactor, not `AnalyticsDispatcher` directly. Domain/data must use `AnalyticsDispatcher`, not the interactor. |
+| core/ | FeatureFlagConventionsTest | Presenters must use `ObserveFeatureFlag` interactor, not `FeatureFlagProvider` directly. Domain/data must use `FeatureFlagProvider`, not the interactor. |
+| core/ | BuildConfigCoverageTest | Every market config JSON has required fields. Build config values are consistent across markets. |
 | core/ | AgentDocumentationTest | Every feature and core module has AGENTS.md. Root AGENTS.md exists. .agents/skills/ directory exists with SKILL.md per skill. .gemini/settings.json references AGENTS.md. |
 | layers/ | ApiLayerTest | Data classes in api are immutable (val only). @Serializable only in api/data/network. No MutableStateFlow in public APIs. api:domain has no Circuit dependency. DTOs only in data/network modules. |
 | layers/ | DataLayerTest | Repository interfaces in domain modules. RepositoryImpl classes in data modules with @ContributesBinding. Repository functions return Flow, not suspend. |
