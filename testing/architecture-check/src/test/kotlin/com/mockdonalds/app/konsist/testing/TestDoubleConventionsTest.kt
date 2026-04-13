@@ -47,7 +47,8 @@ class TestDoubleConventionsTest : BehaviorSpec({
                 .filter {
                     it.name.startsWith("Fake") ||
                         it.name.startsWith("Stub") ||
-                        it.name.startsWith("Mock") ||
+                        (it.name.startsWith("Mock") && !it.name.startsWith("MockDonalds")) ||
+                        it.name.endsWith("Mock") ||
                         it.name.startsWith("TestData") ||
                         it.name.endsWith("TestData") ||
                         it.name.endsWith("Fixture") ||

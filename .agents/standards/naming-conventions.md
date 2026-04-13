@@ -12,6 +12,9 @@
 | Use case (impl) | `Get{Feature}ContentImpl` | `impl/domain` | `@ContributesBinding(AppScope::class)` | `class` with constructor injection |
 | Repository (interface) | `{Feature}Repository` | `impl/domain` | none | `interface` |
 | Repository (impl) | `{Feature}RepositoryImpl` | `impl/data` | `@ContributesBinding(AppScope::class)` | `class` with constructor injection |
+| DataSource (interface) | `{Feature}RemoteDataSource` / `{Feature}LocalDataSource` | `impl/data/remote/` / `impl/data/local/` | none | `interface` |
+| DataSource (impl) | `{Feature}RemoteDataSourceImpl` / `{Feature}LocalDataSourceImpl` | `impl/data/remote/` / `impl/data/local/` | `@ContributesBinding(AppScope::class)` | `class` with constructor injection |
+| DTO | `{Name}Dto` | `impl/data/remote/` | `@Serializable` | `data class` |
 | Fake | `Fake{Name}` | `test/src/commonMain` | none | `class` extending abstract use case |
 | TestTags | `{Feature}TestTags` | `api/navigation` | none | `object` with `const val` tag strings |
 
@@ -59,6 +62,15 @@ Enforced by `VisibilityConventionsTest`:
 - Correct: `interface HomeRepository` in impl/domain, `@ContributesBinding(AppScope::class) class HomeRepositoryImpl : HomeRepository` in impl/data
 - Incorrect: `class HomeRepo` (must end with `Repository`), `HomeRepositoryImplementation` (must use `Impl` suffix)
 
+### DataSource
+- Correct: `interface MenuRemoteDataSource` in `impl/data/remote/`, `@ContributesBinding(AppScope::class) class MenuRemoteDataSourceImpl(...) : MenuRemoteDataSource` in `impl/data/remote/`
+- Correct: `interface MenuLocalDataSource` in `impl/data/local/`, `class MenuLocalDataSourceImpl(...) : MenuLocalDataSource` in `impl/data/local/`
+- Incorrect: `MenuDataSource` (must specify Remote or Local), `MenuRemoteDataSource` in `impl/data/` root (must be in `remote/` package)
+
+### DTO
+- Correct: `@Serializable data class MenuItemDto(...)` in `impl/data/remote/`
+- Incorrect: `data class MenuItemResponse(...)` (must use `Dto` suffix), `MenuItemDto` in `impl/data/` root (must be in `remote/` package), `MenuItemDto` without `@Serializable`
+
 ## Rationale for Key Decisions
 
 | Decision | Why |
@@ -80,3 +92,6 @@ Enforced by `VisibilityConventionsTest`:
 | Package prefix conventions | `PackageConventionsTest` |
 | Visibility of @ContributesBinding, UiState, domain types | `VisibilityConventionsTest` |
 | Test file naming (Fake prefix) | `TestDoubleConventionsTest`, `TestFileNamingTest` |
+| DataSource naming + location (remote/ and local/ packages) | `DataLayerTest` |
+| DTO naming (*Dto suffix), @Serializable, location (remote/ package in impl/data) | `DataLayerTest` |
+| Network import restriction (only impl/data + composeApp) | `LayerDependencyTest` |

@@ -61,13 +61,15 @@ kotlin {
 }
 ```
 
-**impl/data/build.gradle.kts** — repository implementations:
+**impl/data/build.gradle.kts** — repository implementations, data sources, DTOs:
 ```kotlin
 plugins { id("mockdonalds.kmp.data") }
 kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":features:{name}:impl:domain"))
+            implementation(project(":core:network:api"))
+            implementation(project(":core:build-config"))
         }
     }
 }
@@ -190,18 +192,82 @@ interface {Feature}Repository {
 package com.mockdonalds.app.features.{name}.data
 
 import com.mockdonalds.app.features.{name}.api.domain.{Feature}Content
+import com.mockdonalds.app.features.{name}.data.remote.{Feature}RemoteDataSource
 import com.mockdonalds.app.features.{name}.domain.{Feature}Repository
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 
 @ContributesBinding(AppScope::class)
-class {Feature}RepositoryImpl : {Feature}Repository {
-    override fun get{Feature}(): Flow<{Feature}Content> = flowOf(
-        {Feature}Content(/* default data */)
-    )
+@Inject
+class {Feature}RepositoryImpl(
+    private val remoteDataSource: {Feature}RemoteDataSource,
+) : {Feature}Repository {
+    override fun get{Feature}(): Flow<{Feature}Content> =
+        remoteDataSource.get{Feature}().map { it.toContent() }
 }
+```
+
+**impl/data/remote/** — `src/commonMain/kotlin/com/mockdonalds/app/features/{name}/data/remote/`
+
+`{Feature}RemoteDataSource.kt`:
+```kotlin
+package com.mockdonalds.app.features.{name}.data.remote
+
+import kotlinx.coroutines.flow.Flow
+
+interface {Feature}RemoteDataSource {
+    fun get{Feature}(): Flow<{Feature}Dto>
+}
+```
+
+`{Feature}RemoteDataSourceImpl.kt`:
+```kotlin
+package com.mockdonalds.app.features.{name}.data.remote
+
+import com.mockdonalds.app.core.buildconfig.AppBuildConfig
+import com.mockdonalds.app.core.network.HttpClientFactory
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+
+@ContributesBinding(AppScope::class)
+@Inject
+class {Feature}RemoteDataSourceImpl(
+    httpClientFactory: HttpClientFactory,
+    appBuildConfig: AppBuildConfig,
+) : {Feature}RemoteDataSource {
+
+    private val client: HttpClient = httpClientFactory.create {
+        baseUrl = appBuildConfig.{service}BaseUrl  // e.g., menuBaseUrl, orderBaseUrl — see AppBuildConfig
+    }
+
+    override fun get{Feature}(): Flow<{Feature}Dto> = flow {
+        // client.get("{endpoint}").body<{Feature}Dto>()
+    }
+}
+```
+
+`{Feature}Dto.kt`:
+```kotlin
+package com.mockdonalds.app.features.{name}.data.remote
+
+import com.mockdonalds.app.features.{name}.api.domain.{Feature}Content
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class {Feature}Dto(
+    // fields matching API response
+)
+
+fun {Feature}Dto.toContent(): {Feature}Content = {Feature}Content(
+    // map DTO fields to domain model
+)
 ```
 
 **impl/presentation/** — see reference files in `features/order/impl/presentation/`

@@ -24,7 +24,7 @@ features/{name}/
   api/domain/          — models, abstract use cases (public contracts)
   api/navigation/      — Screen objects, TestTags (public, Circuit-aware)
   impl/domain/         — UseCaseImpl, Repository interfaces (private implementation)
-  impl/data/           — RepositoryImpl, DTOs (private implementation)
+  impl/data/           — RepositoryImpl, DataSource (interface + Impl), DTOs (@Serializable, *Dto suffix), mappers
   impl/presentation/   — Presenter, UiState, Events, Compose UI (private implementation)
   test/                — Fakes for testing
 
@@ -34,7 +34,7 @@ core/
   centerpost/          — CenterPostInteractor, CenterPostSubjectInteractor, CenterPostDispatchers
   circuit/             — TabScreen, ProtectedScreen, FlowScreen, Parcelize expect/actual, CircuitProviders
   metro/               — AppGraph interface (shared DI contract)
-  network/             — HttpClientProvider, Ktor engine
+  network/             — HttpClientFactory (api/) + impl with baked-in plugins (api/impl split)
   theme/               — MockDonaldsTheme, colors, typography, dimens, AdaptiveLayout
   test-fixtures/       — TestCenterPostDispatchers, KotestProjectConfig, StateRobot base
 ```
@@ -72,6 +72,9 @@ api ← impl/presentation
 | Use case (impl) | `Get{Feature}ContentImpl` | impl/domain | `@ContributesBinding` |
 | Repository (interface) | `{Feature}Repository` | impl/domain | — |
 | Repository (impl) | `{Feature}RepositoryImpl` | impl/data | `@ContributesBinding` |
+| DataSource (interface) | `{Feature}RemoteDataSource` | impl/data/remote/ | — |
+| DataSource (impl) | `{Feature}RemoteDataSourceImpl` | impl/data/remote/ | `@ContributesBinding` |
+| DTO | `{Name}Dto` | impl/data/remote/ | `@Serializable` data class |
 | Fake | `Fake{Name}` | test/ | extends abstract class |
 | TestTags | `{Feature}TestTags` | api/navigation | object with `const val` tags |
 

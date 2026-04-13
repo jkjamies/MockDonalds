@@ -77,7 +77,7 @@ kotlin {
             implementation(project(":core:centerpost"))
             implementation(project(":core:circuit"))
             implementation(project(":core:theme"))
-            implementation(project(":core:network"))
+            implementation(project(":core:network:impl"))
             implementation(project(":core:build-config"))
 
             // Circuit

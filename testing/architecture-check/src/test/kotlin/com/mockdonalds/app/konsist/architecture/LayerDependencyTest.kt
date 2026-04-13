@@ -85,6 +85,28 @@ class LayerDependencyTest : BehaviorSpec({
         }
     }
 
+    Given("network module access restriction") {
+        Then("only impl/data modules should import from core:network") {
+            val violators = Konsist.scopeFromProject()
+                .files
+                .filter {
+                    it.resideInPath("..features..") &&
+                        it.resideInPath("..commonMain..") &&
+                        !it.resideInPath("..impl/data..")
+                }
+                .flatMap { file ->
+                    file.imports
+                        .filter { it.name.contains(".core.network.") }
+                        .map { "  ${file.name}: ${it.name}" }
+                }
+
+            assert(violators.isEmpty()) {
+                "Only impl/data modules may import from core:network — " +
+                    "presenters and domain must not depend on HTTP infrastructure:\n${violators.joinToString("\n")}"
+            }
+        }
+    }
+
     Given("cross-feature isolation") {
         Then("feature modules should only import from other features via their api module") {
             val featureFiles = Konsist.scopeFromProject()

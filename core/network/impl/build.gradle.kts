@@ -1,17 +1,18 @@
 plugins {
-    id("mockdonalds.kmp.library")
-    alias(libs.plugins.kotlin.serialization)
+    id("mockdonalds.kmp.domain")
 }
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.core.network"
+        namespace = "com.mockdonalds.app.core.network.impl"
     }
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.ktor.client.core)
+            api(project(":core:network:api"))
+            implementation(project(":core:build-config"))
             implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.logging)
             implementation(libs.ktor.serialization.json)
             implementation(libs.coil.network.ktor)
         }

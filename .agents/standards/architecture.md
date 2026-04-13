@@ -32,7 +32,7 @@ graph TB
         CenterPost["centerpost"]
         CircuitCore["circuit"]
         FeatureFlag["feature-flag (api/impl/test)"]
-        Network["network"]
+        Network["network (api/impl)"]
         Theme["theme"]
         TestFixtures["test-fixtures"]
     end
@@ -93,7 +93,9 @@ MockDonalds/
 │   ├── centerpost/                     # Business logic framework (interactors, result types)
 │   ├── circuit/                        # Shared Circuit types (TabScreen, ProtectedScreen, CircuitProviders)
 │   ├── metro/                          # AppGraph interface (DI contract)
-│   ├── network/                        # HTTP client (Ktor)
+│   ├── network/
+│   │   ├── api/                        # HttpClientFactory, ClientConfig DSL, AuthMode, NetworkException
+│   │   └── impl/                       # HttpClientFactoryImpl (baked-in plugins), JsonProvider
 │   ├── test-fixtures/                  # TestCenterPostDispatchers, KotestProjectConfig, StateRobot
 │   └── theme/                          # Design system (Colors, Theme, Dimens, Typography)
 │
@@ -247,7 +249,7 @@ Key constraints:
 | `api/domain` | Public models, abstract use cases (`CenterPostSubjectInteractor` subclasses) | `mockdonalds.kmp.library` |
 | `api/navigation` | Screen objects (`@Parcelize data object`), TestTags | `mockdonalds.kmp.library` |
 | `impl/domain` | UseCaseImpl classes, Repository interfaces | `mockdonalds.kmp.domain` |
-| `impl/data` | RepositoryImpl classes, DTOs, network/storage calls | `mockdonalds.kmp.data` |
+| `impl/data` | RepositoryImpl classes, DataSource interfaces+impls (`remote/`, `local/`), DTOs (`@Serializable` data classes with `Dto` suffix in `remote/`), network via `core:network:api` | `mockdonalds.kmp.data` |
 | `impl/presentation` | Presenter functions, UiState, Events, Compose UI | `mockdonalds.kmp.presentation` |
 | `test` | Fakes extending abstract use cases for testing | `mockdonalds.kmp.domain` |
 
@@ -338,11 +340,11 @@ Konsist tests (run via `./gradlew :testing:architecture-check:test`) enforce all
 
 | Test Class | What It Enforces |
 |-----------|-----------------|
-| `LayerDependencyTest` | api isolation, domain/data/presentation unidirectional flow, cross-feature api-only imports, core never imports features |
+| `LayerDependencyTest` | api isolation, domain/data/presentation unidirectional flow, cross-feature api-only imports, core never imports features, network module imports restricted to impl/data only |
 | `ForbiddenPatternsTest` | No ViewModels, no raw CoroutineScope/launch/async in features, no hardcoded Dispatchers, no Android platform imports in commonMain, app module isolation |
 | `CircularDependencyTest` | No circular dependency chains between modules |
 | `PresentationLayerTest` | Presenters must not depend on repositories, must not construct api domain models, single public function per presenter file |
 | `CircuitConventionsTest` | Events must be sealed class (not interface), Screens in api/navigation with @Parcelize, ProtectedScreen in api/navigation |
 | `ApiLayerTest` | api module purity rules |
 | `DomainLayerTest` | Domain layer conventions |
-| `DataLayerTest` | Data layer conventions |
+| `DataLayerTest` | Data layer conventions: repository interfaces in domain, RepositoryImpl with @ContributesBinding, DataSource classes in correct directories (remote/local), DTOs must be @Serializable data classes in remote/ |

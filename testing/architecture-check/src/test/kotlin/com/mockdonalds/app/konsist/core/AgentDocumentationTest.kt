@@ -81,6 +81,7 @@ class AgentDocumentationTest : BehaviorSpec({
                 "design-system.md",
                 "convention-plugins.md",
                 "feature-scaffolding.md",
+                "build-config.md",
             )
             val missing = expectedFiles.filter { !standardsDir.resolve(it).exists() }
             assert(missing.isEmpty()) {

@@ -84,6 +84,68 @@ class {Name}RepositoryImplTest : BehaviorSpec({
 })
 ```
 
+### 4. Remote Data Source (if network-backed) — `impl/data/remote/`
+
+`features/{feature}/impl/data/src/commonMain/kotlin/com/mockdonalds/app/features/{feature}/data/remote/{Name}RemoteDataSource.kt`
+
+```kotlin
+package com.mockdonalds.app.features.{feature}.data.remote
+
+import kotlinx.coroutines.flow.Flow
+
+interface {Name}RemoteDataSource {
+    fun getData(): Flow<{Name}Dto>
+}
+```
+
+`features/{feature}/impl/data/src/commonMain/kotlin/com/mockdonalds/app/features/{feature}/data/remote/{Name}RemoteDataSourceImpl.kt`
+
+```kotlin
+package com.mockdonalds.app.features.{feature}.data.remote
+
+import com.mockdonalds.app.core.buildconfig.AppBuildConfig
+import com.mockdonalds.app.core.network.HttpClientFactory
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+
+@ContributesBinding(AppScope::class)
+@Inject
+class {Name}RemoteDataSourceImpl(
+    httpClientFactory: HttpClientFactory,
+    appBuildConfig: AppBuildConfig,
+) : {Name}RemoteDataSource {
+
+    private val client: HttpClient = httpClientFactory.create {
+        baseUrl = appBuildConfig.{service}BaseUrl  // e.g., menuBaseUrl, orderBaseUrl — see AppBuildConfig
+    }
+
+    override fun getData(): Flow<{Name}Dto> = flow {
+        // client.get("{endpoint}").body<{Name}Dto>()
+    }
+}
+```
+
+### 5. DTO (if network-backed) — `impl/data/remote/`
+
+`features/{feature}/impl/data/src/commonMain/kotlin/com/mockdonalds/app/features/{feature}/data/remote/{Name}Dto.kt`
+
+```kotlin
+package com.mockdonalds.app.features.{feature}.data.remote
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class {Name}Dto(
+    // fields matching API response
+)
+```
+
+DTOs must be `@Serializable` data classes with `Dto` suffix, located in `remote/` package (Konsist enforces this).
+
 ## Key Rules
 
 - Interface in `impl/domain/` — visible to use cases in the same feature
@@ -91,6 +153,10 @@ class {Name}RepositoryImplTest : BehaviorSpec({
 - Impl name must end with `RepositoryImpl` (Konsist enforces this)
 - Impl must implement the interface (Konsist enforces this)
 - Presenters must NOT depend on repositories directly — only through use cases
+- Remote data sources go in `impl/data/remote/`, local in `impl/data/local/` (Konsist enforces this)
+- DTOs must be `@Serializable` data classes with `Dto` suffix in `remote/` (Konsist enforces this)
+- Only `impl/data` modules may depend on `core:network:api` (Konsist enforces this)
+- Each feature creates its own `HttpClient` via `HttpClientFactory` — no shared singleton
 
 ## Post-Change Verification — MANDATORY
 

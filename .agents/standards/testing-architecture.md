@@ -30,7 +30,7 @@ No emulator or simulator required. These are fast (~10s each) and should always 
 
 | Category | Tests | What They Enforce |
 |----------|-------|-------------------|
-| architecture/ | `LayerDependencyTest` | Unidirectional dependency flow: api <- domain <- data, api <- presentation. Cross-feature imports only via api. Core never imports features. |
+| architecture/ | `LayerDependencyTest` | Unidirectional dependency flow: api <- domain <- data, api <- presentation. Cross-feature imports only via api. Core never imports features. Network module (`core.network`) imports restricted to `impl/data` modules only. |
 | architecture/ | `CircularDependencyTest` | No circular api imports between feature modules. |
 | architecture/ | `ForbiddenPatternsTest` | No ViewModels, no raw CoroutineScope/launch/async/Dispatchers, no Android platform imports in commonMain. |
 | circuit/ | `CircuitConventionsTest` | Events are sealed class (not interface). Screens in api with @Parcelize. TabScreens have tag. ProtectedScreens in api/navigation. |
@@ -43,7 +43,7 @@ No emulator or simulator required. These are fast (~10s each) and should always 
 | core/ | `CoreMetroConventionsTest` | core:metro must not import from features or impl modules. |
 | core/ | `AgentDocumentationTest` | Every feature/core module has AGENTS.md. Skills have SKILL.md. |
 | layers/ | `ApiLayerTest` | Api data classes are immutable. @Serializable only in api/data/network. No MutableStateFlow in public APIs. |
-| layers/ | `DataLayerTest` | Repository interfaces in domain. RepositoryImpl in data with @ContributesBinding. Repository functions return Flow. |
+| layers/ | `DataLayerTest` | Repository interfaces in domain. RepositoryImpl in data with @ContributesBinding. Repository functions return Flow. DataSource classes in correct directories (remote/ or local/). DTOs must be @Serializable data classes in remote/ package. |
 | layers/ | `DomainLayerTest` | Abstract use cases in api. Impl classes in domain with @ContributesBinding. |
 | layers/ | `PresentationLayerTest` | Presenters have @CircuitInject. One public function per presenter file. No direct repository dependencies. |
 | testing/ | `TestDoubleConventionsTest` | Fakes in test/commonMain. Every use case has a Fake. No mockk. |

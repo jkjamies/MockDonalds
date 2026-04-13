@@ -16,6 +16,10 @@ class AppBuildConfigTest : BehaviorSpec({
                 config.appName shouldBe "MockDonalds"
             }
 
+            Then("appId is a non-empty identifier") {
+                config.appId shouldNotBe ""
+            }
+
             Then("market is a non-empty lowercase identifier") {
                 config.market shouldNotBe ""
                 config.market shouldMatch Regex("^[a-z]{2}$")
@@ -34,6 +38,31 @@ class AppBuildConfigTest : BehaviorSpec({
             Then("cdnUrl is an https URL") {
                 config.cdnUrl shouldNotBe ""
                 config.cdnUrl shouldMatch Regex("^https://.+")
+            }
+
+            Then("menuBaseUrl is an https URL") {
+                config.menuBaseUrl shouldNotBe ""
+                config.menuBaseUrl shouldMatch Regex("^https://.+")
+            }
+
+            Then("orderBaseUrl is an https URL") {
+                config.orderBaseUrl shouldNotBe ""
+                config.orderBaseUrl shouldMatch Regex("^https://.+")
+            }
+
+            Then("accountBaseUrl is an https URL") {
+                config.accountBaseUrl shouldNotBe ""
+                config.accountBaseUrl shouldMatch Regex("^https://.+")
+            }
+
+            Then("rewardsBaseUrl is an https URL") {
+                config.rewardsBaseUrl shouldNotBe ""
+                config.rewardsBaseUrl shouldMatch Regex("^https://.+")
+            }
+
+            Then("storeBaseUrl is an https URL") {
+                config.storeBaseUrl shouldNotBe ""
+                config.storeBaseUrl shouldMatch Regex("^https://.+")
             }
 
             Then("locale is a BCP-47-shaped tag") {
