@@ -339,7 +339,7 @@ Should show all 6 submodules. If not, check that the directory name matches the 
 
 ### 6. Post-Change Verification — MANDATORY
 
-**Work is NEVER complete until verification passes.** For new features, run the full `verify` skill (not `verify-smart`) since scaffolding touches many modules and requires a full build to validate wiring.
+**Work is NEVER complete until verification passes.** For new features, run `verify full` (not `verify diff`) since scaffolding touches many modules and requires a full build to validate wiring.
 
 The `verify` skill will run: lint, unit tests, architecture tests (Konsist + Harmonize), and full build.
 

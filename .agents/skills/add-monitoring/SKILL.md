@@ -132,6 +132,6 @@ val centerPost = rememberCenterPost(dispatchers)
 
 ## Post-Change Verification — MANDATORY
 
-**Work is NEVER complete until verification passes.** Run the `verify-smart` skill to validate all changes.
+**Work is NEVER complete until verification passes.** Run the `verify` skill to validate all changes.
 
 If ANY check fails, fix the issue and re-run. Do not declare the task complete until verification passes.

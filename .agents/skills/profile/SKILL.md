@@ -243,4 +243,4 @@ open ./traces/{feature}_profile.trace
 
 ## Post-Change Verification (add mode only)
 
-When adding benchmarks, run `verify-smart` to ensure test code compiles. Running the benchmarks themselves requires a device/emulator/simulator.
+When adding benchmarks, run `verify` to ensure test code compiles. Running the benchmarks themselves requires a device/emulator/simulator.

@@ -255,7 +255,7 @@ Should show all submodules (api, impl, test if applicable).
 
 ## Post-Change Verification — MANDATORY
 
-**Work is NEVER complete until verification passes.** Run the full `verify` skill (not `verify-smart`) since new modules touch build structure and require full validation.
+**Work is NEVER complete until verification passes.** Run `verify full` since new modules touch build structure and require full validation.
 
 The `verify` skill will run: lint, unit tests, architecture tests (Konsist + Harmonize), and builds for both platforms.
 

@@ -142,28 +142,66 @@ xcodebuild test -scheme iOSApp -testPlan E2ETests -destination '...'            
 
 ## Skills
 
-Available automation in `.agents/skills/`:
+Available automation in `.agents/skills/` (30 skills total). All scaffolding and modification skills accept optional context via `@file` spec reference or inline description — see `.agents/templates/` for spec templates.
+
+### Verification & Quality
 
 | Skill | Description |
 |-------|-------------|
-| `verify` | Full verification pipeline (build + lint + all tests) |
-| `verify-smart` | Diff-aware verification — scopes checks to changed modules |
-| `run-unit-tests` | Run Kotest unit test suite |
-| `run-ui-tests` | Run Android UI tests for a specific feature |
-| `run-arch-tests` | Run Konsist + Harmonize architecture tests |
-| `run-all-tests` | Lint + unit tests + architecture tests |
+| `verify` | Unified pipeline — `diff` (default, changed modules), `local` (full build), `ci` (all test levels + variants) |
+| `run-unit-tests` | Kotest unit tests + iOS Swift Testing |
+| `run-ui-tests` | Android + iOS UI tests (requires device/simulator) |
+| `run-arch-tests` | Konsist + Harmonize architecture tests |
+| `run-all-tests` | Full test pipeline — lint + all 5 test levels on both platforms |
 | `code-review` | Diff-based code review against default branch |
-| `add-unit-tests` | Identify and fill unit test gaps from branch diff |
-| `add-ui-tests` | Identify and fill UI test gaps from branch diff |
-| `add-tests` | Combined unit + UI test gap-filling |
-| `add-feature` | Scaffold a complete new feature (6 modules + tests + AGENTS.md) |
-| `add-screen` | Add a new screen to an existing feature (9+ files) |
+| `lint-branch` | Fast pre-commit lint — Detekt + SwiftLint on changed files (~5s) |
+| `find-dead-code` | Surface unused declarations, orphaned TestTags/Screens/Fakes (optional module scope) |
+| `summarize` | Project/feature/module overview with android/ios platform scope |
+| `reverse-spec` | Reverse-engineer a spec from existing code — presumed AC, data flow, contracts |
+| `profile` | Perfetto/Macrobenchmark (Android) + Instruments (iOS) benchmarking and tracing |
+
+### Test Generation
+
+| Skill | Description |
+|-------|-------------|
+| `add-unit-tests` | Fill unit test gaps from branch diff |
+| `add-ui-tests` | Fill UI test gaps from branch diff |
+| `add-tests` | Combined unit + UI gap-filling |
+
+### Scaffolding
+
+| Skill | Description |
+|-------|-------------|
+| `add-feature` | Scaffold complete feature module (6 submodules + tests + AGENTS.md) |
+| `add-screen` | Add screen to existing feature (9+ files) |
 | `add-use-case` | Add interactor (abstract + impl + fake + test) |
-| `add-repository` | Add repository (interface + impl + test) |
-| `add-config-field` | Add a compile-time field to `core:build-config` (Defaults + every combo + facade + smoke test) |
-| `validate-all-markets` | Gradle task on `:core:build-config`: parse every `markets/*.properties` against `Defaults.properties`, enforce schema/format rules. Pre-flight gate for `verify` and `verify-ci`. |
-| `lint-branch` | Fast pre-commit lint: Detekt on commonMain + SwiftLint on changed `.swift` files only. ~5s. For thorough diff-scoped checks, use `verify-smart`. |
-| `find-dead-code` | Surface unused Kotlin declarations (full Detekt across all source sets) + dead TestTags / Screens / Fakes via targeted greps. Reports only; never deletes. |
+| `add-repository` | Add repository (interface + impl + test + data sources + DTOs) |
+| `add-core-module` | Scaffold core module with api/impl split |
+| `add-api-endpoint` | Wire feature to backend API (data source + DTO + mapper + client config) |
+| `add-analytics-events` | Add analytics event definitions + presenter/domain wiring |
+| `add-feature-flag` | Add feature flag definition + observation + gating |
+| `add-monitoring` | Add observability instrumentation (shell — core:monitoring planned) |
+| `add-config-field` | Add compile-time field to `core:build-config` |
+| `validate-all-markets` | Enforce build-config schema/format rules across all market properties |
+
+### Modification
+
+| Skill | Description |
+|-------|-------------|
+| `update` | Modify existing code across all affected layers |
+| `remove` | Clean teardown across layers with dependency analysis |
+| `migrate` | Cross-cutting migration (library swap, pattern change, API version upgrade) |
+
+### Spec Templates
+
+Structured input for skills — copy, fill in, feed via `@file`. Located in `.agents/templates/`:
+
+| Template | Purpose |
+|----------|---------|
+| `new-spec.md` | Describe something new to build |
+| `change-spec.md` | Describe a modification to existing code |
+| `migrate-spec.md` | Describe a migration from one approach to another |
+| `remove-spec.md` | Describe what to tear down |
 
 ## Standards Reference
 

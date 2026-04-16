@@ -7,7 +7,19 @@ description: Surface unused Kotlin declarations (imports, private members, param
 
 Surface code that exists but isn't used — so you can delete it. This skill reports; it never deletes. Dead-code removal is a judgment call (the declaration may be reserved for an upcoming feature, required by a framework contract, or exercised only by tests you haven't discovered yet), so the human always decides what goes.
 
-Target runtime: ~30–60s cold depending on repo size.
+**Parameters**: scope (optional — omit for whole project)
+
+**Usage examples**:
+```
+/find-dead-code                    # whole project
+/find-dead-code order              # single feature
+/find-dead-code core:network       # core module
+/find-dead-code features/order/impl/presentation  # specific submodule
+```
+
+When a scope is provided, all checks (Detekt, TestTags, Screens, Fakes) are restricted to that module/feature. This is faster and produces focused results — useful after a targeted change or during code review of a specific area.
+
+Target runtime: ~30–60s cold for full project, ~5–15s for a single module.
 
 ## What this covers
 
@@ -23,29 +35,48 @@ Target runtime: ~30–60s cold depending on repo size.
 - **Dead Metro bindings** — a `@ContributesBinding(AppScope::class)` class whose interface is never injected anywhere. Konsist could express this but doesn't today. If you see it slipping, add a `DependencyInjectionTest` rule.
 - **Dead resources** — string resources, drawables, XML. Compose doesn't use XML layouts so this is small surface; Android Lint covers it if you need it.
 
+## Scope Resolution
+
+When a scope argument is provided, resolve it to a filesystem path:
+
+| Input | Resolves to | Detekt task |
+|-------|------------|-------------|
+| (none) | whole project | `./gradlew detekt` |
+| `order` | `features/order/` | `./gradlew :features:order:detekt` (all submodules) |
+| `core:network` | `core/network/` | `./gradlew :core:network:detekt` (all submodules) |
+| `features/order/impl/presentation` | that directory | `./gradlew :features:order:impl:presentation:detekt` |
+
+For grep-based checks (TestTags, Screens, Fakes), restrict the search directory to the resolved path. **Always search the whole project for references** — a declaration is only dead if nothing anywhere references it.
+
 ## Steps
 
-### 1. Full Detekt sweep
+### 1. Detekt sweep
 
+**Full project:**
 ```bash
 ./gradlew detekt
 ```
 
-This runs every `detekt*` task in every module, covering commonMain + every platform source set + every test source set. Review the output for `UnusedImports` / `UnusedPrivateMember` / `UnusedParameter` findings.
+**Scoped to a module:**
+```bash
+./gradlew :{module-gradle-path}:detekt
+```
+
+This runs `detekt` tasks covering commonMain + every platform source set + every test source set within the scope. Review the output for `UnusedImports` / `UnusedPrivateMember` / `UnusedParameter` findings.
 
 Most unused-import findings auto-correct (`autoCorrect = true`). Private-member findings require manual review: either the member is actually dead (delete it) or it's reserved for use (suppress with `@Suppress("UnusedPrivateMember")` and a comment explaining why).
 
 ### 2. Dead TestTags
 
-Find every `*TestTags` constant name, then grep for usage outside its declaring file:
+Find `*TestTags` constants within scope, then grep the **whole project** for usage:
 
 ```bash
-# List all tag constants defined
-grep -rhn 'const val [A-Z_]*' --include='*TestTags.kt' \
+# List tag constants defined (within scope)
+grep -rhn 'const val [A-Z_]*' --include='*TestTags.kt' {scope_path} \
   | sed -E 's/.*const val ([A-Z_]+).*/\1/' \
   | sort -u > /tmp/tags-defined.txt
 
-# For each, check if it's referenced anywhere except its declaration
+# For each, check if it's referenced anywhere in the project except its declaration
 while read -r tag; do
     count=$(grep -r "$tag" --include='*.kt' --include='*.swift' -l \
         | grep -v 'TestTags.kt$' | wc -l)
@@ -59,10 +90,10 @@ Report any `dead: *` lines. A dead tag means either the tag is unused (delete it
 
 ### 3. Dead Screens
 
-List every Screen object, then check each for navigation and CircuitInject references:
+List Screen objects within scope, then check the **whole project** for navigation and CircuitInject references:
 
 ```bash
-grep -rh 'data object [A-Za-z_]*Screen[[:space:]]*:' --include='*Screen.kt' \
+grep -rh 'data object [A-Za-z_]*Screen[[:space:]]*:' --include='*Screen.kt' {scope_path} \
   | sed -E 's/.*data object ([A-Za-z_]+Screen).*/\1/' \
   | sort -u > /tmp/screens-defined.txt
 
@@ -81,8 +112,10 @@ A dead screen means either the screen was orphaned by a nav refactor (delete it 
 
 ### 4. Dead Fakes
 
+Search for Fakes within scope, check the **whole project** for references:
+
 ```bash
-find features -path '*/test/src/commonMain/*' -name 'Fake*.kt' \
+find {scope_path} -path '*/test/src/commonMain/*' -name 'Fake*.kt' \
   | while read -r file; do
       name=$(basename "$file" .kt)
       refs=$(grep -r "$name" --include='*Test.kt' -l | wc -l)
@@ -91,6 +124,8 @@ find features -path '*/test/src/commonMain/*' -name 'Fake*.kt' \
       fi
   done
 ```
+
+When scope is the whole project, use `features` as the base path for the find command.
 
 A dead fake means either the fake was replaced (delete it) or a planned test was never written (add the test).
 

@@ -86,7 +86,7 @@ If the change affects the feature's key types, cross-feature dependencies, or do
 
 ## Post-Change Verification — MANDATORY
 
-**Work is NEVER complete until verification passes.** Run the `verify-smart` skill to validate all changes. It will:
+**Work is NEVER complete until verification passes.** Run the `verify` skill to validate all changes. It will:
 
 - Detect which modules were affected
 - Run lint, unit tests, and architecture checks scoped to those modules

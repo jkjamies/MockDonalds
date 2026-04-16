@@ -1,12 +1,14 @@
 # Verification Pipeline
 
-## Local vs. CI — what each level gates
+## Three Scopes — diff, full, all
 
-Verification comes in two shapes, and they exist for different reasons.
+The `verify` skill has three scopes, each for a different purpose.
 
-**Local (the `verify` skill):** prove the code you just wrote is correct and compiles on both platforms, *fast*. Lint, unit tests, architecture checks, SwiftLint, and one debug build per platform against the default market (`us-dev`). Target: under ~60s warm, under ~2 min cold. Run this on every iteration.
+**`diff` (default):** scoped to changed modules only. Fastest option — use during iterative development. Target: ~5–15s.
 
-**CI (the full pipeline below, including `./gradlew assemble`):** prove the code ships. Every market × env combo, both platforms, both build types, release-optimized where it matters. Target: thorough, not fast. Runs once per PR.
+**`full`:** whole project — lint, unit tests, architecture checks, and one debug build per platform against the default market (`us-dev`). Target: under ~60s warm, under ~2 min cold. Run after any code change as the standard verification.
+
+**`all`:** everything — every test level, every variant, every market × env combo, both platforms. Target: thorough, not fast. Run before opening a PR or when the change warrants maximum confidence.
 
 **What `./gradlew assemble` actually does** — and why it's CI-only:
 
@@ -14,13 +16,13 @@ Verification comes in two shapes, and they exist for different reasons.
 - Runs R8/minify on `:androidApp:assembleRelease` and the equivalent optimization passes for iOS release frameworks. These are real failure modes (obfuscation strips a reflected symbol, optimizer trips on a cinterop edge case) but they trigger in <5% of changes.
 - Typically fires **~1800 tasks** on a warm cache. By contrast, `:androidApp:assembleDebug` fires ~60. The 30× task delta is the 5-minute gap.
 
-Locally you almost never need any of that. If your change didn't touch R8 rules, Proguard keep-rules, cinterop, or `expect`/`actual` splits, debug builds prove correctness just as well as release. Pay the `assemble` cost in CI, where wall time doesn't block the dev loop.
+Locally you almost never need any of that. If your change didn't touch R8 rules, Proguard keep-rules, cinterop, or `expect`/`actual` splits, debug builds prove correctness just as well as release. Pay the `assemble` cost in `verify all`, where wall time doesn't block the dev loop.
 
-**On iOS targets specifically:** `iosArm64` is the App Store binary, `iosSimulatorArm64` is what devs and CI run tests on, `iosX64` is the legacy Intel simulator. Local verify only needs `iosSimulatorArm64`. CI should cover `iosArm64` + `iosSimulatorArm64`. `iosX64` is vestigial — Apple has been Apple-Silicon-default since 2020 and KMP compile bugs almost never hit x64 uniquely. Drop it unless someone's actively developing on an Intel Mac.
+**On iOS targets specifically:** `iosArm64` is the App Store binary, `iosSimulatorArm64` is what devs and CI run tests on, `iosX64` is the legacy Intel simulator. `verify full` only needs `iosSimulatorArm64`. `verify all` should cover `iosArm64` + `iosSimulatorArm64`. `iosX64` is vestigial — Apple has been Apple-Silicon-default since 2020 and KMP compile bugs almost never hit x64 uniquely. Drop it unless someone's actively developing on an Intel Mac.
 
-**On the market matrix:** every market compiles the same Kotlin source; the only thing that changes is which `.properties` file gets merged into BuildKonfig. Building every combo locally proves something real (parse + merge + downstream recompile) but it's CI's job, not the dev loop's. The cheap gate that catches schema/format drift across every combo without compiling is `./gradlew :core:build-config:validateAllMarkets` (driven by the `validate-all-markets` skill) — a lightweight configuration-cache-friendly Gradle task that runs as a pre-flight check in both `verify` and `verify-ci`.
+**On the market matrix:** every market compiles the same Kotlin source; the only thing that changes is which `.properties` file gets merged into BuildKonfig. Building every combo locally proves something real (parse + merge + downstream recompile) but it's `verify all`'s job, not the dev loop's. The cheap gate that catches schema/format drift across every combo without compiling is `./gradlew :core:build-config:validateAllMarkets` (driven by the `validate-all-markets` skill) — a lightweight configuration-cache-friendly Gradle task that runs as a pre-flight check in both `verify full` and `verify all`.
 
-## Local (the `verify` skill)
+## Full Scope (the `verify full` pipeline)
 
 Eight steps, symmetric across both platforms: lint → unit → architecture → debug build, plus a pre-flight market-config check. Parameterized by `market` (default `us`) and `env` (default `dev`); only the two debug build steps use those parameters. Stop and fix failures before proceeding.
 
@@ -29,6 +31,8 @@ Eight steps, symmetric across both platforms: lint → unit → architecture →
 ./gradlew :core:build-config:validateAllMarkets
 ```
 Gradle task on `:core:build-config`. Parses every `core/build-config/markets/*.properties` against `Defaults.properties` and enforces the rules in [build-config.md → Validation rules](build-config.md#validation-rules). Aggregates every violation in one pass and fails the build with the full list. Configuration-cache compatible; executes every invocation (no `upToDateWhen` skip) because the validation logic itself isn't an input to the task — if rules in `build.gradle.kts` change but no `.properties` file does, we still need the new rules to fire against existing files. Warm runs complete in under a second. Owned by the [`validate-all-markets`](../skills/validate-all-markets/SKILL.md) skill. Runs before step 1 because if a combo file is malformed, every downstream step builds against stale or wrong config.
+
+> **Note:** The `verify` skill's `diff` scope uses the Diff Decision Logic (below) to run only the subset of these steps relevant to what changed.
 
 
 ```
@@ -68,16 +72,16 @@ Gradle task on `:core:build-config`. Parses every `core/build-config/markets/*.p
    ```
    Simulator-arm64 only. Skips `iosArm64` (device) and `iosX64` (legacy Intel sim) — those are CI's job. Configuration name: `us` + `dev` → `US-Dev`, `de` + `prod` → `DE-Prod`.
 
-### What the local pipeline deliberately does NOT run
+### What `verify full` deliberately does NOT run
 
 - `./gradlew assemble` — 5+ min, every target × every variant on every module.
 - Market matrix — every combo separately.
 - Release builds — R8/minify on Android, LLVM-opt on iOS release frameworks.
 - `iosArm64` (device) and `iosX64` (Intel sim).
-- **UI component tests** on either platform — Android `connectedAndroidDeviceTest` (emulator) and iOS `UIComponentTests` plan (ViewInspector Robot-pattern view tests, simulator). Both run in `verify-ci`.
+- **UI component tests** on either platform — Android `connectedAndroidDeviceTest` (emulator) and iOS `UIComponentTests` plan (ViewInspector Robot-pattern view tests, simulator). Both run in `verify all`.
 - navint-tests, e2e-tests — require a running device/emulator/simulator and are slower still.
 
-### When to escalate to `verify-ci` locally
+### When to escalate to `verify all`
 
 Only when the change specifically touches:
 - R8/Proguard keep-rules → `./gradlew :androidApp:assembleRelease`
@@ -89,7 +93,7 @@ Only when the change specifically touches:
 
 For anything else, the 8 steps above are enough.
 
-## Full Pipeline (CI)
+## All Scope (the `verify all` pipeline)
 
 Run these steps in order after any code change. Stop and fix failures before proceeding.
 
@@ -122,7 +126,7 @@ Fully symmetric across both platforms, organized by concern: lint → unit → a
 12. **iOS e2e-tests** (`E2ETests` test plan, requires simulator): `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'`
 13. **Assemble** (every target × every variant): `./gradlew assemble`
 
-## Scoped Verification (verify-smart)
+## Diff Scope (the `verify diff` pipeline)
 
 For targeted changes, scope checks to affected modules instead of running the full pipeline.
 
@@ -155,7 +159,7 @@ git diff --name-only                       # uncommitted changes on main
 | `testing/e2e-tests/` | `:testing:e2e-tests:connectedAndroidTest` (requires device/emulator) |
 | `iosApp/iosAppE2ETests/` | `xcodebuild test -scheme iOSApp -testPlan E2ETests ...` (requires simulator) |
 
-### verify-smart Decision Logic
+### Diff Decision Logic
 
 1. Always run `:testing:architecture-check:test` (fast, catches structural issues regardless of what changed).
 2. If Kotlin source files changed: run `detektMetadataCommonMain` + scoped unit tests.

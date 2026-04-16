@@ -165,7 +165,7 @@ class Fake{Name} @Inject constructor(
 
 ## Post-Change Verification — MANDATORY
 
-**Work is NEVER complete until verification passes.** Run the `verify-smart` skill to validate all changes. It will:
+**Work is NEVER complete until verification passes.** Run the `verify` skill to validate all changes. It will:
 
 - Detect which modules have new or changed test files
 - Run lint, unit tests, and architecture checks scoped to those modules

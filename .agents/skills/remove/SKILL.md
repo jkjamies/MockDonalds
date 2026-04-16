@@ -121,7 +121,7 @@ Run `/find-dead-code` after removal to catch:
 
 ## Post-Change Verification — MANDATORY
 
-**Work is NEVER complete until verification passes.** Run the full `verify` skill (not `verify-smart`) since removal can affect any module. The skill will run: lint, unit tests, architecture tests (Konsist + Harmonize), and full build.
+**Work is NEVER complete until verification passes.** Run `verify full` since removal can affect any module. The skill will run: lint, unit tests, architecture tests (Konsist + Harmonize), and full build.
 
 Additionally, run `/find-dead-code` to confirm no orphaned code remains.
 

@@ -61,7 +61,7 @@ Work through consumers one at a time, verifying each:
 2. Adapt to new API surface
 3. Update tests to cover new path
 4. Update fakes if abstractions changed
-5. Run `verify-smart` to confirm the consumer still works
+5. Run `verify` to confirm the consumer still works
 
 **Order of migration:**
 1. Core modules (upstream dependencies first)

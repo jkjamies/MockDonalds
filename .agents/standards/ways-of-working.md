@@ -5,7 +5,7 @@
 1. **Branch** from `main` with a descriptive name (e.g., `feature/rewards-history`, `fix/login-redirect`)
 2. **Scaffold** using skills if adding structural elements (add-feature, add-screen, add-use-case, add-repository)
 3. **Implement** business logic, UI, and tests following architecture rules in root AGENTS.md
-4. **Verify** using the full 6-step pipeline: detekt, unit tests, architecture-check, harmonize, swiftlint, assemble
+4. **Verify** using the `verify` skill — `diff` for iterative work, `full` before pushing, `all` before opening a PR
 5. **Code review** — run the code-review skill before opening a PR
 6. **Merge** to main after review approval and green verification
 
@@ -16,12 +16,11 @@ Skills live in `.agents/skills/` with a `SKILL.md` file each. Invoke by name.
 ### Verification (read-only, safe to run anytime)
 | Skill | When to Use |
 |-------|-------------|
-| `verify` | After any code change, before declaring work complete |
-| `verify-smart` | During iterative development on 1-2 modules (faster than full verify) |
+| `verify` | After any code change — `diff` (default, changed modules), `full` (whole project + builds), `all` (every test level + variant) |
 | `run-unit-tests` | Quick check of Kotest suite only |
 | `run-ui-tests` | After UI changes (requires Android device/emulator) |
 | `run-arch-tests` | After structural changes (naming, DI, module layout) |
-| `run-all-tests` | Lint + unit + arch tests (no build step) |
+| `run-all-tests` | Lint + all 5 test levels on both platforms |
 
 ### Scaffolding (modifies code, always verify after)
 | Skill | When to Use |

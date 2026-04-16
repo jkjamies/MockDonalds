@@ -1,6 +1,6 @@
 ---
 name: lint-branch
-description: Fast pre-commit lint check — runs Detekt on commonMain Kotlin and SwiftLint on changed Swift files only. Targets the ~5s inner loop you run 20× a day. For thorough diff-scoped verification (lint + unit + architecture), use verify-smart.
+description: Fast pre-commit lint check — runs Detekt on commonMain Kotlin and SwiftLint on changed Swift files only. Targets the ~5s inner loop you run 20× a day. For thorough diff-scoped verification (lint + unit + architecture), use verify.
 ---
 
 # Lint Branch
@@ -14,18 +14,18 @@ Target runtime: ~5s warm. Slower than "nothing" but faster than anything that in
 | Skill | Scope | Runs | Use when |
 |---|---|---|---|
 | `lint-branch` (this) | changed files only | Detekt (commonMain) + SwiftLint (changed .swift) | Pre-commit sanity, 20× a day |
-| `verify-smart` | changed modules | lint + unit + arch per affected module | Before pushing, once per iteration |
+| `verify` (default: diff) | changed modules | lint + unit + arch per affected module | Before pushing, once per iteration |
 | `verify` | whole repo | full lint + unit + arch + debug build both platforms | End of a task, before opening PR |
 
-If you don't know which to pick: `lint-branch` first. If it passes and you also want unit/arch confidence, escalate to `verify-smart`.
+If you don't know which to pick: `lint-branch` first. If it passes and you also want unit/arch confidence, escalate to `verify`.
 
 ## Coverage limitations
 
 This skill deliberately does NOT cover:
-- **`androidMain` / `iosMain` / `iosSimulatorArm64Main` Kotlin** — platform-specific source sets. If you touched `actual` impls, expect/actual splits, or anything under a platform source dir, run `verify-smart` instead or invoke the per-source-set detekt task (`./gradlew :module:detektAndroidMain`).
-- **Swift architecture tests** — Harmonize lives in `verify-smart` / `run-arch-tests`.
-- **Kotlin architecture tests** — Konsist lives in `verify-smart` / `run-arch-tests`.
-- **Compilation errors** — Detekt doesn't compile Kotlin. A syntactically broken file may slip through; `verify-smart` catches it at the unit-test compile step.
+- **`androidMain` / `iosMain` / `iosSimulatorArm64Main` Kotlin** — platform-specific source sets. If you touched `actual` impls, expect/actual splits, or anything under a platform source dir, run `verify` instead or invoke the per-source-set detekt task (`./gradlew :module:detektAndroidMain`).
+- **Swift architecture tests** — Harmonize lives in `verify` / `run-arch-tests`.
+- **Kotlin architecture tests** — Konsist lives in `verify` / `run-arch-tests`.
+- **Compilation errors** — Detekt doesn't compile Kotlin. A syntactically broken file may slip through; `verify` catches it at the unit-test compile step.
 
 The tradeoff is deliberate: fast feedback for the 90% case (commonMain + Swift edits) at the cost of missing platform-specific Kotlin. The other skills own the 10% case.
 
@@ -82,5 +82,5 @@ If violations remain that can't auto-correct, list them with file:line and stop 
 
 - `.agents/standards/verification.md` — full pipeline context, failure interpretation
 - `.agents/standards/code-style.md` — Detekt/ktlint/SwiftLint rules
-- `.agents/skills/verify-smart/` — diff-scoped full verification (next step up)
+- `.agents/skills/verify/` — diff-scoped full verification (next step up)
 - `.agents/skills/find-dead-code/` — broader unused-declaration sweep across the whole repo

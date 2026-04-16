@@ -5,9 +5,9 @@ description: Run the full test pipeline (lint + all 5 test levels on both platfo
 
 # Run All Tests
 
-Runs every test step from `verification.md` → "Full Pipeline (CI)", in order, on both platforms. Stop and fix failures before proceeding to the next step. The only thing this skill omits from the full CI pipeline is the final `./gradlew assemble` — use the `verify-ci` skill if you need that too.
+Runs every test step from `verification.md` → "All Scope", in order, on both platforms. Stop and fix failures before proceeding to the next step. The only thing this skill omits from the full pipeline is the final `./gradlew assemble` — use `verify all` if you need that too.
 
-For a fast local inner loop that skips device-gated steps, use the `verify` skill. For diff-scoped runs, use `verify-smart`.
+For a fast local inner loop that skips device-gated steps, use `verify full`. For diff-scoped runs, use `verify` (default `diff`).
 
 ## Prerequisites
 

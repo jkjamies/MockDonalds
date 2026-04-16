@@ -140,7 +140,7 @@ class {Name}ImplTest : BehaviorSpec({
 
 ## Post-Change Verification — MANDATORY
 
-**Work is NEVER complete until verification passes.** Run the `verify-smart` skill to validate all changes. It will:
+**Work is NEVER complete until verification passes.** Run the `verify` skill to validate all changes. It will:
 
 - Detect which modules were affected by the new use case files
 - Run lint, unit tests, and architecture checks scoped to those modules

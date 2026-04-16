@@ -12,7 +12,7 @@ Prove every market+env combo file is internally consistent and matches the schem
 ## When to run
 
 - Before any market-scoped build (`./gradlew :composeApp:assembleDebug -Pmarket=de -Penv=prod`)
-- As part of `verify` and `verify-ci` (already wired in)
+- As part of `verify full` and `verify all` (already wired in)
 - After editing anything under `core/build-config/markets/` or `core/build-config/Defaults.properties`
 - Before opening a PR that touches build-config
 - Before adding a new market or new env

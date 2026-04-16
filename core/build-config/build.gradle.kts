@@ -48,7 +48,7 @@ buildkonfig {
 // Parse every markets/*.properties against Defaults.properties and enforce
 // the invariants documented in .agents/standards/build-config.md → "Validation
 // rules". Aggregates ALL violations across ALL files in one pass; never
-// fail-fast. Runs as a pre-flight gate in the `verify` and `verify-ci` skills.
+// fail-fast. Runs as a pre-flight gate in the `verify full` and `verify all` scopes.
 val defaultsFile = layout.projectDirectory.file("Defaults.properties")
 val marketsDir = layout.projectDirectory.dir("markets")
 

@@ -166,6 +166,6 @@ If the endpoint requires a new base URL not already in `AppBuildConfig`, use `/a
 
 ## Post-Change Verification — MANDATORY
 
-**Work is NEVER complete until verification passes.** Run the `verify-smart` skill to validate all changes.
+**Work is NEVER complete until verification passes.** Run the `verify` skill to validate all changes.
 
 If ANY check fails, fix the issue and re-run. Do not declare the task complete until verification passes.

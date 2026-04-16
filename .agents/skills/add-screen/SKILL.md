@@ -63,7 +63,7 @@ Use existing screens in `features/order/` as the pattern reference.
 
 ## Post-Change Verification — MANDATORY
 
-**Work is NEVER complete until verification passes.** Run the `verify-smart` skill to validate all changes. It will:
+**Work is NEVER complete until verification passes.** Run the `verify` skill to validate all changes. It will:
 
 - Detect which modules were affected by the new screen files
 - Run lint, unit tests, and architecture checks scoped to those modules

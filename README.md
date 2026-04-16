@@ -127,7 +127,7 @@ swift test --package-path iosApp/ArchitectureCheck                              
 xcodebuild build -scheme iOSApp -configuration US-Dev -destination 'platform=iOS Simulator,name=iPhone 16'     # 8. iOS debug build
 ```
 
-**Pre-merge / CI (thorough, ~5+ min)** — adds UI component, navint, and e2e test levels on both platforms plus a full `./gradlew assemble` across every market × env. See [`verification.md`](.agents/standards/verification.md) → "Full Pipeline (CI)" for the 13-step list. Use the `verify-ci` skill to run it locally.
+**Pre-merge (thorough, ~5+ min)** — adds UI component, navint, and e2e test levels on both platforms plus a full `./gradlew assemble` across every market × env. See [`verification.md`](.agents/standards/verification.md) → "Full Pipeline (CI)" for the 13-step list. Use `verify all` to run it locally.
 
 ### Test Framework
 
