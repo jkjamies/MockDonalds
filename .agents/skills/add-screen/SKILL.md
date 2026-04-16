@@ -9,6 +9,18 @@ Add a new screen to an existing feature with all required files.
 
 **Parameters**: feature name, screen name, screen type (`Screen` | `ProtectedScreen` | `TabScreen`)
 
+## Context (optional)
+
+The user may provide additional context in three ways — all are optional:
+
+1. **Bare** — just the feature and screen name. Scaffold with placeholders.
+2. **`@file` reference** — e.g., `/add-screen @specs/checkout.md`. The CLI resolves the file and includes its content. Use it to populate UiState fields, events, presenter logic, UI layout, test tags, and test assertions instead of using placeholders. If no feature/screen name is provided as arguments, extract them from the spec's Overview section.
+3. **Inline description** — free text typed after the parameters (or on its own). Extract whatever is provided (feature name, screen name, state fields, events, UI description, navigation targets) and use it the same way as a spec file.
+
+When context is provided, replace placeholders with real values everywhere: UiState, events, presenter logic, UI composable, test tags, and test assertions. If context is partial, fill in what you can and leave `// TODO` only for genuinely unknown parts.
+
+Templates are available in `.agents/templates/new-spec.md` for structured input.
+
 ## Reference Standards
 
 - Naming: `.agents/standards/naming-conventions.md`

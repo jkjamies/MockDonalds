@@ -9,6 +9,18 @@ Create a repository interface, implementation, and test.
 
 **Parameters**: feature name, repository name
 
+## Context (optional)
+
+The user may provide additional context in three ways — all are optional:
+
+1. **Bare** — just the feature and repository name. Scaffold with placeholders.
+2. **`@file` reference** — e.g., `/add-repository @specs/payment-repo.md`. The CLI resolves the file and includes its content. Use it to populate repository methods, data types, DTO fields, endpoint paths, mapper logic, and test assertions instead of using placeholders. If no arguments are provided, extract feature and repository name from the spec's Overview / Repository section.
+3. **Inline description** — free text typed after the parameters (or on its own). Extract whatever is provided (feature name, repository name, methods, return types, endpoint details, DTO shape) and use it the same way as a spec file.
+
+When context is provided, replace placeholders with real values everywhere: interface methods, impl logic, DTOs, mappers, data source methods, and test cases. If context is partial, fill in what you can and leave `// TODO` only for genuinely unknown parts.
+
+Templates are available in `.agents/templates/new-spec.md` for structured input.
+
 ## Reference Standards
 
 - DI patterns: `.agents/standards/dependency-injection.md`

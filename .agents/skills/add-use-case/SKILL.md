@@ -9,6 +9,18 @@ Create a new interactor with all four required files.
 
 **Parameters**: feature name, use case name, type (`CenterPostInteractor` for one-shot, `CenterPostSubjectInteractor` for streaming)
 
+## Context (optional)
+
+The user may provide additional context in three ways — all are optional:
+
+1. **Bare** — just the feature name, use case name, and type. Scaffold with placeholders.
+2. **`@file` reference** — e.g., `/add-use-case @specs/submit-order.md`. The CLI resolves the file and includes its content. Use it to populate param/result types, repository calls, business logic, fake defaults, and test assertions instead of using placeholders. If no arguments are provided, extract feature name, use case name, and type from the spec's Overview / Use Cases section.
+3. **Inline description** — free text typed after the parameters (or on its own). Extract whatever is provided (feature name, use case name, param types, result types, business rules, repository methods) and use it the same way as a spec file.
+
+When context is provided, replace placeholders with real values everywhere: abstract type params, impl logic, fake defaults, and test cases. If context is partial, fill in what you can and leave `// TODO` only for genuinely unknown parts.
+
+Templates are available in `.agents/templates/new-spec.md` for structured input.
+
 ## Reference Standards
 
 - DI patterns: `.agents/standards/dependency-injection.md`

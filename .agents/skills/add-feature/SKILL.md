@@ -9,6 +9,18 @@ Scaffold a complete feature with all layers, tests, and documentation.
 
 **Parameters**: feature name (lowercase, e.g., `deals`), primary screen name (PascalCase, e.g., `Deals`)
 
+## Context (optional)
+
+The user may provide additional context in three ways — all are optional:
+
+1. **Bare** — just the feature name. Scaffold with placeholders (`// TODO` comments, placeholder fields).
+2. **`@file` reference** — e.g., `/add-feature @specs/deals.md`. The CLI resolves the file and includes its content. Use it to populate domain model fields, screen types, endpoint paths, DTO shapes, test assertions, and AGENTS.md business context instead of using placeholders. If no feature name is provided as an argument, extract it from the spec's **Name** field in the Overview section.
+3. **Inline description** — free text typed after the feature name (or on its own). Extract whatever is provided (feature name, field names, screen type, API details, business rules) and use it the same way as a spec file.
+
+When context is provided, replace placeholders with real values everywhere: domain models, DTOs, mappers, presenter state, UI composables, test defaults, and fakes. If context is partial (e.g., field names but no endpoint), fill in what you can and leave `// TODO` only for genuinely unknown parts.
+
+Templates are available in `.agents/templates/new-spec.md` for structured input.
+
 ## Reference Standards
 
 - Architecture & module structure: `.agents/standards/architecture.md`
