@@ -15,12 +15,12 @@ A Kotlin Multiplatform (KMP) reference app showcasing a clean, scalable architec
 | [KMP-NativeCoroutines](https://github.com/rickclephas/KMP-NativeCoroutines) | 1.0.2 | Bridges Kotlin `StateFlow` to Swift `AsyncSequence` |
 | [Coil](https://coil-kt.github.io/coil/) | 3.1.0 | Image loading (Compose) |
 | [Ktor](https://ktor.io/) | 3.1.1 | HTTP client (KMP) |
-| [BuildKonfig](https://github.com/yshrsmz/BuildKonfig) | — | Compile-time `AppBuildConfig` generation for market/env variants |
+| [BuildKonfig](https://github.com/yshrsmz/BuildKonfig) | 0.18.0 | Compile-time `AppBuildConfig` generation for market/env variants |
 | [Kotest](https://kotest.io/) | 6.1.11 | Test framework (BehaviorSpec, assertions, KMP) |
 | [Turbine](https://github.com/cashapp/turbine) | 1.2.0 | Flow testing |
 | [Circuit Test](https://slackhq.github.io/circuit/) | 0.33.1 | Presenter testing (`presenterTestOf`, `FakeNavigator`) |
-| [Konsist](https://docs.konsist.lemonappdev.com/) | — | Kotlin architecture test enforcement |
-| [Harmonize](https://github.com/perrystreetsoftware/Harmonize) | — | Swift/iOS architecture test enforcement |
+| [Konsist](https://docs.konsist.lemonappdev.com/) | 0.17.3 | Kotlin architecture test enforcement |
+| [Harmonize](https://github.com/perrystreetsoftware/Harmonize) | 0.9.0 | Swift/iOS architecture test enforcement |
 
 ## Architecture
 
@@ -215,7 +215,7 @@ xcodebuild build -project iosApp/iosApp.xcodeproj -target iosApp \
 This codebase is fully agentic — AI agents discover conventions, scaffold features, review code, and fill test gaps via standardized files:
 
 - **`AGENTS.md`** files in every module provide JIT context (architecture rules, naming, DI, testing standards)
-- **`.agents/skills/`** directory contains 16 automation skills (verify, test, scaffold, review, config)
+- **`.agents/skills/`** directory contains 29 automation skills (verify, test, scaffold, review, config, spec conversion)
 - **`.gemini/settings.json`** configures Gemini CLI to discover `AGENTS.md` files automatically
 - **Konsist enforces** that all features, core modules, and skills have their agentic files
 

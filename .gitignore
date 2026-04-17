@@ -36,6 +36,9 @@ DerivedData/
 .claude/
 CLAUDE.md
 
+# Generated specs (transient working documents)
+specs/
+
 # OS
 .DS_Store
 Thumbs.db

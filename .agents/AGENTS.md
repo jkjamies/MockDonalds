@@ -24,6 +24,8 @@ The `templates/` directory contains spec templates that provide structured input
 2. **`@file` reference** — e.g., `/add-feature @specs/deals.md` (populate from spec)
 3. **Inline description** — free text typed after the command (extract and apply)
 
+**Generating specs from requirements**: Use `/ac-to-spec` to convert PM artifacts (Gherkin, Jira tickets, PRDs, bullet lists) into a filled-in spec template. The skill infers the template type from content or accepts an explicit type (`new`, `change`, `migrate`, `remove`).
+
 When a spec is provided via `@file`, the skill extracts parameters (feature name, screen name, etc.) from the spec's Overview section — no need to pass them as arguments.
 
 ## Skills
@@ -52,12 +54,15 @@ Skills are invoked by name when an agent needs to perform a specific task. The `
 - `run-arch-tests` — Konsist + Harmonize architecture tests
 - `run-all-tests` — full test pipeline (lint + all 5 test levels on both platforms)
 
+#### Spec Generation
+- `ac-to-spec` — convert acceptance criteria, Jira tickets, Gherkin, or PRDs into a structured spec template (writes spec file)
+- `reverse-spec` — reverse-engineer a spec from existing code (presumed AC, data flow, contracts) (read-only)
+
 #### Code Quality (read-only)
 - `code-review` — diff-based review against default branch
 - `lint-branch` — fast pre-commit lint (Detekt + SwiftLint on changed files only)
 - `find-dead-code` — surface unused declarations, orphaned TestTags/Screens/Fakes (accepts optional module scope)
 - `summarize` — project/feature/module overview with android/ios platform scope
-- `reverse-spec` — reverse-engineer a spec from existing code (presumed AC, data flow, contracts)
 
 #### Profiling (read-only)
 - `profile` — Perfetto/Macrobenchmark (Android) + Instruments (iOS) benchmarking and tracing

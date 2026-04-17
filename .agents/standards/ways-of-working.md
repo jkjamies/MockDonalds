@@ -3,7 +3,8 @@
 ## Contribution Workflow
 
 1. **Branch** from `main` with a descriptive name (e.g., `feature/rewards-history`, `fix/login-redirect`)
-2. **Scaffold** using skills if adding structural elements (add-feature, add-screen, add-use-case, add-repository)
+2. **Spec** (optional) — convert PM requirements into a structured spec using `ac-to-spec`, then feed the spec to implementation skills
+3. **Scaffold** using skills if adding structural elements (add-feature, add-screen, add-use-case, add-repository)
 3. **Implement** business logic, UI, and tests following architecture rules in root AGENTS.md
 4. **Verify** using the `verify` skill — `diff` for iterative work, `full` before pushing, `all` before opening a PR
 5. **Code review** — run the code-review skill before opening a PR
@@ -36,6 +37,12 @@ Skills live in `.agents/skills/` with a `SKILL.md` file each. Invoke by name.
 | `add-unit-tests` | Fill unit test gaps identified from branch diff |
 | `add-ui-tests` | Fill UI test gaps identified from branch diff |
 | `add-tests` | Combined unit + UI test gap-filling |
+
+### Spec Generation
+| Skill | When to Use |
+|-------|-------------|
+| `ac-to-spec` | Convert PM artifacts (Gherkin, Jira, PRD) into a structured spec file for implementation skills |
+| `reverse-spec` | Reverse-engineer a spec from existing code for documentation or pre-refactor baseline (read-only) |
 
 ### Code Quality (read-only)
 | Skill | When to Use |
