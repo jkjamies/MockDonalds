@@ -3,6 +3,7 @@ package com.mockdonalds.app.features.more.presentation
 import com.mockdonalds.app.core.test.TestCenterPostDispatchers
 import com.mockdonalds.app.features.profile.api.navigation.ProfileScreen
 import com.mockdonalds.app.features.more.api.navigation.MoreScreen
+import com.mockdonalds.app.features.recents.api.navigation.RecentsScreen
 import com.mockdonalds.app.features.more.test.FakeGetMoreContent
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.presenterTestOf
@@ -51,6 +52,25 @@ class MorePresenterTest : BehaviorSpec({
                     val state = awaitItem()
                     state.eventSink(MoreEvent.ProfileClicked)
                     navigator.awaitNextScreen() shouldBe ProfileScreen
+                    cancelAndIgnoreRemainingEvents()
+                }
+            }
+        }
+
+        When("the user taps the recents menu item") {
+            Then("it should navigate to the recents screen") {
+                presenterTestOf(
+                    presentFunction = {
+                        MorePresenter(
+                            navigator = navigator,
+                            getMoreContent = fakeGetMoreContent,
+                            dispatchers = dispatchers,
+                        )
+                    },
+                ) {
+                    val state = awaitItem()
+                    state.eventSink(MoreEvent.MenuItemClicked("1"))
+                    navigator.awaitNextScreen() shouldBe RecentsScreen
                     cancelAndIgnoreRemainingEvents()
                 }
             }

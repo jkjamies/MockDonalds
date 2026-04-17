@@ -100,7 +100,7 @@ Enforced by: `TestDoubleConventionsTest`.
 
 ```kotlin
 @ContributesBinding(AppScope::class)
-class FakeGetOrderContent @Inject constructor(
+class FakeGetOrderContent(
     initial: OrderContent = DEFAULT,
 ) : GetOrderContent() {
 

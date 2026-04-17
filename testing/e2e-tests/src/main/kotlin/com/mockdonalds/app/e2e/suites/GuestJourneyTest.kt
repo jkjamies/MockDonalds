@@ -7,6 +7,7 @@ import com.mockdonalds.app.features.login.api.ui.LoginTestTags
 import com.mockdonalds.app.features.login.api.ui.WelcomeTestTags
 import com.mockdonalds.app.features.more.api.ui.MoreTestTags
 import com.mockdonalds.app.features.order.api.ui.OrderTestTags
+import com.mockdonalds.app.features.profile.api.ui.ProfileTestTags
 import com.mockdonalds.app.features.rewards.api.ui.RewardsTestTags
 import com.mockdonalds.app.features.scan.api.ui.ScanTestTags
 import org.junit.Before
@@ -92,6 +93,6 @@ class GuestJourneyTest {
         robot.tapElement(WelcomeTestTags.CONTINUE_BUTTON)
 
         // Should navigate to profile after flow completes
-        robot.assertElementDisplayed(MoreTestTags.PROFILE_SECTION)
+        robot.assertElementDisplayed(ProfileTestTags.NAME)
     }
 }

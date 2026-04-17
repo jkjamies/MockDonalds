@@ -161,6 +161,7 @@ private fun MemberCard(state: ScanUiState, qrSize: androidx.compose.ui.unit.Dp) 
                     modifier = Modifier
                         .clip(RoundedCornerShape(16.dp))
                         .size(qrSize)
+                        .testTag(ScanTestTags.QR_CODE)
                         .drawWithContent {
                             rotate(angle) {
                                 drawCircle(

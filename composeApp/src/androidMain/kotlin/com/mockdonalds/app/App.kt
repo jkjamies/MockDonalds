@@ -13,7 +13,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import com.mockdonalds.app.core.theme.LocalWindowSizeClass
 import com.mockdonalds.app.core.theme.MockDonaldsTheme
@@ -32,6 +35,7 @@ import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import dev.zacsweers.metro.createGraph
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MockDonaldsApp(windowSizeClass: WindowSizeClass, deepLinkIntent: Intent? = null) {
     val graph = remember { createGraph<ProdAppGraph>() }
@@ -85,6 +89,7 @@ fun MockDonaldsApp(windowSizeClass: WindowSizeClass, deepLinkIntent: Intent? = n
             val currentRoute = (topScreen as? TabScreen)?.tag ?: ""
 
             Scaffold(
+                modifier = Modifier.semantics { testTagsAsResourceId = true },
                 bottomBar = {
                     if (currentRoute.isNotEmpty()) {
                         MockDonaldsBottomNavigation(

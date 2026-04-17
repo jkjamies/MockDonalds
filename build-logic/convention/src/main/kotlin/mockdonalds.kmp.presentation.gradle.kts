@@ -48,6 +48,7 @@ kotlin {
             dependencies {
                 implementation(compose.foundation)
                 implementation(compose.material3)
+                implementation(compose.materialIconsExtended)
                 implementation(compose.ui)
                 implementation(catalog.findLibrary("coil-compose").get())
             }

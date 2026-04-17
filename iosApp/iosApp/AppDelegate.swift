@@ -13,6 +13,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
                 ScreenUiFactory<RewardsScreen, RewardsUiState> { RewardsView(state: $0) },
                 ScreenUiFactory<ScanScreen, ScanUiState> { ScanView(state: $0) },
                 ScreenUiFactory<MoreScreen, MoreUiState> { MoreView(state: $0) },
+                ScreenUiFactory<RecentsScreen, RecentsUiState> { RecentsView(state: $0) },
                 ScreenUiFactory<LoginScreen, LoginUiState> { LoginView(state: $0) },
                 ScreenUiFactory<ProfileScreen, ProfileUiState> { ProfileView(state: $0) },
                 ScreenUiFactory<WelcomeScreen, WelcomeUiState> { WelcomeView(state: $0) },

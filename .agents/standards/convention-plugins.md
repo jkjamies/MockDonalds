@@ -13,6 +13,38 @@ mockdonalds.kmp.library (base)
 mockdonalds.detekt (applied transitively via library)
 ```
 
+## Critical: What NOT to Do in Feature build.gradle.kts
+
+Convention plugins handle nearly everything. Feature `build.gradle.kts` files should be minimal — just the plugin ID and dependencies. Specifically:
+
+- **Do NOT declare `android { namespace = ... }`** — the convention plugin derives it automatically from the module path
+- **Do NOT add test framework dependencies** (Kotest, Turbine, coroutines-test) — provided by `mockdonalds.kmp.library`
+- **Do NOT add serialization dependencies in `impl/domain` or `api/*`** — only `mockdonalds.kmp.data` includes serialization
+- **Do NOT add Compose, Circuit, or Coil dependencies** — provided by `mockdonalds.kmp.presentation`
+- **Do NOT add Metro/DI dependencies** — provided by `mockdonalds.kmp.domain`, `.data`, and `.presentation`
+
+A typical feature `impl/presentation/build.gradle.kts` looks like:
+
+```kotlin
+plugins { id("mockdonalds.kmp.presentation") }
+
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation(project(":features:{name}:api:domain"))
+            implementation(project(":features:{name}:api:navigation"))
+            implementation(project(":core:centerpost"))
+            implementation(project(":core:theme"))
+        }
+        commonTest.dependencies {
+            implementation(project(":features:{name}:test"))
+        }
+    }
+}
+```
+
+No `android {}` block, no library dependencies — just project dependencies.
+
 ## mockdonalds.kmp.library
 
 Base KMP library plugin. Used by `api/domain`, `api/navigation`, and `core/*` modules.

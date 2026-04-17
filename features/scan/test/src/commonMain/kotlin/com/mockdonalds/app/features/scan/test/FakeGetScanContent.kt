@@ -6,12 +6,11 @@ import com.mockdonalds.app.features.scan.api.domain.ScanContent
 import com.mockdonalds.app.features.scan.api.domain.ScanRewardsProgress
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @ContributesBinding(AppScope::class)
-class FakeGetScanContent @Inject constructor(
+class FakeGetScanContent(
     initial: ScanContent = DEFAULT,
 ) : GetScanContent() {
 

@@ -34,7 +34,11 @@
 ## Domain Models
 
 <!-- Define the data shapes that flow through the feature. These populate
-     api/domain model classes, DTOs, mappers, fake defaults, and test assertions. -->
+     api/domain model classes, DTOs, mappers, fake defaults, and test assertions.
+
+     IMPORTANT: Domain models in api/domain are plain data classes — no annotations.
+     @Serializable is ONLY used on DTOs in impl/data, never on domain models.
+     Domain model file is named {Feature}Models.kt (not {Feature}Content.kt). -->
 
 ### Primary Model
 
@@ -156,7 +160,15 @@ Get{Feature}Content
 
 ## Screen & UI
 
-<!-- Populates Screen object, Presenter, UiState, Events, and Compose UI. -->
+<!-- Populates Screen object, Presenter, UiState, Events, and Compose UI.
+
+     UI rules:
+     - All colors come from MaterialTheme.colorScheme — never hardcode Color.Gray, Color.White, etc.
+     - All spacing from MockDimens (SpacingXs/Sm/Md/Lg/Xl/Xxl/Xxxl), all radii from MockDimens (RadiusSm/Md/Lg)
+     - Icons use Material Icons (Icons.Default.*, Icons.AutoMirrored.*), never text characters like "<" or "i"
+     - Events are a separate file: {Feature}Event.kt (sealed class, not sealed interface — iOS interop)
+     - UiState is a separate file: {Feature}UiState.kt
+     - The !! operator is forbidden — use safe calls, smart casts, or when bindings -->
 
 **Screen type**: <!-- Screen | ProtectedScreen | TabScreen | FlowScreen -->
 **Tab tag** (if TabScreen): <!-- e.g., "deals" -->
@@ -267,7 +279,12 @@ Get{Feature}Content
 
 ## Testing Notes
 
-<!-- Anything the generated tests should specifically cover beyond the standard patterns. -->
+<!-- Anything the generated tests should specifically cover beyond the standard patterns.
+
+     Fakes in the test/ module use @ContributesBinding(AppScope::class) for navint-tests
+     DI auto-discovery. No @Inject annotation — Metro infers constructor injection
+     implicitly from @ContributesBinding. Fakes are also manually instantiated
+     in unit tests via the constructor (passing initial state). -->
 
 - Edge case: ...
 - Race condition concern: ...

@@ -8,6 +8,7 @@ import com.mockdonalds.app.core.centerpost.rememberCenterPost
 import com.mockdonalds.app.features.more.api.domain.GetMoreContent
 import com.mockdonalds.app.features.more.api.navigation.MoreScreen
 import com.mockdonalds.app.features.profile.api.navigation.ProfileScreen
+import com.mockdonalds.app.features.recents.api.navigation.RecentsScreen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.Navigator
 import dev.zacsweers.metro.AppScope
@@ -30,7 +31,9 @@ fun MorePresenter(
         eventSink = { event ->
             when (event) {
                 is MoreEvent.ProfileClicked -> navigator.goTo(ProfileScreen)
-                is MoreEvent.MenuItemClicked -> { }
+                is MoreEvent.MenuItemClicked -> {
+                    if (event.id == "1") navigator.goTo(RecentsScreen)
+                }
             }
         },
     )

@@ -36,8 +36,9 @@ DerivedData/
 .claude/
 CLAUDE.md
 
-# Generated specs (transient working documents)
-specs/
+# Gemini
+.gemini/
+GEMINI.md
 
 # OS
 .DS_Store

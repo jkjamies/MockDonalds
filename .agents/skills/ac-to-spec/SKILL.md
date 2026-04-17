@@ -117,7 +117,10 @@ Populate every section where the input provides enough information. Follow these
 - **Fill partially** — if the AC implies something but lacks specifics, fill what you can and add `<!-- TODO: [what's missing and why the implementer needs to decide] -->` markers
 - **Leave as TODO** — if a section has zero signal from the AC, keep the template's placeholder structure with `<!-- TODO: no signal in AC — [what to consider] -->` so the implementer knows to fill it
 - **Don't invent** — never fabricate endpoint paths, field names, or UI layouts that aren't grounded in the input. It's better to leave a TODO than to guess wrong
-- **Use project conventions** — when filling technical sections, follow the naming patterns and architecture documented in CLAUDE.md and `.agents/standards/`. For example, use `CenterPostSubjectInteractor` for streaming use cases, the `{Name}RemoteDataSource` / `{Name}RemoteDataSourceImpl` pattern for data sources, etc.
+- **Acceptance criteria are unchecked** — AC items in the spec use `- [ ]` (unchecked), never `- [x]`. The spec describes work to be done, not work already completed
+- **Preserve Out of Scope** — if the AC defines out-of-scope items, carry them into the template's Out of Scope section verbatim. This prevents scope creep during implementation
+- **Preserve Constraints** — if the AC mentions constraints, technical considerations, or implementation guidance (e.g., "keep the data layer clean for future swap"), carry them into the Constraints & Considerations section
+- **Use project conventions** — when filling technical sections, follow the naming patterns and architecture documented in CLAUDE.md and `.agents/standards/`. For example, use `CenterPostSubjectInteractor` for streaming use cases, the `{Name}RemoteDataSource` / `{Name}RemoteDataSourceImpl` pattern for data sources. For TestTags, read an existing feature's TestTags file to match the actual naming convention used in the codebase (e.g., PascalCase vs snake_case)
 - **Preserve AC language** — keep the PM's terminology in Business Context and Acceptance Criteria sections. Translate to technical terms in the implementation sections
 
 ### 7. Append Original Requirements

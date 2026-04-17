@@ -7,12 +7,11 @@ import com.mockdonalds.app.features.rewards.api.domain.RewardsProgress
 import com.mockdonalds.app.features.rewards.api.domain.VaultSpecial
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @ContributesBinding(AppScope::class)
-class FakeGetRewardsContent @Inject constructor(
+class FakeGetRewardsContent(
     initial: RewardsContent = DEFAULT,
 ) : GetRewardsContent() {
 

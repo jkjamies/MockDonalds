@@ -67,7 +67,10 @@
 
 ## Domain Model Changes
 
-<!-- Only fill if models are changing. Show the diff conceptually. -->
+<!-- Only fill if models are changing. Show the diff conceptually.
+
+     IMPORTANT: Domain models in api/domain are plain data classes — no annotations.
+     @Serializable is ONLY used on DTOs in impl/data, never on domain models. -->
 
 ### Added Fields
 

@@ -4,12 +4,11 @@ import com.mockdonalds.app.features.profile.api.domain.GetProfileContent
 import com.mockdonalds.app.features.profile.api.domain.ProfileContent
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 @ContributesBinding(AppScope::class)
-class FakeGetProfileContent @Inject constructor(
+class FakeGetProfileContent(
     private val content: ProfileContent = ProfileContent(
         name = "Night Owl",
         email = "gourmet@night.com",

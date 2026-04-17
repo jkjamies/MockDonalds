@@ -22,7 +22,7 @@ class AppRobot {
     private val context: Context
         get() = InstrumentationRegistry.getInstrumentation().context
 
-    private val targetPackage = "com.mockdonalds.app"
+    private val targetPackage = InstrumentationRegistry.getInstrumentation().targetContext.packageName
     private val launchTimeout = 10_000L
     private val elementTimeout = 5_000L
 
@@ -56,7 +56,7 @@ class AppRobot {
     // MARK: - Element Assertions
 
     fun waitForElement(testTag: String): Boolean {
-        return device.wait(Until.hasObject(By.desc(testTag)), elementTimeout)
+        return device.wait(Until.hasObject(By.res(testTag)), elementTimeout)
     }
 
     fun assertElementDisplayed(testTag: String) {
@@ -65,7 +65,7 @@ class AppRobot {
     }
 
     fun assertElementNotDisplayed(testTag: String) {
-        val element = device.findObject(By.desc(testTag))
+        val element = device.findObject(By.res(testTag))
         assert(element == null) { "Expected element with testTag '$testTag' to NOT be displayed" }
     }
 
@@ -73,7 +73,7 @@ class AppRobot {
 
     fun tapElement(testTag: String) {
         assertElementDisplayed(testTag)
-        device.findObject(By.desc(testTag)).click()
+        device.findObject(By.res(testTag)).click()
         device.waitForIdle()
     }
 
@@ -86,7 +86,7 @@ class AppRobot {
 
     fun typeText(testTag: String, text: String) {
         assertElementDisplayed(testTag)
-        val element = device.findObject(By.desc(testTag))
+        val element = device.findObject(By.res(testTag))
         element.click()
         element.text = text
         device.waitForIdle()
