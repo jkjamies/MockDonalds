@@ -58,6 +58,8 @@ packages:
   ViewInspector:
     url: https://github.com/nalexn/ViewInspector.git
     majorVersion: 0.10.0
+  FeatureFlagBridge:
+    path: ../core/feature-flag/impl/swift
 
 targets:
   iosApp:
@@ -127,6 +129,8 @@ targets:
         product: KMPNativeCoroutinesAsync
       - package: KMP-NativeCoroutines
         product: KMPNativeCoroutinesCore
+      - package: FeatureFlagBridge
+        product: FeatureFlagBridge
     preBuildScripts:
       - name: Build Kotlin framework via Gradle
         basedOnDependencyAnalysis: false

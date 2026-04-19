@@ -23,6 +23,8 @@ androidx-test-runner = "1.6.2"
 androidx-benchmark-macro = "1.3.4"
 androidx-uiautomator = "2.3.0"
 buildkonfig = "0.18.0"
+harness-ff-android = "2.2.7"
+desugar-jdk-libs = "2.1.4"
 
 [libraries]
 # Circuit
@@ -79,6 +81,12 @@ androidx-compose-material3-windowsizeclass = { group = "androidx.compose.materia
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test-runner" }
 androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "androidx-benchmark-macro" }
 androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "androidx-uiautomator" }
+
+# Harness (Feature Flags)
+harness-ff-android = { group = "io.harness", name = "ff-android-client-sdk", version.ref = "harness-ff-android" }
+
+# Desugaring (required by Harness SDK)
+desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

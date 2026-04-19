@@ -16,6 +16,7 @@
 		25D715ABF4850D868D86EA9F /* LoginStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6036F756AFA6A60ADE3565D /* LoginStateRobot.swift */; };
 		29358C24D75E87465DF77853 /* ProfileViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9627A7826090D20016B5803 /* ProfileViewRobot.swift */; };
 		2D4DE01415099A8C1B1F8B19 /* MoreViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278596ADA9C8CE73D603EE2B /* MoreViewRobot.swift */; };
+		2E16FB50DD5C1ACC0B316A6A /* SwiftHarnessBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33EB2463F544EA664F058FFE /* SwiftHarnessBridge.swift */; };
 		3163774887824E183DA4A910 /* HomeViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B31DD1960E4A68BC692BBA /* HomeViewRobot.swift */; };
 		32B6DADCFAE72C82855FB676 /* CircuitStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D62BE96084EDBC090C5102F /* CircuitStack.swift */; };
 		36E5AA829FB4EC77B708348E /* ViewInspector in Frameworks */ = {isa = PBXBuildFile; productRef = EC9CEAB90B09506A7CBD4DF5 /* ViewInspector */; };
@@ -57,6 +58,7 @@
 		AE36E7CF9D661FB4AA8689BE /* TabSwitchingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D047837D95196BDBFB0F889 /* TabSwitchingTest.swift */; };
 		B13C05324F1DB5C7FC11AEEC /* RecentsStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = C799102DEE0851DAB3F96DD7 /* RecentsStateRobot.swift */; };
 		B4D16BAC8848A6512EB71110 /* GuestJourneyTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90671FDFBBB2E3A1D45C5FBB /* GuestJourneyTest.swift */; };
+		B7C4F6137AC8345E71E92063 /* FeatureFlagBridge in Frameworks */ = {isa = PBXBuildFile; productRef = E25C52EF17D26989C68AAFCE /* FeatureFlagBridge */; };
 		B9BC59FEF59CF0DCD01F7AAF /* ScanViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C22F6BEDB0F029ED12E6C55 /* ScanViewTest.swift */; };
 		BE1116CAA2524E4B9C57A25D /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C6ACFBF27E73AFE38D5CE2 /* ScanView.swift */; };
 		C08659A09878F2140B96A954 /* PlaceholderUnitTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C068CAB6EFD4E7772347D1 /* PlaceholderUnitTest.swift */; };
@@ -101,6 +103,7 @@
 		13B52C2218363410752F7DCF /* DE-Prod-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "DE-Prod-Release.xcconfig"; sourceTree = "<group>"; };
 		150CD59E086139540505DF6D /* CORE-Int-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "CORE-Int-Debug.xcconfig"; sourceTree = "<group>"; };
 		1DDCBBCAC60BD215B06058CA /* RewardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardsView.swift; sourceTree = "<group>"; };
+		1E02C7D2F4AB4196F0D8F99B /* swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = swift; path = "../core/feature-flag/impl/swift"; sourceTree = SOURCE_ROOT; };
 		20445B074FA2A57FD5799CA4 /* ProfileStateRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStateRobot.swift; sourceTree = "<group>"; };
 		23B7B4AC32296EDB4BCA6E72 /* CircuitContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircuitContent.swift; sourceTree = "<group>"; };
 		26BBEA5809BB072FE3AACD05 /* WelcomeViewRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewRobot.swift; sourceTree = "<group>"; };
@@ -110,6 +113,7 @@
 		2FF4D753BA2FD11E064BD140 /* OrderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderView.swift; sourceTree = "<group>"; };
 		3021582D081F62910D0547BA /* DE-Int-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "DE-Int-Release.xcconfig"; sourceTree = "<group>"; };
 		311677DB2B257F0E5C6E92D1 /* NavigationStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationStateManager.swift; sourceTree = "<group>"; };
+		33EB2463F544EA664F058FFE /* SwiftHarnessBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftHarnessBridge.swift; sourceTree = "<group>"; };
 		3C7A950457FF7186E93AC79C /* CORE-Mte-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "CORE-Mte-Debug.xcconfig"; sourceTree = "<group>"; };
 		3F3A65C2D19A1B272A3D1A4A /* AU-Mte-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "AU-Mte-Debug.xcconfig"; sourceTree = "<group>"; };
 		45F4C67459CBC2CDC9D3D33C /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
@@ -200,6 +204,7 @@
 			files = (
 				1C81D6F669B7BB6D2FFCCEB3 /* KMPNativeCoroutinesAsync in Frameworks */,
 				445C052442747365B7CB2124 /* KMPNativeCoroutinesCore in Frameworks */,
+				B7C4F6137AC8345E71E92063 /* FeatureFlagBridge in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,6 +269,7 @@
 			children = (
 				0BC733604E4AD589D965B538 /* Circuit */,
 				00DC1A39F70C25CE0C0A51BF /* Features */,
+				86F15A7FB99126F50D0EC3D7 /* Harness */,
 				4795698A257B423F254DDC14 /* Theme */,
 				8B6C1F485E0CF8BB70C9DDD2 /* AppDelegate.swift */,
 				A9F2DB67645546F2662250AF /* AppIconForeground.png */,
@@ -307,6 +313,14 @@
 			path = Navigation;
 			sourceTree = "<group>";
 		};
+		2BE9D1071031C3FC069C34FC /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				1E02C7D2F4AB4196F0D8F99B /* swift */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
 		2C06B67D055C6ED2255FA067 /* Integration */ = {
 			isa = PBXGroup;
 			children = (
@@ -336,6 +350,7 @@
 				DDA6207795B385A3B1A9E59C /* iosAppE2ETests */,
 				407F741E7FEBA273A8579B0E /* iosAppTests */,
 				1F89104FB695BB395DE5803D /* MockDonalds */,
+				2BE9D1071031C3FC069C34FC /* Packages */,
 				B1720870E51445F47D3045A0 /* Assets.xcassets */,
 				94C98B8B3A2BFC1966447269 /* Products */,
 			);
@@ -392,6 +407,14 @@
 				590261E20449B63543E9808A /* CORE-Prod-Release.xcconfig */,
 			);
 			path = core;
+			sourceTree = "<group>";
+		};
+		86F15A7FB99126F50D0EC3D7 /* Harness */ = {
+			isa = PBXGroup;
+			children = (
+				33EB2463F544EA664F058FFE /* SwiftHarnessBridge.swift */,
+			);
+			path = Harness;
 			sourceTree = "<group>";
 		};
 		89FE041FD6D3E990366B335D /* Order */ = {
@@ -649,6 +672,7 @@
 			packageProductDependencies = (
 				0BACEB90EE28C3C163DE3C96 /* KMPNativeCoroutinesAsync */,
 				0A471EF06FD56D009B863370 /* KMPNativeCoroutinesCore */,
+				E25C52EF17D26989C68AAFCE /* FeatureFlagBridge */,
 			);
 			productName = iosApp;
 			productReference = 86038AE1032E284E79B32AD6 /* iosApp.app */;
@@ -710,6 +734,7 @@
 			packageReferences = (
 				70ED8E483A5F2D6B21FC96CF /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
 				23783E62FBAF093ECF8DF72C /* XCRemoteSwiftPackageReference "ViewInspector" */,
+				37FEDABE1C343E10AF4C6C0A /* XCLocalSwiftPackageReference "../core/feature-flag/impl/swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 94C98B8B3A2BFC1966447269 /* Products */;
@@ -792,6 +817,7 @@
 				50C5711A063A3111C71E7FDC /* RecentsView.swift in Sources */,
 				A71D234D6D4A7A612E4629AE /* RewardsView.swift in Sources */,
 				BE1116CAA2524E4B9C57A25D /* ScanView.swift in Sources */,
+				2E16FB50DD5C1ACC0B316A6A /* SwiftHarnessBridge.swift in Sources */,
 				D69FC88016F05FD3B9A1A6FD /* WelcomeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4980,6 +5006,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		37FEDABE1C343E10AF4C6C0A /* XCLocalSwiftPackageReference "../core/feature-flag/impl/swift" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../core/feature-flag/impl/swift";
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		23783E62FBAF093ECF8DF72C /* XCRemoteSwiftPackageReference "ViewInspector" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -5009,6 +5042,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 70ED8E483A5F2D6B21FC96CF /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
 			productName = KMPNativeCoroutinesAsync;
+		};
+		E25C52EF17D26989C68AAFCE /* FeatureFlagBridge */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FeatureFlagBridge;
 		};
 		EC9CEAB90B09506A7CBD4DF5 /* ViewInspector */ = {
 			isa = XCSwiftPackageProductDependency;

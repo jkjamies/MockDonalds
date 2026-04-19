@@ -218,7 +218,36 @@ In `composeApp/build.gradle.kts`, the iOS framework auto-exports for each featur
 - `api:navigation` — Screen objects, TestTags
 - `impl:presentation` — UiState, Event sealed classes, presenter types
 
-Plus `core:circuit` for shared Circuit types (TabScreen, ProtectedScreen).
+Plus `core:circuit` for shared Circuit types (TabScreen, ProtectedScreen), and `core:feature-flag:impl` for the `HarnessIosBridge` contract (see "Native Swift bridge pattern" below).
+
+## Native Swift bridge pattern
+
+Used when an iOS vendor SDK has no pure-Kotlin binding and we want to avoid CocoaPods and `expect/actual` FFI. Precedent: Harness Feature Flags (`core:feature-flag:impl`).
+
+**Contract**: a Kotlin interface in the core module's `iosMain` (e.g., `HarnessIosBridge`). Listener callbacks are bridged to `Flow` via `callbackFlow` in a Kotlin impl that depends on the interface.
+
+**Swift side** is split across two locations because a local SPM package **cannot import the `ComposeApp` framework** (that framework is produced by Gradle's `embedAndSignAppleFrameworkForXcode` and linked into the `iosApp` Xcode target only — SPM packages are resolved before it exists):
+
+- **SPM package** colocated in the core module under `{module}/impl/swift/` — owns the vendor SDK dependency and all vendor-specific work (SDK init, variation reads, listener registration). Exposes a Swift-native public API (e.g., `HarnessClient`). **Does not import `ComposeApp`.**
+- **iosApp target adapter** (e.g., `iosApp/iosApp/Harness/SwiftHarnessBridge.swift`) — a thin class that imports both `ComposeApp` (for the Kotlin interface) and the SPM product, conforms to the Kotlin interface, and delegates to the SPM client. This is the only place where Swift code crosses the Kotlin boundary.
+
+**Wiring**:
+- Export the core module from the ComposeApp framework (`export(project(":core:xxx:impl"))`) and switch its dependency to `api(...)` in `composeApp/commonMain`, so Swift can reach the interface.
+- Add the local package to `iosApp/project.yml` under `packages:` (`path: ../core/{module}/impl/swift`) and list its product under `targets.iosApp.dependencies`.
+- Pass the Swift adapter instance into Kotlin via a `@DependencyGraph.Factory` on the iOS-specific `ProdAppGraph` (see "Per-platform AppGraph" below).
+
+**Keep the bridge minimal**. It should expose only what the Kotlin-side `RemoteFeatureFlagSource` (or equivalent abstraction) needs — not the vendor SDK's surface.
+
+## Per-platform AppGraph
+
+`ProdAppGraph` is platform-specific, not shared:
+
+| Source set | Factory parameter | Purpose |
+|------------|-------------------|---------|
+| `composeApp/androidMain/AppGraph.kt` | `@Provides Application` | Android SDK init (e.g., Harness `CfClient.initialize(context, …)`) |
+| `composeApp/iosMain/AppGraph.kt` | `@Provides HarnessIosBridge` (and any other Swift-provided bridges) | Injecting Swift-owned instances into the Kotlin graph |
+
+Callers use `createGraphFactory<ProdAppGraph.Factory>().create(…)` rather than `createGraph<ProdAppGraph>()`. This pattern generalizes whenever either platform needs host-owned types (Application, Swift bridges) as DI inputs.
 
 ## ScreenUiFactory Registration (AppDelegate.swift)
 

@@ -21,7 +21,7 @@ All tests use Kotest BehaviorSpec (Given/Then style) and scan the project with `
 | core/ | DependencyGraphScopeTest | @DependencyGraph only in consumer modules (composeApp, navint-tests). CircuitProviders only in core:circuit. AppGraph interface only in core:metro. |
 | core/ | CoreMetroConventionsTest | core:metro must not import from feature modules. core:metro must not import from impl modules. |
 | core/ | AnalyticsConventionsTest | Presenters must use `TrackAnalyticsEvent` interactor, not `AnalyticsDispatcher` directly. Domain/data must use `AnalyticsDispatcher`, not the interactor. |
-| core/ | FeatureFlagConventionsTest | Presenters must use `ObserveFeatureFlag` interactor, not `FeatureFlagProvider` directly. Domain/data must use `FeatureFlagProvider`, not the interactor. |
+| core/ | FeatureFlagConventionsTest | Presenters must read flags via `FeatureFlagProvider.rememberFlag(flag)` — direct `.isEnabled(...)` / `.observe(...)` calls in presentation are forbidden. Domain/data must use `FeatureFlagProvider` directly and must not reference the Composable `rememberFlag`. |
 | core/ | BuildConfigCoverageTest | Every market config JSON has required fields. Build config values are consistent across markets. |
 | core/ | AgentDocumentationTest | Every feature and core module has AGENTS.md. Root AGENTS.md exists. .agents/skills/ directory exists with SKILL.md per skill. .gemini/settings.json references AGENTS.md. |
 | layers/ | ApiLayerTest | Data classes in api are immutable (val only). @Serializable only in api/data/network. No MutableStateFlow in public APIs. api:domain has no Circuit dependency. DTOs only in data/network modules. |

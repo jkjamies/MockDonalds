@@ -5,34 +5,39 @@ import io.kotest.core.spec.style.BehaviorSpec
 
 /**
  * Enforces feature flag consumption patterns:
- * - Presenters must use ObserveFeatureFlag interactor, not FeatureFlagProvider directly
- * - Domain and data layers must use FeatureFlagProvider, not the ObserveFeatureFlag interactor
+ * - Presenters must read flags via `FeatureFlagProvider.rememberFlag(flag)` — never
+ *   `.isEnabled(...)` or `.observe(...)` directly (those bypass Compose state and
+ *   won't react to flag changes).
+ * - Domain and data layers must use `FeatureFlagProvider.isEnabled(...)` or
+ *   `.observe(...)` — never `rememberFlag` (it's Composable and presenter-only).
  */
 class FeatureFlagConventionsTest : BehaviorSpec({
 
     Given("feature flag consumption in presentation layer") {
-        Then("presenters should not import FeatureFlagProvider directly") {
+        Then("presenters must not call FeatureFlagProvider.isEnabled or .observe directly") {
             val presenterFiles = Konsist.scopeFromProject()
                 .files
                 .filter {
                     it.resideInPath("..impl/presentation..") &&
-                        it.resideInPath("..commonMain..")
+                        it.resideInPath("..commonMain..") &&
+                        it.imports.any { import ->
+                            import.name == "com.mockdonalds.app.core.featureflag.FeatureFlagProvider"
+                        }
                 }
 
-            val violators = presenterFiles.flatMap { file ->
-                file.imports
-                    .filter { it.name == "com.mockdonalds.app.core.featureflag.FeatureFlagProvider" }
-                    .map { "  ${file.name}: ${it.name}" }
-            }
+            val violators = presenterFiles.filter { file ->
+                file.text.contains(".isEnabled(") || file.text.contains(".observe(")
+            }.map { "  ${it.name}" }
 
             assert(violators.isEmpty()) {
-                "Presenters must use ObserveFeatureFlag interactor, not FeatureFlagProvider directly:\n${violators.joinToString("\n")}"
+                "Presenters must read flags via FeatureFlagProvider.rememberFlag(flag), " +
+                    "not .isEnabled(...) or .observe(...) directly:\n${violators.joinToString("\n")}"
             }
         }
     }
 
     Given("feature flag consumption in domain layer") {
-        Then("domain classes should not import ObserveFeatureFlag") {
+        Then("domain classes must not reference rememberFlag") {
             val domainFiles = Konsist.scopeFromProject()
                 .files
                 .filter {
@@ -41,20 +46,18 @@ class FeatureFlagConventionsTest : BehaviorSpec({
                         !it.resideInPath("..api..")
                 }
 
-            val violators = domainFiles.flatMap { file ->
-                file.imports
-                    .filter { it.name == "com.mockdonalds.app.core.featureflag.ObserveFeatureFlag" }
-                    .map { "  ${file.name}: ${it.name}" }
-            }
+            val violators = domainFiles.filter { it.text.contains("rememberFlag") }
+                .map { "  ${it.name}" }
 
             assert(violators.isEmpty()) {
-                "Domain layer must use FeatureFlagProvider, not the ObserveFeatureFlag interactor:\n${violators.joinToString("\n")}"
+                "Domain layer must use FeatureFlagProvider.isEnabled / .observe, " +
+                    "not the Composable rememberFlag extension:\n${violators.joinToString("\n")}"
             }
         }
     }
 
     Given("feature flag consumption in data layer") {
-        Then("data classes should not import ObserveFeatureFlag") {
+        Then("data classes must not reference rememberFlag") {
             val dataFiles = Konsist.scopeFromProject()
                 .files
                 .filter {
@@ -62,14 +65,12 @@ class FeatureFlagConventionsTest : BehaviorSpec({
                         it.resideInPath("..commonMain..")
                 }
 
-            val violators = dataFiles.flatMap { file ->
-                file.imports
-                    .filter { it.name == "com.mockdonalds.app.core.featureflag.ObserveFeatureFlag" }
-                    .map { "  ${file.name}: ${it.name}" }
-            }
+            val violators = dataFiles.filter { it.text.contains("rememberFlag") }
+                .map { "  ${it.name}" }
 
             assert(violators.isEmpty()) {
-                "Data layer must use FeatureFlagProvider, not the ObserveFeatureFlag interactor:\n${violators.joinToString("\n")}"
+                "Data layer must use FeatureFlagProvider.isEnabled / .observe, " +
+                    "not the Composable rememberFlag extension:\n${violators.joinToString("\n")}"
             }
         }
     }

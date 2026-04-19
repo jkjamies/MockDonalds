@@ -2,6 +2,7 @@ package com.mockdonalds.app.bridge
 
 import com.mockdonalds.app.ProdAppGraph
 import com.mockdonalds.app.core.circuit.TabScreen
+import com.mockdonalds.app.core.featureflag.impl.HarnessIosBridge
 import com.mockdonalds.app.features.home.api.navigation.HomeScreen
 import com.mockdonalds.app.features.login.api.navigation.LoginScreen
 import com.mockdonalds.app.navigation.AnalyticsNavigationListener
@@ -13,10 +14,10 @@ import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
-import dev.zacsweers.metro.createGraph
+import dev.zacsweers.metro.createGraphFactory
 
-class IosApp {
-    private val graph = createGraph<ProdAppGraph>()
+class IosApp(harnessIosBridge: HarnessIosBridge) {
+    private val graph = createGraphFactory<ProdAppGraph.Factory>().create(harnessIosBridge)
 
     val circuit: Circuit get() = graph.circuit
 

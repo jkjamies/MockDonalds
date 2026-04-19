@@ -278,14 +278,16 @@ Core modules (`core/*`) must NEVER import from feature modules (`features/*`). T
 
 ## Core Module Consumption Patterns
 
-**Rule: Presenters always use CenterPost interactors. Domain/data always use the provider interface directly.** This applies to all core modules with api/impl — no exceptions.
+**Rule: Presenters always use CenterPost interactors. Domain/data always use the provider interface directly.** This is the default for all core modules with api/impl. One documented exception: `core:feature-flag` (see below).
 
 | Core Module | Presenter Layer | Domain/Data Layer |
 |-------------|----------------|-------------------|
-| `core:feature-flag` | `ObserveFeatureFlag` (CenterPostSubjectInteractor) | `FeatureFlagProvider` (interface) |
+| `core:feature-flag` | `FeatureFlagProvider.rememberFlag(flag)` (Composable extension) | `FeatureFlagProvider` (interface) |
 | `core:analytics` | `TrackAnalyticsEvent` (CenterPostInteractor) | `AnalyticsDispatcher` (interface) |
 
-For fire-and-forget interactors (analytics), the `inProgress` loading state goes uncollected — zero overhead. The value: structured execution, error handling, timeout protection, dispatcher correctness. Keeping the rule absolute means no exceptions to remember.
+For fire-and-forget interactors (analytics), the `inProgress` loading state goes uncollected — zero overhead. The value: structured execution, error handling, timeout protection, dispatcher correctness.
+
+**Feature-flag carve-out:** flag reads are cheap, synchronous at the source, and routinely plural per screen (3–5 flags in one presenter is common). A `CenterPostSubjectInteractor` handles "one param, one stream" and would force N injections for N flags. Instead, presenters inject `FeatureFlagProvider` and call the Composable extension `rememberFlag(flag)` per flag — one DI param, one line per flag, per-flag recomposition isolation. Konsist forbids direct `.isEnabled(...)` / `.observe(...)` calls in presentation to preserve the reactive Compose-state boundary. See `.agents/standards/centerpost.md` for the detailed rationale.
 
 Note: `core:auth` currently exposes only `AuthManager` (interface) with no interactor — auth is consumed by `AuthInterceptor` (infrastructure in composeApp), not by presenters directly. If presenters need auth state reactively in the future, an interactor should be added.
 

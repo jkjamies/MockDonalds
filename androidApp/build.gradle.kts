@@ -38,6 +38,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // Required by io.harness:ff-android-client-sdk (see core/feature-flag/AGENTS.md).
+        isCoreLibraryDesugaringEnabled = true
     }
 }
 
@@ -47,4 +49,5 @@ dependencies {
     implementation(libs.androidx.compose.material3.windowsizeclass)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtime)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }

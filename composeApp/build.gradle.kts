@@ -43,6 +43,7 @@ kotlin {
                     export(project(":features:$feature:impl:presentation"))
                 }
             export(project(":core:circuit"))
+            export(project(":core:feature-flag:impl"))
         }
     }
 
@@ -73,7 +74,7 @@ kotlin {
             api(project(":core:metro"))
             implementation(project(":core:analytics:impl"))
             implementation(project(":core:auth:impl"))
-            implementation(project(":core:feature-flag:impl"))
+            api(project(":core:feature-flag:impl"))
             implementation(project(":core:centerpost"))
             implementation(project(":core:circuit"))
             implementation(project(":core:theme"))

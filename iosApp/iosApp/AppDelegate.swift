@@ -1,10 +1,11 @@
 import SwiftUI
 import ComposeApp
+import FeatureFlagBridge
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
 
     lazy var circuit: CircuitIos = {
-        let iosApp = IosApp()
+        let iosApp = IosApp(harnessIosBridge: SwiftHarnessBridge())
         return CircuitIos(
             iosApp: iosApp,
             uiFactories: [

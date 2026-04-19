@@ -112,12 +112,13 @@ Place public interfaces, abstract interactors, and data types here. Package: `co
 
 #### CenterPost Interactor Requirement
 
-All core modules with api/impl MUST expose CenterPost interactors for presenter consumption. Domain/data layers always inject the provider interface directly. This rule is absolute — no exceptions.
+Core modules with api/impl expose CenterPost interactors for presenter consumption by default. Domain/data layers always inject the provider interface directly. One documented exception: `core:feature-flag` uses a Composable `rememberFlag(flag)` extension instead of an interactor (see `.agents/standards/centerpost.md` for the rationale). New core modules follow the interactor rule unless the carve-out is re-justified and documented.
 
 | Core Module Characteristic | Presenter Consumption | Domain/Data Consumption | Example |
 |---------------------------|----------------------|------------------------|---------|
-| Produces **observable state** (Flow/StateFlow) | `CenterPostSubjectInteractor` | Provider interface | `core:feature-flag`: `ObserveFeatureFlag` / `FeatureFlagProvider` |
+| Produces **observable state** (Flow/StateFlow) | `CenterPostSubjectInteractor` | Provider interface | `GetHomeContent` (feature-level subject interactor) |
 | Produces **one-shot result or fire-and-forget** | `CenterPostInteractor` | Provider interface | `core:analytics`: `TrackAnalyticsEvent` / `AnalyticsDispatcher` |
+| **Ambient config read** (carve-out) | Composable extension on provider | Provider interface | `core:feature-flag`: `FeatureFlagProvider.rememberFlag(flag)` / `FeatureFlagProvider` |
 
 For fire-and-forget interactors, the `inProgress` loading state simply goes uncollected — it's opt-in with zero overhead. The value of wrapping even void operations in CenterPost: structured execution, error handling, timeout protection, dispatcher correctness.
 

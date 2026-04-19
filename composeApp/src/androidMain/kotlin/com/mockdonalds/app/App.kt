@@ -1,5 +1,6 @@
 package com.mockdonalds.app
 
+import android.app.Application
 import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,12 +34,18 @@ import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
-import dev.zacsweers.metro.createGraph
+import dev.zacsweers.metro.createGraphFactory
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun MockDonaldsApp(windowSizeClass: WindowSizeClass, deepLinkIntent: Intent? = null) {
-    val graph = remember { createGraph<ProdAppGraph>() }
+fun MockDonaldsApp(
+    application: Application,
+    windowSizeClass: WindowSizeClass,
+    deepLinkIntent: Intent? = null,
+) {
+    val graph = remember(application) {
+        createGraphFactory<ProdAppGraph.Factory>().create(application)
+    }
 
     val deepLinkParser = remember { createDeepLinkParser() }
 

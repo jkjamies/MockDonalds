@@ -177,16 +177,33 @@ interface AppGraph {
 }
 ```
 
-**`composeApp/AppGraph.kt`** — production graph:
+**`composeApp/androidMain/AppGraph.kt` and `composeApp/iosMain/AppGraph.kt`** — production graph, per-platform:
 ```kotlin
+// androidMain
 @DependencyGraph(AppScope::class)
-interface ProdAppGraph : AppGraph
+interface ProdAppGraph : AppGraph {
+    @DependencyGraph.Factory
+    fun interface Factory {
+        fun create(@Provides application: Application): ProdAppGraph
+    }
+}
+
+// iosMain
+@DependencyGraph(AppScope::class)
+interface ProdAppGraph : AppGraph {
+    @DependencyGraph.Factory
+    fun interface Factory {
+        fun create(@Provides harnessIosBridge: HarnessIosBridge): ProdAppGraph
+    }
+}
 ```
 
-- `@DependencyGraph(AppScope::class)` on `ProdAppGraph` marks it as the root graph
-- `@ContributesTo(AppScope::class)` on `CircuitProviders` merges it into the graph
-- `@Multibinds` collects all `Presenter.Factory` and `Ui.Factory` instances contributed by `@CircuitInject` across all feature modules
-- Every `@ContributesBinding(AppScope::class)` class is automatically included in the graph
+- `ProdAppGraph` lives in each platform source set (no commonMain copy). Each platform's factory accepts host-owned types that `@ContributesBinding` impls depend on: `Application` on Android, `HarnessIosBridge` (Swift-provided) on iOS.
+- `@DependencyGraph(AppScope::class)` marks it as the root graph.
+- `@ContributesTo(AppScope::class)` on `CircuitProviders` merges it into the graph.
+- `@Multibinds` collects all `Presenter.Factory` and `Ui.Factory` instances contributed by `@CircuitInject` across all feature modules.
+- Every `@ContributesBinding(AppScope::class)` class is automatically included in the graph. Platform-specific bindings (e.g., `HarnessRemoteFeatureFlagSourceImpl` per source set) are aggregated into the same `RemoteFeatureFlagSource` slot per target.
+- Callers use `createGraphFactory<ProdAppGraph.Factory>().create(…)` instead of `createGraph<ProdAppGraph>()`.
 
 ## Lazy<T> / Provider<T>
 
