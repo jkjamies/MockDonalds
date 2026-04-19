@@ -4,10 +4,9 @@ import com.mockdonalds.app.core.analytics.AnalyticsDispatcher
 import com.mockdonalds.app.core.analytics.AnalyticsEvent
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 
 @ContributesBinding(AppScope::class)
-class FakeAnalyticsDispatcher @Inject constructor() : AnalyticsDispatcher {
+class FakeAnalyticsDispatcher : AnalyticsDispatcher {
 
     private val _trackedEvents = mutableListOf<AnalyticsEvent>()
     val trackedEvents: List<AnalyticsEvent> get() = _trackedEvents

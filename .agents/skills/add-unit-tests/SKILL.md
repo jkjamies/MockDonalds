@@ -145,7 +145,7 @@ Reference: `features/order/test/src/commonMain/.../FakeGetOrderContent.kt`
 
 ```kotlin
 @ContributesBinding(AppScope::class)
-class Fake{Name} @Inject constructor(
+class Fake{Name}(
     initial: {ContentType} = DEFAULT,
 ) : {AbstractClass}() {
 

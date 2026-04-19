@@ -59,7 +59,7 @@ Core modules: `auth`, `build-config`, `centerpost`, `circuit`, `metro`, `network
 
 ### Compile-Time Market & Environment Variants
 
-`core:build-config` exposes a typed `AppBuildConfig` facade backed by [BuildKonfig](https://github.com/yshrsmz/BuildKonfig). Per-build inputs live in `core/build-config/src/commonMain/buildkonfig/markets/{market}.properties` (merged over `Defaults.properties`) and are selected at build time via `-Pmarket=` / `-Penv=` Gradle properties. Android's `applicationId` is derived per market (`com.mockdonalds.app.{market}`); iOS uses per-combo xcconfigs (`US-Dev`, `US-Prod`, `DE-Dev`, `DE-Prod`) driving `PRODUCT_BUNDLE_IDENTIFIER` from the `MARKET` variable.
+`core:build-config` is split into three modules: `api/` exposes a typed `AppBuildConfig` facade interface; `impl/` applies [BuildKonfig](https://github.com/yshrsmz/BuildKonfig), merges `impl/Defaults.properties` with `impl/markets/{market}/{market}-{env}.properties`, and contributes `AppBuildConfigImpl`; `test/` contributes a `FakeAppBuildConfig` for test modules. Features depend on `:api` only — the generated `BuildConfig` object and BuildKonfig plugin stay out of their classpath. Market/env are selected at build time via `-Pmarket=` / `-Penv=` Gradle properties. Android's `applicationId` is derived per market (`com.mockdonalds.app.{market}`); iOS uses per-combo xcconfigs (`US-Int-Debug`, `US-Prod-Release`, `DE-Int-Debug`, `DE-Prod-Release`, …) driving `PRODUCT_BUNDLE_IDENTIFIER` from the `MARKET` variable.
 
 ```bash
 ./gradlew :androidApp:assembleDebug                                 # Default us/dev

@@ -4,13 +4,12 @@ import com.mockdonalds.app.core.featureflag.FeatureFlag
 import com.mockdonalds.app.core.featureflag.ObserveFeatureFlag
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
 @ContributesBinding(AppScope::class)
-class FakeObserveFeatureFlag @Inject constructor() : ObserveFeatureFlag() {
+class FakeObserveFeatureFlag : ObserveFeatureFlag() {
 
     private val flags = MutableStateFlow<Map<String, Boolean>>(emptyMap())
 

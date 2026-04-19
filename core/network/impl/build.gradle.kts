@@ -10,7 +10,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":core:network:api"))
-            implementation(project(":core:build-config"))
+            implementation(project(":core:build-config:api"))
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.serialization.json)

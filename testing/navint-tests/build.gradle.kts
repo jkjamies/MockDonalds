@@ -35,6 +35,7 @@ kotlin {
             api(project(":core:circuit"))
             api(project(":core:analytics:test"))
             api(project(":core:auth:api"))
+            api(project(":core:build-config:test"))
             implementation(project(":core:centerpost"))
             implementation(project(":core:theme"))
             implementation(project(":core:test-fixtures"))

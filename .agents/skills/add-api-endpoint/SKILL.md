@@ -141,7 +141,7 @@ class {Feature}RepositoryImpl(
 Ensure `impl/data/build.gradle.kts` has:
 ```kotlin
 implementation(project(":core:network:api"))
-implementation(project(":core:build-config"))
+implementation(project(":core:build-config:api"))
 ```
 
 ### 7. Build Config (if new base URL needed)

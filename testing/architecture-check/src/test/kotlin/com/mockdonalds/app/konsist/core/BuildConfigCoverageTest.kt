@@ -14,8 +14,8 @@ class BuildConfigCoverageTest : BehaviorSpec({
         val testFile = buildConfigFiles.firstOrNull { it.path.endsWith("AppBuildConfigTest.kt") }
 
         Then("both the facade and its test file must exist") {
-            assert(appBuildConfig != null) { "AppBuildConfig.kt not found in core:build-config" }
-            assert(testFile != null) { "AppBuildConfigTest.kt not found in core:build-config" }
+            assert(appBuildConfig != null) { "AppBuildConfig.kt not found in core:build-config:api" }
+            assert(testFile != null) { "AppBuildConfigTest.kt not found in core:build-config:impl" }
         }
 
         Then("every AppBuildConfig property must be referenced in AppBuildConfigTest") {

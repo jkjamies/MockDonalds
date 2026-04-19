@@ -25,17 +25,29 @@ class TestModuleDITest : BehaviorSpec({
                 }
         }
 
-        Then("all Fake classes in feature test modules should have @Inject constructor") {
-            Konsist.scopeFromProject()
+        Then("Fake classes with @ContributesBinding must NOT also declare @Inject") {
+            // Metro infers injectability for any class annotated with @ContributesBinding,
+            // so an explicit @Inject (on either the class or the primary constructor) is
+            // redundant noise. The compiler emits a warning for single-constructor classes
+            // that keep the constructor-level form; this rule keeps fakes clean across all
+            // test modules (feature test/, core test/, and any future test sibling).
+            val violators = Konsist.scopeFromProject()
                 .classes()
                 .withNameStartingWith("Fake")
                 .filter {
-                    it.resideInPath("..features..") &&
-                        it.resideInPath("..test/src/commonMain..")
+                    it.resideInPath("..test/src/commonMain..") &&
+                        it.hasAnnotation { a -> a.name == "ContributesBinding" }
                 }
-                .assertTrue(additionalMessage = "Fake classes in feature test modules must have @Inject constructor for Metro DI") {
-                    it.text.contains("@Inject constructor")
+                .filter { klass ->
+                    klass.hasAnnotation { a -> a.name == "Inject" } ||
+                        klass.text.contains("@Inject constructor")
                 }
+
+            assert(violators.isEmpty()) {
+                val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
+                "Fake classes with @ContributesBinding must not also declare @Inject — " +
+                    "Metro infers it. Remove the redundant annotation:\n$names"
+            }
         }
     }
 

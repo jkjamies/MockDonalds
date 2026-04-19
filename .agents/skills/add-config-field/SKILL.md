@@ -29,12 +29,14 @@ If you pattern-match a field name like `*Enabled`, `*Flag`, `*Toggle`, `*Rollout
 
 ## Reference Files
 
-- Facade interface: `core/build-config/src/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/AppBuildConfig.kt`
-- Production impl: `core/build-config/src/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/AppBuildConfigImpl.kt` (bound via `@ContributesBinding(AppScope::class)` — no separate providers module)
-- Smoke test: `core/build-config/src/commonTest/kotlin/com/mockdonalds/app/core/buildconfig/AppBuildConfigTest.kt`
-- Defaults: `core/build-config/Defaults.properties`
-- Combo files: `core/build-config/markets/{market}-{env}.properties` (Phase 1: us-dev, us-prod, de-dev, de-prod)
+- Facade interface: `core/build-config/api/src/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/AppBuildConfig.kt`
+- Production impl: `core/build-config/impl/src/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/AppBuildConfigImpl.kt` (bound via `@ContributesBinding(AppScope::class)` — no separate providers module)
+- Fake impl: `core/build-config/test/src/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/test/FakeAppBuildConfig.kt`
+- Smoke test: `core/build-config/impl/src/commonTest/kotlin/com/mockdonalds/app/core/buildconfig/AppBuildConfigTest.kt`
+- Defaults: `core/build-config/impl/Defaults.properties`
+- Combo files: `core/build-config/impl/markets/{market}/{market}-{env}.properties` — 15 combos (5 markets × 3 envs: us/ca/de/au/core × int/mte/prod)
 - Konsist coverage rule: `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigCoverageTest.kt`
+- Konsist facade boundary: `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigImportTest.kt`
 
 ## Steps
 
@@ -60,15 +62,19 @@ Ask the user for the default if it isn't obvious.
 
 ### 3. Update every `markets/*.properties` file
 
-List every file in `core/build-config/markets/`. For each one, ask the user for the value (or confirm it should fall back to the default). Write `{KEY}={value}` to the file. Do this for **every** combo — a missing override is fine (falls back to default), but every combo file should be considered.
+List every file in `core/build-config/impl/markets/`. For each one, ask the user for the value (or confirm it should fall back to the default). Write `{KEY}={value}` to the file. Do this for **every** combo — a missing override is fine (falls back to default), but every combo file should be considered.
+
+When adding a new field, also update `FakeAppBuildConfig` in `core/build-config/test/src/commonMain/.../test/FakeAppBuildConfig.kt` so tests that inject it see a sensible default.
 
 Suggested flow: print the full matrix to the user in one message:
 
 ```
-us-dev   → PRIVACY_POLICY_URL=?
+us-int   → PRIVACY_POLICY_URL=?
+us-mte   → PRIVACY_POLICY_URL=?
 us-prod  → PRIVACY_POLICY_URL=?
-de-dev   → PRIVACY_POLICY_URL=?
-de-prod  → PRIVACY_POLICY_URL=?
+ca-int   → PRIVACY_POLICY_URL=?
+...
+core-prod → PRIVACY_POLICY_URL=?
 ```
 
 Let them fill in the blanks or say "use default everywhere."
@@ -130,14 +136,14 @@ If none of these fit, write a real assertion on the value's shape. The goal is *
 
 `AppBuildConfig` as a whole is already injectable via Metro — any presenter, use case, repo, or data source can take it as a constructor parameter and read `appBuildConfig.privacyPolicyUrl` directly. **Default: do nothing here.**
 
-Only add a dedicated `@Provides` fun to `BuildConfigProviders` if the field needs to be injected as its own stand-alone type (e.g. you're introducing a `LegalConfig` sub-interface to make legal-specific consumers easier to test). Ask the user before doing this — it's usually unnecessary ceremony.
+Only add a dedicated `@Provides` fun if the field needs to be injected as its own stand-alone type (e.g. you're introducing a `LegalConfig` sub-interface to make legal-specific consumers easier to test). Ask the user before doing this — it's usually unnecessary ceremony.
 
 ### 7. Verify
 
 Run both in parallel:
 
 ```bash
-./gradlew :core:build-config:testAndroidHostTest
+./gradlew :core:build-config:impl:testAndroidHostTest
 ./gradlew :testing:architecture-check:test --tests "com.mockdonalds.app.konsist.core.BuildConfigCoverageTest"
 ```
 
@@ -146,7 +152,7 @@ Both must pass. If the coverage test fails, the most likely cause is that the te
 Then build one non-default combo end-to-end to prove the field bakes in:
 
 ```bash
-./gradlew :composeApp:assembleDebug -Pmarket=de -Penv=prod
+./gradlew :androidApp:assembleDebug -Pmarket=de -Penv=prod
 ```
 
 ### 8. Report

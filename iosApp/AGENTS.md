@@ -1,5 +1,31 @@
 # iOS App (SwiftUI Shell)
 
+## Project generation (xcodegen)
+
+`iosApp.xcodeproj/project.pbxproj` is a **generated artifact**. The source of truth is `iosApp/project.yml`, consumed by [xcodegen](https://github.com/yonaskolb/XcodeGen).
+
+**Why xcodegen.** The matrix of 5 markets × 3 envs × 2 build types = 30 build configurations × 3 targets = **90 `XCBuildConfiguration` entries** (plus 30 at project level). Hand-editing `project.pbxproj` at this scale is error-prone and produces unreviewable PR diffs. `project.yml` is ~220 lines of declarative YAML; adding a market adds ~12 lines total.
+
+**Install:** `brew install xcodegen` (project requires v2.45+).
+
+**Regenerate:** `cd iosApp && xcodegen generate`. Takes <1s. Run this after editing `project.yml`, adding/removing xcconfig files, or adding Swift source files in a new top-level directory.
+
+**Commit both `project.yml` and `project.pbxproj`** in the same commit — CI and team members who don't run xcodegen locally need the generated project to open in Xcode.
+
+**What's in `project.yml`:**
+
+| Section | What it defines |
+|---|---|
+| `configs:` | All 30 build configurations (`US-Int-Debug`, `AU-Prod-Release`, etc.) mapped to `debug`/`release` |
+| `targets.iosApp` | Application target: sources (iosApp/, Assets.xcassets), Info.plist, ComposeApp framework linkage, pre-build Gradle script, per-config xcconfig refs |
+| `targets.iosAppTests` | Unit-test bundle (Swift Testing + ViewInspector), depends on `iosApp` |
+| `targets.iosAppE2ETests` | UI-test bundle (XCUITest), depends on `iosApp` |
+| `schemes.iOSApp` | Single shared scheme; Run/Test/Analyze → `US-Int-Debug`, Profile/Archive → `US-Prod-Release`; 5 test plans wired |
+
+**Never edit `project.pbxproj` directly.** If the pbxproj diverges from what xcodegen produces, CI regeneration will wipe the manual changes. If you need a setting xcodegen doesn't cover, put it in an xcconfig (for per-config values) or extend `project.yml` (for target-level structure).
+
+**Adding a new market:** see `.agents/standards/markets.md` for the cross-cutting market concept, `.agents/standards/build-config.md` § "Adding a new market" for the mechanics, and the `add-market` skill for the automated recipe. The iOS-side short version: create 6 xcconfigs in `Configuration/{market}/`, add one `configs:` entry per build config (6 new), add 6 `configFiles:` entries under each of the three targets, then `xcodegen generate`.
+
 ## Architecture
 
 The iOS app is a thin SwiftUI shell that consumes shared KMP presenters from the `ComposeApp` framework. There is no business logic in Swift -- all state management lives in shared Kotlin Circuit presenters.

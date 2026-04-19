@@ -81,7 +81,7 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":features:{name}:impl:domain"))
             implementation(project(":core:network:api"))
-            implementation(project(":core:build-config"))
+            implementation(project(":core:build-config:api"))
         }
     }
 }
@@ -298,7 +298,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @ContributesBinding(AppScope::class)
-class FakeGet{Feature}Content @Inject constructor(
+class FakeGet{Feature}Content(
     initial: {Feature}Content = DEFAULT,
 ) : Get{Feature}Content() {
 

@@ -64,7 +64,7 @@ Run the steps listed in `.agents/standards/verification.md` → "Local (the `ver
 
 Summary (see the standard for exact commands):
 
-0. **Pre-flight: `./gradlew :core:build-config:validateAllMarkets`** — runs first because malformed combo files invalidate every downstream step.
+0. **Pre-flight: `./gradlew :core:build-config:impl:validateAllMarkets`** — runs first because malformed combo files invalidate every downstream step.
 1. Detekt — Kotlin lint
 2. SwiftLint — Swift style
 3. Kotest — Kotlin pure-logic unit tests (Android host)
@@ -94,7 +94,7 @@ Run the full pipeline from `.agents/standards/verification.md` → "Full Pipelin
 
 Summary (see the standard for exact commands):
 
-0. **Pre-flight: `./gradlew :core:build-config:validateAllMarkets`** — gates the entire pipeline.
+0. **Pre-flight: `./gradlew :core:build-config:impl:validateAllMarkets`** — gates the entire pipeline.
 1. Detekt — Kotlin lint
 2. SwiftLint — Swift style
 3. Kotest — Kotlin pure-logic unit tests (Android host)
@@ -116,7 +116,7 @@ The pre-flight `validate-all-markets` step covers schema/format drift across eve
 ### When to use
 
 - Before opening a PR, as a last sanity check
-- When the change touches R8/Proguard keep-rules, `expect`/`actual` splits, cinterop `.def` files, or `core:build-config` schema
+- When the change touches R8/Proguard keep-rules, `expect`/`actual` splits, cinterop `.def` files, or `core:build-config:impl` schema
 - When `full` passed but CI failed and you want to reproduce locally
 - See `.agents/standards/verification.md` → "When to escalate" for the exact trigger list
 

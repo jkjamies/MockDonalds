@@ -30,7 +30,7 @@ features/{name}/
 
 core/
   auth/                — AuthManager interface (api/) + InMemoryAuthManager (impl/)
-  build-config/        — Compile-time market/env config (BuildKonfig-backed AppBuildConfig facade; -Pmarket/-Penv)
+  build-config/        — Compile-time market/env config, api/impl/test split (AppBuildConfig facade in api/, BuildKonfig+validateAllMarkets in impl/, FakeAppBuildConfig in test/; -Pmarket/-Penv)
   centerpost/          — CenterPostInteractor, CenterPostSubjectInteractor, CenterPostDispatchers
   circuit/             — TabScreen, ProtectedScreen, FlowScreen, Parcelize expect/actual, CircuitProviders
   metro/               — AppGraph interface (shared DI contract)
@@ -228,6 +228,7 @@ Detailed reference documents in `.agents/standards/`:
 | [convention-plugins.md](.agents/standards/convention-plugins.md) | Plugin hierarchy, what each plugin provides, auto-wiring |
 | [feature-scaffolding.md](.agents/standards/feature-scaffolding.md) | Step-by-step guide to add a new feature, checklist |
 | [build-config.md](.agents/standards/build-config.md) | Compile-time market/env config (`core:build-config`): BuildKonfig schema, `AppBuildConfig` facade, Harness boundary, add-a-field workflow |
+| [markets.md](.agents/standards/markets.md) | Cross-cutting market concept: the 5 markets, how each surfaces across Android (applicationId), iOS (bundle ID, xcconfig), CI axis, future localization/analytics/store listings |
 
 ## Self-Updating Documentation
 

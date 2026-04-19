@@ -183,7 +183,7 @@ struct {Feature}View: View {
 
 ```kotlin
 @ContributesBinding(AppScope::class)
-class FakeGet{Feature}Content @Inject constructor(
+class FakeGet{Feature}Content(
     initial: {Feature}Content = DEFAULT,
 ) : Get{Feature}Content() {
     private val _content = MutableStateFlow(initial)

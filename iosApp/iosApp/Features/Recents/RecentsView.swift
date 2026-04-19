@@ -14,22 +14,22 @@ struct RecentsView: View {
         VStack {
             navigationBar
             
-            if let _ = state as? RecentsUiStateLoading {
+            if let _ = state as? RecentsUiState.Loading {
                 Spacer()
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: colors.primary))
                 Spacer()
-            } else if let _ = state as? RecentsUiStateEmpty {
+            } else if let _ = state as? RecentsUiState.Empty {
                 Spacer()
                 emptyStateView
                 Spacer()
-            } else if let successState = state as? RecentsUiStateSuccess {
+            } else if let successState = state as? RecentsUiState.Success {
                 ScrollView {
                     VStack(spacing: MockDimens.spacingMd) {
                         ForEach(successState.items, id: \.id) { item in
                             RecentItemCard(item: item)
                                 .onTapGesture {
-                                    successState.eventSink(RecentsEventOnItemTapped(id: item.id))
+                                    successState.eventSink(RecentsEvent.OnItemTapped(id: item.id))
                                 }
                         }
                     }
@@ -48,12 +48,12 @@ struct RecentsView: View {
     private var navigationBar: some View {
         HStack {
             Button(action: {
-                if let loading = state as? RecentsUiStateLoading {
-                    loading.eventSink(RecentsEventOnBackTapped())
-                } else if let empty = state as? RecentsUiStateEmpty {
-                    empty.eventSink(RecentsEventOnBackTapped())
-                } else if let success = state as? RecentsUiStateSuccess {
-                    success.eventSink(RecentsEventOnBackTapped())
+                if let loading = state as? RecentsUiState.Loading {
+                    loading.eventSink(RecentsEvent.OnBackTapped())
+                } else if let empty = state as? RecentsUiState.Empty {
+                    empty.eventSink(RecentsEvent.OnBackTapped())
+                } else if let success = state as? RecentsUiState.Success {
+                    success.eventSink(RecentsEvent.OnBackTapped())
                 }
             }) {
                 Image(systemName: "arrow.left")
@@ -140,7 +140,7 @@ struct RecentItemCard: View {
             Spacer()
         }
         .padding(MockDimens.spacingMd)
-        .background(colors.surfaceVariant)
+        .background(colors.surfaceContainerHighest)
         .cornerRadius(MockDimens.radiusMd)
         .accessibilityIdentifier("\(tags.ITEM)-\(item.id)")
     }

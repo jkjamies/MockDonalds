@@ -20,7 +20,7 @@ Locally you almost never need any of that. If your change didn't touch R8 rules,
 
 **On iOS targets specifically:** `iosArm64` is the App Store binary, `iosSimulatorArm64` is what devs and CI run tests on, `iosX64` is the legacy Intel simulator. `verify full` only needs `iosSimulatorArm64`. `verify all` should cover `iosArm64` + `iosSimulatorArm64`. `iosX64` is vestigial — Apple has been Apple-Silicon-default since 2020 and KMP compile bugs almost never hit x64 uniquely. Drop it unless someone's actively developing on an Intel Mac.
 
-**On the market matrix:** every market compiles the same Kotlin source; the only thing that changes is which `.properties` file gets merged into BuildKonfig. Building every combo locally proves something real (parse + merge + downstream recompile) but it's `verify all`'s job, not the dev loop's. The cheap gate that catches schema/format drift across every combo without compiling is `./gradlew :core:build-config:validateAllMarkets` (driven by the `validate-all-markets` skill) — a lightweight configuration-cache-friendly Gradle task that runs as a pre-flight check in both `verify full` and `verify all`.
+**On the market matrix:** every market compiles the same Kotlin source; the only thing that changes is which `.properties` file gets merged into BuildKonfig. Building every combo locally proves something real (parse + merge + downstream recompile) but it's `verify all`'s job, not the dev loop's. The cheap gate that catches schema/format drift across every combo without compiling is `./gradlew :core:build-config:impl:validateAllMarkets` (driven by the `validate-all-markets` skill) — a lightweight configuration-cache-friendly Gradle task that runs as a pre-flight check in both `verify full` and `verify all`.
 
 ## Full Scope (the `verify full` pipeline)
 
@@ -28,9 +28,9 @@ Eight steps, symmetric across both platforms: lint → unit → architecture →
 
 **Pre-flight — `validate-all-markets`:**
 ```bash
-./gradlew :core:build-config:validateAllMarkets
+./gradlew :core:build-config:impl:validateAllMarkets
 ```
-Gradle task on `:core:build-config`. Parses every `core/build-config/markets/*.properties` against `Defaults.properties` and enforces the rules in [build-config.md → Validation rules](build-config.md#validation-rules). Aggregates every violation in one pass and fails the build with the full list. Configuration-cache compatible; executes every invocation (no `upToDateWhen` skip) because the validation logic itself isn't an input to the task — if rules in `build.gradle.kts` change but no `.properties` file does, we still need the new rules to fire against existing files. Warm runs complete in under a second. Owned by the [`validate-all-markets`](../skills/validate-all-markets/SKILL.md) skill. Runs before step 1 because if a combo file is malformed, every downstream step builds against stale or wrong config.
+Gradle task on `:core:build-config:impl`. Parses every `core/build-config/impl/markets/*.properties` against `Defaults.properties` and enforces the rules in [build-config.md → Validation rules](build-config.md#validation-rules). Aggregates every violation in one pass and fails the build with the full list. Configuration-cache compatible; executes every invocation (no `upToDateWhen` skip) because the validation logic itself isn't an input to the task — if rules in `build.gradle.kts` change but no `.properties` file does, we still need the new rules to fire against existing files. Warm runs complete in under a second. Owned by the [`validate-all-markets`](../skills/validate-all-markets/SKILL.md) skill. Runs before step 1 because if a combo file is malformed, every downstream step builds against stale or wrong config.
 
 > **Note:** The `verify` skill's `diff` scope uses the Diff Decision Logic (below) to run only the subset of these steps relevant to what changed.
 
@@ -87,7 +87,7 @@ Only when the change specifically touches:
 - R8/Proguard keep-rules → `./gradlew :androidApp:assembleRelease`
 - `expect`/`actual` source-set splits → build both platforms explicitly
 - cinterop `.def` files → build `iosArm64` too
-- `core:build-config` schema, combo files, or a new market → build at least one non-default combo (`-Pmarket=de -Penv=prod`)
+- `core:build-config:impl` schema, combo files, or a new market → build at least one non-default combo (`-Pmarket=de -Penv=prod`)
 - Circuit navigation wiring, deep links, or presenter graph changes → also run navint-tests
 - Full user journeys or startup performance work → also run e2e-tests
 
@@ -99,7 +99,7 @@ Run these steps in order after any code change. Stop and fix failures before pro
 
 Fully symmetric across both platforms, organized by concern: lint → unit → architecture → UI component → nav/int → e2e → build. Every box has one Android + one iOS step. A pre-flight `validate-all-markets` check runs before step 1.
 
-**Pre-flight — `validate-all-markets`:** `./gradlew :core:build-config:validateAllMarkets` — see [build-config.md → Validation rules](build-config.md#validation-rules) and the [`validate-all-markets`](../skills/validate-all-markets/SKILL.md) skill. Gates the entire pipeline; fails fast if any combo file drifts from the schema.
+**Pre-flight — `validate-all-markets`:** `./gradlew :core:build-config:impl:validateAllMarkets` — see [build-config.md → Validation rules](build-config.md#validation-rules) and the [`validate-all-markets`](../skills/validate-all-markets/SKILL.md) skill. Gates the entire pipeline; fails fast if any combo file drifts from the schema.
 
 
 ```

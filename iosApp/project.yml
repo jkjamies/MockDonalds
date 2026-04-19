@@ -1,0 +1,262 @@
+name: iosApp
+options:
+  bundleIdPrefix: com.mockdonalds.app
+  deploymentTarget:
+    iOS: "16.0"
+  defaultConfig: US-Prod-Release
+  createIntermediateGroups: true
+  generateEmptyDirectories: false
+  groupSortPosition: top
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+
+# 5 markets x 3 envs x 2 build types = 30.
+# Each config's xcconfig file sets MARKET, ENV, optimization levels, etc.
+configs:
+  US-Int-Debug: debug
+  US-Int-Release: release
+  US-Mte-Debug: debug
+  US-Mte-Release: release
+  US-Prod-Debug: debug
+  US-Prod-Release: release
+  CA-Int-Debug: debug
+  CA-Int-Release: release
+  CA-Mte-Debug: debug
+  CA-Mte-Release: release
+  CA-Prod-Debug: debug
+  CA-Prod-Release: release
+  DE-Int-Debug: debug
+  DE-Int-Release: release
+  DE-Mte-Debug: debug
+  DE-Mte-Release: release
+  DE-Prod-Debug: debug
+  DE-Prod-Release: release
+  AU-Int-Debug: debug
+  AU-Int-Release: release
+  AU-Mte-Debug: debug
+  AU-Mte-Release: release
+  AU-Prod-Debug: debug
+  AU-Prod-Release: release
+  CORE-Int-Debug: debug
+  CORE-Int-Release: release
+  CORE-Mte-Debug: debug
+  CORE-Mte-Release: release
+  CORE-Prod-Debug: debug
+  CORE-Prod-Release: release
+
+fileGroups:
+  - Configuration
+  - ../CLAUDE.md
+
+packages:
+  KMP-NativeCoroutines:
+    url: https://github.com/rickclephas/KMP-NativeCoroutines.git
+    exactVersion: 1.0.2-spm-async
+  ViewInspector:
+    url: https://github.com/nalexn/ViewInspector.git
+    majorVersion: 0.10.0
+
+targets:
+  iosApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: iosApp
+        excludes:
+          - "Info.plist"
+          - ".xcassets"
+      - path: Assets.xcassets
+        buildPhase: resources
+    configFiles:
+      US-Int-Debug: Configuration/us/US-Int-Debug.xcconfig
+      US-Int-Release: Configuration/us/US-Int-Release.xcconfig
+      US-Mte-Debug: Configuration/us/US-Mte-Debug.xcconfig
+      US-Mte-Release: Configuration/us/US-Mte-Release.xcconfig
+      US-Prod-Debug: Configuration/us/US-Prod-Debug.xcconfig
+      US-Prod-Release: Configuration/us/US-Prod-Release.xcconfig
+      CA-Int-Debug: Configuration/ca/CA-Int-Debug.xcconfig
+      CA-Int-Release: Configuration/ca/CA-Int-Release.xcconfig
+      CA-Mte-Debug: Configuration/ca/CA-Mte-Debug.xcconfig
+      CA-Mte-Release: Configuration/ca/CA-Mte-Release.xcconfig
+      CA-Prod-Debug: Configuration/ca/CA-Prod-Debug.xcconfig
+      CA-Prod-Release: Configuration/ca/CA-Prod-Release.xcconfig
+      DE-Int-Debug: Configuration/de/DE-Int-Debug.xcconfig
+      DE-Int-Release: Configuration/de/DE-Int-Release.xcconfig
+      DE-Mte-Debug: Configuration/de/DE-Mte-Debug.xcconfig
+      DE-Mte-Release: Configuration/de/DE-Mte-Release.xcconfig
+      DE-Prod-Debug: Configuration/de/DE-Prod-Debug.xcconfig
+      DE-Prod-Release: Configuration/de/DE-Prod-Release.xcconfig
+      AU-Int-Debug: Configuration/au/AU-Int-Debug.xcconfig
+      AU-Int-Release: Configuration/au/AU-Int-Release.xcconfig
+      AU-Mte-Debug: Configuration/au/AU-Mte-Debug.xcconfig
+      AU-Mte-Release: Configuration/au/AU-Mte-Release.xcconfig
+      AU-Prod-Debug: Configuration/au/AU-Prod-Debug.xcconfig
+      AU-Prod-Release: Configuration/au/AU-Prod-Release.xcconfig
+      CORE-Int-Debug: Configuration/core/CORE-Int-Debug.xcconfig
+      CORE-Int-Release: Configuration/core/CORE-Int-Release.xcconfig
+      CORE-Mte-Debug: Configuration/core/CORE-Mte-Debug.xcconfig
+      CORE-Mte-Release: Configuration/core/CORE-Mte-Release.xcconfig
+      CORE-Prod-Debug: Configuration/core/CORE-Prod-Debug.xcconfig
+      CORE-Prod-Release: Configuration/core/CORE-Prod-Release.xcconfig
+    settings:
+      base:
+        INFOPLIST_FILE: iosApp/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_KEY_CFBundleDisplayName: MockDonalds
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: "${TEAM_ID}"
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../composeApp/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
+        OTHER_LDFLAGS:
+          - $(inherited)
+          - "-framework"
+          - ComposeApp
+        LD_RUNPATH_SEARCH_PATHS:
+          - $(inherited)
+          - "@executable_path/Frameworks"
+    dependencies:
+      - package: KMP-NativeCoroutines
+        product: KMPNativeCoroutinesAsync
+      - package: KMP-NativeCoroutines
+        product: KMPNativeCoroutinesCore
+    preBuildScripts:
+      - name: Build Kotlin framework via Gradle
+        basedOnDependencyAnalysis: false
+        script: |
+          if [ "YES" = "$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED" ]; then
+            echo "Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \"YES\""
+            exit 0
+          fi
+          if [ -z "${MARKET:-}" ] || [ -z "${ENV:-}" ]; then
+            echo "error: MARKET and ENV must be set by the active xcconfig (e.g. US-Int-Debug, DE-Prod-Release)" >&2
+            exit 1
+          fi
+          cd "$SRCROOT/.."
+          ./gradlew :composeApp:embedAndSignAppleFrameworkForXcode -Pmarket="$MARKET" -Penv="$ENV"
+
+  iosAppTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - iosAppTests
+    configFiles:
+      US-Int-Debug: Configuration/us/US-Int-Debug.xcconfig
+      US-Int-Release: Configuration/us/US-Int-Release.xcconfig
+      US-Mte-Debug: Configuration/us/US-Mte-Debug.xcconfig
+      US-Mte-Release: Configuration/us/US-Mte-Release.xcconfig
+      US-Prod-Debug: Configuration/us/US-Prod-Debug.xcconfig
+      US-Prod-Release: Configuration/us/US-Prod-Release.xcconfig
+      CA-Int-Debug: Configuration/ca/CA-Int-Debug.xcconfig
+      CA-Int-Release: Configuration/ca/CA-Int-Release.xcconfig
+      CA-Mte-Debug: Configuration/ca/CA-Mte-Debug.xcconfig
+      CA-Mte-Release: Configuration/ca/CA-Mte-Release.xcconfig
+      CA-Prod-Debug: Configuration/ca/CA-Prod-Debug.xcconfig
+      CA-Prod-Release: Configuration/ca/CA-Prod-Release.xcconfig
+      DE-Int-Debug: Configuration/de/DE-Int-Debug.xcconfig
+      DE-Int-Release: Configuration/de/DE-Int-Release.xcconfig
+      DE-Mte-Debug: Configuration/de/DE-Mte-Debug.xcconfig
+      DE-Mte-Release: Configuration/de/DE-Mte-Release.xcconfig
+      DE-Prod-Debug: Configuration/de/DE-Prod-Debug.xcconfig
+      DE-Prod-Release: Configuration/de/DE-Prod-Release.xcconfig
+      AU-Int-Debug: Configuration/au/AU-Int-Debug.xcconfig
+      AU-Int-Release: Configuration/au/AU-Int-Release.xcconfig
+      AU-Mte-Debug: Configuration/au/AU-Mte-Debug.xcconfig
+      AU-Mte-Release: Configuration/au/AU-Mte-Release.xcconfig
+      AU-Prod-Debug: Configuration/au/AU-Prod-Debug.xcconfig
+      AU-Prod-Release: Configuration/au/AU-Prod-Release.xcconfig
+      CORE-Int-Debug: Configuration/core/CORE-Int-Debug.xcconfig
+      CORE-Int-Release: Configuration/core/CORE-Int-Release.xcconfig
+      CORE-Mte-Debug: Configuration/core/CORE-Mte-Debug.xcconfig
+      CORE-Mte-Release: Configuration/core/CORE-Mte-Release.xcconfig
+      CORE-Prod-Debug: Configuration/core/CORE-Prod-Debug.xcconfig
+      CORE-Prod-Release: Configuration/core/CORE-Prod-Release.xcconfig
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mockdonalds.app.tests
+        GENERATE_INFOPLIST_FILE: YES
+        BUNDLE_LOADER: $(TEST_HOST)
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: "${TEAM_ID}"
+    dependencies:
+      - target: iosApp
+      - package: ViewInspector
+
+  iosAppE2ETests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - iosAppE2ETests
+    configFiles:
+      US-Int-Debug: Configuration/us/US-Int-Debug.xcconfig
+      US-Int-Release: Configuration/us/US-Int-Release.xcconfig
+      US-Mte-Debug: Configuration/us/US-Mte-Debug.xcconfig
+      US-Mte-Release: Configuration/us/US-Mte-Release.xcconfig
+      US-Prod-Debug: Configuration/us/US-Prod-Debug.xcconfig
+      US-Prod-Release: Configuration/us/US-Prod-Release.xcconfig
+      CA-Int-Debug: Configuration/ca/CA-Int-Debug.xcconfig
+      CA-Int-Release: Configuration/ca/CA-Int-Release.xcconfig
+      CA-Mte-Debug: Configuration/ca/CA-Mte-Debug.xcconfig
+      CA-Mte-Release: Configuration/ca/CA-Mte-Release.xcconfig
+      CA-Prod-Debug: Configuration/ca/CA-Prod-Debug.xcconfig
+      CA-Prod-Release: Configuration/ca/CA-Prod-Release.xcconfig
+      DE-Int-Debug: Configuration/de/DE-Int-Debug.xcconfig
+      DE-Int-Release: Configuration/de/DE-Int-Release.xcconfig
+      DE-Mte-Debug: Configuration/de/DE-Mte-Debug.xcconfig
+      DE-Mte-Release: Configuration/de/DE-Mte-Release.xcconfig
+      DE-Prod-Debug: Configuration/de/DE-Prod-Debug.xcconfig
+      DE-Prod-Release: Configuration/de/DE-Prod-Release.xcconfig
+      AU-Int-Debug: Configuration/au/AU-Int-Debug.xcconfig
+      AU-Int-Release: Configuration/au/AU-Int-Release.xcconfig
+      AU-Mte-Debug: Configuration/au/AU-Mte-Debug.xcconfig
+      AU-Mte-Release: Configuration/au/AU-Mte-Release.xcconfig
+      AU-Prod-Debug: Configuration/au/AU-Prod-Debug.xcconfig
+      AU-Prod-Release: Configuration/au/AU-Prod-Release.xcconfig
+      CORE-Int-Debug: Configuration/core/CORE-Int-Debug.xcconfig
+      CORE-Int-Release: Configuration/core/CORE-Int-Release.xcconfig
+      CORE-Mte-Debug: Configuration/core/CORE-Mte-Debug.xcconfig
+      CORE-Mte-Release: Configuration/core/CORE-Mte-Release.xcconfig
+      CORE-Prod-Debug: Configuration/core/CORE-Prod-Debug.xcconfig
+      CORE-Prod-Release: Configuration/core/CORE-Prod-Release.xcconfig
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mockdonalds.app.e2etests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: iosApp
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: "${TEAM_ID}"
+    dependencies:
+      - target: iosApp
+
+schemes:
+  iOSApp:
+    build:
+      targets:
+        iosApp: all
+        iosAppTests: [test]
+        iosAppE2ETests: [test]
+    run:
+      config: US-Int-Debug
+    test:
+      config: US-Int-Debug
+      testPlans:
+        - path: iosApp.xcodeproj/xcshareddata/TestPlans/AllTests.xctestplan
+          defaultPlan: true
+        - path: iosApp.xcodeproj/xcshareddata/TestPlans/UnitTests.xctestplan
+        - path: iosApp.xcodeproj/xcshareddata/TestPlans/UIComponentTests.xctestplan
+        - path: iosApp.xcodeproj/xcshareddata/TestPlans/NavIntTests.xctestplan
+        - path: iosApp.xcodeproj/xcshareddata/TestPlans/E2ETests.xctestplan
+    profile:
+      config: US-Prod-Release
+    analyze:
+      config: US-Int-Debug
+    archive:
+      config: US-Prod-Release

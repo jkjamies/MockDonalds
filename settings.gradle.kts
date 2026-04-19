@@ -37,7 +37,9 @@ include(":core:analytics:api")
 include(":core:analytics:impl")
 include(":core:analytics:test")
 include(":core:metro")
-include(":core:build-config")
+include(":core:build-config:api")
+include(":core:build-config:impl")
+include(":core:build-config:test")
 
 // Feature modules — auto-discovered, architecture-enforced submodules
 rootDir.resolve("features").listFiles()
