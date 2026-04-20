@@ -1,0 +1,76 @@
+#if DEBUG
+import SwiftUI
+import ComposeApp
+
+private let tags = DebugMenuTestTags.shared
+
+struct DebugMenuView: View {
+    let state: DebugMenuUiState
+    @Environment(\.mockDonaldsColors) private var colors
+
+    var body: some View {
+        VStack(spacing: 0) {
+            navigationBar
+            ScrollView {
+                VStack(spacing: MockDimens.spacingMd) {
+                    ForEach(state.entries, id: \.id) { entry in
+                        DebugEntryCard(entry: entry)
+                            .onTapGesture {
+                                state.eventSink(DebugMenuEvent.EntryClicked(id: entry.id))
+                            }
+                    }
+                }
+                .padding(MockDimens.spacingMd)
+            }
+            .accessibilityIdentifier(tags.ENTRY_LIST)
+        }
+        .background(colors.background)
+        .accessibilityIdentifier(tags.ROOT)
+        .navigationBarHidden(true)
+    }
+
+    private var navigationBar: some View {
+        HStack {
+            Button(action: { state.eventSink(DebugMenuEvent.BackClicked()) }) {
+                Image(systemName: "arrow.left")
+                    .foregroundColor(colors.onBackground)
+            }
+            .accessibilityIdentifier(tags.BACK_BUTTON)
+
+            Text("Debug Menu")
+                .font(.headline)
+                .foregroundColor(colors.onBackground)
+                .padding(.leading, MockDimens.spacingSm)
+
+            Spacer()
+        }
+        .padding()
+        .background(colors.background)
+    }
+}
+
+private struct DebugEntryCard: View {
+    let entry: DebugMenuEntry
+    @Environment(\.mockDonaldsColors) private var colors
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(entry.title)
+                    .font(.headline)
+                    .foregroundColor(colors.onSurface)
+                Text(entry.subtitle)
+                    .font(.subheadline)
+                    .foregroundColor(colors.onSurfaceVariant)
+            }
+            Spacer()
+            Text(">")
+                .foregroundColor(colors.onSurfaceVariant)
+        }
+        .padding(MockDimens.spacingLg)
+        .background(colors.surfaceContainerHighest)
+        .cornerRadius(MockDimens.radiusMd)
+        .accessibilityIdentifier("\(DebugMenuTestTags.shared.ENTRY_ITEM)-\(entry.id)")
+    }
+}
+#endif

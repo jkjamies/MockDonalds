@@ -30,6 +30,10 @@ class AppBuildConfigTest : BehaviorSpec({
                 listOf("int", "mte", "prod") shouldContain config.env
             }
 
+            Then("buildType is one of debug or release") {
+                listOf("debug", "release") shouldContain config.buildType
+            }
+
             Then("baseUrl is an https URL") {
                 config.baseUrl shouldNotBe ""
                 config.baseUrl shouldMatch Regex("^https://.+")

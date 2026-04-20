@@ -77,15 +77,15 @@ final class RecentsViewRobot {
 
     func simulateBackTap() {
         let state = stateRobot.defaultState()
-        if let success = state as? RecentsUiStateSuccess {
-            success.eventSink(RecentsEventOnBackTapped())
+        if let success = state as? RecentsUiState.Success {
+            success.eventSink(RecentsEvent.OnBackTapped())
         }
     }
 
     func simulateItemTap(id: String) {
         let state = stateRobot.defaultState()
-        if let success = state as? RecentsUiStateSuccess {
-            success.eventSink(RecentsEventOnItemTapped(id: id))
+        if let success = state as? RecentsUiState.Success {
+            success.eventSink(RecentsEvent.OnItemTapped(id: id))
         }
     }
 

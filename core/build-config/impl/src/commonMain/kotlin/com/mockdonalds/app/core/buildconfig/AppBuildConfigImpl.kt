@@ -11,6 +11,7 @@ class AppBuildConfigImpl : AppBuildConfig {
     override val appId: String = BuildConfig.APP_ID
     override val market: String = BuildConfig.MARKET
     override val env: String = BuildConfig.ENV
+    override val buildType: String = BuildConfig.BUILD_TYPE
     override val baseUrl: String = BuildConfig.BASE_URL
     override val cdnUrl: String = BuildConfig.CDN_URL
     override val menuBaseUrl: String = BuildConfig.MENU_BASE_URL

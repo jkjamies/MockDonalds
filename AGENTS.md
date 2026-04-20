@@ -30,7 +30,7 @@ features/{name}/
 
 core/
   auth/                — AuthManager interface (api/) + InMemoryAuthManager (impl/)
-  build-config/        — Compile-time market/env config, api/impl/test split (AppBuildConfig facade in api/, BuildKonfig+validateAllMarkets in impl/, FakeAppBuildConfig in test/; -Pmarket/-Penv)
+  build-config/        — Compile-time market/env/buildType config, api/impl/test split (AppBuildConfig facade + `isDebug` extension in api/, BuildKonfig+validateAllMarkets in impl/, FakeAppBuildConfig in test/; variant selection delegated to build-logic/`BuildVariantResolver` — `-P` flags, AGP variant task names, or defaults)
   centerpost/          — CenterPostInteractor, CenterPostSubjectInteractor, CenterPostDispatchers
   circuit/             — TabScreen, ProtectedScreen, FlowScreen, Parcelize expect/actual, CircuitProviders
   metro/               — AppGraph interface (shared DI contract)

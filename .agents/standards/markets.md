@@ -38,18 +38,25 @@ The market regex in `validateAllMarkets` accepts any 2+ lowercase letters, not s
 
 ### Android
 
-`androidApp/build.gradle.kts` reads `-Pmarket` and derives `applicationId`:
+`androidApp/build.gradle.kts` declares two AGP `flavorDimensions` — `market` and `env` — so every combo surfaces natively in Android Studio's Build Variants window and as a real Gradle task (`assembleUsIntDebug`, `assembleDeProdRelease`, …). Each market flavor carries its own `applicationIdSuffix`:
 
 ```kotlin
-val market: String = providers.gradleProperty("market").getOrElse("us")
 android {
-    defaultConfig {
-        applicationId = "com.mockdonalds.app.$market"
+    flavorDimensions += listOf("market", "env")
+    productFlavors {
+        create("us") { dimension = "market"; applicationIdSuffix = ".us" }
+        create("ca") { dimension = "market"; applicationIdSuffix = ".ca" }
+        create("de") { dimension = "market"; applicationIdSuffix = ".de" }
+        create("au") { dimension = "market"; applicationIdSuffix = ".au" }
+        create("core") { dimension = "market"; applicationIdSuffix = ".core" }
+        create("int") { dimension = "env" }
+        create("mte") { dimension = "env" }
+        create("prod") { dimension = "env" }
     }
 }
 ```
 
-So `-Pmarket=de` produces `com.mockdonalds.app.de`, a distinct Play Store app. No flavor declarations required — the `-P` property is consumed at configure time and every `assemble*` task that follows uses that applicationId. `versionCode` / `versionName` are currently market-agnostic; if future store submission policy requires per-market versioning, that belongs in `androidApp/build.gradle.kts` next to `applicationId`.
+So selecting `deIntDebug` in the Build Variants window (or running `./gradlew :androidApp:assembleDeProdRelease`) produces `com.mockdonalds.app.de`, a distinct Play Store app. The explicit CLI form `-Pmarket=de -Penv=prod -PbuildType=release` still works and is the path iOS uses. Both paths converge in the shared resolver — `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — which `:core:build-config:impl` and `:core:feature-flag:impl` call at configure time to pick the right `.properties` files. `versionCode` / `versionName` are currently market-agnostic; if future store submission policy requires per-market versioning, that belongs in `androidApp/build.gradle.kts` next to the flavor declarations.
 
 ### iOS
 

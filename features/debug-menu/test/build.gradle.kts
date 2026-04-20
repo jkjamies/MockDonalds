@@ -1,0 +1,17 @@
+plugins {
+    id("mockdonalds.kmp.domain")
+}
+
+kotlin {
+    android {
+        namespace = "com.mockdonalds.app.features.debugmenu.test"
+    }
+
+    sourceSets {
+        commonMain.dependencies {
+            api(project(":features:debug-menu:api:domain"))
+            api(project(":features:debug-menu:api:navigation"))
+            api(project(":core:test-fixtures"))
+        }
+    }
+}

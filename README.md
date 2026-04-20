@@ -59,11 +59,12 @@ Core modules: `auth`, `build-config`, `centerpost`, `circuit`, `metro`, `network
 
 ### Compile-Time Market & Environment Variants
 
-`core:build-config` is split into three modules: `api/` exposes a typed `AppBuildConfig` facade interface; `impl/` applies [BuildKonfig](https://github.com/yshrsmz/BuildKonfig), merges `impl/Defaults.properties` with `impl/markets/{market}/{market}-{env}.properties`, and contributes `AppBuildConfigImpl`; `test/` contributes a `FakeAppBuildConfig` for test modules. Features depend on `:api` only — the generated `BuildConfig` object and BuildKonfig plugin stay out of their classpath. Market/env are selected at build time via `-Pmarket=` / `-Penv=` Gradle properties. Android's `applicationId` is derived per market (`com.mockdonalds.app.{market}`); iOS uses per-combo xcconfigs (`US-Int-Debug`, `US-Prod-Release`, `DE-Int-Debug`, `DE-Prod-Release`, …) driving `PRODUCT_BUNDLE_IDENTIFIER` from the `MARKET` variable.
+`core:build-config` is split into three modules: `api/` exposes a typed `AppBuildConfig` facade interface; `impl/` applies [BuildKonfig](https://github.com/yshrsmz/BuildKonfig), merges `impl/Defaults.properties` with `impl/markets/{market}/{market}-{env}.properties`, and contributes `AppBuildConfigImpl`; `test/` contributes a `FakeAppBuildConfig` for test modules. Features depend on `:api` only — the generated `BuildConfig` object and BuildKonfig plugin stay out of their classpath. Market/env/buildType are resolved by the shared `BuildVariantResolver` in `build-logic/` via three signals — explicit `-Pmarket`/`-Penv`/`-PbuildType`, AGP variant task names (`assembleUsIntDebug`, `assembleDeProdRelease`, …) from Android Studio's Build Variants window, or defaults (`us`/`int`/`debug`). Android declares 30 native variants from `flavorDimensions = ["market", "env"]` × debug/release; iOS uses per-combo xcconfigs (`US-Int-Debug`, `US-Prod-Release`, `DE-Int-Debug`, `DE-Prod-Release`, …) driving `PRODUCT_BUNDLE_IDENTIFIER` from the `MARKET` variable.
 
 ```bash
-./gradlew :androidApp:assembleDebug                                 # Default us/dev
-./gradlew :androidApp:assembleRelease -Pmarket=de -Penv=prod        # Germany production build
+./gradlew :androidApp:assembleDebug                                 # Default us/int/debug
+./gradlew :androidApp:assembleDeProdRelease                         # Germany production release (AGP variant task)
+./gradlew :androidApp:assembleRelease -Pmarket=de -Penv=prod        # Same, explicit -P form (used by iOS preBuildScript + CI)
 ```
 
 See [`.agents/standards/build-config.md`](.agents/standards/build-config.md) for the full schema, Harness boundary, and "adding a field" workflow. Runtime feature flags / kill switches / experiments belong in Harness, **not** here.

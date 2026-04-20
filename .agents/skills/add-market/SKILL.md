@@ -1,6 +1,6 @@
 ---
 name: add-market
-description: Scaffold a new market across both platforms — 3 .properties files in core/build-config/markets/{market}/, 6 xcconfigs in iosApp/Configuration/{market}/, YAML edits to iosApp/project.yml for 30 new target-config bindings, xcodegen regeneration, and cross-platform smoke builds. Use when launching the app in a new country/region or adding a synthetic sandbox market.
+description: Scaffold a new market across both platforms — 3 .properties files in core/build-config/markets/{market}/, a new AGP market flavor in androidApp/build.gradle.kts, a single regex extension in build-logic/convention/.../BuildVariantResolver.kt, 6 xcconfigs in iosApp/Configuration/{market}/, YAML edits to iosApp/project.yml for 30 new target-config bindings, xcodegen regeneration, and cross-platform smoke builds. Use when launching the app in a new country/region or adding a synthetic sandbox market.
 ---
 
 # Add Market
@@ -83,7 +83,34 @@ For a synthetic sandbox market: use `{market}-int-{service}.mockdonalds.com` pat
 
 Must pass before continuing. If it fails, fix the combo files — symmetry is not optional.
 
-### 3. Create `iosApp/Configuration/{market}/` and six xcconfig files
+### 3. Register the Android flavor and extend the shared resolver
+
+Two small edits make the new market selectable from Android Studio's Build Variants window and let `:core:build-config:impl` / `:core:feature-flag:impl` resolve it from AGP variant task names.
+
+**a. `androidApp/build.gradle.kts`** — add one market flavor inside `productFlavors { … }`:
+
+```kotlin
+create("{market}") { dimension = "market"; applicationIdSuffix = ".{market}" }
+```
+
+AGP will now expose 6 new rows (`{market}IntDebug`, `{market}IntRelease`, `{market}MteDebug`, `{market}MteRelease`, `{market}ProdDebug`, `{market}ProdRelease`) and `applicationId` resolves to `com.mockdonalds.app.{market}` automatically.
+
+**b. `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt`** — extend the market alternation in `variantRe`:
+
+```kotlin
+private val variantRe = Regex("""(?i)(us|ca|de|au|core|{market})(Int|Mte|Prod)(Debug|Release)""")
+```
+
+This is the single place the market list lives. Both `:core:build-config:impl` and `:core:feature-flag:impl` call `BuildVariantResolver.market(project)` / `.env(project)` / `.buildType(project)` — no other `build.gradle.kts` needs editing.
+
+Smoke-verify at configure time:
+
+```bash
+./gradlew :androidApp:assemble{Market}IntDebug --dry-run 2>&1 | grep "core:build-config:impl →"
+# expected: core:build-config:impl → market={market} env=int buildType=debug
+```
+
+### 4. Create `iosApp/Configuration/{market}/` and six xcconfig files
 
 Copy the `us/` templates:
 
@@ -150,11 +177,11 @@ Should now show **30 + 6 × (the number of new markets) = 36 (for one new market
 The matrix is too big to build every combo; pick representative configurations:
 
 ```bash
-# Android: debug + int (the most common dev path)
-./gradlew :androidApp:assembleDebug -Pmarket={market} -Penv=int
+# Android: debug + int (the most common dev path — AGP variant task name drives the resolver)
+./gradlew :androidApp:assemble{Market}IntDebug
 
 # Android: release + prod (the minify/obfuscation path)
-./gradlew :androidApp:assembleRelease -Pmarket={market} -Penv=prod
+./gradlew :androidApp:assemble{Market}ProdRelease
 
 # iOS: one debug + one release
 xcodebuild -project iosApp/iosApp.xcodeproj -scheme iOSApp \

@@ -1,4 +1,5 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import com.mockdonalds.buildlogic.BuildVariantResolver
 import java.net.URI
 import java.util.Properties
 
@@ -19,10 +20,11 @@ kotlin {
     }
 }
 
-val market: String = providers.gradleProperty("market").getOrElse("us")
-val env: String = providers.gradleProperty("env").getOrElse("int")
+val market: String = BuildVariantResolver.market(project)
+val env: String = BuildVariantResolver.env(project)
+val buildType: String = BuildVariantResolver.buildType(project)
 
-logger.lifecycle("core:build-config:impl → market=$market env=$env")
+logger.lifecycle("core:build-config:impl → market=$market env=$env buildType=$buildType")
 
 fun loadProps(path: String): Map<String, String> {
     val f = file(path)
@@ -47,6 +49,7 @@ buildkonfig {
         merged.forEach { (key, value) ->
             buildConfigField(STRING, key, value)
         }
+        buildConfigField(STRING, "BUILD_TYPE", buildType)
     }
 }
 

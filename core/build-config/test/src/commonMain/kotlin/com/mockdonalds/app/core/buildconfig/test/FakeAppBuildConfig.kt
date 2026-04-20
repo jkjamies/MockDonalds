@@ -10,6 +10,7 @@ class FakeAppBuildConfig : AppBuildConfig {
     override var appId: String = "us-mockdonalds-mobile-int"
     override var market: String = "us"
     override var env: String = "int"
+    override var buildType: String = "debug"
     override var baseUrl: String = "https://int-api.mockdonalds.com"
     override var cdnUrl: String = "https://int-cdn.mockdonalds.com"
     override var menuBaseUrl: String = "https://int-menu-api.mockdonalds.com"

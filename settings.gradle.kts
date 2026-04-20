@@ -41,7 +41,9 @@ include(":core:build-config:api")
 include(":core:build-config:impl")
 include(":core:build-config:test")
 
-// Feature modules — auto-discovered, architecture-enforced submodules
+// Feature modules — auto-discovered, architecture-enforced submodules.
+// Debug-only features (e.g. `debug-menu`) are filtered at runtime via
+// `AppBuildConfig.buildType` rather than stripped from the module graph.
 rootDir.resolve("features").listFiles()
     ?.filter { it.isDirectory }
     ?.map { it.name }

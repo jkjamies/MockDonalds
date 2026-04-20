@@ -4,20 +4,31 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
-val market: String = providers.gradleProperty("market").getOrElse("us")
-
-logger.lifecycle("androidApp → market=$market")
-
 android {
     namespace = "com.mockdonalds.app"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.mockdonalds.app.$market"
+        applicationId = "com.mockdonalds.app"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0.0"
+    }
+
+    // Symmetric with iOS xcconfigs: 5 markets × 3 envs × debug/release = 30 Build Variants.
+    // Market flavor drives applicationId suffix; env flavor is config-only (values flow to
+    // BuildKonfig via task-name parsing in core/build-config/impl/build.gradle.kts).
+    flavorDimensions += listOf("market", "env")
+    productFlavors {
+        create("us") { dimension = "market"; applicationIdSuffix = ".us" }
+        create("ca") { dimension = "market"; applicationIdSuffix = ".ca" }
+        create("de") { dimension = "market"; applicationIdSuffix = ".de" }
+        create("au") { dimension = "market"; applicationIdSuffix = ".au" }
+        create("core") { dimension = "market"; applicationIdSuffix = ".core" }
+        create("int") { dimension = "env" }
+        create("mte") { dimension = "env" }
+        create("prod") { dimension = "env" }
     }
 
     buildTypes {

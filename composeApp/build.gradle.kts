@@ -32,7 +32,7 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
 
-            // Export feature modules for iOS consumption (auto-discovered)
+            // Export feature modules for iOS consumption (auto-discovered).
             rootDir.resolve("features").listFiles()
                 ?.filter { it.isDirectory }
                 ?.map { it.name }
@@ -56,7 +56,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
 
-            // Feature modules (auto-discovered, architecture-enforced wiring)
+            // Feature modules (auto-discovered, architecture-enforced wiring).
             rootDir.resolve("features").listFiles()
                 ?.filter { it.isDirectory }
                 ?.map { it.name }

@@ -139,12 +139,15 @@ targets:
             echo "Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \"YES\""
             exit 0
           fi
-          if [ -z "${MARKET:-}" ] || [ -z "${ENV:-}" ]; then
-            echo "error: MARKET and ENV must be set by the active xcconfig (e.g. US-Int-Debug, DE-Prod-Release)" >&2
+          if [ -z "${MARKET:-}" ] || [ -z "${ENV:-}" ] || [ -z "${KOTLIN_FRAMEWORK_BUILD_TYPE:-}" ]; then
+            echo "error: MARKET, ENV, and KOTLIN_FRAMEWORK_BUILD_TYPE must be set by the active xcconfig (e.g. US-Int-Debug, DE-Prod-Release)" >&2
             exit 1
           fi
           cd "$SRCROOT/.."
-          ./gradlew :composeApp:embedAndSignAppleFrameworkForXcode -Pmarket="$MARKET" -Penv="$ENV"
+          ./gradlew :composeApp:embedAndSignAppleFrameworkForXcode \
+            -Pmarket="$MARKET" \
+            -Penv="$ENV" \
+            -PbuildType="$KOTLIN_FRAMEWORK_BUILD_TYPE"
 
   iosAppTests:
     type: bundle.unit-test

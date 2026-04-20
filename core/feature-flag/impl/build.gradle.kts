@@ -1,4 +1,5 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import com.mockdonalds.buildlogic.BuildVariantResolver
 import java.util.Properties
 
 plugins {
@@ -21,7 +22,7 @@ kotlin {
     }
 }
 
-val env: String = providers.gradleProperty("env").getOrElse("int")
+val env: String = BuildVariantResolver.env(project)
 
 logger.lifecycle("core:feature-flag:impl → env=$env")
 

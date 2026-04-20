@@ -5,6 +5,7 @@ interface AppBuildConfig {
     val appId: String
     val market: String
     val env: String
+    val buildType: String
     val baseUrl: String
     val cdnUrl: String
     val menuBaseUrl: String
@@ -15,3 +16,5 @@ interface AppBuildConfig {
     val locale: String
     val currency: String
 }
+
+val AppBuildConfig.isDebug: Boolean get() = buildType == "debug"

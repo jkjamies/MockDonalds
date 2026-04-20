@@ -15,10 +15,19 @@ Compile-time market + environment configuration lives in `core:build-config` (sp
 
 ## Selection
 
-| Property | Default | Example |
-|---|---|---|
-| `-Pmarket` | `us` | `-Pmarket=de` |
-| `-Penv`    | `int` | `-Penv=prod` |
+Selection is centralized in a single shared resolver — `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — which both `:core:build-config:impl` and `:core:feature-flag:impl` call into as `BuildVariantResolver.market(project)` / `.env(project)` / `.buildType(project)`. The resolver applies a three-stage signal chain, giving both platforms equivalent UX:
+
+1. **Explicit `-P` property** (`-Pmarket`, `-Penv`, `-PbuildType`) — wins everything. Used by iOS's preBuildScript (which forwards `$MARKET` / `$ENV` / `$KOTLIN_FRAMEWORK_BUILD_TYPE` from the active xcconfig) and by CI / ad-hoc CLI invocations.
+2. **AGP variant task name parsing** — when a Gradle invocation contains a task like `assembleUsIntDebug`, `compileUsIntDebugKotlin`, or `connectedUsIntDebugAndroidTest`, the resolver extracts `market`/`env`/`buildType` from the camelCase triple via `(?i)(us|ca|de|au|core)(Int|Mte|Prod)(Debug|Release)`. This is how Android Studio's Build Variants dropdown feeds into BuildKonfig — picking `usIntDebug` in the IDE runs `:androidApp:assembleUsIntDebug`, which the resolver sees.
+3. **Defaults** — `us` / `int` / `debug`.
+
+| Property | Default | Example (explicit) | Example (AGP variant) |
+|---|---|---|---|
+| `-Pmarket` | `us` | `-Pmarket=de` | `assembleDeIntDebug` |
+| `-Penv` | `int` | `-Penv=prod` | `assembleDeProdDebug` |
+| `-PbuildType` | `debug` | `-PbuildType=release` | `assembleDeProdRelease` |
+
+A last-resort heuristic (camelCase `*Release*` segment in any task name) catches variant-agnostic release tasks like `testReleaseUnitTest`. Explicit `-P` always wins when both signals are present, so iOS's preBuildScript path is never overridden by a coincidental task-name match.
 
 ### Markets
 
@@ -40,30 +49,61 @@ Compile-time market + environment configuration lives in `core:build-config` (sp
 | `mte` | Manual Test Environment — QA sign-off; release-complete code pointed at a stable test backend |
 | `prod` | Production — end users |
 
-### Build types (iOS only — explicit in the config name)
+### Build types
 
 | Build type | Compile mode | When to use |
 |---|---|---|
-| `Debug` | Non-optimized; testability on; `SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG` | Day-to-day dev |
-| `Release` | `-O` + whole-module; obfuscation/minify behavior matches prod | Reproducing R8/minify-only regressions; perf/archive builds |
+| `debug` | Non-optimized; testability on; Swift `DEBUG` condition / Android R8 off | Day-to-day dev |
+| `release` | `-O` + whole-module (iOS) / R8 + resource shrinking + ProGuard (Android); obfuscation/minify behavior matches prod | Reproducing minify-only regressions; perf/archive builds |
 
-Android handles debug/release via Gradle's standard build types (`assembleDebug` / `assembleRelease`) — no extra declaration in `androidApp/build.gradle.kts`. iOS couples the build type into the build configuration *name* (`US-Int-Debug` vs `US-Int-Release`) because Xcode's configuration axis serves double duty as env + mode; each combo needs its own `XCBuildConfiguration`.
+Both platforms treat debug/release as a first-class axis orthogonal to market+env:
+- **Android** — AGP's native `buildTypes { debug; release }` in `androidApp/build.gradle.kts` drives R8, resource shrinking, and ProGuard. Combined with `productFlavors` for market and env (see below), this produces 30 variants in the Build Variants dropdown.
+- **iOS** — Xcode's `XCBuildConfiguration` axis serves double duty as env + mode, so each combo needs its own named configuration (`US-Int-Debug` vs `US-Int-Release`).
 
 ### The matrix
 
-**5 markets × 3 envs × 2 build types = 30 combos.** iOS declares all 30 in `iosApp.xcodeproj` (via 30 xcconfigs and 90 `XCBuildConfiguration` entries across 3 targets — iosApp, iosAppTests, iosAppE2ETests — plus 30 project-level configs = 120 total). Android gets 30 variants from 15 `.properties` files × 2 Gradle build types — no flavor declarations required because `-P` properties select the market+env at configure time.
+**5 markets × 3 envs × 2 build types = 30 combos.** Both platforms declare the full matrix natively:
+
+- **iOS** — 30 xcconfigs and 90 `XCBuildConfiguration` entries across 3 targets (iosApp, iosAppTests, iosAppE2ETests), plus 30 project-level configs = 120 total.
+- **Android** — 30 variants from `flavorDimensions = ["market", "env"]` with 5 market flavors × 3 env flavors × 2 build types. Every variant appears in Android Studio's Build Variants window: `usIntDebug`, `usIntRelease`, …, `coreProdRelease`. CLI equivalents: `./gradlew :androidApp:assembleUsIntDebug`, etc.
+
+The 15 `.properties` files in `core/build-config/impl/markets/` supply per-combo values for the market+env axis; debug/release is handled at the consumer-module level (AGP buildTypes on Android, xcconfig naming on iOS).
 
 **Why the full matrix:** minification, resource shrinking, and obfuscation only run in release builds and often break things that worked in debug. Having `{market}-{env}-release` on every non-prod env lets the team reproduce obfuscation issues against int/mte without cutting a prod RC.
 
 ### Platform wiring
 
-**Android:** `./gradlew :androidApp:assembleRelease -Pmarket=de -Penv=prod`. `applicationId` is derived in `androidApp/build.gradle.kts` as `com.mockdonalds.app.$market`, so every market produces a distinct Play Store app.
+**Android** — `androidApp/build.gradle.kts` declares two flavor dimensions:
 
-**iOS:** `iosApp.xcodeproj` is generated from `iosApp/project.yml` by **xcodegen** — `project.yml` is the source of truth, `project.pbxproj` is a build artifact. Each combo has its own `.xcconfig` in `iosApp/Configuration/{market}/` setting `MARKET`, `ENV`, and `KOTLIN_FRAMEWORK_BUILD_TYPE`. The iosApp target has one build configuration per combo — e.g. `US-Int-Debug`, `US-Int-Release`, `US-Prod-Release`, `DE-Mte-Debug`, `CORE-Prod-Debug`. The `iOSApp` shared scheme defaults Run/Test/Analyze to `US-Int-Debug` and Profile/Archive to `US-Prod-Release`. The Gradle build phase reads `$MARKET` / `$ENV` from the active xcconfig and forwards them via `-Pmarket=` / `-Penv=`. `PRODUCT_BUNDLE_IDENTIFIER` in `Base.xcconfig` is `com.mockdonalds.app.$(MARKET)` so every market gets a distinct App Store listing.
+```kotlin
+android {
+    flavorDimensions += listOf("market", "env")
+    productFlavors {
+        create("us") { dimension = "market"; applicationIdSuffix = ".us" }
+        create("ca") { dimension = "market"; applicationIdSuffix = ".ca" }
+        create("de") { dimension = "market"; applicationIdSuffix = ".de" }
+        create("au") { dimension = "market"; applicationIdSuffix = ".au" }
+        create("core") { dimension = "market"; applicationIdSuffix = ".core" }
+        create("int") { dimension = "env" }
+        create("mte") { dimension = "env" }
+        create("prod") { dimension = "env" }
+    }
+}
+```
 
-**Regenerating the project** (after editing `project.yml` or adding/removing xcconfigs): `cd iosApp && xcodegen generate`. Commit both `project.yml` and the regenerated `project.pbxproj` in the same commit.
+Selection flows through two paths that converge in `core:build-config:impl`'s resolver (see "Selection" above):
+- **Android Studio Build Variants dropdown** — selecting `usIntDebug` runs `:androidApp:assembleUsIntDebug`; the resolver parses the task name and extracts market/env/buildType.
+- **CLI** — `./gradlew :androidApp:assembleDeProdRelease` or the explicit form `./gradlew :androidApp:assemble -Pmarket=de -Penv=prod -PbuildType=release`.
 
-**Switching locally (iOS):** `Product → Scheme → Edit Scheme → Run → Build Configuration`.
+`applicationId` is `com.mockdonalds.app` + the market flavor's `applicationIdSuffix` — so `usIntDebug` produces `com.mockdonalds.app.us`, a distinct Play Store app per market.
+
+**iOS** — `iosApp.xcodeproj` is generated from `iosApp/project.yml` by **xcodegen** (the yml is source of truth; `project.pbxproj` is a build artifact). Each combo has its own `.xcconfig` in `iosApp/Configuration/{market}/` setting `MARKET`, `ENV`, and `KOTLIN_FRAMEWORK_BUILD_TYPE`. The iosApp target has one build configuration per combo — `US-Int-Debug`, `US-Prod-Release`, `DE-Mte-Debug`, etc. The `iOSApp` shared scheme defaults Run/Test/Analyze to `US-Int-Debug` and Profile/Archive to `US-Prod-Release`. The Gradle build phase reads `$MARKET` / `$ENV` / `$KOTLIN_FRAMEWORK_BUILD_TYPE` from the active xcconfig and forwards them as `-Pmarket=` / `-Penv=` / `-PbuildType=` — so the iOS path always lands on rung 1 (explicit `-P`) of the selection chain. `PRODUCT_BUNDLE_IDENTIFIER` in `Base.xcconfig` is `com.mockdonalds.app.$(MARKET)` so every market gets a distinct App Store listing.
+
+**Regenerating the Xcode project** (after editing `project.yml` or adding/removing xcconfigs): `cd iosApp && xcodegen generate`. Commit both `project.yml` and the regenerated `project.pbxproj` in the same commit.
+
+**Switching locally:**
+- **Android** — Build Variants tool window (View → Tool Windows → Build Variants) → pick a row.
+- **iOS** — Product → Scheme → Edit Scheme → Run → Build Configuration.
 
 ## Layout
 
@@ -112,11 +152,15 @@ interface AppBuildConfig {
     val appName: String
     val market: String
     val env: String
+    val buildType: String      // "debug" | "release"; use the `isDebug` extension below
     val baseUrl: String
     val cdnUrl: String
     val locale: String
     val currency: String
 }
+
+// Canonical runtime check — prefer this over comparing buildType strings directly.
+val AppBuildConfig.isDebug: Boolean get() = buildType == "debug"
 
 // Production impl — Metro binds this to AppBuildConfig via ContributesBinding.
 @SingleIn(AppScope::class)
@@ -155,9 +199,11 @@ Manually:
 6. If the field needs independent injection (e.g. as its own sub-type), introduce a new interface + `@ContributesBinding` impl alongside `AppBuildConfigImpl`. Most fields don't need this — consumers already get the whole `AppBuildConfig` injected.
 7. `./gradlew :core:build-config:impl:testAndroidHostTest :testing:architecture-check:test` — both must pass.
 
+**Exception — system-level fields.** Fields derived from Gradle properties (not `.properties` files) skip steps 1–2 and emit directly in `impl/build.gradle.kts` via `buildConfigField(type, "KEY", value)`. Current example: `BUILD_TYPE` is resolved through the three-rung Selection chain (explicit `-PbuildType` → AGP variant task name → debug default) and emitted outside the `Defaults.properties` merge. Still follow steps 3–5 for interface exposure, impl, and test coverage.
+
 ## Adding a new market
 
-Each market adds **6 iOS build configurations** (3 envs × 2 build types) and **3 Android property files**. `project.yml` + xcodegen means you never hand-edit `project.pbxproj`.
+Each market adds **6 iOS build configurations** (3 envs × 2 build types), **3 Android property files**, and **one AGP market flavor** (`create("{market}") { dimension = "market"; applicationIdSuffix = ".{market}" }`) in `androidApp/build.gradle.kts`. Adding the flavor is what makes the 6 new Android variants appear in the Build Variants window and what enables task-name parsing to resolve the new market. `project.yml` + xcodegen means you never hand-edit `project.pbxproj`.
 
 1. **Properties files.** Create `core/build-config/impl/markets/{market}/` and add all three env files:
    - `{market}-int.properties`
@@ -166,7 +212,11 @@ Each market adds **6 iOS build configurations** (3 envs × 2 build types) and **
 
    Every key in `Defaults.properties` is automatically inherited; override only what differs. `validateAllMarkets` fails the build if any env file is missing — the matrix is symmetry-enforced.
 
-2. **Android.** Nothing else. `applicationId` becomes `com.mockdonalds.app.{market}` automatically via `androidApp/build.gradle.kts`.
+2. **Android flavor.** Add the market to `productFlavors` in `androidApp/build.gradle.kts`:
+   ```kotlin
+   create("{market}") { dimension = "market"; applicationIdSuffix = ".{market}" }
+   ```
+   Android Studio's Build Variants window will then expose 6 new rows (`{market}IntDebug`, `{market}IntRelease`, …, `{market}ProdRelease`). `applicationId` resolves to `com.mockdonalds.app.{market}` automatically. **Also** extend the market alternation in the shared resolver — `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — so the task-name parser recognizes the new market. This is the single place the `(us|ca|de|au|core)` list lives; both `:core:build-config:impl` and `:core:feature-flag:impl` consume it.
 
 3. **iOS xcconfigs.** Create `iosApp/Configuration/{market}/` with all 6 files:
    ```
@@ -183,17 +233,21 @@ Each market adds **6 iOS build configurations** (3 envs × 2 build types) and **
 
 6. **Smoke build both platforms:**
    ```
-   ./gradlew :androidApp:assembleDebug -Pmarket={market} -Penv=int
+   # Android — variant task drives market/env/buildType via task-name parsing
+   ./gradlew :androidApp:assemble{Market}IntDebug
+   ./gradlew :androidApp:assemble{Market}ProdRelease
+
+   # iOS — xcconfig drives values via preBuildScript → -P flags
    xcodebuild -project iosApp/iosApp.xcodeproj -scheme iOSApp -configuration {MARKET}-Int-Debug -destination 'generic/platform=iOS Simulator' -sdk iphonesimulator build
    ```
 
 7. **CI matrix.** Add the new market to the market axis.
 
-The `add-market` skill (`.agents/skills/add-market.md`) automates steps 1, 3, 4, and 5 mechanically.
+The `add-market` skill (`.agents/skills/add-market/SKILL.md`) automates steps 1, 2 (flavor + regex), 3, 4, and 5 mechanically.
 
 ## Adding a new environment
 
-Same shape as a market, but multiplied the other way: 5 new `*-{env}.properties` files (one per market) and 10 new xcconfigs (5 markets × 2 build types). Extend `project.yml` `configs:` and every target's `configFiles:` map, then regenerate. Also update `knownEnvs` in `core/build-config/impl/build.gradle.kts` so `validateAllMarkets` accepts the new env name.
+Same shape as a market, but multiplied the other way: 5 new `*-{env}.properties` files (one per market), one AGP env flavor entry (`create("{env}") { dimension = "env" }`) in `androidApp/build.gradle.kts`, and 10 new xcconfigs (5 markets × 2 build types). Extend `project.yml` `configs:` and every target's `configFiles:` map, then regenerate. Also update `knownEnvs` in the `validateAllMarkets` task in `core/build-config/impl/build.gradle.kts` and extend the env alternation `(Int|Mte|Prod)` in the shared resolver `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` so the new env resolves through the variant path.
 
 ## Enforced rules (Konsist + code review)
 
@@ -241,7 +295,8 @@ The split is deliberate: `validate-all-markets` runs in milliseconds against `.p
 
 - `.agents/standards/markets.md` — cross-cutting market concept: what a market is and how it surfaces across Android, iOS, CI, localization, analytics
 - `core/build-config/api/build.gradle.kts` — pure facade module build script
-- `core/build-config/impl/build.gradle.kts` — the merge + BuildKonfig wiring; validator config (`knownEnvs`, market/env regexes) lives here
+- `core/build-config/impl/build.gradle.kts` — the merge + BuildKonfig wiring; `validateAllMarkets` task config (`knownEnvs`, market/env regexes) lives here
+- `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — shared `(market, env, buildType)` resolver consumed by both `:core:build-config:impl` and `:core:feature-flag:impl`; the `(us|ca|de|au|core)` and `(Int|Mte|Prod)` alternations live here
 - `core/build-config/test/build.gradle.kts` — test-fixtures module build script
 - `core/build-config/AGENTS.md` — module-level summary for agents
 - `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigCoverageTest.kt` — the facade coverage rule

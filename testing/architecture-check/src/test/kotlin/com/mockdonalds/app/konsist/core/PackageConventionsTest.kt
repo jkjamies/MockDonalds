@@ -37,9 +37,12 @@ class PackageConventionsTest : BehaviorSpec({
                 .files
                 .filter { it.resideInPath("..features..") && it.resideInPath("..commonMain..") }
                 .assertTrue { file ->
-                    // Extract feature name from path: features/home/api -> "home"
+                    // Extract feature name from path: features/home/api -> "home". Hyphens in
+                    // directory names (e.g. "debug-menu") are stripped in Kotlin packages
+                    // (debugmenu) since `-` isn't a valid package-segment character.
                     val featureName = file.path.substringAfter("features/").substringBefore("/")
-                    file.packagee?.name?.contains(".features.$featureName.") == true
+                    val packageSegment = featureName.replace("-", "")
+                    file.packagee?.name?.contains(".features.$packageSegment.") == true
                 }
         }
     }
