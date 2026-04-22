@@ -4,7 +4,7 @@
 
 `iosApp.xcodeproj/project.pbxproj` is a **generated artifact**. The source of truth is `iosApp/project.yml`, consumed by [xcodegen](https://github.com/yonaskolb/XcodeGen).
 
-**Why xcodegen.** The matrix of 5 markets × 3 envs × 2 build types = 30 build configurations × 3 targets = **90 `XCBuildConfiguration` entries** (plus 30 at project level). Hand-editing `project.pbxproj` at this scale is error-prone and produces unreviewable PR diffs. `project.yml` is ~220 lines of declarative YAML; adding a market adds ~12 lines total.
+**Why xcodegen.** The matrix of 5 markets × 3 envs × 2 build types = 30 build configurations × 4 targets = **120 `XCBuildConfiguration` entries** (plus 30 at project level). Hand-editing `project.pbxproj` at this scale is error-prone and produces unreviewable PR diffs. `project.yml` is ~260 lines of declarative YAML; adding a market adds ~12 lines total.
 
 **Install:** `brew install xcodegen` (project requires v2.45+).
 
@@ -19,12 +19,13 @@
 | `configs:` | All 30 build configurations (`US-Int-Debug`, `AU-Prod-Release`, etc.) mapped to `debug`/`release` |
 | `targets.iosApp` | Application target: sources (iosApp/, Assets.xcassets), Info.plist, ComposeApp framework linkage, pre-build Gradle script, per-config xcconfig refs |
 | `targets.iosAppTests` | Unit-test bundle (Swift Testing + ViewInspector), depends on `iosApp` |
-| `targets.iosAppE2ETests` | UI-test bundle (XCUITest), depends on `iosApp` |
-| `schemes.iOSApp` | Single shared scheme; Run/Test/Analyze → `US-Int-Debug`, Profile/Archive → `US-Prod-Release`; 5 test plans wired |
+| `targets.iosAppE2ETests` | UI-test bundle (XCUITest journeys), depends on `iosApp` |
+| `targets.iosAppBenchmarks` | UI-test bundle (XCTApplicationLaunchMetric), depends on `iosApp` |
+| `schemes.iOSApp` | Single shared scheme; Run/Test/Analyze → `US-Int-Debug`, Profile/Archive → `US-Prod-Release`; 6 test plans wired |
 
 **Never edit `project.pbxproj` directly.** If the pbxproj diverges from what xcodegen produces, CI regeneration will wipe the manual changes. If you need a setting xcodegen doesn't cover, put it in an xcconfig (for per-config values) or extend `project.yml` (for target-level structure).
 
-**Adding a new market:** see `.agents/standards/markets.md` for the cross-cutting market concept, `.agents/standards/build-config.md` § "Adding a new market" for the mechanics, and the `add-market` skill for the automated recipe. The iOS-side short version: create 6 xcconfigs in `Configuration/{market}/`, add one `configs:` entry per build config (6 new), add 6 `configFiles:` entries under each of the three targets, then `xcodegen generate`.
+**Adding a new market:** see `.agents/standards/markets.md` for the cross-cutting market concept, `.agents/standards/build-config.md` § "Adding a new market" for the mechanics, and the `add-market` skill for the automated recipe. The iOS-side short version: create 6 xcconfigs in `Configuration/{market}/`, add one `configs:` entry per build config (6 new), add 6 `configFiles:` entries under each of the four targets, then `xcodegen generate`.
 
 ## Architecture
 
@@ -59,7 +60,7 @@ Swift-side equivalent of Konsist. Located in `iosApp/ArchitectureCheck/` as a Sw
 | Test File | What It Enforces |
 |-----------|-----------------|
 | `ViewConventionsTest.swift` | Views conform to View protocol, import ComposeApp, have `state` property, use accessibilityIdentifier with shared TestTags, no UIKit/Combine/DispatchQueue, no force unwraps/casts/try, no print/TODO/FIXME |
-| `TestConventionsTest.swift` | Every View has ViewTest/ViewRobot/StateRobot. Robot pattern encapsulation (ViewTest only uses ViewRobot). StateRobots extend BaseStateRobot. ViewTests are `@Suite` structs with `@Test` methods (Swift Testing, not XCTest). ViewRobots are `@MainActor final` classes importing ViewInspector. Landscape test coverage required. NavInt tests must be `@Suite @MainActor struct`. E2E tests must extend XCTestCase, use AppRobot, journey files end with JourneyTest, benchmarks end with PerformanceTest. |
+| `TestConventionsTest.swift` | Every View has ViewTest/ViewRobot/StateRobot. Robot pattern encapsulation (ViewTest only uses ViewRobot). StateRobots extend BaseStateRobot. ViewTests are `@Suite` structs with `@Test` methods (Swift Testing, not XCTest). ViewRobots are `@MainActor final` classes importing ViewInspector. Landscape test coverage required. NavInt tests must be `@Suite @MainActor struct`. E2E journeys in `iosAppE2ETests/Suites/` must extend XCTestCase, use AppRobot, and end with JourneyTest. Benchmarks in `iosAppBenchmarks/` must end with PerformanceTest or Benchmark. |
 
 Run Harmonize tests:
 ```bash
@@ -100,16 +101,16 @@ Tests are separately invokable via Xcode test plans:
 | `UnitTests` | Pure-logic Swift Testing tests in `iosAppTests/Unit/` (PlaceholderUnitTest today; reserved for Swift-only helpers) | `xcodebuild test -scheme iOSApp -testPlan UnitTests` |
 | `UIComponentTests` | ViewInspector Robot-pattern view tests in `iosAppTests/UIComponent/` | `xcodebuild test -scheme iOSApp -testPlan UIComponentTests` |
 | `NavIntTests` | Navigation + integration tests in `iosAppTests/NavInt/` | `xcodebuild test -scheme iOSApp -testPlan NavIntTests` |
-| `E2ETests` | End-to-end journeys + benchmarks | `xcodebuild test -scheme iOSApp -testPlan E2ETests` |
+| `E2ETests` | End-to-end journeys in `iosAppE2ETests/Suites/` (debug target) | `xcodebuild test -scheme iOSApp -testPlan E2ETests` |
+| `Benchmarks` | Launch-time performance tests in `iosAppBenchmarks/` (release-like target) | `xcodebuild test -scheme iOSApp -testPlan Benchmarks` |
 
 ## E2E Tests (XCUITest)
 
-Process-isolated end-to-end journey tests in `iosAppE2ETests/`. These launch the real app via XCUITest and interact through accessibility identifiers (shared TestTags from KMP).
+Process-isolated end-to-end journey tests in `iosAppE2ETests/`. These launch the real app via XCUITest and interact through accessibility identifiers (shared TestTags from KMP). Target symmetry: Gradle `:testing:e2e-tests` ↔ Xcode `iosAppE2ETests`.
 
 | Directory | Tests |
 |-----------|-------|
 | `Suites/` | `GuestJourneyTest`, `DeepLinkJourneyTest`, `OrderJourneyTest` |
-| `Benchmarks/` | `StartupPerformanceTest` (XCTApplicationLaunchMetric) |
 | `Robots/` | `AppRobot` — launch, navigate tabs, assert/tap elements |
 
 ```bash
@@ -122,9 +123,27 @@ Key conventions:
 - Journey tests use `AppRobot` exclusively for app interaction
 - No model construction — interact via UI only
 
+## Benchmarks (XCTApplicationLaunchMetric)
+
+Launch-time performance measurements in `iosAppBenchmarks/`. Separate target/test plan from journeys so performance runs stay isolated from functional correctness. Target symmetry: Gradle `:testing:benchmarks` ↔ Xcode `iosAppBenchmarks`.
+
+| File | Measures |
+|------|----------|
+| `StartupPerformanceTest.swift` | `testColdStartup` (app launch metric), `testColdStartupToFirstScreen` (cold launch until `HomeUserName` accessibility identifier is visible) |
+
+```bash
+xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 16'
+```
+
+Key conventions:
+- Uses XCTest with `measure(metrics: [XCTApplicationLaunchMetric()]) { … }`
+- Class names end with `PerformanceTest` or `Benchmark` (Harmonize-enforced)
+- No `AppRobot` dependency — benchmarks exercise launch only, not cross-feature flows
+- Runs on simulator for convenience; CI uses a fixed device to keep numbers comparable
+
 ## SwiftLint
 
-Config at project root `.swiftlint.yml`. Scoped to `iosApp/iosApp`, `iosApp/iosAppTests`, and `iosApp/iosAppE2ETests`. Excludes `Circuit/` directory (KMP interop bridging code). Opt-in rules: force_unwrapping, force_cast, force_try.
+Config at project root `.swiftlint.yml`. Scoped to `iosApp/iosApp`, `iosApp/iosAppTests`, `iosApp/iosAppE2ETests`, and `iosApp/iosAppBenchmarks`. Excludes `Circuit/` directory (KMP interop bridging code). Opt-in rules: force_unwrapping, force_cast, force_try.
 
 ```bash
 swiftlint --config .swiftlint.yml

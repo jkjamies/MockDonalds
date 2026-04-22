@@ -75,6 +75,7 @@ struct HomeView: View {
                         startPoint: .leading, endPoint: .trailing
                     )
                 }
+                .accessibilityElement(children: .contain)
                 .accessibilityIdentifier(tags.HERO_BANNER)
                 .overlay(alignment: .bottomLeading) {
                     heroOverlayContent(hero: hero)

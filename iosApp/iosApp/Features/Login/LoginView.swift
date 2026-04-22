@@ -99,6 +99,7 @@ struct LoginView: View {
         }
         .padding(.top, MockDimens.spacingXxl)
         .padding(.bottom, MockDimens.spacingXxxl)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier(tags.BRANDING)
     }
 

@@ -103,13 +103,13 @@ Fully symmetric across both platforms, organized by concern: lint → unit → a
 
 
 ```
-  lint          unit          arch          ui-component   nav/int       e2e           build
- ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐    ┌─────────┐   ┌─────────┐   ┌─────────┐
- │1.Detekt │   │3.Kotest │   │5.Konsist│   │7.Androd │    │9.AndNvi │   │11.AndE2E│   │13.asmbl │
- │2.SwiftL.│   │4.iOSUnit│   │6.Harmon.│   │8.iOSUI  │    │10.iOSNvi│   │12.iOSE2E│   │  every  │
- └─────────┘   └─────────┘   └─────────┘   └─────────┘    └─────────┘   └─────────┘   └─────────┘
-   ~20s          ~60s          ~20s         ~varies        ~varies       ~varies        ~5min
-                                             (device)      (device)      (device)
+  lint          unit          arch          ui-component   nav/int       e2e           benchmark     build
+ ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐    ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐
+ │1.Detekt │   │3.Kotest │   │5.Konsist│   │7.Androd │    │9.AndNvi │   │11.AndE2E│   │13.AndMB │   │15.asmbl │
+ │2.SwiftL.│   │4.iOSUnit│   │6.Harmon.│   │8.iOSUI  │    │10.iOSNvi│   │12.iOSE2E│   │14.iOSBnc│   │  every  │
+ └─────────┘   └─────────┘   └─────────┘   └─────────┘    └─────────┘   └─────────┘   └─────────┘   └─────────┘
+   ~20s          ~60s          ~20s         ~varies        ~varies       ~varies      ~varies         ~5min
+                                             (device)      (device)      (device)     (phys+sim)
 ```
 
 1. **Detekt** (Kotlin lint): `./gradlew detektMetadataCommonMain`
@@ -124,7 +124,9 @@ Fully symmetric across both platforms, organized by concern: lint → unit → a
 10. **iOS navint-tests** (`NavIntTests` test plan, requires simulator): `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'`
 11. **Android e2e-tests** (full user journeys, requires device/emulator): `./gradlew :testing:e2e-tests:connectedAndroidTest`
 12. **iOS e2e-tests** (`E2ETests` test plan, requires simulator): `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'`
-13. **Assemble** (every target × every variant): `./gradlew assemble`
+13. **Android macrobenchmarks** (startup + frame-timing against minified `benchmark` variant, requires **physical** Android device — emulator is blocked by androidx.benchmark). Self-instrumenting decouples the test APK from the target, so install the target first: `./gradlew :androidApp:installCoreIntBenchmark :testing:benchmarks:connectedBenchmarkAndroidTest`
+14. **iOS benchmarks** (`Benchmarks` test plan — `XCTApplicationLaunchMetric` launch-time tests in `iosApp/iosAppBenchmarks/`, requires simulator or device): `xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 16'`
+15. **Assemble** (every target × every variant): `./gradlew assemble`
 
 ## Diff Scope (the `verify diff` pipeline)
 
@@ -231,19 +233,33 @@ git diff --name-only                       # uncommitted changes on main
 
 ### e2e-tests (End-to-End Tests)
 - Reports: JUnit4 test name + UI Automator assertion detail
-- Failures indicate broken user journeys — screen transitions, deep link handling, tab navigation, auth gating, or startup performance regression
-- Journey tests in `testing/e2e-tests/src/main/kotlin/.../suites/` end with `JourneyTest`; benchmarks in `benchmarks/` end with `Benchmark`
+- Failures indicate broken user journeys — screen transitions, deep link handling, tab navigation, or auth gating
+- Journey tests in `testing/e2e-tests/src/main/kotlin/.../suites/` end with `JourneyTest`
 - Requires a connected Android device/emulator; run `./gradlew :testing:e2e-tests:connectedAndroidTest`
 - Tests use UI Automator with `By.desc(testTag)` — check `AppRobot.kt` for the test helper and `features/*/api/navigation/` for TestTags
-- Benchmarks use `MacrobenchmarkRule` with Perfetto traces for startup timing
+
+### benchmarks (Android Macrobenchmarks)
+- Reports: JUnit4 test name + androidx.benchmark metric output + Perfetto trace
+- Failures indicate startup/frame-timing regression or configuration drift (minification, build type, signing)
+- Benchmark files in `testing/benchmarks/src/main/kotlin/.../benchmarks/` end with `Benchmark`
+- Requires a **physical** Android device (emulator refuses by default); install the target first, then run benchmarks: `./gradlew :androidApp:installCoreIntBenchmark :testing:benchmarks:connectedBenchmarkAndroidTest`
+- Separate module from e2e-tests because it targets the minified `benchmark` variant and cannot share Compose UI test deps with journey tests
+- Uses `MacrobenchmarkRule` with Perfetto traces; self-instrumenting so benchmark runs out-of-process against R8-minified target
 
 ### iOS e2e-tests (iOS End-to-End Tests)
 - Reports: XCTest test name + XCUIElement assertion detail
-- Failures indicate broken iOS user journeys — tab navigation, deep link handling, auth gating, or startup performance regression
-- Journey tests in `iosApp/iosAppE2ETests/Suites/` end with `JourneyTest`; benchmarks in `Benchmarks/` end with `PerformanceTest`
+- Failures indicate broken iOS user journeys — tab navigation, deep link handling, or auth gating
+- Journey tests in `iosApp/iosAppE2ETests/Suites/` end with `JourneyTest`
 - Requires an iOS Simulator; run `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'`
 - Tests use XCUITest with accessibility identifiers matching KMP TestTags (raw string constants — process-isolated)
 - Uses `AppRobot` for all app interactions — check `iosApp/iosAppE2ETests/Robots/AppRobot.swift`
+
+### iOS benchmarks (iOS Performance Tests)
+- Reports: XCTest test name + `XCTApplicationLaunchMetric` average/stddev
+- Failures indicate startup-time regression or XCTest performance baseline drift
+- Benchmark files in `iosApp/iosAppBenchmarks/` end with `PerformanceTest` or `Benchmark` (Harmonize-enforced)
+- Requires an iOS Simulator or device; run `xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 16'`
+- Separate target from `iosAppE2ETests` so performance runs stay isolated from functional journeys
 
 ## IDE Troubleshooting
 

@@ -13,6 +13,7 @@ class HttpClientFactoryImplTest : BehaviorSpec({
         override val appId = "us-mockdonalds-mobile-dev"
         override val market = "us"
         override val env = "dev"
+        override val buildType = "debug"
         override val baseUrl = "https://dev-api.mockdonalds.com"
         override val cdnUrl = "https://dev-cdn.mockdonalds.com"
         override val menuBaseUrl = "https://dev-menu-api.mockdonalds.com"

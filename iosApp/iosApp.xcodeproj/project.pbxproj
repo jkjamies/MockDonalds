@@ -52,7 +52,6 @@
 		93A389D58A7E4AA08B56CEAB /* FeatureFlagsDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA0D590A963BF54058FF52D /* FeatureFlagsDebugView.swift */; };
 		93FA73BD49EABDD9CB20974D /* ProfileViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BF512A524F962526CBFBD7 /* ProfileViewTest.swift */; };
 		9511EE705A0FDD1ADA45EC15 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F4C67459CBC2CDC9D3D33C /* ProfileView.swift */; };
-		951277D5E4F09BBFECD0B395 /* StartupPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E40F57A50591FA6CEE90258 /* StartupPerformanceTest.swift */; };
 		9614DF57D4F3EDFF198FB2D6 /* CircuitContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B7B4AC32296EDB4BCA6E72 /* CircuitContent.swift */; };
 		9B314DF1B31D97D38BF95FAA /* ScanViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E62FF7A9A24BC9CB908D02 /* ScanViewRobot.swift */; };
 		9CEE6F38C3A3B33469A02B7A /* AdaptiveLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 910C7E718B1A2BF3BF62972A /* AdaptiveLayout.swift */; };
@@ -71,6 +70,7 @@
 		C08659A09878F2140B96A954 /* PlaceholderUnitTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C068CAB6EFD4E7772347D1 /* PlaceholderUnitTest.swift */; };
 		C83A6FDF9A4D8F0E0E7BEBD0 /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C447A5D47485B5FCFB5B1B82 /* MoreView.swift */; };
 		D3F5C3CD7765BA358DCA22BC /* DebugMenuViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A2BDF9F4CB5BB23F2F72B8 /* DebugMenuViewTest.swift */; };
+		D572535D7C6BF8E98B258980 /* StartupPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 236744B8615A52FCF06E62CE /* StartupPerformanceTest.swift */; };
 		D5FA0344548A43A26A25E3CD /* CircuitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8230EA110BD42922302F20 /* CircuitView.swift */; };
 		D69FC88016F05FD3B9A1A6FD /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B32E1749C096CF28B113D18D /* WelcomeView.swift */; };
 		D8CFD50752C25C34E17A1810 /* MockDonaldsTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEAFBC0A9A7E027934A6EE7 /* MockDonaldsTheme.swift */; };
@@ -88,6 +88,13 @@
 
 /* Begin PBXContainerItemProxy section */
 		0FBF91AC48015D09643FAF6B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 242FB5348943441C388468CE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 78B53CC79860CBFC2F5543C6;
+			remoteInfo = iosApp;
+		};
+		147A1C851E33608A25CAC591 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 242FB5348943441C388468CE /* Project object */;
 			proxyType = 1;
@@ -120,6 +127,7 @@
 		1DDCBBCAC60BD215B06058CA /* RewardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardsView.swift; sourceTree = "<group>"; };
 		1E02C7D2F4AB4196F0D8F99B /* swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = swift; path = "../core/feature-flag/impl/swift"; sourceTree = SOURCE_ROOT; };
 		20445B074FA2A57FD5799CA4 /* ProfileStateRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStateRobot.swift; sourceTree = "<group>"; };
+		236744B8615A52FCF06E62CE /* StartupPerformanceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupPerformanceTest.swift; sourceTree = "<group>"; };
 		23B7B4AC32296EDB4BCA6E72 /* CircuitContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircuitContent.swift; sourceTree = "<group>"; };
 		26BBEA5809BB072FE3AACD05 /* WelcomeViewRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewRobot.swift; sourceTree = "<group>"; };
 		26C068CAB6EFD4E7772347D1 /* PlaceholderUnitTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderUnitTest.swift; sourceTree = "<group>"; };
@@ -136,7 +144,6 @@
 		489511AE3D56113BE54F79ED /* LoginViewTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewTest.swift; sourceTree = "<group>"; };
 		49420AE151F40DB23E438002 /* OrderStateRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderStateRobot.swift; sourceTree = "<group>"; };
 		49D7CAFCCA0176EC307EAD50 /* BuildConfigDebugViewTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildConfigDebugViewTest.swift; sourceTree = "<group>"; };
-		4E40F57A50591FA6CEE90258 /* StartupPerformanceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupPerformanceTest.swift; sourceTree = "<group>"; };
 		511EAF7B53390045400D08AD /* DebugMenuViewRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugMenuViewRobot.swift; sourceTree = "<group>"; };
 		51452D1E8493A309EB8CE060 /* FeatureFlagsDebugViewRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagsDebugViewRobot.swift; sourceTree = "<group>"; };
 		517EFCA455854588BA333A25 /* HomeViewTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewTest.swift; sourceTree = "<group>"; };
@@ -211,6 +218,7 @@
 		EDEAFBC0A9A7E027934A6EE7 /* MockDonaldsTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDonaldsTheme.swift; sourceTree = "<group>"; };
 		EE8A27DFA24EC01CCE58A089 /* AuthFlowNavigationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthFlowNavigationTest.swift; sourceTree = "<group>"; };
 		EF8230EA110BD42922302F20 /* CircuitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircuitView.swift; sourceTree = "<group>"; };
+		F752EA9AEDE7F166CD503D1D /* iosAppBenchmarks.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = iosAppBenchmarks.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA2126ADD2C87A8C074E8276 /* US-Int-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "US-Int-Release.xcconfig"; sourceTree = "<group>"; };
 		FADDD56A6ACF5E74A5640FE1 /* DE-Mte-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "DE-Mte-Debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -391,6 +399,7 @@
 			children = (
 				30EEB9A6711302BCF09D714D /* Configuration */,
 				1DB4B685CAEE8BEFEBBAEF94 /* iosApp */,
+				3DD46C25E23D37E35EF5ADF2 /* iosAppBenchmarks */,
 				DDA6207795B385A3B1A9E59C /* iosAppE2ETests */,
 				407F741E7FEBA273A8579B0E /* iosAppTests */,
 				1F89104FB695BB395DE5803D /* MockDonalds */,
@@ -398,6 +407,14 @@
 				B1720870E51445F47D3045A0 /* Assets.xcassets */,
 				94C98B8B3A2BFC1966447269 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		3DD46C25E23D37E35EF5ADF2 /* iosAppBenchmarks */ = {
+			isa = PBXGroup;
+			children = (
+				236744B8615A52FCF06E62CE /* StartupPerformanceTest.swift */,
+			);
+			path = iosAppBenchmarks;
 			sourceTree = "<group>";
 		};
 		400E166BD48CB8D404019091 /* BuildConfigDebug */ = {
@@ -550,18 +567,11 @@
 			isa = PBXGroup;
 			children = (
 				86038AE1032E284E79B32AD6 /* iosApp.app */,
+				F752EA9AEDE7F166CD503D1D /* iosAppBenchmarks.xctest */,
 				826D869FD039B60325E2B7D5 /* iosAppE2ETests.xctest */,
 				56583BC252B5F01ED9DEA19D /* iosAppTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		A2341D780F2B91DE0324C284 /* Benchmarks */ = {
-			isa = PBXGroup;
-			children = (
-				4E40F57A50591FA6CEE90258 /* StartupPerformanceTest.swift */,
-			);
-			path = Benchmarks;
 			sourceTree = "<group>";
 		};
 		AB9E0D43DB9C6A4691A940D7 /* BuildConfigDebug */ = {
@@ -691,7 +701,6 @@
 		DDA6207795B385A3B1A9E59C /* iosAppE2ETests */ = {
 			isa = PBXGroup;
 			children = (
-				A2341D780F2B91DE0324C284 /* Benchmarks */,
 				259C684AF5489079256CF0D7 /* Robots */,
 				8F8E4C2195D8E86D6EB57D71 /* Suites */,
 			);
@@ -758,6 +767,24 @@
 			productReference = 826D869FD039B60325E2B7D5 /* iosAppE2ETests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		45201C532D66CED8C8C1EED2 /* iosAppBenchmarks */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 57544E199B616FED66AB85FC /* Build configuration list for PBXNativeTarget "iosAppBenchmarks" */;
+			buildPhases = (
+				22F55616B5D7DC37162E5BBE /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				64F3E12D589B930BF61B8BCF /* PBXTargetDependency */,
+			);
+			name = iosAppBenchmarks;
+			packageProductDependencies = (
+			);
+			productName = iosAppBenchmarks;
+			productReference = F752EA9AEDE7F166CD503D1D /* iosAppBenchmarks.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		78B53CC79860CBFC2F5543C6 /* iosApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 29DCA9F0B3A40325067EB163 /* Build configuration list for PBXNativeTarget "iosApp" */;
@@ -815,6 +842,11 @@
 						ProvisioningStyle = Automatic;
 						TestTargetID = 78B53CC79860CBFC2F5543C6;
 					};
+					45201C532D66CED8C8C1EED2 = {
+						DevelopmentTeam = "${TEAM_ID}";
+						ProvisioningStyle = Automatic;
+						TestTargetID = 78B53CC79860CBFC2F5543C6;
+					};
 					78B53CC79860CBFC2F5543C6 = {
 						DevelopmentTeam = "${TEAM_ID}";
 						ProvisioningStyle = Automatic;
@@ -845,6 +877,7 @@
 			projectRoot = "";
 			targets = (
 				78B53CC79860CBFC2F5543C6 /* iosApp */,
+				45201C532D66CED8C8C1EED2 /* iosAppBenchmarks */,
 				0618CB341719EF98872EA928 /* iosAppE2ETests */,
 				EDDC9037D014CD9DDCA653AC /* iosAppTests */,
 			);
@@ -894,7 +927,14 @@
 				FF534E6859935FA65484EF52 /* DeepLinkJourneyTest.swift in Sources */,
 				B4D16BAC8848A6512EB71110 /* GuestJourneyTest.swift in Sources */,
 				53BEECF622FE8A3ECFF5B022 /* OrderJourneyTest.swift in Sources */,
-				951277D5E4F09BBFECD0B395 /* StartupPerformanceTest.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		22F55616B5D7DC37162E5BBE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D572535D7C6BF8E98B258980 /* StartupPerformanceTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -981,6 +1021,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		64F3E12D589B930BF61B8BCF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 78B53CC79860CBFC2F5543C6 /* iosApp */;
+			targetProxy = 147A1C851E33608A25CAC591 /* PBXContainerItemProxy */;
+		};
 		D43CBAE795E903A3EB376CD0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 78B53CC79860CBFC2F5543C6 /* iosApp */;
@@ -994,6 +1039,106 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		0036AC2EAF6E9B08C503CA9E /* CORE-Prod-Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 590261E20449B63543E9808A /* CORE-Prod-Release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "CORE-Prod-Release";
+		};
+		03325A3B49CAF4FE2BAECE78 /* AU-Mte-Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3F3A65C2D19A1B272A3D1A4A /* AU-Mte-Debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "AU-Mte-Debug";
+		};
+		0408F85845C09B7C49C7CDCA /* AU-Int-Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5D64A50286110F80717DCEE7 /* AU-Int-Debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "AU-Int-Debug";
+		};
+		052DFFBAE2B0E7DC5CC9BF1D /* AU-Mte-Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5A1ACFBB194AF87192185DFA /* AU-Mte-Release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "AU-Mte-Release";
+		};
+		06A01CE7273E5DA02659942A /* US-Int-Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FA2126ADD2C87A8C074E8276 /* US-Int-Release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "US-Int-Release";
+		};
 		09750C8A1A3857C5286309F8 /* CORE-Mte-Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1050,6 +1195,26 @@
 				SWIFT_VERSION = 5.0;
 			};
 			name = "CORE-Mte-Release";
+		};
+		0DC64DE7458C6DF3556DA0FC /* CORE-Prod-Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 87557534CE32244A62688878 /* CORE-Prod-Debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "CORE-Prod-Debug";
 		};
 		10749E3009FC9FD2CCD347AE /* US-Int-Release */ = {
 			isa = XCBuildConfiguration;
@@ -1544,6 +1709,26 @@
 			};
 			name = "US-Int-Debug";
 		};
+		26B45560B2D5429E37805CA3 /* CA-Int-Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC7FA3FE76FFEAB439FA30D1 /* CA-Int-Debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "CA-Int-Debug";
+		};
 		285379D12375AABE78900590 /* AU-Int-Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5D64A50286110F80717DCEE7 /* AU-Int-Debug.xcconfig */;
@@ -1575,6 +1760,46 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "AU-Int-Debug";
+		};
+		2A17486273C1FF3566DF76F4 /* DE-Mte-Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FADDD56A6ACF5E74A5640FE1 /* DE-Mte-Debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "DE-Mte-Debug";
+		};
+		2DA781848F7489FCF787B25D /* CA-Prod-Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 71A10C9FD71FD2C4DA115201 /* CA-Prod-Debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "CA-Prod-Debug";
 		};
 		2DADFEE0A2F8261AF039ACAA /* US-Mte-Debug */ = {
 			isa = XCBuildConfiguration;
@@ -1680,6 +1905,26 @@
 			};
 			name = "DE-Prod-Debug";
 		};
+		2E335A6515AEE1C146BEF15A /* CORE-Int-Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 150CD59E086139540505DF6D /* CORE-Int-Debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "CORE-Int-Debug";
+		};
 		2FA2424BBC486C90D4778259 /* CORE-Int-Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1756,6 +2001,26 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
 			};
 			name = "AU-Int-Debug";
+		};
+		320653634663FCB251ECEE33 /* US-Mte-Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5A0060A33A6D2B2BB2B5D8C9 /* US-Mte-Release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "US-Mte-Release";
 		};
 		325176047ADD5A1790A7DF78 /* DE-Int-Release */ = {
 			isa = XCBuildConfiguration;
@@ -1873,6 +2138,26 @@
 				SWIFT_VERSION = 5.0;
 			};
 			name = "US-Prod-Release";
+		};
+		3B58BC6BCF606E783B3528D1 /* DE-Int-Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3021582D081F62910D0547BA /* DE-Int-Release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "DE-Int-Release";
 		};
 		3BED87D721C1E1FA5A5B7409 /* US-Int-Debug */ = {
 			isa = XCBuildConfiguration;
@@ -2034,6 +2319,26 @@
 			};
 			name = "DE-Int-Release";
 		};
+		434F935ED921DE3021EE9082 /* DE-Prod-Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 13B52C2218363410752F7DCF /* DE-Prod-Release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "DE-Prod-Release";
+		};
 		464BF52B28BECE1DA1438CF2 /* CORE-Mte-Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 62B7572E1FA45E1825C9080D /* CORE-Mte-Release.xcconfig */;
@@ -2053,6 +2358,26 @@
 				TEST_TARGET_NAME = iosApp;
 			};
 			name = "CORE-Mte-Release";
+		};
+		497847A92E73B0B852EF7731 /* CORE-Int-Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1EB9A63D001CC2A8B6D88B0 /* CORE-Int-Release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "CORE-Int-Release";
 		};
 		4C66E457C8AF5CF50B9CA33E /* AU-Int-Release */ = {
 			isa = XCBuildConfiguration;
@@ -2291,6 +2616,26 @@
 			};
 			name = "AU-Mte-Release";
 		};
+		528786220707AADC1BF40FD5 /* AU-Prod-Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BE49D8AEC6C7E9A9CCA52F24 /* AU-Prod-Debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "AU-Prod-Debug";
+		};
 		542CBDD7B3D6C119F24CD242 /* CA-Int-Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2FA6CE1442565EBCCC2E1501 /* CA-Int-Release.xcconfig */;
@@ -2400,6 +2745,26 @@
 			};
 			name = "CORE-Prod-Release";
 		};
+		591680E968C9079852997259 /* CORE-Mte-Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 62B7572E1FA45E1825C9080D /* CORE-Mte-Release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "CORE-Mte-Release";
+		};
 		5B8C617414366B6EE49CD79A /* CORE-Mte-Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 62B7572E1FA45E1825C9080D /* CORE-Mte-Release.xcconfig */;
@@ -2439,6 +2804,26 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
 			};
 			name = "CA-Int-Debug";
+		};
+		5EEDB1E49DBF381FF21AA1E6 /* DE-Mte-Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4893BF7A21A15EA4DEC3BB90 /* DE-Mte-Release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "DE-Mte-Release";
 		};
 		5EF0228860213C864D14FB73 /* DE-Int-Release */ = {
 			isa = XCBuildConfiguration;
@@ -2990,6 +3375,26 @@
 			};
 			name = "CORE-Mte-Debug";
 		};
+		7AFBA627C4B37F73C2B2404D /* DE-Prod-Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 95E668E3AF16708060000C48 /* DE-Prod-Debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "DE-Prod-Debug";
+		};
 		7D80082EFE31311B4EF900E7 /* CORE-Int-Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A1EB9A63D001CC2A8B6D88B0 /* CORE-Int-Release.xcconfig */;
@@ -3146,6 +3551,26 @@
 			};
 			name = "CA-Prod-Debug";
 		};
+		87DCA70E299153026B314469 /* CA-Mte-Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C63F2828F0B2CAE8F9A01577 /* CA-Mte-Debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "CA-Mte-Debug";
+		};
 		889516D0C8BC1D174E83B00C /* CORE-Mte-Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 62B7572E1FA45E1825C9080D /* CORE-Mte-Release.xcconfig */;
@@ -3177,6 +3602,26 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "CORE-Mte-Release";
+		};
+		88B27B95DE4EEC78370173D0 /* AU-Int-Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 828E71F748D98B94883C8C3D /* AU-Int-Release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "AU-Int-Release";
 		};
 		8A8F6452BB15A68F11C7B544 /* CORE-Prod-Debug */ = {
 			isa = XCBuildConfiguration;
@@ -3269,6 +3714,26 @@
 				TEST_TARGET_NAME = iosApp;
 			};
 			name = "DE-Mte-Release";
+		};
+		8CC0655BB80A049E758B96DA /* US-Mte-Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B1CE1ED8A6091A2CA4DE405E /* US-Mte-Debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "US-Mte-Debug";
 		};
 		900ADD4B4245702F585CDE8B /* DE-Int-Debug */ = {
 			isa = XCBuildConfiguration;
@@ -3366,6 +3831,46 @@
 				SWIFT_VERSION = 5.0;
 			};
 			name = "DE-Prod-Release";
+		};
+		96DE0AA1D40DD5B08CC7845E /* CA-Mte-Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A7746CA1A948E69C8E50C7BE /* CA-Mte-Release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "CA-Mte-Release";
+		};
+		97A3D85A3E4C149253B3C769 /* CORE-Mte-Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3C7A950457FF7186E93AC79C /* CORE-Mte-Debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "CORE-Mte-Debug";
 		};
 		9882E8CA728AFFD9691DC5AD /* AU-Int-Debug */ = {
 			isa = XCBuildConfiguration;
@@ -3772,6 +4277,26 @@
 			};
 			name = "AU-Mte-Debug";
 		};
+		B179E8C53E72FE1AA8830EDF /* AU-Prod-Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 69CE32184CE840B5941B93A9 /* AU-Prod-Release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "AU-Prod-Release";
+		};
 		B2D725B3C70D7A865534EDCE /* DE-Prod-Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 95E668E3AF16708060000C48 /* DE-Prod-Debug.xcconfig */;
@@ -3973,6 +4498,26 @@
 			};
 			name = "DE-Prod-Release";
 		};
+		BD122908B950A6EA43C18ACB /* CA-Prod-Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BD5E9E2442BA96EEA8DE5F89 /* CA-Prod-Release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "CA-Prod-Release";
+		};
 		BF1FF3F6164F783CBD234294 /* DE-Mte-Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FADDD56A6ACF5E74A5640FE1 /* DE-Mte-Debug.xcconfig */;
@@ -4121,6 +4666,26 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
 			};
 			name = "AU-Mte-Release";
+		};
+		C5ADE18F2364FBEDE6A48156 /* DE-Int-Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C70901DC09F80F6AEDE8E188 /* DE-Int-Debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "DE-Int-Debug";
 		};
 		C7EB4386128ACAF14AE31E59 /* CA-Mte-Release */ = {
 			isa = XCBuildConfiguration;
@@ -4581,6 +5146,46 @@
 			};
 			name = "CA-Int-Debug";
 		};
+		E157B8606A81BEE79E293D8F /* US-Prod-Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 05C8F5EEA61A6962D8A8B378 /* US-Prod-Release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "US-Prod-Release";
+		};
+		E1BB3A986514FA259DB59881 /* CA-Int-Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2FA6CE1442565EBCCC2E1501 /* CA-Int-Release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "CA-Int-Release";
+		};
 		E30DDB15170C40338B44E689 /* DE-Int-Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4833,6 +5438,26 @@
 			};
 			name = "AU-Mte-Debug";
 		};
+		F061D12821F17F5D8F8949F0 /* US-Prod-Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 06031203BF1BAE348D6228EE /* US-Prod-Debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "US-Prod-Debug";
+		};
 		F5CD68DDCFA9B6EFE0AF317F /* DE-Prod-Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 13B52C2218363410752F7DCF /* DE-Prod-Release.xcconfig */;
@@ -4896,6 +5521,26 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "CA-Mte-Debug";
+		};
+		F5F61B7367C6418253C8A5F5 /* US-Int-Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7BDF906DCB7D45BB8F026AAA /* US-Int-Debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iosApp;
+			};
+			name = "US-Int-Debug";
 		};
 		F6AB81DA2162A0B6414F7A90 /* AU-Mte-Debug */ = {
 			isa = XCBuildConfiguration;
@@ -5005,6 +5650,43 @@
 				223C83DC746D2704529B34D3 /* US-Mte-Release */,
 				9F018E65276C55F78AAB1254 /* US-Prod-Debug */,
 				196C4668ED59DEBA629A11CE /* US-Prod-Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "US-Prod-Release";
+		};
+		57544E199B616FED66AB85FC /* Build configuration list for PBXNativeTarget "iosAppBenchmarks" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0408F85845C09B7C49C7CDCA /* AU-Int-Debug */,
+				88B27B95DE4EEC78370173D0 /* AU-Int-Release */,
+				03325A3B49CAF4FE2BAECE78 /* AU-Mte-Debug */,
+				052DFFBAE2B0E7DC5CC9BF1D /* AU-Mte-Release */,
+				528786220707AADC1BF40FD5 /* AU-Prod-Debug */,
+				B179E8C53E72FE1AA8830EDF /* AU-Prod-Release */,
+				26B45560B2D5429E37805CA3 /* CA-Int-Debug */,
+				E1BB3A986514FA259DB59881 /* CA-Int-Release */,
+				87DCA70E299153026B314469 /* CA-Mte-Debug */,
+				96DE0AA1D40DD5B08CC7845E /* CA-Mte-Release */,
+				2DA781848F7489FCF787B25D /* CA-Prod-Debug */,
+				BD122908B950A6EA43C18ACB /* CA-Prod-Release */,
+				2E335A6515AEE1C146BEF15A /* CORE-Int-Debug */,
+				497847A92E73B0B852EF7731 /* CORE-Int-Release */,
+				97A3D85A3E4C149253B3C769 /* CORE-Mte-Debug */,
+				591680E968C9079852997259 /* CORE-Mte-Release */,
+				0DC64DE7458C6DF3556DA0FC /* CORE-Prod-Debug */,
+				0036AC2EAF6E9B08C503CA9E /* CORE-Prod-Release */,
+				C5ADE18F2364FBEDE6A48156 /* DE-Int-Debug */,
+				3B58BC6BCF606E783B3528D1 /* DE-Int-Release */,
+				2A17486273C1FF3566DF76F4 /* DE-Mte-Debug */,
+				5EEDB1E49DBF381FF21AA1E6 /* DE-Mte-Release */,
+				7AFBA627C4B37F73C2B2404D /* DE-Prod-Debug */,
+				434F935ED921DE3021EE9082 /* DE-Prod-Release */,
+				F5F61B7367C6418253C8A5F5 /* US-Int-Debug */,
+				06A01CE7273E5DA02659942A /* US-Int-Release */,
+				8CC0655BB80A049E758B96DA /* US-Mte-Debug */,
+				320653634663FCB251ECEE33 /* US-Mte-Release */,
+				F061D12821F17F5D8F8949F0 /* US-Prod-Debug */,
+				E157B8606A81BEE79E293D8F /* US-Prod-Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "US-Prod-Release";

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Manifest overlay for the `benchmark` build type only. Merged into the benchmark-
+  variant APK; never merged into debug or release.
+
+  Jetpack Macrobenchmark's internal PermissionRequester calls `pm grant` on the
+  target app for READ/WRITE_EXTERNAL_STORAGE so Perfetto can write trace files to
+  a pullable location. `pm grant` only succeeds if the permission is declared in
+  the installed APK's merged manifest — so the perm has to live on the target app,
+  not the test APK, and only in the benchmark variant to keep production + debug
+  APKs clean.
+
+  maxSdkVersion="29" bounds the perm to legacy storage (API ≤ 29). On API 30+
+  scoped storage handles this without the permission; androidx.benchmark 1.3.4
+  still declares it but does not require it at runtime.
+
+  `<profileable android:shell="true" />` gives Perfetto trace access without
+  requiring `debuggable=true` — debuggable disables JIT and invalidates
+  measurements, which is why androidx.benchmark rejects debuggable targets.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29"
+        tools:node="merge" />
+
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29"
+        tools:node="merge" />
+
+    <application tools:node="merge">
+        <profileable
+            android:shell="true"
+            tools:targetApi="29" />
+    </application>
+
+</manifest>

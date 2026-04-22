@@ -31,6 +31,48 @@ Rules:
 - The class must be `public` (default visibility) -- `internal` would hide it from Metro's cross-module resolution (`VisibilityConventionsTest`)
 - Constructor parameters are automatically injected by Metro (implicit `@Inject`)
 
+## DI Annotation Placement — api vs. impl
+
+All Metro DI annotations (`@ContributesBinding`, `@ContributesTo`, `@Multibinds`, `@Provides`) live in **impl** modules. `api` modules stay annotation-free — they define the public contract (interfaces, abstract use cases, data classes); `impl` modules do the wiring.
+
+This applies equally to multibind contract declarations. A `@ContributesTo(AppScope::class) interface FooProviders { @Multibinds fun foos(): Set<Foo> }` lives in `impl` next to the `@ContributesIntoSet` contributions it gathers — even when the element type `Foo` is an api-level interface. The contract is a DI concern; the type it aggregates is a public one.
+
+### Test modules depend only on `api` — never on `impl`
+
+`test` modules are the "fake data layer" for consumer tests (presenter tests, navint tests, domain/data tests). They ship fakes of the public `api` contracts and nothing more. The invariant:
+
+- `test` modules declare `api(project(":core:{module}:api"))` only — **never** `api(project(":core:{module}:impl"))`.
+- Consumer test graphs see `api + test`, not `impl`. This keeps vendor SDKs, platform-specific code, and impl-only dependencies out of test graphs.
+- Konsist enforces this (see `TestModuleDependencyTest`).
+
+No `replaces = [...]` is needed, because `impl` never ends up on the same graph as `test` — the fake's `@ContributesBinding(AppScope::class)` is the only binding for that type, so there's no duplicate to replace.
+
+### Parallel multibind contracts: impl and test each declare their own
+
+A multibind contract (`@ContributesTo(AppScope::class) interface FooProviders { @Multibinds fun foos(): Set<Foo> }`) is a DI concern that belongs with the wiring. But because `test` cannot depend on `impl`, the contract declared in `impl` is invisible to test graphs.
+
+The rule: when `impl` declares a `@Multibinds` slot via a `@ContributesTo` interface, **`test` declares a parallel copy** — same scope, same slot signature, different package. Metro consolidates multibind slots by type + scope + qualifier (not by interface name), so both declarations resolve to the same `Set<Foo>` slot at compile time. Prod graphs pull the `impl` copy; test graphs pull the `test` copy; neither graph sees the other's copy.
+
+```kotlin
+// core/feature-flag/impl — seen by prod graph
+@ContributesTo(AppScope::class)
+interface FeatureFlagDefinitionProviders {
+    @Multibinds(allowEmpty = true)
+    fun featureFlagDefinitions(): Set<FeatureFlagDefinition>
+}
+
+// core/feature-flag/test — seen by test graphs that depend on api + test (not impl)
+@ContributesTo(AppScope::class)
+interface FeatureFlagDefinitionProviders {
+    @Multibinds(allowEmpty = true)
+    fun featureFlagDefinitions(): Set<FeatureFlagDefinition>
+}
+```
+
+Both files can use the same interface name because they sit in different packages (`...impl` vs `...test`). If you rename the element type or qualifier in one, rename it in the other — Metro consolidates by binding key, and a mismatch creates two different slots.
+
+When to apply this pattern: only when `impl` contributes a `@Multibinds` slot AND a `test` module for the same core exists. One-off cases (contract only used in prod, no test fakes needed) can keep the single declaration in `impl`.
+
 ## @CircuitInject + @Inject -- Presenter and UI Wiring
 
 Presenters and UI composables use Circuit's annotation-driven wiring:

@@ -20,5 +20,8 @@ kotlin {
         commonTest.dependencies {
             implementation(project(":features:debug-menu:test"))
         }
+        getByName("androidDeviceTest").dependencies {
+            implementation(project(":core:build-config:test"))
+        }
     }
 }

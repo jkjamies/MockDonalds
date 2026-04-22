@@ -117,19 +117,19 @@ class TestBoundaryTest : BehaviorSpec({
             }
         }
 
-        Then("e2e benchmark files should end with Benchmark") {
-            val e2eBenchmarks = Konsist.scopeFromProject()
+        Then("benchmark files should end with Benchmark") {
+            val benchmarkFiles = Konsist.scopeFromProject()
                 .files
                 .filter {
-                    it.resideInPath("..e2e-tests..benchmarks..") &&
+                    it.resideInPath("..testing..benchmarks..") &&
                         it.nameWithExtension.endsWith(".kt")
                 }
 
-            val violators = e2eBenchmarks.filter { !it.name.endsWith("Benchmark") }
+            val violators = benchmarkFiles.filter { !it.name.endsWith("Benchmark") }
 
             assert(violators.isEmpty()) {
                 val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
-                "E2E benchmark files in benchmarks/ must end with Benchmark:\n$names"
+                "Benchmark files in testing/benchmarks/ must end with Benchmark:\n$names"
             }
         }
     }

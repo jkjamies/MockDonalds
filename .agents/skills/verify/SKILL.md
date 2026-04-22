@@ -107,7 +107,9 @@ Summary (see the standard for exact commands):
 10. iOS navint tests (requires simulator)
 11. Android e2e tests (requires device/emulator)
 12. iOS e2e tests (requires simulator)
-13. `./gradlew assemble` — every target × every variant
+13. Android macrobenchmarks — `:testing:benchmarks:connectedBenchmarkAndroidTest` (requires physical Android device)
+14. iOS benchmarks — `Benchmarks` test plan, `iosApp/iosAppBenchmarks/` (requires simulator)
+15. `./gradlew assemble` — every target × every variant
 
 ### Market matrix
 

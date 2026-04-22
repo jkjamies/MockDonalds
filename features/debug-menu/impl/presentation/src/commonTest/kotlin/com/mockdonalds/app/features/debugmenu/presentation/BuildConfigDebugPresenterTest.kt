@@ -6,6 +6,8 @@ import com.mockdonalds.app.features.debugmenu.api.navigation.BuildConfigDebugScr
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.presenterTestOf
 import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.shouldBe
 
 class BuildConfigDebugPresenterTest : BehaviorSpec({
 
@@ -26,8 +28,8 @@ class BuildConfigDebugPresenterTest : BehaviorSpec({
                     },
                 ) {
                     val state = awaitItem()
-                    assert(state.fields.map { it.name }.contains("appId"))
-                    assert(state.fields.first { it.name == "baseUrl" }.value == buildConfig.baseUrl)
+                    state.fields.map { it.name } shouldContain "appId"
+                    state.fields.first { it.name == "baseUrl" }.value shouldBe buildConfig.baseUrl
                     cancelAndIgnoreRemainingEvents()
                 }
             }

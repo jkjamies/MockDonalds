@@ -7,6 +7,7 @@ included:
   - iosApp/iosApp
   - iosApp/iosAppTests
   - iosApp/iosAppE2ETests
+  - iosApp/iosAppBenchmarks
 
 excluded:
   - iosApp/ArchitectureCheck/.build

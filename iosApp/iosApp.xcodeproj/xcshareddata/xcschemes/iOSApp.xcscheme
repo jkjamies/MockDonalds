@@ -29,6 +29,20 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "45201C532D66CED8C8C1EED2"
+               BuildableName = "iosAppBenchmarks.xctest"
+               BlueprintName = "iosAppBenchmarks"
+               ReferencedContainer = "container:iosApp.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "0618CB341719EF98872EA928"
                BuildableName = "iosAppE2ETests.xctest"
                BlueprintName = "iosAppE2ETests"
@@ -74,6 +88,9 @@
          <TestPlanReference
             reference = "container:iosApp.xcodeproj/xcshareddata/TestPlans/E2ETests.xctestplan">
          </TestPlanReference>
+         <TestPlanReference
+            reference = "container:iosApp.xcodeproj/xcshareddata/TestPlans/Benchmarks.xctestplan">
+         </TestPlanReference>
       </TestPlans>
       <MacroExpansion>
          <BuildableReference
@@ -109,10 +126,8 @@
             ReferencedContainer = "container:iosApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <LocationScenarioReference
-         identifier = "com.apple.dt.IDEFoundation.CurrentLocationScenarioIdentifier"
-         referenceType = "1">
-      </LocationScenarioReference>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "US-Prod-Release"

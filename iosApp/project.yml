@@ -243,6 +243,52 @@ targets:
     dependencies:
       - target: iosApp
 
+  iosAppBenchmarks:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - iosAppBenchmarks
+    configFiles:
+      US-Int-Debug: Configuration/us/US-Int-Debug.xcconfig
+      US-Int-Release: Configuration/us/US-Int-Release.xcconfig
+      US-Mte-Debug: Configuration/us/US-Mte-Debug.xcconfig
+      US-Mte-Release: Configuration/us/US-Mte-Release.xcconfig
+      US-Prod-Debug: Configuration/us/US-Prod-Debug.xcconfig
+      US-Prod-Release: Configuration/us/US-Prod-Release.xcconfig
+      CA-Int-Debug: Configuration/ca/CA-Int-Debug.xcconfig
+      CA-Int-Release: Configuration/ca/CA-Int-Release.xcconfig
+      CA-Mte-Debug: Configuration/ca/CA-Mte-Debug.xcconfig
+      CA-Mte-Release: Configuration/ca/CA-Mte-Release.xcconfig
+      CA-Prod-Debug: Configuration/ca/CA-Prod-Debug.xcconfig
+      CA-Prod-Release: Configuration/ca/CA-Prod-Release.xcconfig
+      DE-Int-Debug: Configuration/de/DE-Int-Debug.xcconfig
+      DE-Int-Release: Configuration/de/DE-Int-Release.xcconfig
+      DE-Mte-Debug: Configuration/de/DE-Mte-Debug.xcconfig
+      DE-Mte-Release: Configuration/de/DE-Mte-Release.xcconfig
+      DE-Prod-Debug: Configuration/de/DE-Prod-Debug.xcconfig
+      DE-Prod-Release: Configuration/de/DE-Prod-Release.xcconfig
+      AU-Int-Debug: Configuration/au/AU-Int-Debug.xcconfig
+      AU-Int-Release: Configuration/au/AU-Int-Release.xcconfig
+      AU-Mte-Debug: Configuration/au/AU-Mte-Debug.xcconfig
+      AU-Mte-Release: Configuration/au/AU-Mte-Release.xcconfig
+      AU-Prod-Debug: Configuration/au/AU-Prod-Debug.xcconfig
+      AU-Prod-Release: Configuration/au/AU-Prod-Release.xcconfig
+      CORE-Int-Debug: Configuration/core/CORE-Int-Debug.xcconfig
+      CORE-Int-Release: Configuration/core/CORE-Int-Release.xcconfig
+      CORE-Mte-Debug: Configuration/core/CORE-Mte-Debug.xcconfig
+      CORE-Mte-Release: Configuration/core/CORE-Mte-Release.xcconfig
+      CORE-Prod-Debug: Configuration/core/CORE-Prod-Debug.xcconfig
+      CORE-Prod-Release: Configuration/core/CORE-Prod-Release.xcconfig
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mockdonalds.app.benchmarks
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: iosApp
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: "${TEAM_ID}"
+    dependencies:
+      - target: iosApp
+
 schemes:
   iOSApp:
     build:
@@ -250,6 +296,7 @@ schemes:
         iosApp: all
         iosAppTests: [test]
         iosAppE2ETests: [test]
+        iosAppBenchmarks: [test]
     run:
       config: US-Int-Debug
     test:
@@ -261,6 +308,7 @@ schemes:
         - path: iosApp.xcodeproj/xcshareddata/TestPlans/UIComponentTests.xctestplan
         - path: iosApp.xcodeproj/xcshareddata/TestPlans/NavIntTests.xctestplan
         - path: iosApp.xcodeproj/xcshareddata/TestPlans/E2ETests.xctestplan
+        - path: iosApp.xcodeproj/xcshareddata/TestPlans/Benchmarks.xctestplan
     profile:
       config: US-Prod-Release
     analyze:

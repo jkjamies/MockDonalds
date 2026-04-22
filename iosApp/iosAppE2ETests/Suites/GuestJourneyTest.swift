@@ -23,28 +23,28 @@ final class GuestJourneyTest: XCTestCase {
         robot.assertElementDisplayed("HomeUserName")
 
         // Order tab
-        robot.tapTab("Order")
+        robot.tapTab("ORDER")
         robot.assertElementDisplayed("OrderFeaturedItemsSection")
 
         // Rewards tab
-        robot.tapTab("Rewards")
+        robot.tapTab("REWARDS")
         robot.assertElementDisplayed("RewardsPointsSection")
 
         // Scan tab
-        robot.tapTab("Scan")
+        robot.tapTab("SCAN")
         robot.assertElementDisplayed("ScanMemberCard")
 
         // More tab
-        robot.tapTab("More")
+        robot.tapTab("MORE")
         robot.assertElementDisplayed("MoreMenuList")
 
         // Back to home
-        robot.tapTab("Home")
+        robot.tapTab("HOME")
         robot.assertElementDisplayed("HomeUserName")
     }
 
     func testProfileNavigationRedirectsToLoginWhenUnauthenticated() {
-        robot.tapTab("More")
+        robot.tapTab("MORE")
         robot.assertElementDisplayed("MoreProfileSection")
         robot.tapElement("MoreProfileSection")
 
@@ -54,7 +54,7 @@ final class GuestJourneyTest: XCTestCase {
     }
 
     func testSignInFlowShowsWelcomeScreenThenCompletes() {
-        robot.tapTab("More")
+        robot.tapTab("MORE")
         robot.tapElement("MoreProfileSection")
 
         // Login screen appears via auth interception
@@ -72,7 +72,7 @@ final class GuestJourneyTest: XCTestCase {
         // Tap continue to complete flow
         robot.tapElement("WelcomeContinueButton")
 
-        // Should navigate back to More tab after flow completes
-        robot.assertElementDisplayed("MoreProfileSection")
+        // Flow pops Welcome + Login covers, then navigates to the auth-gated returnTo (Profile)
+        robot.assertElementDisplayed("ProfileName")
     }
 }

@@ -8,30 +8,23 @@ E2E tests validate full user journeys against the **real app** — real Metro DI
 
 | What's tested | What's real | What's faked |
 |---------------|-------------|--------------|
-| Full user journeys, deep links, startup perf | Everything — DI, presenters, data, network | Nothing |
+| Full user journeys, deep links | Everything — DI, presenters, data, network | Nothing |
 
 ## Run Commands
 
 ```bash
-# All e2e tests (journeys + benchmarks)
+# All Android e2e journey tests
 ./gradlew :testing:e2e-tests:connectedAndroidTest
-
-# Journeys only (exclude benchmarks)
-./gradlew :testing:e2e-tests:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.notClass=com.mockdonalds.app.e2e.benchmarks.StartupBenchmark
-
-# Benchmarks only
-./gradlew :testing:e2e-tests:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.mockdonalds.app.e2e.benchmarks.StartupBenchmark
 ```
 
 Requires a connected Android device or running emulator.
 
 ## Key Characteristics
 
-- **Plugin**: `com.android.test` — separate test APK instruments against `:androidApp`
+- **Plugin**: `com.android.test` — separate test APK instruments against `:androidApp` debug variant
 - **Runner**: JUnit4 `@RunWith(AndroidJUnit4::class)` — instrumented tests
 - **Data layer**: Real (no fakes, no test doubles)
 - **Element access**: UI Automator (`By.desc(testTag)`) — cross-process element identification
-- **Benchmarks**: Macrobenchmark (`MacrobenchmarkRule`) with Perfetto traces
 - **Location**: `testing/e2e-tests/src/main/kotlin/`
 
 ## Test Organization
@@ -39,7 +32,6 @@ Requires a connected Android device or running emulator.
 | Category | Location | Naming |
 |----------|----------|--------|
 | Journeys | `suites/` | Files end with `JourneyTest` |
-| Benchmarks | `benchmarks/` | Files end with `Benchmark` |
 
 ## AppRobot
 
@@ -85,30 +77,6 @@ class GuestJourneyTest {
 }
 ```
 
-## Benchmark Pattern
-
-```kotlin
-@RunWith(AndroidJUnit4::class)
-class StartupBenchmark {
-
-    @get:Rule
-    val benchmarkRule = MacrobenchmarkRule()
-
-    @Test
-    fun coldStartup() {
-        benchmarkRule.measureRepeated(
-            packageName = "com.mockdonalds.app",
-            metrics = listOf(StartupTimingMetric()),
-            iterations = 3,
-            startupMode = StartupMode.COLD,
-        ) {
-            pressHome()
-            startActivityAndWait()
-        }
-    }
-}
-```
-
 ## Module Dependencies
 
 ```
@@ -128,7 +96,6 @@ Add or update e2e-tests when:
 - A new user journey is introduced (e.g., onboarding flow)
 - Deep link handling is added or modified
 - Tab navigation or auth gating changes
-- Startup performance needs regression tracking
 
 ## Distinction from Other Test Levels
 
@@ -146,21 +113,19 @@ Add or update e2e-tests when:
 
 ### Konsist
 
-4 boundary rules in `TestBoundaryTest`:
+Boundary rules in `TestBoundaryTest`:
 - e2e-tests must not import from feature `test/` modules (no fakes)
 - e2e-tests must not import from `impl/domain` or `impl/data` (interact via UI only)
 - Journey test files in `suites/` must end with `JourneyTest`
-- Benchmark files in `benchmarks/` must end with `Benchmark`
 
 1 coverage rule in `TestModuleCoverageTest`:
 - Every `{Feature}TestTags` object in `api/navigation` must be referenced in at least one e2e test
 
 ### Harmonize
 
-6 convention rules + 1 coverage rule in `TestConventionsTest.swift`:
+Convention rules + 1 coverage rule in `TestConventionsTest.swift`:
 - E2E tests must extend `XCTestCase` (XCUITest process isolation)
 - Journey test files in `Suites/` must end with `JourneyTest`
-- Benchmark files in `Benchmarks/` must end with `PerformanceTest` or `Benchmark`
 - Journey tests must use `AppRobot` for app interactions
 - E2E tests must not import `ViewInspector` (wrong test level)
 - E2E tests must not import `Testing` (must use XCTest for XCUITest)
@@ -186,8 +151,6 @@ iosAppE2ETests/
     GuestJourneyTest.swift      — browse tabs, auth redirect
     DeepLinkJourneyTest.swift   — cold start with URI
     OrderJourneyTest.swift      — order browsing flow
-  Benchmarks/
-    StartupPerformanceTest.swift — XCTApplicationLaunchMetric
 ```
 
 ### Key Differences from Android E2E
@@ -198,4 +161,3 @@ iosAppE2ETests/
 | Framework | JUnit4 + UI Automator | XCTest + XCUIApplication |
 | Element access | `By.desc(testTag)` | `app.descendants[testTag]` |
 | TestTags | Import from KMP api modules | Raw string constants (process-isolated) |
-| Benchmarks | Macrobenchmark + Perfetto | XCTMetric + XCTApplicationLaunchMetric |

@@ -149,6 +149,9 @@ Place fakes here (in `commonMain`, NOT `commonTest`). Package: `com.mockdonalds.
 - Fakes are `MutableStateFlow`-backed with control methods (`setXxx()`, `reset()`)
 - Annotate with `@ContributesBinding(AppScope::class)` for test graph auto-wiring
 - Every public interface and abstract interactor in api needs a corresponding fake
+- **test modules depend on `api` only — never on `impl`** (Konsist-enforced via `TestModuleDependencyTest`). This keeps vendor SDKs and platform-specific code out of test graphs.
+
+**Parallel multibind contracts** — if your `impl` module declares a multibind slot via a `@ContributesTo(AppScope::class)` interface with `@Multibinds`, declare the **same slot a second time** in `test` (different package, same scope, same signature). Test graphs that pull `api + test` (not `impl`) need to see the slot or Metro cannot resolve the `Set<T>`. Metro consolidates slots by type + scope, so both copies resolve to the same binding. Do this whenever a `test` module exists for a core that contributes multibind aggregators. See `.agents/standards/dependency-injection.md` → "Parallel multibind contracts".
 
 ### 4. Create Tests
 

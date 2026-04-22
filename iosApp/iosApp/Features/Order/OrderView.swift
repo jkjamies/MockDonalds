@@ -126,6 +126,7 @@ struct OrderView: View {
         }
         .padding(.horizontal, MockDimens.spacingXl)
         .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: isLandscape))
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier(tags.FEATURED_ITEMS_SECTION)
     }
 

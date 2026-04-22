@@ -40,6 +40,18 @@ android {
                 "proguard-rules.pro",
             )
         }
+        create("benchmark") {
+            // Release-like code (R8 + resource shrinking + proguard) so macrobenchmarks
+            // measure production-representative performance. Must NOT be debuggable —
+            // androidx.benchmark refuses debuggable targets because JIT is disabled in
+            // that mode, which invalidates measurements. Perfetto access comes from the
+            // `<profileable android:shell="true" />` tag in src/benchmark/AndroidManifest.xml.
+            // Uses debug signing so CI can install the APK without release keystore access.
+            // Never ships — production AAB comes from the `release` build type.
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+        }
     }
 
     buildFeatures {

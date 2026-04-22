@@ -9,6 +9,7 @@ import com.mockdonalds.app.features.debugmenu.api.navigation.FeatureFlagsDebugSc
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.presenterTestOf
 import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.shouldBe
 
 class FeatureFlagsDebugPresenterTest : BehaviorSpec({
 
@@ -29,7 +30,7 @@ class FeatureFlagsDebugPresenterTest : BehaviorSpec({
                     },
                 ) {
                     val state = awaitItem()
-                    assert(state.rows.isEmpty())
+                    state.rows.isEmpty() shouldBe true
                     cancelAndIgnoreRemainingEvents()
                 }
             }
@@ -60,9 +61,9 @@ class FeatureFlagsDebugPresenterTest : BehaviorSpec({
                     // and assert against the converged state.
                     awaitItem()
                     val state = awaitItem()
-                    assert(state.rows.map { it.key } == listOf("account.new_profile", "order.new_checkout"))
-                    assert(state.rows.first { it.key == flagA.key }.enabled)
-                    assert(state.rows.first { it.key == flagB.key }.enabled)
+                    state.rows.map { it.key } shouldBe listOf("account.new_profile", "order.new_checkout")
+                    state.rows.first { it.key == flagA.key }.enabled shouldBe true
+                    state.rows.first { it.key == flagB.key }.enabled shouldBe true
                     cancelAndIgnoreRemainingEvents()
                 }
             }
