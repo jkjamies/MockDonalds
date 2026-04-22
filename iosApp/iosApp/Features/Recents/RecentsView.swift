@@ -11,18 +11,20 @@ struct RecentsView: View {
     private var isLandscape: Bool { verticalSizeClass == .compact }
 
     var body: some View {
-        VStack {
-            navigationBar
-            
+        Group {
             if let _ = state as? RecentsUiState.Loading {
-                Spacer()
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: colors.primary))
-                Spacer()
+                VStack {
+                    Spacer()
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: colors.primary))
+                    Spacer()
+                }
             } else if let _ = state as? RecentsUiState.Empty {
-                Spacer()
-                emptyStateView
-                Spacer()
+                VStack {
+                    Spacer()
+                    emptyStateView
+                    Spacer()
+                }
             } else if let successState = state as? RecentsUiState.Success {
                 ScrollView {
                     VStack(spacing: MockDimens.spacingMd) {
@@ -39,39 +41,13 @@ struct RecentsView: View {
                 .accessibilityIdentifier(tags.LIST)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(colors.background)
         .accessibilityIdentifier(tags.SCREEN)
-        // Hidden navigation bar as we provide our own
-        .navigationBarHidden(true)
+        .navigationTitle("Recents")
+        .navigationBarTitleDisplayMode(.inline)
     }
-    
-    private var navigationBar: some View {
-        HStack {
-            Button(action: {
-                if let loading = state as? RecentsUiState.Loading {
-                    loading.eventSink(RecentsEvent.OnBackTapped())
-                } else if let empty = state as? RecentsUiState.Empty {
-                    empty.eventSink(RecentsEvent.OnBackTapped())
-                } else if let success = state as? RecentsUiState.Success {
-                    success.eventSink(RecentsEvent.OnBackTapped())
-                }
-            }) {
-                Image(systemName: "arrow.left")
-                    .foregroundColor(colors.onBackground)
-            }
-            .accessibilityIdentifier(tags.BACK_BUTTON)
-            
-            Text("Recents")
-                .font(.headline)
-                .foregroundColor(colors.onBackground)
-                .padding(.leading, MockDimens.spacingSm)
-            
-            Spacer()
-        }
-        .padding()
-        .background(colors.background)
-    }
-    
+
     private var emptyStateView: some View {
         VStack(spacing: MockDimens.spacingLg) {
             Image(systemName: "info.circle")
@@ -79,12 +55,12 @@ struct RecentsView: View {
                 .scaledToFit()
                 .frame(width: 64, height: 64)
                 .foregroundColor(colors.secondary)
-            
+
             Text("No recent activity")
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(colors.onBackground)
-            
+
             Text("Your recent orders and items will appear here")
                 .font(.body)
                 .foregroundColor(colors.onSurfaceVariant)
@@ -122,21 +98,21 @@ struct RecentItemCard: View {
             }
             .frame(width: 64, height: 64)
             .cornerRadius(MockDimens.radiusSm)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.name)
                     .font(.headline)
                     .foregroundColor(colors.onSurface)
-                
+
                 Text(item.description_)
                     .font(.subheadline)
                     .foregroundColor(colors.onSurfaceVariant)
-                
+
                 Text(item.relativeTime)
                     .font(.caption)
                     .foregroundColor(colors.primary)
             }
-            
+
             Spacer()
         }
         .padding(MockDimens.spacingMd)

@@ -37,19 +37,35 @@ The user may provide additional context in three ways — all are optional:
 package com.mockdonalds.app.features.{feature}.api.domain
 
 import com.mockdonalds.app.core.featureflag.FeatureFlag
+import com.mockdonalds.app.core.featureflag.FeatureFlagDefinition
+import com.mockdonalds.app.core.featureflag.FlagLifecycle
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoSet
 
 object {Feature}Flags {
     val {flagName} = FeatureFlag(
-        key = "{feature}_{flag_name}",
+        key = "{feature}.{flag_name}",
         defaultValue = false,
     )
 }
+
+@ContributesIntoSet(AppScope::class)
+class {FlagName}Definition : FeatureFlagDefinition {
+    override val flag = {Feature}Flags.{flagName}
+    override val description = "{one-line description for the debug UI}"
+    override val owner = "{feature}"
+    override val lifecycle = FlagLifecycle.Experiment  // or KillSwitch / Ops / Permanent
+}
 ```
 
-**Naming convention**: `{feature}_{snake_case_description}`
-- `deals_carousel_enabled` — gates a UI section
-- `deals_v2_api` — gates an API version
-- `deals_experiment_new_layout` — A/B experiment
+**Naming convention (namespaced)**: `{feature}.{snake_case_description}`
+- `deals.carousel_enabled` — gates a UI section
+- `deals.v2_api` — gates an API version
+- `deals.experiment_new_layout` — A/B experiment
+
+The dot-namespace groups flags by feature in the debug menu and Harness dashboard.
+
+**Registry contribution is mandatory.** Every production flag must ship a `FeatureFlagDefinition` via `@ContributesIntoSet(AppScope::class)` so the debug-menu feature-flag viewer can enumerate it. The `FeatureFlag` itself is still the read API (`rememberFlag(def.flag)`); the definition just adds metadata.
 
 ### 2. Presenter Observation — `impl/presentation/`
 
@@ -171,6 +187,9 @@ commonMain.dependencies {
 ## Key Rules
 
 - **Flags defined in `api/domain/`** — they're part of the feature's public contract
+- **Every production flag must ship a `FeatureFlagDefinition` contribution** — `@ContributesIntoSet(AppScope::class)` — so the debug-menu enumerates it
+- **Use namespaced keys** (`feature.flag_name`) so the registry can group by feature
+- **Pick a `FlagLifecycle`**: `Experiment` for A/B tests, `KillSwitch` for operational toggles, `Ops` for infra knobs, `Permanent` for config that outlives a release
 - **Presenters read flags via `featureFlags.rememberFlag(flag)`** — reactive Composable extension, one DI param for N flags
 - **Domain/data use `FeatureFlagProvider.isEnabled(...)` / `.observe(...)`** — synchronous or Flow, direct injection
 - **Never** call `.isEnabled(...)` / `.observe(...)` from presentation — Konsist-enforced

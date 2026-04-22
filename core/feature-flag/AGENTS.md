@@ -26,6 +26,9 @@ core/feature-flag/test           -> FakeFeatureFlagProvider for consumer tests (
 | `FeatureFlagProvider` | api | Interface with `isEnabled(flag): Boolean` and `observe(flag): Flow<Boolean>` |
 | `FeatureFlagProvider.rememberFlag(flag)` | api | `@Composable` extension returning `State<Boolean>` — the presenter-only entry point |
 | `FeatureFlags` | api | Object for cross-cutting flag definitions (feature-specific flags go in their own `api/domain`) |
+| `FeatureFlagDefinition` | api | Interface wrapping a `FeatureFlag` with registry metadata (`description`, `owner`, `lifecycle: FlagLifecycle`). Every production flag must ship a `@ContributesIntoSet(AppScope::class)` definition so the debug-menu feature-flag viewer can enumerate it. Consumers still read values via `rememberFlag` / `isEnabled` using `def.flag`. |
+| `FeatureFlagDefinitionProviders` | impl | `@ContributesTo(AppScope::class)` interface declaring `@Multibinds(allowEmpty = true) fun featureFlagDefinitions(): Set<FeatureFlagDefinition>`. Lets Metro resolve the registry as an empty set when no flags have been contributed yet. |
+| `FlagLifecycle` | api | Enum — `Experiment`, `KillSwitch`, `Ops`, `Permanent`. Drives filtering and retirement signals in the debug UI. |
 | `FakeFeatureFlagProvider` | test | `MutableStateFlow`-backed fake with `setEnabled()` and `reset()` — drives both presenter (via `rememberFlag`) and domain/data tests |
 | `HarnessIosBridge` | impl/iosMain | Vendor-agnostic-looking contract for iOS; implemented in Swift (`SwiftHarnessBridge`) |
 | `FeatureFlagBuildConfig` | impl (generated) | BuildKonfig object exposing `HARNESS_CLIENT_ID` to Kotlin and Swift |
@@ -63,13 +66,23 @@ class MyRepositoryImpl(
 }
 ```
 
-**Feature-specific flags** are defined in `features/{name}/api/domain/`:
+**Feature-specific flags** are defined in `features/{name}/api/domain/` and contributed to the registry via `FeatureFlagDefinition`:
 
 ```kotlin
 object MyFlags {
     val NEW_FEATURE = FeatureFlag(key = "new_feature", defaultValue = false)
 }
+
+@ContributesIntoSet(AppScope::class)
+class NewFeatureFlagDefinition : FeatureFlagDefinition {
+    override val flag = MyFlags.NEW_FEATURE
+    override val description = "Enables the rewritten feature flow"
+    override val owner = "{team-or-feature}"
+    override val lifecycle = FlagLifecycle.Experiment
+}
 ```
+
+The `FeatureFlag` stays the reading API (`rememberFlag(MyFlags.NEW_FEATURE)`); the `FeatureFlagDefinition` contribution adds enumeration metadata. Keys are namespaced (`order.checkout_v2`) so the debug UI can group by feature and the Harness dashboard stays readable.
 
 ## Harness integration
 

@@ -4,7 +4,7 @@ import ComposeApp
 final class FeatureFlagsDebugStateRobot: BaseStateRobot<FeatureFlagsDebugUiState, FeatureFlagsDebugEvent> {
 
     override func defaultState() -> FeatureFlagsDebugUiState {
-        FeatureFlagsDebugUiState(eventSink: createEventSink())
+        FeatureFlagsDebugUiState(rows: [], eventSink: createEventSink())
     }
 }
 #endif

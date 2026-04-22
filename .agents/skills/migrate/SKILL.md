@@ -47,10 +47,21 @@ Choose based on scope and risk. Default to **phased** for anything touching more
 
 - Add new abstractions alongside existing ones
 - Create bridge/adapter if old and new must coexist
-- Wire feature flag to toggle between old and new paths if applicable:
+- Wire feature flag to toggle between old and new paths if applicable. Use the namespaced `{feature}.{flag}` key convention and contribute a `FeatureFlagDefinition` so the debug-menu enumerates the migration flag:
   ```kotlin
-  val flag = FeatureFlag(key = "use_new_{thing}", defaultValue = false)
+  object {Feature}Flags {
+      val useNewThing = FeatureFlag(key = "{feature}.use_new_thing", defaultValue = false)
+  }
+
+  @ContributesIntoSet(AppScope::class)
+  class UseNewThingFlagDefinition : FeatureFlagDefinition {
+      override val flag = {Feature}Flags.useNewThing
+      override val description = "Routes {thing} through the new impl during migration"
+      override val owner = "{feature}"
+      override val lifecycle = FlagLifecycle.Experiment
+  }
   ```
+  Remove both the flag and its definition in step 6 once the migration lands.
 
 ### 4. Migrate Consumers
 

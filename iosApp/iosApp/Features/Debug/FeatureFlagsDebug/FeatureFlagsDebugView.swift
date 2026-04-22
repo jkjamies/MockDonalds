@@ -2,40 +2,78 @@
 import SwiftUI
 import ComposeApp
 
+private let tags = FeatureFlagsDebugTestTags.shared
+
 struct FeatureFlagsDebugView: View {
     let state: FeatureFlagsDebugUiState
     @Environment(\.mockDonaldsColors) private var colors
 
     var body: some View {
-        VStack(spacing: 0) {
-            navigationBar
-            Spacer()
-            Text("Feature Flags will be listed here")
-                .font(.body)
-                .foregroundColor(colors.onSurfaceVariant)
-            Spacer()
+        Group {
+            if state.rows.isEmpty {
+                VStack {
+                    Spacer()
+                    Text("No feature flags registered")
+                        .font(.body)
+                        .foregroundColor(colors.onSurfaceVariant)
+                        .accessibilityIdentifier(tags.EMPTY_STATE)
+                    Spacer()
+                }
+            } else {
+                ScrollView {
+                    LazyVStack(spacing: MockDimens.spacingSm) {
+                        ForEach(state.rows, id: \.key) { row in
+                            FeatureFlagCard(row: row)
+                        }
+                    }
+                    .padding(MockDimens.spacingMd)
+                }
+                .accessibilityIdentifier(tags.FLAG_LIST)
+            }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(colors.background)
-        .accessibilityIdentifier(FeatureFlagsDebugTestTags.shared.ROOT)
-        .navigationBarHidden(true)
+        .accessibilityIdentifier(tags.ROOT)
+        .navigationTitle("Feature Flags")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct FeatureFlagCard: View {
+    let row: FeatureFlagRow
+    @Environment(\.mockDonaldsColors) private var colors
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(row.key)
+                    .font(.headline)
+                    .foregroundColor(colors.onSurface)
+                if !row.description_.isEmpty {
+                    Text(row.description_)
+                        .font(.subheadline)
+                        .foregroundColor(colors.onSurfaceVariant)
+                }
+                Text(metaLine)
+                    .font(.caption)
+                    .foregroundColor(colors.onSurfaceVariant)
+            }
+            Spacer()
+            Toggle("", isOn: .constant(row.enabled))
+                .labelsHidden()
+                .disabled(true)
+        }
+        .padding(MockDimens.spacingLg)
+        .background(colors.surfaceContainerHighest)
+        .cornerRadius(MockDimens.radiusMd)
+        .accessibilityIdentifier("\(tags.FLAG_ROW)-\(row.key)")
     }
 
-    private var navigationBar: some View {
-        HStack {
-            Button(action: { state.eventSink(FeatureFlagsDebugEvent.BackClicked()) }) {
-                Image(systemName: "arrow.left")
-                    .foregroundColor(colors.onBackground)
-            }
-
-            Text("Feature Flags")
-                .font(.headline)
-                .foregroundColor(colors.onBackground)
-                .padding(.leading, MockDimens.spacingSm)
-
-            Spacer()
+    private var metaLine: String {
+        if row.owner.isEmpty {
+            return row.lifecycle.name
         }
-        .padding()
-        .background(colors.background)
+        return "\(row.owner) • \(row.lifecycle.name)"
     }
 }
 #endif

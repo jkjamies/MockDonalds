@@ -142,8 +142,8 @@ Output a filled-in spec using the `new-spec.md` template structure. Every sectio
 - Note which events are in presenters vs domain/data
 
 #### Feature Flags
-- Find any `FeatureFlag` definitions
-- Document where they're checked (presenter observation vs domain/data provider)
+- Find any `FeatureFlag` definitions and their corresponding `FeatureFlagDefinition` `@ContributesIntoSet` classes (capture description, owner, `FlagLifecycle`)
+- Document where they're checked (presenter `rememberFlag` vs domain/data `isEnabled` / `observe`)
 
 #### Cross-Feature Dependencies
 - Grep for imports from other features' `api/` modules

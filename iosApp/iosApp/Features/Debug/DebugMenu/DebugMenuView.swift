@@ -9,43 +9,22 @@ struct DebugMenuView: View {
     @Environment(\.mockDonaldsColors) private var colors
 
     var body: some View {
-        VStack(spacing: 0) {
-            navigationBar
-            ScrollView {
-                VStack(spacing: MockDimens.spacingMd) {
-                    ForEach(state.entries, id: \.id) { entry in
-                        DebugEntryCard(entry: entry)
-                            .onTapGesture {
-                                state.eventSink(DebugMenuEvent.EntryClicked(id: entry.id))
-                            }
-                    }
+        ScrollView {
+            VStack(spacing: MockDimens.spacingMd) {
+                ForEach(state.entries, id: \.id) { entry in
+                    DebugEntryCard(entry: entry)
+                        .onTapGesture {
+                            state.eventSink(DebugMenuEvent.EntryClicked(id: entry.id))
+                        }
                 }
-                .padding(MockDimens.spacingMd)
             }
-            .accessibilityIdentifier(tags.ENTRY_LIST)
+            .padding(MockDimens.spacingMd)
         }
+        .accessibilityIdentifier(tags.ENTRY_LIST)
         .background(colors.background)
         .accessibilityIdentifier(tags.ROOT)
-        .navigationBarHidden(true)
-    }
-
-    private var navigationBar: some View {
-        HStack {
-            Button(action: { state.eventSink(DebugMenuEvent.BackClicked()) }) {
-                Image(systemName: "arrow.left")
-                    .foregroundColor(colors.onBackground)
-            }
-            .accessibilityIdentifier(tags.BACK_BUTTON)
-
-            Text("Debug Menu")
-                .font(.headline)
-                .foregroundColor(colors.onBackground)
-                .padding(.leading, MockDimens.spacingSm)
-
-            Spacer()
-        }
-        .padding()
-        .background(colors.background)
+        .navigationTitle("Debug Menu")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

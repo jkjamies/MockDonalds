@@ -225,12 +225,12 @@ Get{Feature}Content
 
 ## Feature Flag Changes
 
-<!-- Only fill if feature flags are being added/changed/removed. -->
+<!-- Only fill if feature flags are being added/changed/removed. New flags must ship a `@ContributesIntoSet` FeatureFlagDefinition so the debug-menu viewer picks them up. Removals must delete both the FeatureFlag and its FeatureFlagDefinition. Use namespaced keys (`{feature}.{flag_name}`) and a FlagLifecycle. -->
 
-| Flag Key | Change | Description |
-|----------|--------|-------------|
-| `{name}_extras_enabled` | New | Gates the new extras section |
-| `{name}_old_layout` | Remove | No longer needed after migration |
+| Flag Key | Change | Lifecycle | Description |
+|----------|--------|-----------|-------------|
+| `{feature}.extras_enabled` | New | `Experiment` | Gates the new extras section |
+| `{feature}.old_layout` | Remove | — | No longer needed after migration |
 
 ---
 

@@ -15,8 +15,9 @@ The Debug Menu is an engineer-facing surface that exposes inspection and overrid
 | BuildConfigDebugTestTags | api/ui | Test tags for `BuildConfigDebugUi` |
 | DebugMenuEntry | impl/presentation | `id`, `title`, `subtitle`, `target: Screen` — one row in the hub list |
 | DebugMenuPresenter | impl/presentation | Builds the entry list, routes `EntryClicked` to the target screen and `BackClicked` to `navigator.pop()` |
-| BuildConfigDebugPresenter | impl/presentation | Handles `BackClicked` only; state will grow once baked `AppBuildConfig` values are surfaced |
-| FeatureFlagsDebugPresenter | impl/presentation | Handles `BackClicked` only; state will grow once per-flag overrides are wired |
+| BuildConfigDebugPresenter | impl/presentation | Injects `AppBuildConfig` and publishes `asFields()` (from `core:build-config:api`) as read-only rows grouped by `BuildConfigField.Group` |
+| FeatureFlagsDebugPresenter | impl/presentation | Injects `Set<FeatureFlagDefinition>` (Metro multibinding) + `FeatureFlagProvider`; produces `FeatureFlagRow` entries sorted by owner then key, resolved via `rememberFlag` for per-flag recomposition |
+| FeatureFlagRow | impl/presentation | `key`, `description`, `owner`, `lifecycle`, `enabled` — one row in the flags screen |
 | DebugMenuUi / BuildConfigDebugUi / FeatureFlagsDebugUi | impl/presentation (androidMain) | Compose UIs, each annotated `@CircuitInject` |
 | DebugMenuTabExtension | impl/presentation | `@ContributesIntoSet(AppScope::class)` — adds the 🐞 Debug Menu row to the More tab (`isDebugOnly = true`) |
 
@@ -24,7 +25,7 @@ The Debug Menu is an engineer-facing surface that exposes inspection and overrid
 - Contributes into: `features:more` via `MoreTabExtension` (runtime `Set<MoreTabExtension>` multibinding)
 - Navigates to: its own sub-screens (`FeatureFlagsDebugScreen`, `BuildConfigDebugScreen`) — no outbound cross-feature navigation
 - Imported by: composeApp (wired at app level, scoped to debug builds via the extension's `isDebugOnly` flag)
-- Core deps: core:centerpost, core:theme
+- Core deps: core:centerpost, core:theme, core:feature-flag:api (flag registry + rememberFlag), core:build-config:api (AppBuildConfig + asFields)
 - Sibling api deps: `:features:more:api:navigation` (to implement `MoreTabExtension`)
 
 ## Feature-Specific Patterns

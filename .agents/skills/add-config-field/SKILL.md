@@ -132,13 +132,28 @@ Then("someFlag matches the expected bool shape") {
 
 If none of these fit, write a real assertion on the value's shape. The goal is *coverage existed*, not perfect validation.
 
-### 6. Decide on DI exposure
+### 6. Add the field to `asFields()`
+
+`BuildConfigField.kt` (same package as `AppBuildConfig` in the api module) exposes `AppBuildConfig.asFields(): List<BuildConfigField>` — the enumeration adapter the debug-menu build-config viewer reads. Append a row for the new field, picking the group that matches:
+
+```kotlin
+fun AppBuildConfig.asFields(): List<BuildConfigField> = listOf(
+    // ...existing rows...
+    BuildConfigField("privacyPolicyUrl", privacyPolicyUrl, BuildConfigField.Group.Urls),
+)
+```
+
+Groups today: `Identity` (appName, appId, market, env, buildType), `Urls` (any `*Url`), `Localization` (locale, currency). Add a new enum variant if none fit — but first ask whether the field really needs its own group.
+
+`BuildConfigCoverageTest` reflects over `AppBuildConfig` and fails the build if any interface property is missing from `asFields()`, so this step is not optional.
+
+### 7. Decide on DI exposure
 
 `AppBuildConfig` as a whole is already injectable via Metro — any presenter, use case, repo, or data source can take it as a constructor parameter and read `appBuildConfig.privacyPolicyUrl` directly. **Default: do nothing here.**
 
 Only add a dedicated `@Provides` fun if the field needs to be injected as its own stand-alone type (e.g. you're introducing a `LegalConfig` sub-interface to make legal-specific consumers easier to test). Ask the user before doing this — it's usually unnecessary ceremony.
 
-### 7. Verify
+### 8. Verify
 
 Run both in parallel:
 
@@ -155,13 +170,14 @@ Then build one non-default combo end-to-end to prove the field bakes in:
 ./gradlew :androidApp:assembleDebug -Pmarket=de -Penv=prod
 ```
 
-### 8. Report
+### 9. Report
 
 Summarize to the user:
 
 - Field name, type, and key
 - Default value in `Defaults.properties`
 - Per-combo overrides written
+- `asFields()` row (name + group)
 - Whether DI passthrough was added
 - Test status (both commands green)
 

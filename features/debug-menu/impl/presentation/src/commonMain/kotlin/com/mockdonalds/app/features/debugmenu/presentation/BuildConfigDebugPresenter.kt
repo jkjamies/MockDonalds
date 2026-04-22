@@ -1,6 +1,8 @@
 package com.mockdonalds.app.features.debugmenu.presentation
 
 import androidx.compose.runtime.Composable
+import com.mockdonalds.app.core.buildconfig.AppBuildConfig
+import com.mockdonalds.app.core.buildconfig.asFields
 import com.mockdonalds.app.core.centerpost.CenterPostDispatchers
 import com.mockdonalds.app.core.centerpost.rememberCenterPost
 import com.mockdonalds.app.features.debugmenu.api.navigation.BuildConfigDebugScreen
@@ -15,10 +17,12 @@ import dev.zacsweers.metro.Inject
 fun BuildConfigDebugPresenter(
     navigator: Navigator,
     dispatchers: CenterPostDispatchers,
+    buildConfig: AppBuildConfig,
 ): BuildConfigDebugUiState {
     rememberCenterPost(dispatchers)
 
     return BuildConfigDebugUiState(
+        fields = buildConfig.asFields(),
         eventSink = { event ->
             when (event) {
                 is BuildConfigDebugEvent.BackClicked -> navigator.pop()

@@ -44,6 +44,7 @@ kotlin {
                 }
             export(project(":core:circuit"))
             export(project(":core:feature-flag:impl"))
+            export(project(":core:build-config:api"))
         }
     }
 

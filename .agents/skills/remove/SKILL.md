@@ -83,8 +83,8 @@ Remove in reverse dependency order (consumers first, then providers):
 
 ### 6. Clean Up Feature Flags and Config
 
-- Remove `FeatureFlag` definitions for the deleted feature
-- Remove build-config fields only used by the deleted feature (verify no other consumers first)
+- Remove `FeatureFlag` definitions **and** their `FeatureFlagDefinition` `@ContributesIntoSet` classes for the deleted feature — otherwise the debug-menu flag viewer keeps showing orphan rows
+- Remove build-config fields only used by the deleted feature (verify no other consumers first); if a field is removed, also delete its row in `AppBuildConfig.asFields()` or the coverage test will fail
 - Remove analytics event classes for the deleted feature
 
 ### 7. Update Documentation

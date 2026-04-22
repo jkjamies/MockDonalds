@@ -1,5 +1,6 @@
 package com.mockdonalds.app.features.debugmenu.presentation
 
+import com.mockdonalds.app.core.buildconfig.test.FakeAppBuildConfig
 import com.mockdonalds.app.core.test.TestCenterPostDispatchers
 import com.mockdonalds.app.features.debugmenu.api.navigation.BuildConfigDebugScreen
 import com.slack.circuit.test.FakeNavigator
@@ -12,14 +13,21 @@ class BuildConfigDebugPresenterTest : BehaviorSpec({
         val dispatchers = TestCenterPostDispatchers()
 
         When("the presenter emits state") {
-            Then("it should expose an event sink") {
+            Then("it should expose every AppBuildConfig field") {
                 val navigator = FakeNavigator(BuildConfigDebugScreen, BuildConfigDebugScreen)
+                val buildConfig = FakeAppBuildConfig()
                 presenterTestOf(
                     presentFunction = {
-                        BuildConfigDebugPresenter(navigator = navigator, dispatchers = dispatchers)
+                        BuildConfigDebugPresenter(
+                            navigator = navigator,
+                            dispatchers = dispatchers,
+                            buildConfig = buildConfig,
+                        )
                     },
                 ) {
-                    awaitItem()
+                    val state = awaitItem()
+                    assert(state.fields.map { it.name }.contains("appId"))
+                    assert(state.fields.first { it.name == "baseUrl" }.value == buildConfig.baseUrl)
                     cancelAndIgnoreRemainingEvents()
                 }
             }
@@ -30,7 +38,11 @@ class BuildConfigDebugPresenterTest : BehaviorSpec({
                 val navigator = FakeNavigator(BuildConfigDebugScreen)
                 presenterTestOf(
                     presentFunction = {
-                        BuildConfigDebugPresenter(navigator = navigator, dispatchers = dispatchers)
+                        BuildConfigDebugPresenter(
+                            navigator = navigator,
+                            dispatchers = dispatchers,
+                            buildConfig = FakeAppBuildConfig(),
+                        )
                     },
                 ) {
                     val state = awaitItem()

@@ -1,5 +1,9 @@
 package com.mockdonalds.app.features.debugmenu.presentation
 
+import com.mockdonalds.app.core.featureflag.FeatureFlag
+import com.mockdonalds.app.core.featureflag.FeatureFlagDefinition
+import com.mockdonalds.app.core.featureflag.FlagLifecycle
+import com.mockdonalds.app.core.featureflag.test.FakeFeatureFlagProvider
 import com.mockdonalds.app.core.test.TestCenterPostDispatchers
 import com.mockdonalds.app.features.debugmenu.api.navigation.FeatureFlagsDebugScreen
 import com.slack.circuit.test.FakeNavigator
@@ -11,15 +15,54 @@ class FeatureFlagsDebugPresenterTest : BehaviorSpec({
     Given("a feature flags debug presenter") {
         val dispatchers = TestCenterPostDispatchers()
 
-        When("the presenter emits state") {
-            Then("it should expose an event sink") {
+        When("no flags are registered") {
+            Then("it should expose an empty row list") {
                 val navigator = FakeNavigator(FeatureFlagsDebugScreen, FeatureFlagsDebugScreen)
                 presenterTestOf(
                     presentFunction = {
-                        FeatureFlagsDebugPresenter(navigator = navigator, dispatchers = dispatchers)
+                        FeatureFlagsDebugPresenter(
+                            navigator = navigator,
+                            dispatchers = dispatchers,
+                            definitions = emptySet(),
+                            featureFlags = FakeFeatureFlagProvider(),
+                        )
                     },
                 ) {
+                    val state = awaitItem()
+                    assert(state.rows.isEmpty())
+                    cancelAndIgnoreRemainingEvents()
+                }
+            }
+        }
+
+        When("flags are registered") {
+            Then("rows should reflect the definitions sorted by owner then key") {
+                val navigator = FakeNavigator(FeatureFlagsDebugScreen, FeatureFlagsDebugScreen)
+                val flagA = FeatureFlag(key = "order.new_checkout", defaultValue = false)
+                val flagB = FeatureFlag(key = "account.new_profile", defaultValue = true)
+                val provider = FakeFeatureFlagProvider()
+                provider.setEnabled(flagA, enabled = true)
+                presenterTestOf(
+                    presentFunction = {
+                        FeatureFlagsDebugPresenter(
+                            navigator = navigator,
+                            dispatchers = dispatchers,
+                            definitions = setOf(
+                                TestFlagDefinition(flagA, "new checkout", "order", FlagLifecycle.Experiment),
+                                TestFlagDefinition(flagB, "new profile", "account", FlagLifecycle.KillSwitch),
+                            ),
+                            featureFlags = provider,
+                        )
+                    },
+                ) {
+                    // rememberFlag seeds State with flag.defaultValue, then recomposes once the
+                    // MutableStateFlow-backed observe(...) emits. Skip the initial-defaults frame
+                    // and assert against the converged state.
                     awaitItem()
+                    val state = awaitItem()
+                    assert(state.rows.map { it.key } == listOf("account.new_profile", "order.new_checkout"))
+                    assert(state.rows.first { it.key == flagA.key }.enabled)
+                    assert(state.rows.first { it.key == flagB.key }.enabled)
                     cancelAndIgnoreRemainingEvents()
                 }
             }
@@ -30,7 +73,12 @@ class FeatureFlagsDebugPresenterTest : BehaviorSpec({
                 val navigator = FakeNavigator(FeatureFlagsDebugScreen)
                 presenterTestOf(
                     presentFunction = {
-                        FeatureFlagsDebugPresenter(navigator = navigator, dispatchers = dispatchers)
+                        FeatureFlagsDebugPresenter(
+                            navigator = navigator,
+                            dispatchers = dispatchers,
+                            definitions = emptySet(),
+                            featureFlags = FakeFeatureFlagProvider(),
+                        )
                     },
                 ) {
                     val state = awaitItem()
@@ -42,3 +90,10 @@ class FeatureFlagsDebugPresenterTest : BehaviorSpec({
         }
     }
 })
+
+private data class TestFlagDefinition(
+    override val flag: FeatureFlag,
+    override val description: String,
+    override val owner: String,
+    override val lifecycle: FlagLifecycle,
+) : FeatureFlagDefinition

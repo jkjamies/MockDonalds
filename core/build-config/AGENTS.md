@@ -21,6 +21,7 @@ The api module is contract-only (no Metro, no BuildKonfig). Only `impl` rebuilds
 | Type | Where | Role |
 |------|-------|------|
 | `AppBuildConfig` | `api` | Public interface; 14 `val`s (`appName`, `appId`, `market`, `env`, `buildType`, `baseUrl`, `cdnUrl`, `menuBaseUrl`, `orderBaseUrl`, `accountBaseUrl`, `rewardsBaseUrl`, `storeBaseUrl`, `locale`, `currency`) plus the extension `val AppBuildConfig.isDebug: Boolean get() = buildType == "debug"` |
+| `BuildConfigField` | `api` | Data class (`name`, `value`, `group: Group`) plus enumeration extension `fun AppBuildConfig.asFields(): List<BuildConfigField>`. Powers the debug-menu build-config viewer and any future read-only dumpers. `Group` is `Identity`, `Urls`, or `Localization`. Completeness is Konsist-enforced (`BuildConfigCoverageTest`) — every property on the interface must appear in `asFields()`. |
 | `AppBuildConfigImpl` | `impl` | Production binding — reads every field from the generated `BuildConfig` |
 | `BuildConfig` | `impl` (generated) | Internal BuildKonfig object — never imported outside `impl` (Konsist-enforced by `BuildConfigImportTest`) |
 | `FakeAppBuildConfig` | `test` | Test binding — all fields are `var`s with valid default values (`buildType = "debug"` by default); override per test |
@@ -108,7 +109,8 @@ The `add-market` skill (`.agents/skills/add-market/SKILL.md`) automates steps 1�
 3. Expose it on `AppBuildConfig` in `api/src/commonMain/kotlin/…/AppBuildConfig.kt`.
 4. Override it in `AppBuildConfigImpl` in `impl/src/commonMain/kotlin/…/AppBuildConfigImpl.kt`.
 5. Add a sensible default + corresponding `var` override in `FakeAppBuildConfig` (`test/src/commonMain/…`) so test graphs stay green.
-6. Consume via `AppBuildConfig.fieldName` (injected via Metro).
+6. Append the new field to `asFields()` in `api/src/commonMain/kotlin/…/BuildConfigField.kt`, picking the right `Group` (`Identity`, `Urls`, or `Localization`). Without this, the debug-menu build-config viewer will not surface the field and `BuildConfigCoverageTest` will fail.
+7. Consume via `AppBuildConfig.fieldName` (injected via Metro).
 
 ## Quick commands
 

@@ -12,6 +12,10 @@ kotlin {
             api(project(":features:debug-menu:api:domain"))
             api(project(":features:debug-menu:api:navigation"))
             api(project(":core:test-fixtures"))
+            api(project(":core:feature-flag:api"))
+            api(project(":core:feature-flag:test"))
+            api(project(":core:build-config:api"))
+            api(project(":core:build-config:test"))
         }
     }
 }

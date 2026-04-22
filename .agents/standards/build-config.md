@@ -112,6 +112,7 @@ core/build-config/
   api/
     build.gradle.kts                          kmp.library; zero runtime deps — pure interface surface
     src/commonMain/kotlin/.../AppBuildConfig.kt      public facade interface — the ONLY consumer surface
+    src/commonMain/kotlin/.../BuildConfigField.kt    enumeration adapter (name, value, Group) + AppBuildConfig.asFields() for the debug-menu viewer
   impl/
     build.gradle.kts                          applies BuildKonfig + validateAllMarkets; merges Defaults + combo; emits internal BuildConfig
     Defaults.properties                       shared defaults, every field MUST have an entry here
@@ -196,8 +197,9 @@ Manually:
 3. Add the property to the `AppBuildConfig` **interface** in `AppBuildConfig.kt`.
 4. Implement the property in `AppBuildConfigImpl.kt` reading from the generated `BuildConfig` constant.
 5. Add an assertion to `AppBuildConfigTest.kt` that references `config.<field>`. The Konsist `BuildConfigCoverageTest` **fails the build** if you skip this step.
-6. If the field needs independent injection (e.g. as its own sub-type), introduce a new interface + `@ContributesBinding` impl alongside `AppBuildConfigImpl`. Most fields don't need this — consumers already get the whole `AppBuildConfig` injected.
-7. `./gradlew :core:build-config:impl:testAndroidHostTest :testing:architecture-check:test` — both must pass.
+6. Append a `BuildConfigField(<name>, <property>, Group.<group>)` row to `AppBuildConfig.asFields()` in `core/build-config/api/src/commonMain/.../BuildConfigField.kt`. Pick the group (`Identity` / `Urls` / `Localization`) that matches the field. `BuildConfigCoverageTest` also reflects over the interface and fails if any property is missing from `asFields()` — this is how the debug-menu build-config viewer stays in sync without codegen.
+7. If the field needs independent injection (e.g. as its own sub-type), introduce a new interface + `@ContributesBinding` impl alongside `AppBuildConfigImpl`. Most fields don't need this — consumers already get the whole `AppBuildConfig` injected.
+8. `./gradlew :core:build-config:impl:testAndroidHostTest :testing:architecture-check:test` — both must pass.
 
 **Exception — system-level fields.** Fields derived from Gradle properties (not `.properties` files) skip steps 1–2 and emit directly in `impl/build.gradle.kts` via `buildConfigField(type, "KEY", value)`. Current example: `BUILD_TYPE` is resolved through the three-rung Selection chain (explicit `-PbuildType` → AGP variant task name → debug default) and emitted outside the `Defaults.properties` merge. Still follow steps 3–5 for interface exposure, impl, and test coverage.
 
@@ -251,7 +253,7 @@ Same shape as a market, but multiplied the other way: 5 new `*-{env}.properties`
 
 ## Enforced rules (Konsist + code review)
 
-1. **Facade coverage** — `BuildConfigCoverageTest` reflects over `AppBuildConfig`'s properties and asserts every one is referenced in `AppBuildConfigTest.kt`. Adding a field without a test fails arch-check.
+1. **Facade coverage** — `BuildConfigCoverageTest` reflects over `AppBuildConfig`'s properties and asserts every one is (a) referenced in `AppBuildConfigTest.kt` and (b) present in `AppBuildConfig.asFields()`. Adding a field without a test or without an `asFields()` row fails arch-check.
 2. **No direct `BuildConfig` / `AppBuildConfigImpl` imports outside `:core:build-config:impl`** — `BuildConfigImportTest` enforces this. The facade boundary is structural: the api module has no BuildKonfig classpath, so even intra-module code in `:core:build-config:api` cannot reach the generated object.
 3. **No feature-flag-shaped field names** (`*Enabled`, `*Flag`, `*Toggle`) — those belong in Harness. (Konsist rule to add when the first violator appears; for now, review-enforced.)
 4. **Module must not depend on any feature module.** Enforced by existing core-isolation rules.
