@@ -31,7 +31,7 @@ If you pattern-match a field name like `*Enabled`, `*Flag`, `*Toggle`, `*Rollout
 
 - Facade interface: `core/build-config/api/src/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/AppBuildConfig.kt`
 - Production impl: `core/build-config/impl/src/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/AppBuildConfigImpl.kt` (bound via `@ContributesBinding(AppScope::class)` — no separate providers module)
-- Fake impl: `core/build-config/test/src/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/test/FakeAppBuildConfig.kt`
+- Fake impl: **auto-generated** by `:build-tooling:ksp-fake-app-build-config`; source lives at `core/build-config/test/build/generated/ksp/metadata/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/test/FakeAppBuildConfig.kt` after a build
 - Smoke test: `core/build-config/impl/src/commonTest/kotlin/com/mockdonalds/app/core/buildconfig/AppBuildConfigTest.kt`
 - Defaults: `core/build-config/impl/Defaults.properties`
 - Combo files: `core/build-config/impl/markets/{market}/{market}-{env}.properties` — 15 combos (5 markets × 3 envs: us/ca/de/au/core × int/mte/prod)
@@ -64,7 +64,7 @@ Ask the user for the default if it isn't obvious.
 
 List every file in `core/build-config/impl/markets/`. For each one, ask the user for the value (or confirm it should fall back to the default). Write `{KEY}={value}` to the file. Do this for **every** combo — a missing override is fine (falls back to default), but every combo file should be considered.
 
-When adding a new field, also update `FakeAppBuildConfig` in `core/build-config/test/src/commonMain/.../test/FakeAppBuildConfig.kt` so tests that inject it see a sensible default.
+**`FakeAppBuildConfig` — nothing to do.** The fake in `:core:build-config:test` is auto-generated from the `AppBuildConfig` interface by `:build-tooling:ksp-fake-app-build-config`. Every property becomes an `override var` seeded with a type-empty default (`""` / `0` / `false`). Tests that care about a specific value mutate it directly (e.g. `fake.baseUrl = "https://…"`); tests that don't care inherit the empty default.
 
 Suggested flow: print the full matrix to the user in one message:
 
@@ -81,11 +81,19 @@ Let them fill in the blanks or say "use default everywhere."
 
 ### 4. Expose on `AppBuildConfig` (two files)
 
-**a. Add the abstract property to the interface** in `AppBuildConfig.kt`:
+**a. Add the abstract property to the interface** in `AppBuildConfig.kt`, **annotated with `@DebugConfigField(Group.…)`**:
 
 ```kotlin
-val privacyPolicyUrl: String
+@DebugConfigField(Group.Urls) val privacyPolicyUrl: String
 ```
+
+The annotation is mandatory: the KSP registry processor (`:build-tooling:ksp-build-config-registry`) reads it and auto-generates the debug-menu listing. Missing it fails the build with an explicit error, and `BuildConfigCoverageTest` flags it at the Konsist layer first. Pick the right group:
+
+- `Identity` — appName, appId, market, env, buildType, anything that identifies the binary
+- `Urls` — any `*Url` / base URL / endpoint
+- `Localization` — locale, currency, anything region-sensitive
+
+If none fit, add a new variant to `BuildConfigField.Group` **before** annotating.
 
 **b. Override it in the production impl** in `AppBuildConfigImpl.kt`:
 
@@ -132,20 +140,15 @@ Then("someFlag matches the expected bool shape") {
 
 If none of these fit, write a real assertion on the value's shape. The goal is *coverage existed*, not perfect validation.
 
-### 6. Add the field to `asFields()`
+### 6. Debug-menu listing — nothing to do
 
-`BuildConfigField.kt` (same package as `AppBuildConfig` in the api module) exposes `AppBuildConfig.asFields(): List<BuildConfigField>` — the enumeration adapter the debug-menu build-config viewer reads. Append a row for the new field, picking the group that matches:
+The KSP processor at `:build-tooling:ksp-build-config-registry` reads `@DebugConfigField` annotations on `AppBuildConfig` and auto-generates `BuildConfigField.kt`'s `asFields()` at compile time. As long as step 4a's annotation is present, the new field will appear in the build-config debug menu on next build — no edit to `BuildConfigField.kt` required.
 
-```kotlin
-fun AppBuildConfig.asFields(): List<BuildConfigField> = listOf(
-    // ...existing rows...
-    BuildConfigField("privacyPolicyUrl", privacyPolicyUrl, BuildConfigField.Group.Urls),
-)
-```
+The generated file lives at `core/build-config/api/build/generated/ksp/metadata/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/BuildConfigFieldRegistry.kt` (inspect it to confirm the new row landed).
 
-Groups today: `Identity` (appName, appId, market, env, buildType), `Urls` (any `*Url`), `Localization` (locale, currency). Add a new enum variant if none fit — but first ask whether the field really needs its own group.
-
-`BuildConfigCoverageTest` reflects over `AppBuildConfig` and fails the build if any interface property is missing from `asFields()`, so this step is not optional.
+Konsist backstops:
+- `BuildConfigCoverageTest` — fast failure if the annotation is missing
+- `BuildConfigRegistryIntegrityTest` — prevents misuse (annotation on non-`AppBuildConfig` types, hand-rolled list reverts, generated-function shadowing)
 
 ### 7. Decide on DI exposure
 
@@ -155,14 +158,18 @@ Only add a dedicated `@Provides` fun if the field needs to be injected as its ow
 
 ### 8. Verify
 
-Run both in parallel:
+Run in parallel:
 
 ```bash
+./gradlew :core:build-config:api:build
 ./gradlew :core:build-config:impl:testAndroidHostTest
-./gradlew :testing:architecture-check:test --tests "com.mockdonalds.app.konsist.core.BuildConfigCoverageTest"
+./gradlew :testing:architecture-check:test --tests "com.mockdonalds.app.konsist.core.BuildConfig*"
 ```
 
-Both must pass. If the coverage test fails, the most likely cause is that the test assertion doesn't literally contain `config.<fieldName>` — fix the assertion text, don't weaken the rule.
+All three must pass. Common failure modes:
+- **KSP error on `:core:build-config:api:build`** → the new property is missing `@DebugConfigField(Group.…)`. Add the annotation.
+- **`BuildConfigCoverageTest` fails** with "properties without @DebugConfigField" → same fix.
+- **`BuildConfigCoverageTest` fails** with "missing assertions" → the smoke test doesn't reference `config.<fieldName>`. Fix the assertion text, don't weaken the rule.
 
 Then build one non-default combo end-to-end to prove the field bakes in:
 

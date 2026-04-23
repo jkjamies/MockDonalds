@@ -1,0 +1,163 @@
+package com.mockdonalds.app.buildtooling.ksp.buildconfig
+
+import com.google.devtools.ksp.getDeclaredProperties
+import com.google.devtools.ksp.processing.CodeGenerator
+import com.google.devtools.ksp.processing.Dependencies
+import com.google.devtools.ksp.processing.KSPLogger
+import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.processing.SymbolProcessor
+import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSAnnotation
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSPropertyDeclaration
+import com.google.devtools.ksp.symbol.KSType
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.LIST
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import java.io.OutputStreamWriter
+
+/**
+ * Generates `fun AppBuildConfig.generatedFields(): List<BuildConfigField>` from the `AppBuildConfig`
+ * interface. Every property on the interface must be annotated with `@DebugConfigField(Group.…)`;
+ * the processor fails the build with a precise error if any property is missing it.
+ */
+class BuildConfigRegistryProcessor(
+    private val codeGenerator: CodeGenerator,
+    private val logger: KSPLogger,
+) : SymbolProcessor {
+
+    private var generated = false
+
+    override fun process(resolver: Resolver): List<KSAnnotated> {
+        if (generated) return emptyList()
+
+        val facade = resolver.findClass(APP_BUILD_CONFIG_FQN) ?: return emptyList()
+
+        val properties = facade.getDeclaredProperties().toList()
+        if (properties.isEmpty()) {
+            logger.error("AppBuildConfig has no declared properties — schema empty.", facade)
+            return emptyList()
+        }
+
+        val rows = mutableListOf<RegistryRow>()
+        var hasError = false
+        for (property in properties) {
+            val propertyName = property.simpleName.asString()
+            val annotation = property.findDebugConfigFieldAnnotation()
+            if (annotation == null) {
+                logger.error(
+                    "AppBuildConfig.$propertyName is missing @DebugConfigField(group = …). " +
+                        "Every property on AppBuildConfig must declare a group so the debug menu can list it.",
+                    property,
+                )
+                hasError = true
+                continue
+            }
+            val group = annotation.groupArgument()
+            if (group == null) {
+                logger.error(
+                    "@DebugConfigField on AppBuildConfig.$propertyName has no readable group argument.",
+                    property,
+                )
+                hasError = true
+                continue
+            }
+            rows += RegistryRow(name = propertyName, group = group)
+        }
+
+        if (hasError) return emptyList()
+
+        writeFile(rows, containingFile = facade)
+        generated = true
+        return emptyList()
+    }
+
+    private fun Resolver.findClass(fqn: String): KSClassDeclaration? =
+        getClassDeclarationByName(getKSNameFromString(fqn))
+
+    private fun KSPropertyDeclaration.findDebugConfigFieldAnnotation(): KSAnnotation? =
+        annotations.firstOrNull { annotation ->
+            val decl = annotation.annotationType.resolve().declaration
+            decl.qualifiedName?.asString() == DEBUG_CONFIG_FIELD_FQN
+        }
+
+    private fun KSAnnotation.groupArgument(): String? {
+        val value = arguments.firstOrNull { it.name?.asString() == "group" }?.value
+            ?: arguments.firstOrNull()?.value
+            ?: return null
+        return when (value) {
+            is KSType -> value.declaration.simpleName.asString()
+            else -> value.toString().substringAfterLast('.')
+        }
+    }
+
+    private fun writeFile(rows: List<RegistryRow>, containingFile: KSClassDeclaration) {
+        val appBuildConfig = ClassName(PACKAGE, "AppBuildConfig")
+        val buildConfigField = ClassName(PACKAGE, "BuildConfigField")
+        val group = buildConfigField.nestedClass("Group")
+        val returnType = LIST.parameterizedBy(buildConfigField)
+
+        val body = CodeBlock.builder().apply {
+            add("return listOf(\n")
+            indent()
+            rows.forEach { row ->
+                addStatement(
+                    "%T(%S, %L, %T.%L),",
+                    buildConfigField,
+                    row.name,
+                    row.name,
+                    group,
+                    row.group,
+                )
+            }
+            unindent()
+            add(")")
+        }.build()
+
+        val function = FunSpec.builder("generatedFields")
+            .addModifiers(KModifier.INTERNAL)
+            .receiver(appBuildConfig)
+            .returns(returnType)
+            .addKdoc(
+                "Auto-generated by BuildConfigRegistryProcessor. Do not edit by hand — " +
+                    "annotate AppBuildConfig properties with @DebugConfigField to update this list.",
+            )
+            .addCode(body)
+            .build()
+
+        val file = FileSpec.builder(PACKAGE, GENERATED_FILE_NAME)
+            .addFileComment("Generated by BuildConfigRegistryProcessor. Do not edit.")
+            .addFunction(function)
+            .build()
+
+        val containing = containingFile.containingFile
+        val dependencies = if (containing != null) {
+            Dependencies(aggregating = false, containing)
+        } else {
+            Dependencies(aggregating = true)
+        }
+
+        codeGenerator.createNewFile(
+            dependencies = dependencies,
+            packageName = PACKAGE,
+            fileName = GENERATED_FILE_NAME,
+        ).use { stream ->
+            OutputStreamWriter(stream, Charsets.UTF_8).use { writer ->
+                file.writeTo(writer)
+            }
+        }
+    }
+
+    private data class RegistryRow(val name: String, val group: String)
+
+    private companion object {
+        const val PACKAGE = "com.mockdonalds.app.core.buildconfig"
+        const val APP_BUILD_CONFIG_FQN = "$PACKAGE.AppBuildConfig"
+        const val DEBUG_CONFIG_FIELD_FQN = "$PACKAGE.DebugConfigField"
+        const val GENERATED_FILE_NAME = "BuildConfigFieldRegistry"
+    }
+}

@@ -1,20 +1,22 @@
 package com.mockdonalds.app.core.buildconfig
 
+import com.mockdonalds.app.core.buildconfig.BuildConfigField.Group
+
 interface AppBuildConfig {
-    val appName: String
-    val appId: String
-    val market: String
-    val env: String
-    val buildType: String
-    val baseUrl: String
-    val cdnUrl: String
-    val menuBaseUrl: String
-    val orderBaseUrl: String
-    val accountBaseUrl: String
-    val rewardsBaseUrl: String
-    val storeBaseUrl: String
-    val locale: String
-    val currency: String
+    @DebugConfigField(Group.Identity) val appName: String
+    @DebugConfigField(Group.Identity) val appId: String
+    @DebugConfigField(Group.Identity) val market: String
+    @DebugConfigField(Group.Identity) val env: String
+    @DebugConfigField(Group.Identity) val buildType: String
+    @DebugConfigField(Group.Urls) val baseUrl: String
+    @DebugConfigField(Group.Urls) val cdnUrl: String
+    @DebugConfigField(Group.Urls) val menuBaseUrl: String
+    @DebugConfigField(Group.Urls) val orderBaseUrl: String
+    @DebugConfigField(Group.Urls) val accountBaseUrl: String
+    @DebugConfigField(Group.Urls) val rewardsBaseUrl: String
+    @DebugConfigField(Group.Urls) val storeBaseUrl: String
+    @DebugConfigField(Group.Localization) val locale: String
+    @DebugConfigField(Group.Localization) val currency: String
 }
 
 val AppBuildConfig.isDebug: Boolean get() = buildType == "debug"

@@ -17,6 +17,10 @@ dependencyResolutionManagement {
 
 rootProject.name = "MockDonalds"
 
+// Build tooling (JVM-only, not part of the shipped app)
+include(":build-tooling:ksp-build-config-registry")
+include(":build-tooling:ksp-fake-app-build-config")
+
 // App
 include(":androidApp")
 include(":composeApp")

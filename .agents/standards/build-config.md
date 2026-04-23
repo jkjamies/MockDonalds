@@ -111,8 +111,9 @@ Selection flows through two paths that converge in `core:build-config:impl`'s re
 core/build-config/
   api/
     build.gradle.kts                          kmp.library; zero runtime deps — pure interface surface
-    src/commonMain/kotlin/.../AppBuildConfig.kt      public facade interface — the ONLY consumer surface
-    src/commonMain/kotlin/.../BuildConfigField.kt    enumeration adapter (name, value, Group) + AppBuildConfig.asFields() for the debug-menu viewer
+    src/commonMain/kotlin/.../AppBuildConfig.kt      public facade interface — the ONLY consumer surface; every property carries @DebugConfigField(Group.…)
+    src/commonMain/kotlin/.../BuildConfigField.kt    enumeration adapter (name, value, Group); AppBuildConfig.asFields() delegates to the KSP-generated generatedFields() extension
+    src/commonMain/kotlin/.../DebugConfigField.kt    source-retention annotation consumed by :build-tooling:ksp-build-config-registry
   impl/
     build.gradle.kts                          applies BuildKonfig + validateAllMarkets; merges Defaults + combo; emits internal BuildConfig
     Defaults.properties                       shared defaults, every field MUST have an entry here
@@ -125,8 +126,9 @@ core/build-config/
     src/commonMain/kotlin/.../AppBuildConfigImpl.kt  binds the facade; reads from generated internal BuildConfig
     src/commonTest/kotlin/.../AppBuildConfigTest.kt  Phase 1 smoke test, must reference every field
   test/
-    build.gradle.kts                          kmp.domain; depends on :core:build-config:api
-    src/commonMain/kotlin/.../test/FakeAppBuildConfig.kt   @ContributesBinding test double, mutable var fields
+    build.gradle.kts                          kmp.domain; depends on :core:build-config:api; consumes :build-tooling:ksp-fake-app-build-config
+    src/commonMain/kotlin/.../test/package.kt                anchor file for KSP commonMain (FakeAppBuildConfig is auto-generated)
+    build/generated/ksp/metadata/commonMain/kotlin/.../test/FakeAppBuildConfig.kt   generated @ContributesBinding test double, mutable var fields, type-empty defaults
 
 iosApp/Configuration/
   Base.xcconfig                               shared base (deployment target, bundle-id = com.mockdonalds.app.$(MARKET))
@@ -149,15 +151,17 @@ BuildKonfig generates `internal object BuildConfig` in the `:core:build-config:i
 
 ```kotlin
 // Public contract — every consumer depends on this.
+// Every property must carry @DebugConfigField(Group.…); the KSP processor uses it
+// to generate the debug-menu registry at compile time.
 interface AppBuildConfig {
-    val appName: String
-    val market: String
-    val env: String
-    val buildType: String      // "debug" | "release"; use the `isDebug` extension below
-    val baseUrl: String
-    val cdnUrl: String
-    val locale: String
-    val currency: String
+    @DebugConfigField(Group.Identity)     val appName: String
+    @DebugConfigField(Group.Identity)     val market: String
+    @DebugConfigField(Group.Identity)     val env: String
+    @DebugConfigField(Group.Identity)     val buildType: String   // "debug" | "release"; use `isDebug`
+    @DebugConfigField(Group.Urls)         val baseUrl: String
+    @DebugConfigField(Group.Urls)         val cdnUrl: String
+    @DebugConfigField(Group.Localization) val locale: String
+    @DebugConfigField(Group.Localization) val currency: String
 }
 
 // Canonical runtime check — prefer this over comparing buildType strings directly.
@@ -194,12 +198,14 @@ Manually:
 
 1. Add the key to `Defaults.properties` with a safe default.
 2. Override per combo in every `markets/*.properties` where it differs. If the field has no sensible default, set it in every combo file and leave `Defaults.properties` blank — the Phase 1 test will catch empty required fields.
-3. Add the property to the `AppBuildConfig` **interface** in `AppBuildConfig.kt`.
+3. Add the property to the `AppBuildConfig` **interface** in `AppBuildConfig.kt`, **annotated with `@DebugConfigField(Group.…)`**. Pick the group (`Identity` / `Urls` / `Localization`) that matches the field — the KSP processor at `:build-tooling:ksp-build-config-registry` reads this annotation and emits the debug-menu row at compile time. Missing it fails the build.
 4. Implement the property in `AppBuildConfigImpl.kt` reading from the generated `BuildConfig` constant.
 5. Add an assertion to `AppBuildConfigTest.kt` that references `config.<field>`. The Konsist `BuildConfigCoverageTest` **fails the build** if you skip this step.
-6. Append a `BuildConfigField(<name>, <property>, Group.<group>)` row to `AppBuildConfig.asFields()` in `core/build-config/api/src/commonMain/.../BuildConfigField.kt`. Pick the group (`Identity` / `Urls` / `Localization`) that matches the field. `BuildConfigCoverageTest` also reflects over the interface and fails if any property is missing from `asFields()` — this is how the debug-menu build-config viewer stays in sync without codegen.
+6. `FakeAppBuildConfig` is auto-generated by `:build-tooling:ksp-fake-app-build-config` — nothing to do. Every new property becomes an `override var` seeded with a type-empty default (`""` / `0` / `false`). Tests that care about a non-empty value mutate the fake directly (`fake.<field> = "…"`).
 7. If the field needs independent injection (e.g. as its own sub-type), introduce a new interface + `@ContributesBinding` impl alongside `AppBuildConfigImpl`. Most fields don't need this — consumers already get the whole `AppBuildConfig` injected.
-8. `./gradlew :core:build-config:impl:testAndroidHostTest :testing:architecture-check:test` — both must pass.
+8. `./gradlew :core:build-config:api:build :core:build-config:impl:testAndroidHostTest :testing:architecture-check:test` — all three must pass. The first compiles the KSP registry and proves the annotation is present; the rest cover behavior and architectural invariants.
+
+**Debug-menu registry is generated** — there is no hand-maintained `asFields()` list. The KSP processor scans `AppBuildConfig`'s annotated properties at compile time and emits `internal fun AppBuildConfig.generatedFields(): List<BuildConfigField>` into `core/build-config/api/build/generated/ksp/metadata/commonMain/kotlin/`. `BuildConfigField.asFields()` delegates to it. Engineers never touch the generated file or `asFields()`.
 
 **Exception — system-level fields.** Fields derived from Gradle properties (not `.properties` files) skip steps 1–2 and emit directly in `impl/build.gradle.kts` via `buildConfigField(type, "KEY", value)`. Current example: `BUILD_TYPE` is resolved through the three-rung Selection chain (explicit `-PbuildType` → AGP variant task name → debug default) and emitted outside the `Defaults.properties` merge. Still follow steps 3–5 for interface exposure, impl, and test coverage.
 
@@ -253,11 +259,12 @@ Same shape as a market, but multiplied the other way: 5 new `*-{env}.properties`
 
 ## Enforced rules (Konsist + code review)
 
-1. **Facade coverage** — `BuildConfigCoverageTest` reflects over `AppBuildConfig`'s properties and asserts every one is (a) referenced in `AppBuildConfigTest.kt` and (b) present in `AppBuildConfig.asFields()`. Adding a field without a test or without an `asFields()` row fails arch-check.
-2. **No direct `BuildConfig` / `AppBuildConfigImpl` imports outside `:core:build-config:impl`** — `BuildConfigImportTest` enforces this. The facade boundary is structural: the api module has no BuildKonfig classpath, so even intra-module code in `:core:build-config:api` cannot reach the generated object.
-3. **No feature-flag-shaped field names** (`*Enabled`, `*Flag`, `*Toggle`) — those belong in Harness. (Konsist rule to add when the first violator appears; for now, review-enforced.)
-4. **Module must not depend on any feature module.** Enforced by existing core-isolation rules.
-5. **AGENTS.md** exists per module — `core/build-config/AGENTS.md` is required and Konsist-enforced.
+1. **Facade coverage** — `BuildConfigCoverageTest` reflects over `AppBuildConfig`'s properties and asserts every one is (a) referenced in `AppBuildConfigTest.kt` and (b) annotated with `@DebugConfigField`. Adding a field without a test assertion or without the annotation fails arch-check. The annotation check is a fast Konsist failure that fires before the KSP processor's compile-time error, so engineers see a clear message before hitting a generic KSP stack trace.
+2. **Registry integrity** — `BuildConfigRegistryIntegrityTest` locks down the KSP-generated registry against regression: `@DebugConfigField` is only valid on `AppBuildConfig` properties (any other use breaks the processor contract), `asFields()` must delegate via `= generatedFields()` and must not contain a hand-rolled `listOf(…)`, and no hand-written `AppBuildConfig.generatedFields()` may shadow the generator's output. This is how the pattern stays safe at 150+ engineers — the test catches accidental regressions before they ship.
+3. **No direct `BuildConfig` / `AppBuildConfigImpl` imports outside `:core:build-config:impl`** — `BuildConfigImportTest` enforces this. The facade boundary is structural: the api module has no BuildKonfig classpath, so even intra-module code in `:core:build-config:api` cannot reach the generated object.
+4. **No feature-flag-shaped field names** (`*Enabled`, `*Flag`, `*Toggle`) — those belong in Harness. (Konsist rule to add when the first violator appears; for now, review-enforced.)
+5. **Module must not depend on any feature module.** Enforced by existing core-isolation rules.
+6. **AGENTS.md** exists per module — `core/build-config/AGENTS.md` is required and Konsist-enforced.
 
 ## Validation rules
 
@@ -301,8 +308,11 @@ The split is deliberate: `validate-all-markets` runs in milliseconds against `.p
 - `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — shared `(market, env, buildType)` resolver consumed by both `:core:build-config:impl` and `:core:feature-flag:impl`; the `(us|ca|de|au|core)` and `(Int|Mte|Prod)` alternations live here
 - `core/build-config/test/build.gradle.kts` — test-fixtures module build script
 - `core/build-config/AGENTS.md` — module-level summary for agents
-- `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigCoverageTest.kt` — the facade coverage rule
+- `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigCoverageTest.kt` — the facade coverage rule (smoke-test refs + `@DebugConfigField` presence)
+- `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigRegistryIntegrityTest.kt` — locks down both KSP-generated artefacts: registry contract (no hand-rolled `listOf`, no shadow `generatedFields()`) and fake contract (no hand-written `FakeAppBuildConfig`)
 - `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigImportTest.kt` — the facade import boundary rule
+- `build-tooling/ksp-build-config-registry/` — the KSP processor that reads `@DebugConfigField` and emits `generatedFields()` into `:core:build-config:api`
+- `build-tooling/ksp-fake-app-build-config/` — the KSP processor that reads `AppBuildConfig` properties and emits `FakeAppBuildConfig` into `:core:build-config:test`
 - `iosApp/project.yml` — **source of truth** for the Xcode project; lists all 30 configs and per-target xcconfig bindings
 - `iosApp/Configuration/{market}/*.xcconfig` — iOS combo definitions
 - `iosApp/iosApp.xcodeproj/project.pbxproj` — generated by `xcodegen generate`; commit alongside `project.yml` changes but never hand-edit

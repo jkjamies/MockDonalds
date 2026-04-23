@@ -13,11 +13,13 @@ class BuildConfigCoverageTest : BehaviorSpec({
         val appBuildConfig = buildConfigFiles.firstOrNull { it.path.endsWith("AppBuildConfig.kt") }
         val testFile = buildConfigFiles.firstOrNull { it.path.endsWith("AppBuildConfigTest.kt") }
         val fieldsFile = buildConfigFiles.firstOrNull { it.path.endsWith("BuildConfigField.kt") }
+        val annotationFile = buildConfigFiles.firstOrNull { it.path.endsWith("DebugConfigField.kt") }
 
-        Then("the facade, its test file, and the enumeration file must exist") {
+        Then("the facade, its test file, the enumeration file, and the annotation must exist") {
             assert(appBuildConfig != null) { "AppBuildConfig.kt not found in core:build-config:api" }
             assert(testFile != null) { "AppBuildConfigTest.kt not found in core:build-config:impl" }
             assert(fieldsFile != null) { "BuildConfigField.kt not found in core:build-config:api" }
+            assert(annotationFile != null) { "DebugConfigField.kt not found in core:build-config:api" }
         }
 
         Then("every AppBuildConfig property must be referenced in AppBuildConfigTest") {
@@ -46,25 +48,22 @@ class BuildConfigCoverageTest : BehaviorSpec({
             }
         }
 
-        Then("every AppBuildConfig property must appear in asFields() enumeration") {
+        Then("every AppBuildConfig property must carry @DebugConfigField so the KSP registry can enumerate it") {
             val facade = appBuildConfig!!
-            val fields = fieldsFile!!
 
             val properties = facade.interfaces(includeNested = false)
                 .firstOrNull { it.name == "AppBuildConfig" }
                 ?.properties()
-                ?.map { it.name }
                 .orEmpty()
 
-            val fieldsText = fields.text
             val missing = properties.filterNot { prop ->
-                fieldsText.contains("\"$prop\"") && fieldsText.contains(", $prop,")
-            }
+                prop.annotations.any { it.name.endsWith("DebugConfigField") }
+            }.map { it.name }
 
             assert(missing.isEmpty()) {
-                "BuildConfigField.asFields() is missing entries for: ${missing.joinToString()}. " +
-                    "Every property on AppBuildConfig must appear in asFields() so the debug-menu " +
-                    "build-config viewer can enumerate it."
+                "AppBuildConfig properties without @DebugConfigField: ${missing.joinToString()}. " +
+                    "The KSP registry processor generates asFields() from this annotation; missing it fails " +
+                    "compilation with a generic KSP error. Annotating here gives a direct Konsist failure first."
             }
         }
     }
