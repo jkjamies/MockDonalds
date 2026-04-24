@@ -16,8 +16,11 @@ core/auth/impl  -> InMemoryAuthManager (DI-only, never imported directly)
 
 | Type | Module | Description |
 |------|--------|-------------|
-| `AuthManager` | api | Interface with `isAuthenticated: Boolean`, `login()`, `logout()` |
-| `InMemoryAuthManager` | impl | `@SingleIn(AppScope)` implementation bound via `@ContributesBinding` |
+| `AuthManager` | api | Interface — `isAuthenticated: Boolean`, `login()`, `logout()`, `suspend currentTokens(): AuthTokens?`, `suspend refresh(): AuthTokens?` |
+| `AuthTokens` | api | `data class` — `accessToken`, `refreshToken` |
+| `RefreshTokenSource` | api | `suspend fun refresh(refreshToken: String): AuthTokens?` — callable by `AuthManager.refresh()`; production impl swaps the stub for a real refresh endpoint |
+| `InMemoryAuthManager` | impl | `@SingleIn(AppScope)` `AuthManager` binding. Holds tokens in-memory; `refresh()` serializes concurrent callers via `Mutex` + `CompletableDeferred` so cross-client 401 bursts collapse to one upstream refresh |
+| `StubRefreshTokenSource` | impl | `@SingleIn(AppScope)` `RefreshTokenSource` binding. Returns `null`; present so the DI graph resolves until a real refresh client is wired |
 
 ## Usage
 
@@ -41,4 +44,4 @@ navigating to any `ProtectedScreen`.
 - Features MUST depend on `core:auth:api` only, never `core:auth:impl`
 - `impl` is wired exclusively through Metro `@ContributesBinding` in `AppScope`
 - Never call `login()`/`logout()` outside of auth-related presenters
-- Test code should use `FakeAuthManager` from `core:test-fixtures`
+- Test code should use `FakeAuthManager` and `FakeRefreshTokenSource` from `core:test-fixtures`

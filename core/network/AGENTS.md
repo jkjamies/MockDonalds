@@ -18,14 +18,14 @@ core/network/
 |------|-------------|
 | `HttpClientFactory` | `fun interface` — creates per-feature `HttpClient` instances via DSL config |
 | `ClientConfig` | DSL class — `baseUrl`, `authMode`, `requestTimeout`, `connectTimeout`, `socketTimeout`, `headers`, `ktorConfig` escape hatch |
-| `AuthMode` | Enum — `BEARER` (default, future: auto-refresh on 401) or `NONE` (public endpoints) |
+| `AuthMode` | Enum — `BEARER` (default) or `NONE` (public endpoints) |
 | `NetworkException` | Sealed class — `HttpError`, `Timeout`, `NoConnectivity`, `Serialization`, `Unknown` |
 
 ## Implementation (impl module)
 
 | Type | Description |
 |------|-------------|
-| `HttpClientFactoryImpl` | `@ContributesBinding` factory. Bakes in: JSON content negotiation, `X-App-Id` header, `X-Market` header, dev logging (non-prod), `HttpTimeout`. Features configure via DSL. |
+| `HttpClientFactoryImpl` | `@SingleIn(AppScope)` `@ContributesBinding` factory. Holds one base `HttpClient` whose engine is shared by every derived per-feature client (via `baseClient.config { }`). Bakes in: JSON content negotiation, `X-App-Id` header, `X-Market` header, dev logging (non-prod), `HttpTimeout`, and — when `AuthMode.BEARER` — Ktor's `Auth` plugin wired to `AuthManager`. Features configure via DSL. |
 | `JsonProvider` | `@ContributesTo` interface providing singleton `Json` instance with `ignoreUnknownKeys`, `isLenient`, `encodeDefaults`, `explicitNulls = false` |
 
 ## Usage
@@ -57,13 +57,11 @@ Per-service base URLs come from `AppBuildConfig` market properties (`menuBaseUrl
 - **X-Market header** — market code from `AppBuildConfig`
 - **HttpTimeout** — defaults: request 15s, connect 5s, socket 10s (overridable via DSL)
 - **Logging** — `LogLevel.HEADERS` in non-prod, `LogLevel.NONE` in prod
+- **Auth (bearer)** — installed when `AuthMode.BEARER`. `loadTokens`/`refreshTokens` delegate to `AuthManager`; cross-client refresh coordination lives in `AuthManager` (one refresh call for concurrent 401 bursts across clients). Skipped when `AuthMode.NONE`.
 
-## Future (stubbed/planned)
+## Shared Engine
 
-- **Auth (bearer + refresh)** — `AuthMode.BEARER` is declared but auth plugin not yet wired. Will integrate with `core:auth` `AuthManager` for token injection and 401 refresh with `Mutex`-coordinated concurrent refresh.
-- **Akamai headers** — always-on, every request. Plugin placeholder for SDK integration.
-- **Retry with backoff** — configurable retry policy.
-- **Error mapping** — HTTP errors mapped to `NetworkException` subtypes.
+The factory holds one `HttpClient` as its base. Each `create()` call returns a derived client via `baseClient.config { }`, which shares the underlying engine (connection pool, TLS config) with the base. Per-feature clients remain isolated for plugin/header/timeout configuration but do not duplicate engine resources.
 
 ## Rules
 

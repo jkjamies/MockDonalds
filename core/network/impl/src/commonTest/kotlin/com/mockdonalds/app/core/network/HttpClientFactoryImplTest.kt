@@ -1,6 +1,7 @@
 package com.mockdonalds.app.core.network
 
 import com.mockdonalds.app.core.buildconfig.AppBuildConfig
+import com.mockdonalds.app.core.test.FakeAuthManager
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -30,7 +31,8 @@ class HttpClientFactoryImplTest : BehaviorSpec({
         isLenient = true
     }
 
-    val factory = HttpClientFactoryImpl(appBuildConfig, json)
+    val authManager = FakeAuthManager()
+    val factory = HttpClientFactoryImpl(appBuildConfig, json, authManager)
 
     Given("a HttpClientFactoryImpl") {
 
@@ -81,6 +83,18 @@ class HttpClientFactoryImplTest : BehaviorSpec({
             Then("the escape hatch block is invoked") {
                 escapeHatchCalled shouldBe true
                 client.close()
+            }
+        }
+
+        When("creating multiple clients") {
+            val a = factory.create { baseUrl = "https://a.mockdonalds.com" }
+            val b = factory.create { baseUrl = "https://b.mockdonalds.com" }
+
+            Then("each is a distinct HttpClient sharing the same engine") {
+                a shouldNotBe b
+                a.engine shouldBe b.engine
+                a.close()
+                b.close()
             }
         }
     }
