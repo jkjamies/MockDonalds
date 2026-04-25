@@ -35,6 +35,7 @@ core/
   circuit/             — TabScreen, ProtectedScreen, FlowScreen, Parcelize expect/actual, CircuitProviders
   metro/               — AppGraph interface (shared DI contract)
   network/             — HttpClientFactory (api/) + impl with baked-in plugins (api/impl split)
+  strings/             — Android-only `R.string` resources populated by `pullTranslations` (Phrase). iOS reads its own `iosApp/iosApp/Resources/{locale}.lproj/` files.
   theme/               — MockDonaldsTheme, colors, typography, dimens, AdaptiveLayout
   test-fixtures/       — TestCenterPostDispatchers, KotestProjectConfig, StateRobot base
 ```
@@ -135,10 +136,11 @@ xcodebuild test -scheme iOSApp -testPlan E2ETests -destination '...'            
 
 | Plugin | Used By | Adds |
 |--------|---------|------|
-| `mockdonalds.kmp.library` | api modules | Base KMP setup, Kotest |
+| `mockdonalds.kmp.library` | api modules, single-target core modules | Base KMP setup, Kotest |
 | `mockdonalds.kmp.domain` | impl/domain modules | Metro DI (`@ContributesBinding`) |
 | `mockdonalds.kmp.data` | impl/data modules | Metro DI + kotlinx.serialization |
-| `mockdonalds.kmp.presentation` | impl/presentation modules | Compose Multiplatform + Circuit codegen |
+| `mockdonalds.kmp.presentation` | impl/presentation modules | Compose Multiplatform + Circuit codegen + auto-adds `core:strings` to `androidMain` |
+| `mockdonalds.phrase` | `core:strings` | Registers `pullTranslations` Gradle task pulling Phrase translations into Android XML + iOS `.lproj` files |
 
 ## Skills
 

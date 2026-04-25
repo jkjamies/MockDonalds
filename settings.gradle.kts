@@ -44,6 +44,7 @@ include(":core:metro")
 include(":core:build-config:api")
 include(":core:build-config:impl")
 include(":core:build-config:test")
+include(":core:strings")
 
 // Feature modules — auto-discovered, architecture-enforced submodules.
 // Debug-only features (e.g. `debug-menu`) are filtered at runtime via

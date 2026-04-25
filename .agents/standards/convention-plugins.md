@@ -9,8 +9,10 @@ mockdonalds.kmp.library (base)
   ├── mockdonalds.kmp.domain      = library + Metro DI
   ├── mockdonalds.kmp.data        = library + Metro DI + Serialization
   └── mockdonalds.kmp.presentation = library + Compose + Metro DI + Circuit codegen + Coil
+                                     + auto-wires core:strings on androidMain
 
 mockdonalds.detekt (applied transitively via library)
+mockdonalds.phrase  (standalone, applied only to core:strings — registers pullTranslations task)
 ```
 
 ## Critical: What NOT to Do in Feature build.gradle.kts
@@ -112,6 +114,38 @@ For `impl/presentation` modules. Provides:
   - `core:test-fixtures` (StateRobot base class)
   - `AndroidJUnitRunner` for instrumented tests
   - Disabled `copyAndroidDeviceTestComposeResourcesToAndroidAssets` (Compose Multiplatform 1.10.3 workaround)
+
+### `core:strings` auto-wiring
+
+`mockdonalds.kmp.presentation` adds `implementation(project(":core:strings"))` to every
+applying module's `androidMain` source set. Feature presentation `build.gradle.kts` files
+do **not** declare this dependency themselves — `stringResource(R.string.…)` is available
+in any Compose UI in `androidMain` without per-module setup. iOS source sets never see
+`core:strings`, so the iOS framework export stays untouched.
+
+## mockdonalds.phrase
+
+Applied only to `core:strings`. Registers the `pullTranslations` Gradle task
+(`PhraseTranslationTask` in `com.mockdonalds.buildlogic`) which pulls translations from
+the Phrase API and writes:
+
+- Android XML → `core/strings/src/androidMain/res/values{-locale}/strings.xml`
+- iOS `.strings` → `iosApp/iosApp/Resources/{locale}.lproj/Localizable.strings`
+
+Configuration reads (all optional, all driven from outside the build):
+
+- `phrase.projectId` Gradle property (set in `~/.gradle/gradle.properties` or `local.properties`)
+- `phrase.apiToken` Gradle property OR `PHRASE_API_TOKEN` environment variable — never committed
+- `-Pmarket=…` to select a market-scoped Phrase project bundle
+
+```bash
+./gradlew :core:strings:pullTranslations                # default market
+./gradlew :core:strings:pullTranslations -Pmarket=de    # specific market
+```
+
+The task currently throws a clear "skeleton — not wired to Phrase API" error; the HTTP
+call is the next milestone for localization. Outputs are declared as `@OutputDirectory`
+so Gradle's build cache can short-circuit re-runs once wired.
 
 ## mockdonalds.detekt
 

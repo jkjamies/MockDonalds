@@ -33,6 +33,7 @@ graph TB
         CircuitCore["circuit"]
         FeatureFlag["feature-flag (api/impl/test)"]
         Network["network (api/impl)"]
+        Strings["strings (Android-only resources, Phrase-fed)"]
         Theme["theme"]
         TestFixtures["test-fixtures"]
     end
@@ -96,6 +97,7 @@ MockDonalds/
 │   ├── network/
 │   │   ├── api/                        # HttpClientFactory, ClientConfig DSL, AuthMode, NetworkException
 │   │   └── impl/                       # HttpClientFactoryImpl (baked-in plugins), JsonProvider
+│   ├── strings/                        # Android R.string resources (Phrase-fed); iOS reads its own .lproj files in iosApp/
 │   ├── test-fixtures/                  # TestCenterPostDispatchers, KotestProjectConfig, StateRobot
 │   └── theme/                          # Design system (Colors, Theme, Dimens, Typography)
 │
@@ -122,7 +124,8 @@ MockDonalds/
         ├── mockdonalds.kmp.library.gradle.kts       # Base KMP (api modules)
         ├── mockdonalds.kmp.domain.gradle.kts        # KMP + Metro
         ├── mockdonalds.kmp.data.gradle.kts          # KMP + Metro + Serialization
-        └── mockdonalds.kmp.presentation.gradle.kts  # KMP + Compose + Metro + Circuit codegen
+        ├── mockdonalds.kmp.presentation.gradle.kts  # KMP + Compose + Metro + Circuit codegen + auto core:strings on androidMain
+        └── mockdonalds.phrase.gradle.kts            # pullTranslations task (Phrase → Android XML + iOS .lproj)
 ```
 
 ## Layer Dependency Rules
@@ -298,7 +301,8 @@ Note: `core:auth` currently exposes only `AuthManager` (interface) with no inter
 | `mockdonalds.kmp.library` | api/*, core/* | Base KMP (Android SDK 36/min 26, iOS targets, JVM 17), Parcelize, KSP, Kotest, Detekt, auto `:core:test-fixtures` in commonTest |
 | `mockdonalds.kmp.domain` | impl/domain | Everything in library + Metro DI (`@ContributesBinding` support) |
 | `mockdonalds.kmp.data` | impl/data | Everything in library + Metro DI + kotlinx.serialization |
-| `mockdonalds.kmp.presentation` | impl/presentation | Everything in library + Compose Multiplatform + Compose Compiler + Metro DI with Circuit codegen (`enableCircuitCodegen`), Circuit dependencies, Material3, Coil, androidDeviceTest support |
+| `mockdonalds.kmp.presentation` | impl/presentation | Everything in library + Compose Multiplatform + Compose Compiler + Metro DI with Circuit codegen (`enableCircuitCodegen`), Circuit dependencies, Material3, Coil, androidDeviceTest support, **auto-adds `core:strings` to `androidMain`** |
+| `mockdonalds.phrase` | `core:strings` | Registers the `pullTranslations` task (Phrase API → Android XML + iOS `.lproj/Localizable.strings`) |
 | `mockdonalds.detekt` | (transitive via library) | Detekt with `config/detekt/detekt.yml`, parallel execution, auto-correct, formatting plugin |
 
 ## Gradle Module Wiring

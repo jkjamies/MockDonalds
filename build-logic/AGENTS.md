@@ -40,8 +40,28 @@ For `impl/presentation` modules. Applies:
 - Metro DI with Circuit codegen enabled (`enableCircuitCodegen.set(true)`)
 - Circuit dependencies: foundation, runtime-presenter, retained, codegen-annotations, circuit-test (commonTest)
 - Android Compose UI: foundation, material3, ui, coil-compose
+- `core:strings` on `androidMain` (auto-wired so every feature can call `stringResource(R.string.…)` without per-module config)
 - androidDeviceTest: compose-ui-test-junit4, core:test-fixtures
 - Android device test instrumentation runner configured
+
+### mockdonalds.phrase.gradle.kts
+
+Applied only to `core:strings`. Registers the `pullTranslations` Gradle task (typed
+`PhraseTranslationTask` in `com.mockdonalds.buildlogic`). The task pulls translations
+from Phrase and writes:
+
+- Android XML to `core/strings/src/androidMain/res/values{-locale}/strings.xml`
+- iOS `.strings` to `iosApp/iosApp/Resources/{locale}.lproj/Localizable.strings`
+
+Inputs (all optional Gradle properties / env vars):
+
+- `phrase.projectId` — the Phrase project identifier
+- `phrase.apiToken` (or `PHRASE_API_TOKEN` env var) — auth token, never committed
+- `-Pmarket=…` — selects the market when Phrase is organized per market
+
+The task currently throws a clear "skeleton — not wired to Phrase API" error;
+implementing the HTTP call is the next milestone for localization. Outputs are declared
+as `@OutputDirectory` so Gradle's build cache can short-circuit re-runs.
 
 ### mockdonalds.detekt.gradle.kts
 
@@ -61,4 +81,5 @@ Applied transitively via `mockdonalds.kmp.library`. Configures:
 | impl/data | `mockdonalds.kmp.data` | features/home/impl/data |
 | impl/presentation | `mockdonalds.kmp.presentation` | features/home/impl/presentation |
 | core/* | `mockdonalds.kmp.library` | core/circuit, core/theme |
+| core/strings | `mockdonalds.kmp.library` + `mockdonalds.phrase` | core/strings |
 | test modules | `mockdonalds.kmp.domain` | features/home/test |

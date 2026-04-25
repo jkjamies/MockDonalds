@@ -55,7 +55,7 @@ features/{name}/
   test/                — Fakes for testing
 ```
 
-Core modules: `auth`, `build-config`, `centerpost`, `circuit`, `metro`, `network`, `theme`, `test-fixtures`
+Core modules: `auth`, `build-config`, `centerpost`, `circuit`, `metro`, `network`, `strings`, `theme`, `test-fixtures`
 
 ### Compile-Time Market & Environment Variants
 
