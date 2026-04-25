@@ -293,6 +293,7 @@ These are the rules the `validate-all-markets` skill enforces by parsing every `
 
 - Facade coverage (`AppBuildConfig` interface property → `AppBuildConfigTest` reference) — needs the JVM and reflection (`BuildConfigCoverageTest`)
 - No direct `BuildConfig` / `AppBuildConfigImpl` imports outside `:core:build-config:impl` — Kotlin source parsing (`BuildConfigImportTest`)
+- Schema parity: every `AppBuildConfig` property has a `Defaults.properties` key (camelCase ↔ SCREAMING_SNAKE_CASE) and vice versa; every market dir covers the same envs (`BuildConfigSchemaParityTest`). Runs in the standard architecture pass on every PR — the structural-drift subset of `validateAllMarkets`, without invoking it
 - No feature-flag-shaped field names — needs Kotlin source parsing
 - Module isolation — needs the Gradle dependency graph
 
@@ -311,6 +312,7 @@ The split is deliberate: `validate-all-markets` runs in milliseconds against `.p
 - `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigCoverageTest.kt` — the facade coverage rule (smoke-test refs + `@DebugConfigField` presence)
 - `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigRegistryIntegrityTest.kt` — locks down both KSP-generated artefacts: registry contract (no hand-rolled `listOf`, no shadow `generatedFields()`) and fake contract (no hand-written `FakeAppBuildConfig`)
 - `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigImportTest.kt` — the facade import boundary rule
+- `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigSchemaParityTest.kt` — `AppBuildConfig` ↔ `Defaults.properties` key parity and per-market env coverage parity
 - `build-tooling/ksp-build-config-registry/` — the KSP processor that reads `@DebugConfigField` and emits `generatedFields()` into `:core:build-config:api`
 - `build-tooling/ksp-fake-app-build-config/` — the KSP processor that reads `AppBuildConfig` properties and emits `FakeAppBuildConfig` into `:core:build-config:test`
 - `iosApp/project.yml` — **source of truth** for the Xcode project; lists all 30 configs and per-target xcconfig bindings
