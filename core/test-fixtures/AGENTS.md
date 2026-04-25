@@ -14,6 +14,7 @@ and Kotest configuration. Auto-included in all test modules via convention plugi
 | `StateRobot<State, Event>` | Abstract base class for Circuit presenter testing robots. Captures events via `createEventSink()`, exposes `capturedEvents`, `lastEvent`, and `clearEvents()`. Subclass implements `defaultState()`. |
 | `FakeAuthManager` | Test fake implementing `AuthManager`. Constructor accepts initial `isAuthenticated`, `tokens`, and `refreshResult`. Tracks `refreshCallCount`. |
 | `FakeRefreshTokenSource` | Test fake implementing `RefreshTokenSource`. Configurable `result` / `error`, tracks `callCount`, supports `holdNextCallsUntilReleased()` / `release()` for deterministic concurrency tests. |
+| `FakeSensorDataProvider` | Test fake implementing `SensorDataProvider`. Mutable `data` property; `currentSensorData()` returns it. |
 
 ## Usage
 

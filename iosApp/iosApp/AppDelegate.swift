@@ -5,7 +5,10 @@ import FeatureFlagBridge
 final class AppDelegate: NSObject, UIApplicationDelegate {
 
     lazy var circuit: CircuitIos = {
-        let iosApp = IosApp(harnessIosBridge: SwiftHarnessBridge())
+        let iosApp = IosApp(
+            harnessIosBridge: SwiftHarnessBridge(),
+            akamaiSensorBridge: SwiftAkamaiSensorBridge()
+        )
 
         var factories: [CircuitIos.UiFactory] = [
             ScreenUiFactory<HomeScreen, HomeUiState> { HomeView(state: $0) },

@@ -64,6 +64,19 @@ android {
         // Required by io.harness:ff-android-client-sdk (see core/feature-flag/AGENTS.md).
         isCoreLibraryDesugaringEnabled = true
     }
+
+    // Akamai Bot Manager ships `libakamai.so` per ABI. `pickFirst` keeps the first
+    // match per ABI so the merge doesn't fail if another AAR ever bundles the same name.
+    packaging {
+        jniLibs {
+            pickFirsts += listOf(
+                "lib/arm64-v8a/libakamai.so",
+                "lib/armeabi-v7a/libakamai.so",
+                "lib/x86/libakamai.so",
+                "lib/x86_64/libakamai.so",
+            )
+        }
+    }
 }
 
 dependencies {
