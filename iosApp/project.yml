@@ -60,6 +60,8 @@ packages:
     majorVersion: 0.10.0
   FeatureFlagBridge:
     path: ../core/feature-flag/impl/swift
+  CircuitMacros:
+    path: CircuitMacros
 
 targets:
   iosApp:
@@ -131,6 +133,8 @@ targets:
         product: KMPNativeCoroutinesCore
       - package: FeatureFlagBridge
         product: FeatureFlagBridge
+      - package: CircuitMacros
+        product: CircuitMacros
     preBuildScripts:
       - name: Build Kotlin framework via Gradle
         basedOnDependencyAnalysis: false
@@ -148,6 +152,27 @@ targets:
             -Pmarket="$MARKET" \
             -Penv="$ENV" \
             -PbuildType="$KOTLIN_FRAMEWORK_BUILD_TYPE"
+      - name: Generate Circuit factory registry
+        basedOnDependencyAnalysis: false
+        script: |
+          # Scans every Swift source under iosApp/ for @CircuitInject and emits
+          # iosApp/Generated/GeneratedCircuitFactories.swift, which extends
+          # CircuitIos with `generatedFactories()` so AppDelegate stays a one-liner.
+          # The compiled executable is reused across builds — `swift build` is a
+          # no-op when nothing changed, so the steady-state cost of this phase is
+          # the parse + emit pass (sub-second on ~30 files).
+          set -euo pipefail
+          OUTPUT="$SRCROOT/iosApp/Generated/GeneratedCircuitFactories.swift"
+          mkdir -p "$(dirname "$OUTPUT")"
+          cd "$SRCROOT/../build-tooling/CircuitFactoryRegistry"
+          # Clear Xcode's iOS-build env vars so `swift build` evaluates the macOS
+          # manifest against the macOS SDK. Without this, SDKROOT leaks in as
+          # iphonesimulator and SwiftPM fails compiling the manifest.
+          unset SDKROOT PLATFORM_NAME EFFECTIVE_PLATFORM_NAME TARGET_DEVICE_PLATFORM_NAME TOOLCHAINS
+          swift build -c release --product CircuitFactoryRegistry
+          BIN="$(swift build -c release --product CircuitFactoryRegistry --show-bin-path)/CircuitFactoryRegistry"
+          find "$SRCROOT/iosApp" -name '*.swift' -not -path '*/Generated/*' -print0 \
+            | xargs -0 "$BIN" --output "$OUTPUT"
 
   iosAppTests:
     type: bundle.unit-test

@@ -1,9 +1,11 @@
 #if DEBUG
+import CircuitMacros
 import SwiftUI
 import ComposeApp
 
 private let tags = FeatureFlagsDebugTestTags.shared
 
+@CircuitInject(FeatureFlagsDebugScreen.self, FeatureFlagsDebugUiState.self)
 struct FeatureFlagsDebugView: View {
     let state: FeatureFlagsDebugUiState
     @Environment(\.mockDonaldsColors) private var colors

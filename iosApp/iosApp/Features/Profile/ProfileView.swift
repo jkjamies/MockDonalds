@@ -1,8 +1,10 @@
+import CircuitMacros
 import SwiftUI
 import ComposeApp
 
 private let tags = ProfileTestTags.shared
 
+@CircuitInject(ProfileScreen.self, ProfileUiState.self)
 struct ProfileView: View {
     let state: ProfileUiState
     @Environment(\.mockDonaldsColors) private var colors

@@ -298,7 +298,7 @@ These are the rules the `validate-all-markets` skill enforces by parsing every `
 
 The split is deliberate: `validate-all-markets` runs in milliseconds against `.properties` files only, so it can sit in front of every build. Konsist runs against compiled metadata and is heavier; it owns the rules that need a typed view of the code.
 
-**Failure output shape:** the skill aggregates every violation across every file and reports them in one pass — `markets/de-prod.properties: missing required key 'cdnUrl'` / `markets/us-dev.properties: unknown key 'baseURL' (did you mean 'baseUrl'?)`. Never fail-fast on the first error; the whole point is to fix a market in one edit cycle.
+**Failure output shape:** the skill aggregates every violation across every file and reports them in one pass — `markets/de-prod.properties: missing required key 'cdnUrl'` / `markets/us-int.properties: unknown key 'baseURL' (did you mean 'baseUrl'?)`. Never fail-fast on the first error; the whole point is to fix a market in one edit cycle.
 
 ## Reference files
 

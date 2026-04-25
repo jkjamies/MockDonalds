@@ -1,8 +1,10 @@
+import CircuitMacros
 import SwiftUI
 import ComposeApp
 
 private let tags = LoginTestTags.shared
 
+@CircuitInject(LoginScreen.self, LoginUiState.self)
 struct LoginView: View {
     let state: LoginUiState
     @Environment(\.mockDonaldsColors) private var colors

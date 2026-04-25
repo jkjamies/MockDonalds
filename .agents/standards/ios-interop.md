@@ -249,14 +249,56 @@ Used when an iOS vendor SDK has no pure-Kotlin binding and we want to avoid Coco
 
 Callers use `createGraphFactory<ProdAppGraph.Factory>().create(…)` rather than `createGraph<ProdAppGraph>()`. This pattern generalizes whenever either platform needs host-owned types (Application, Swift bridges) as DI inputs.
 
-## ScreenUiFactory Registration (AppDelegate.swift)
+## ScreenUiFactory Registration via `@CircuitInject` (Swift macro)
 
-`AppDelegate` creates `CircuitIos` with an array of `ScreenUiFactory<Screen, UiState>` entries:
+`AppDelegate` consumes a generated factory list — authors do **not** edit `AppDelegate.swift`
+to register new screens. Instead, every SwiftUI view annotates itself with `@CircuitInject`,
+mirroring Kotlin's presenter/UI registration on Android:
+
 ```swift
-ScreenUiFactory<HomeScreen, HomeUiState> { HomeView(state: $0) }
+import CircuitMacros
+
+@CircuitInject(HomeScreen.self, HomeUiState.self)
+struct HomeView: View {
+    let state: HomeUiState
+    var body: some View { … }
+}
 ```
-Each factory matches on Screen type and casts the state. Adding a new screen requires a new
-`ScreenUiFactory` entry in `AppDelegate.swift`.
+
+A pre-build script scans `iosApp/**/*.swift`, extracts every `@CircuitInject` site, and emits
+`iosApp/iosApp/Generated/GeneratedCircuitFactories.swift`, an extension on `CircuitIos` that
+exposes `static func generatedFactories() -> [UiFactory]`. `AppDelegate` wires it as:
+
+```swift
+return CircuitIos(iosApp: iosApp, uiFactories: CircuitIos.generatedFactories())
+```
+
+**Two SPM packages back this:**
+
+| Package | Location | Role |
+|---------|----------|------|
+| `CircuitMacros` | `iosApp/CircuitMacros/` | Declares `@CircuitInject` (peer macro). Consumed by the iosApp Xcode target. iOS-only platforms array; the macro plugin builds for the host (macOS) automatically. |
+| `CircuitFactoryRegistry` | `build-tooling/CircuitFactoryRegistry/` | Executable that parses Swift source via SwiftSyntax and emits the generated factories file. macOS-only, deliberately outside `iosApp/` so Xcode's SwiftPM driver doesn't try to load its manifest. |
+
+The peer macro returns `[]` — its purpose is compile-time type validation (typos in
+`HomeScreen.self`/`HomeUiState.self` fail the Swift build). The registry executable does the
+actual codegen.
+
+**`@CircuitInject` annotations honour `#if DEBUG`.** The registry visitor tracks `#if DEBUG`
+nesting and emits debug entries inside an `#if DEBUG` block in the generated file, matching
+the source's gating exactly. Debug-only screens (`DebugMenuView`, `BuildConfigDebugView`,
+`FeatureFlagsDebugView`) keep their file-level `#if DEBUG` and the registry mirrors that.
+
+**Build-script env hygiene.** The pre-build script runs `swift build` on the registry
+executable. Xcode's iOS build environment exports `SDKROOT=iphonesimulator`, which would
+leak into SwiftPM's macOS manifest evaluator and produce the cryptic
+`error: 'circuitfactoryregistry': Invalid manifest`. The script `unset`s `SDKROOT`,
+`PLATFORM_NAME`, `EFFECTIVE_PLATFORM_NAME`, `TARGET_DEVICE_PLATFORM_NAME`, and `TOOLCHAINS`
+before invoking `swift build`. Any future "build a host tool from an iOS run script" must do
+the same.
+
+See `iosApp/CircuitMacros/AGENTS.md` and `build-tooling/CircuitFactoryRegistry/AGENTS.md`
+for the macro plugin internals and registry tool internals respectively.
 
 ## iOS Robot Pattern Differences
 

@@ -22,6 +22,7 @@
 		3163774887824E183DA4A910 /* HomeViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B31DD1960E4A68BC692BBA /* HomeViewRobot.swift */; };
 		32B6DADCFAE72C82855FB676 /* CircuitStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D62BE96084EDBC090C5102F /* CircuitStack.swift */; };
 		36E5AA829FB4EC77B708348E /* ViewInspector in Frameworks */ = {isa = PBXBuildFile; productRef = EC9CEAB90B09506A7CBD4DF5 /* ViewInspector */; };
+		379D4C6DBBA934A8EF44CDDE /* CircuitMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 53482F78C1E269AB5B0DEF11 /* CircuitMacros */; };
 		3D6EC2F1A9C912F76B69955C /* LoginViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D908911A055244A4152480A8 /* LoginViewRobot.swift */; };
 		3FFE615190297288FDE92911 /* LoginViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 489511AE3D56113BE54F79ED /* LoginViewTest.swift */; };
 		41A1D4E5B1E169ED1235396B /* Circuit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097B5DF1D3894F050ECF03FD /* Circuit.swift */; };
@@ -40,6 +41,7 @@
 		6C984A52389B4405C5D6F9BC /* RewardsStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5E2C924246CD2D275361A8D /* RewardsStateRobot.swift */; };
 		6E6AD8D9948F6D0D5ADBBE82 /* WelcomeStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649997444C003AB72D398725 /* WelcomeStateRobot.swift */; };
 		7072BF29E591CFBA862406BB /* RecentsViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 787AB5A772052BD85A531135 /* RecentsViewRobot.swift */; };
+		7152C8781A714567D9612348 /* SwiftAkamaiSensorBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25C263997D7E32D39F4A95D /* SwiftAkamaiSensorBridge.swift */; };
 		71E995A91AEDCE09BF178AEF /* OrderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FF4D753BA2FD11E064BD140 /* OrderView.swift */; };
 		73CEA926F12190173804A9D1 /* DebugMenuNavigationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC944C0C49211229EA6C7884 /* DebugMenuNavigationTest.swift */; };
 		75E8E8DDDD2B50B94CBF67AC /* ProfileStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20445B074FA2A57FD5799CA4 /* ProfileStateRobot.swift */; };
@@ -78,6 +80,7 @@
 		DE2F6DE6227DCA077CFF40D9 /* FeatureFlagsDebugViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C98902D9F9B5E721BF4BE366 /* FeatureFlagsDebugViewTest.swift */; };
 		E007187FB60BA8E9A087102E /* DebugMenuViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511EAF7B53390045400D08AD /* DebugMenuViewRobot.swift */; };
 		E699815F789C319198C41D6E /* WelcomeViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26BBEA5809BB072FE3AACD05 /* WelcomeViewRobot.swift */; };
+		E8BEE027C5D289022EC74C18 /* GeneratedCircuitFactories.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA3868741B3910775933E12 /* GeneratedCircuitFactories.swift */; };
 		EBCC6A59A2A2CA48D608A308 /* NavigationStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 311677DB2B257F0E5C6E92D1 /* NavigationStateManager.swift */; };
 		EC9D51B8D24EEF7328ACD3FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1720870E51445F47D3045A0 /* Assets.xcassets */; };
 		F6B1193D7257CB20613D07B0 /* FeatureFlagsDebugStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9326C56F33FB477DDBFD79E9 /* FeatureFlagsDebugStateRobot.swift */; };
@@ -134,6 +137,7 @@
 		278596ADA9C8CE73D603EE2B /* MoreViewRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreViewRobot.swift; sourceTree = "<group>"; };
 		2FA6CE1442565EBCCC2E1501 /* CA-Int-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "CA-Int-Release.xcconfig"; sourceTree = "<group>"; };
 		2FF4D753BA2FD11E064BD140 /* OrderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderView.swift; sourceTree = "<group>"; };
+		300ED7CB366873400F9C6BB3 /* CircuitMacros */ = {isa = PBXFileReference; lastKnownFileType = folder; name = CircuitMacros; path = CircuitMacros; sourceTree = SOURCE_ROOT; };
 		3021582D081F62910D0547BA /* DE-Int-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "DE-Int-Release.xcconfig"; sourceTree = "<group>"; };
 		311677DB2B257F0E5C6E92D1 /* NavigationStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationStateManager.swift; sourceTree = "<group>"; };
 		33EB2463F544EA664F058FFE /* SwiftHarnessBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftHarnessBridge.swift; sourceTree = "<group>"; };
@@ -155,6 +159,7 @@
 		598BABB7736BF3204AB696E5 /* RewardsViewTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardsViewTest.swift; sourceTree = "<group>"; };
 		5A0060A33A6D2B2BB2B5D8C9 /* US-Mte-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "US-Mte-Release.xcconfig"; sourceTree = "<group>"; };
 		5A1ACFBB194AF87192185DFA /* AU-Mte-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "AU-Mte-Release.xcconfig"; sourceTree = "<group>"; };
+		5AA3868741B3910775933E12 /* GeneratedCircuitFactories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedCircuitFactories.swift; sourceTree = "<group>"; };
 		5D64A50286110F80717DCEE7 /* AU-Int-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "AU-Int-Debug.xcconfig"; sourceTree = "<group>"; };
 		5E15AA486EA93D15102E8E45 /* DeepLinkJourneyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkJourneyTest.swift; sourceTree = "<group>"; };
 		62B7572E1FA45E1825C9080D /* CORE-Mte-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "CORE-Mte-Release.xcconfig"; sourceTree = "<group>"; };
@@ -218,6 +223,7 @@
 		EDEAFBC0A9A7E027934A6EE7 /* MockDonaldsTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDonaldsTheme.swift; sourceTree = "<group>"; };
 		EE8A27DFA24EC01CCE58A089 /* AuthFlowNavigationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthFlowNavigationTest.swift; sourceTree = "<group>"; };
 		EF8230EA110BD42922302F20 /* CircuitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircuitView.swift; sourceTree = "<group>"; };
+		F25C263997D7E32D39F4A95D /* SwiftAkamaiSensorBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftAkamaiSensorBridge.swift; sourceTree = "<group>"; };
 		F752EA9AEDE7F166CD503D1D /* iosAppBenchmarks.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = iosAppBenchmarks.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA2126ADD2C87A8C074E8276 /* US-Int-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "US-Int-Release.xcconfig"; sourceTree = "<group>"; };
 		FADDD56A6ACF5E74A5640FE1 /* DE-Mte-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "DE-Mte-Debug.xcconfig"; sourceTree = "<group>"; };
@@ -239,6 +245,7 @@
 				1C81D6F669B7BB6D2FFCCEB3 /* KMPNativeCoroutinesAsync in Frameworks */,
 				445C052442747365B7CB2124 /* KMPNativeCoroutinesCore in Frameworks */,
 				B7C4F6137AC8345E71E92063 /* FeatureFlagBridge in Frameworks */,
+				379D4C6DBBA934A8EF44CDDE /* CircuitMacros in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,8 +317,10 @@
 		1DB4B685CAEE8BEFEBBAEF94 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				88918DC60388CC49B353B49F /* Akamai */,
 				0BC733604E4AD589D965B538 /* Circuit */,
 				00DC1A39F70C25CE0C0A51BF /* Features */,
+				C50D47BA6E1679912481153B /* Generated */,
 				86F15A7FB99126F50D0EC3D7 /* Harness */,
 				4795698A257B423F254DDC14 /* Theme */,
 				8B6C1F485E0CF8BB70C9DDD2 /* AppDelegate.swift */,
@@ -360,6 +369,7 @@
 		2BE9D1071031C3FC069C34FC /* Packages */ = {
 			isa = PBXGroup;
 			children = (
+				300ED7CB366873400F9C6BB3 /* CircuitMacros */,
 				1E02C7D2F4AB4196F0D8F99B /* swift */,
 			);
 			name = Packages;
@@ -518,6 +528,14 @@
 			path = Harness;
 			sourceTree = "<group>";
 		};
+		88918DC60388CC49B353B49F /* Akamai */ = {
+			isa = PBXGroup;
+			children = (
+				F25C263997D7E32D39F4A95D /* SwiftAkamaiSensorBridge.swift */,
+			);
+			path = Akamai;
+			sourceTree = "<group>";
+		};
 		89FE041FD6D3E990366B335D /* Order */ = {
 			isa = PBXGroup;
 			children = (
@@ -623,6 +641,14 @@
 				DD176D6C8E3CD288191E0DF3 /* MoreViewTest.swift */,
 			);
 			path = More;
+			sourceTree = "<group>";
+		};
+		C50D47BA6E1679912481153B /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				5AA3868741B3910775933E12 /* GeneratedCircuitFactories.swift */,
+			);
+			path = Generated;
 			sourceTree = "<group>";
 		};
 		C5CF234D77298B1961B3424B /* Recents */ = {
@@ -790,6 +816,7 @@
 			buildConfigurationList = 29DCA9F0B3A40325067EB163 /* Build configuration list for PBXNativeTarget "iosApp" */;
 			buildPhases = (
 				E414847385BEFCD48BE3FB52 /* Build Kotlin framework via Gradle */,
+				4B7F36F4D5A9FBB5D12E57FE /* Generate Circuit factory registry */,
 				297B59D9CE634556D6007C40 /* Sources */,
 				1623B02D10928C8101C1F806 /* Resources */,
 				EF8A6E9BFD470986D9D5C9B5 /* Frameworks */,
@@ -803,6 +830,7 @@
 				0BACEB90EE28C3C163DE3C96 /* KMPNativeCoroutinesAsync */,
 				0A471EF06FD56D009B863370 /* KMPNativeCoroutinesCore */,
 				E25C52EF17D26989C68AAFCE /* FeatureFlagBridge */,
+				53482F78C1E269AB5B0DEF11 /* CircuitMacros */,
 			);
 			productName = iosApp;
 			productReference = 86038AE1032E284E79B32AD6 /* iosApp.app */;
@@ -869,6 +897,7 @@
 			packageReferences = (
 				70ED8E483A5F2D6B21FC96CF /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
 				23783E62FBAF093ECF8DF72C /* XCRemoteSwiftPackageReference "ViewInspector" */,
+				1183E3A2087C19058A5BF3B4 /* XCLocalSwiftPackageReference "CircuitMacros" */,
 				37FEDABE1C343E10AF4C6C0A /* XCLocalSwiftPackageReference "../core/feature-flag/impl/swift" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -897,6 +926,25 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		4B7F36F4D5A9FBB5D12E57FE /* Generate Circuit factory registry */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Generate Circuit factory registry";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Scans every Swift source under iosApp/ for @CircuitInject and emits\n# iosApp/Generated/GeneratedCircuitFactories.swift, which extends\n# CircuitIos with `generatedFactories()` so AppDelegate stays a one-liner.\n# The compiled executable is reused across builds — `swift build` is a\n# no-op when nothing changed, so the steady-state cost of this phase is\n# the parse + emit pass (sub-second on ~30 files).\nset -euo pipefail\nOUTPUT=\"$SRCROOT/iosApp/Generated/GeneratedCircuitFactories.swift\"\nmkdir -p \"$(dirname \"$OUTPUT\")\"\ncd \"$SRCROOT/../build-tooling/CircuitFactoryRegistry\"\n# Clear Xcode's iOS-build env vars so `swift build` evaluates the macOS\n# manifest against the macOS SDK. Without this, SDKROOT leaks in as\n# iphonesimulator and SwiftPM fails compiling the manifest.\nunset SDKROOT PLATFORM_NAME EFFECTIVE_PLATFORM_NAME TARGET_DEVICE_PLATFORM_NAME TOOLCHAINS\nswift build -c release --product CircuitFactoryRegistry\nBIN=\"$(swift build -c release --product CircuitFactoryRegistry --show-bin-path)/CircuitFactoryRegistry\"\nfind \"$SRCROOT/iosApp\" -name '*.swift' -not -path '*/Generated/*' -print0 \\\n  | xargs -0 \"$BIN\" --output \"$OUTPUT\"\n";
+		};
 		E414847385BEFCD48BE3FB52 /* Build Kotlin framework via Gradle */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -952,6 +1000,7 @@
 				D5FA0344548A43A26A25E3CD /* CircuitView.swift in Sources */,
 				0CF38DAC0F5E23FB0954488F /* DebugMenuView.swift in Sources */,
 				93A389D58A7E4AA08B56CEAB /* FeatureFlagsDebugView.swift in Sources */,
+				E8BEE027C5D289022EC74C18 /* GeneratedCircuitFactories.swift in Sources */,
 				44414C784143D022614D1BE3 /* HomeView.swift in Sources */,
 				9ED9498463DC1DA344DCF800 /* LoginView.swift in Sources */,
 				09F0FA134D3E4F7562713DFB /* MockDonaldsApp.swift in Sources */,
@@ -963,6 +1012,7 @@
 				50C5711A063A3111C71E7FDC /* RecentsView.swift in Sources */,
 				A71D234D6D4A7A612E4629AE /* RewardsView.swift in Sources */,
 				BE1116CAA2524E4B9C57A25D /* ScanView.swift in Sources */,
+				7152C8781A714567D9612348 /* SwiftAkamaiSensorBridge.swift in Sources */,
 				2E16FB50DD5C1ACC0B316A6A /* SwiftHarnessBridge.swift in Sources */,
 				D69FC88016F05FD3B9A1A6FD /* WelcomeView.swift in Sources */,
 			);
@@ -5805,6 +5855,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		1183E3A2087C19058A5BF3B4 /* XCLocalSwiftPackageReference "CircuitMacros" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = CircuitMacros;
+		};
 		37FEDABE1C343E10AF4C6C0A /* XCLocalSwiftPackageReference "../core/feature-flag/impl/swift" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "../core/feature-flag/impl/swift";
@@ -5840,6 +5894,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 70ED8E483A5F2D6B21FC96CF /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
 			productName = KMPNativeCoroutinesAsync;
+		};
+		53482F78C1E269AB5B0DEF11 /* CircuitMacros */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CircuitMacros;
 		};
 		E25C52EF17D26989C68AAFCE /* FeatureFlagBridge */ = {
 			isa = XCSwiftPackageProductDependency;

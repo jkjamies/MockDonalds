@@ -1,8 +1,10 @@
+import CircuitMacros
 import SwiftUI
 import ComposeApp
 
 private let tags = OrderTestTags.shared
 
+@CircuitInject(OrderScreen.self, OrderUiState.self)
 struct OrderView: View {
     @Environment(\.mockDonaldsColors) private var colors
     @Environment(\.verticalSizeClass) private var verticalSizeClass

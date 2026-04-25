@@ -1,8 +1,10 @@
+import CircuitMacros
 import SwiftUI
 import ComposeApp
 
 private let tags = RewardsTestTags.shared
 
+@CircuitInject(RewardsScreen.self, RewardsUiState.self)
 struct RewardsView: View {
     let state: RewardsUiState
     @Environment(\.mockDonaldsColors) private var colors

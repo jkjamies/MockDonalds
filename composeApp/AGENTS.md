@@ -48,6 +48,10 @@ The `build.gradle.kts` auto-discovers feature modules by scanning the `features/
 
 Adding a new feature module to `features/` automatically wires it into the app -- no manual dependency edits needed.
 
+### iOS-side parallel: `@CircuitInject` auto-registration
+
+Android resolves Screen → Composable Ui via `@CircuitInject` on the Compose `Ui` function (Metro/Circuit codegen handles the factory). iOS gets the same auto-discovery via the `@CircuitInject` Swift macro on each SwiftUI view — `CircuitFactoryRegistry` (a build-time SwiftSyntax codegen tool) scans the source tree, finds annotated views, and emits `iosApp/iosApp/Generated/GeneratedCircuitFactories.swift`. `AppDelegate` consumes it via `CircuitIos.generatedFactories()`. Adding a new screen on iOS requires only the `@CircuitInject(Screen.self, UiState.self)` annotation on the SwiftUI view — no manual `AppDelegate.swift` edit. See `.agents/standards/ios-interop.md` and `iosApp/AGENTS.md`.
+
 ## Navigation Flow
 
 1. Android: `MockDonaldsApp` -> `rememberSaveableBackStack` -> `InterceptingNavigator` -> `NavigableCircuitContent`

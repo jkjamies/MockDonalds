@@ -1,8 +1,10 @@
+import CircuitMacros
 import SwiftUI
 import ComposeApp
 
 private let tags = HomeTestTags.shared
 
+@CircuitInject(HomeScreen.self, HomeUiState.self)
 struct HomeView: View {
     @Environment(\.mockDonaldsColors) private var colors
     @Environment(\.verticalSizeClass) private var verticalSizeClass

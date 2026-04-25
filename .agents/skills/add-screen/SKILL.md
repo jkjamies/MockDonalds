@@ -42,10 +42,14 @@ Use existing screens in `features/order/` as the pattern reference.
 | `{Screen}Presenter.kt` | impl/presentation/src/commonMain | @CircuitInject + @Inject + @Composable |
 | `{Screen}UiState.kt` | impl/presentation/src/commonMain | Data class : CircuitUiState + sealed Event |
 | `{Screen}Ui.kt` | impl/presentation/src/androidMain | @CircuitInject Composable |
+| `{Screen}View.swift` | iosApp/iosApp/Features/{Feature}/ | SwiftUI View with `@CircuitInject({Screen}.self, {Screen}UiState.self)` (drives factory codegen — no AppDelegate edit) |
 | `{Screen}PresenterTest.kt` | impl/presentation/src/commonTest | BehaviorSpec with presenterTestOf |
 | `{Screen}UiTest.kt` | impl/presentation/src/androidDeviceTest | BehaviorSpec with UiRobot |
 | `{Screen}UiRobot.kt` | impl/presentation/src/androidDeviceTest | Robot with StateRobot |
 | `{Screen}StateRobot.kt` | impl/presentation/src/androidDeviceTest | Extends core StateRobot |
+| `{Screen}ViewTest.swift` | iosApp/iosAppTests/UIComponent/{Feature}/ | Swift Testing + ViewInspector Robot pattern |
+| `{Screen}ViewRobot.swift` | iosApp/iosAppTests/UIComponent/{Feature}/ | `@MainActor final class` with ViewInspector |
+| `{Screen}StateRobot.swift` | iosApp/iosAppTests/UIComponent/{Feature}/ | Extends `BaseStateRobot` |
 
 ## Screen Type Selection
 
@@ -60,6 +64,7 @@ Use existing screens in `features/order/` as the pattern reference.
 - UiState must implement `CircuitUiState` and include `eventSink: ({Event}) -> Unit`
 - Events must be `sealed class` (not `sealed interface`) for iOS interop
 - Ui functions must have `@CircuitInject({Screen}::class, AppScope::class)` and `@Composable`
+- SwiftUI Views must `import CircuitMacros` and carry `@CircuitInject({Screen}.self, {Screen}UiState.self)` — `CircuitFactoryRegistry` codegen picks it up at build time, so `AppDelegate.swift` never needs editing. See `.agents/standards/ios-interop.md`.
 
 ## Post-Change Verification — MANDATORY
 

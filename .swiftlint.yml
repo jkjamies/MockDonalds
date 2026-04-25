@@ -12,6 +12,7 @@ included:
 excluded:
   - iosApp/ArchitectureCheck/.build
   - iosApp/iosApp/Circuit  # Framework bridging code — force casts required for KMP interop
+  - iosApp/iosApp/Generated  # CircuitFactoryRegistry codegen output — regenerated every build
 
 # Line and body length — relaxed for SwiftUI views with long body properties
 line_length:

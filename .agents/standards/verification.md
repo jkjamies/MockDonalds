@@ -6,7 +6,7 @@ The `verify` skill has three scopes, each for a different purpose.
 
 **`diff` (default):** scoped to changed modules only. Fastest option — use during iterative development. Target: ~5–15s.
 
-**`full`:** whole project — lint, unit tests, architecture checks, and one debug build per platform against the default market (`us-dev`). Target: under ~60s warm, under ~2 min cold. Run after any code change as the standard verification.
+**`full`:** whole project — lint, unit tests, architecture checks, and one debug build per platform against the default market/env (`us-int`). Target: under ~60s warm, under ~2 min cold. Run after any code change as the standard verification.
 
 **`all`:** everything — every test level, every variant, every market × env combo, both platforms. Target: thorough, not fast. Run before opening a PR or when the change warrants maximum confidence.
 
@@ -24,7 +24,7 @@ Locally you almost never need any of that. If your change didn't touch R8 rules,
 
 ## Full Scope (the `verify full` pipeline)
 
-Eight steps, symmetric across both platforms: lint → unit → architecture → debug build, plus a pre-flight market-config check. Parameterized by `market` (default `us`) and `env` (default `dev`); only the two debug build steps use those parameters. Stop and fix failures before proceeding.
+Eight steps, symmetric across both platforms: lint → unit → architecture → debug build, plus a pre-flight market-config check. Parameterized by `market` (default `us`) and `env` (default `int`); only the two debug build steps use those parameters. Envs are `int`, `mte`, `prod`. Stop and fix failures before proceeding.
 
 **Pre-flight — `validate-all-markets`:**
 ```bash
@@ -61,16 +61,16 @@ Gradle task on `:core:build-config:impl`. Parses every `core/build-config/impl/m
    ```bash
    ./gradlew :androidApp:assembleDebug -Pmarket=$MARKET -Penv=$ENV
    ```
-   Default `us-dev`. One combo, one build type. Proves the shared Kotlin compiles for Android and the app links. No market matrix.
+   Default `us-int`. One combo, one build type. Proves the shared Kotlin compiles for Android and the app links. No market matrix.
 8. **iOS debug build** (simulator-arm64 only, from `market`/`env` params):
    ```bash
    xcodebuild build \
      -scheme iOSApp \
-     -configuration ${MARKET_UPPER}-${ENV_TITLE} \
+     -configuration ${MARKET_UPPER}-${ENV_TITLE}-Debug \
      -destination 'platform=iOS Simulator,name=iPhone 16' \
      -sdk iphonesimulator
    ```
-   Simulator-arm64 only. Skips `iosArm64` (device) and `iosX64` (legacy Intel sim) — those are CI's job. Configuration name: `us` + `dev` → `US-Dev`, `de` + `prod` → `DE-Prod`.
+   Simulator-arm64 only. Skips `iosArm64` (device) and `iosX64` (legacy Intel sim) — those are CI's job. Configuration name format is `${MARKET_UPPER}-${ENV_TITLE}-${BuildType}` where build type is `Debug` or `Release` — e.g. `us` + `int` → `US-Int-Debug`, `de` + `prod` → `DE-Prod-Debug`. Run `xcodebuild -list -project iosApp/iosApp.xcodeproj` to enumerate the full set of configurations Xcodegen emits.
 
 ### What `verify full` deliberately does NOT run
 
@@ -160,6 +160,8 @@ git diff --name-only                       # uncommitted changes on main
 | `iosApp/iosAppTests/NavInt/` | `xcodebuild test -scheme iOSApp -testPlan NavIntTests ...` (requires simulator) |
 | `testing/e2e-tests/` | `:testing:e2e-tests:connectedAndroidTest` (requires device/emulator) |
 | `iosApp/iosAppE2ETests/` | `xcodebuild test -scheme iOSApp -testPlan E2ETests ...` (requires simulator) |
+| `testing/benchmarks/` | `:androidApp:installCoreIntBenchmark :testing:benchmarks:connectedBenchmarkAndroidTest` (requires **physical** Android device) |
+| `iosApp/iosAppBenchmarks/` | `xcodebuild test -scheme iOSApp -testPlan Benchmarks ...` (requires simulator or device) |
 
 ### Diff Decision Logic
 
@@ -173,6 +175,8 @@ git diff --name-only                       # uncommitted changes on main
 7. If `iosApp/iosApp/Circuit/` or `iosApp/iosAppTests/NavInt/` changed: run `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'` (requires simulator; flag for pre-merge if simulator unavailable).
 8. If `testing/e2e-tests/` changed: run `./gradlew :testing:e2e-tests:connectedAndroidTest` (requires device/emulator; flag for pre-merge if unavailable).
 9. If `iosApp/iosAppE2ETests/` changed: run `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'` (requires simulator; flag for pre-merge if unavailable).
+9a. If `testing/benchmarks/` changed: run `./gradlew :androidApp:installCoreIntBenchmark :testing:benchmarks:connectedBenchmarkAndroidTest` (requires **physical** Android device — emulator is blocked by androidx.benchmark; defer to `verify all` if no device available).
+9b. If `iosApp/iosAppBenchmarks/` changed: run `xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 16'` (requires simulator).
 10. If `build.gradle.kts` or `settings.gradle.kts` changed: run `./gradlew assemble`.
 11. If only markdown/documentation changed: architecture tests only (step 1).
 

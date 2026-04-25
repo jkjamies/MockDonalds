@@ -1,9 +1,11 @@
 #if DEBUG
+import CircuitMacros
 import SwiftUI
 import ComposeApp
 
 private let tags = BuildConfigDebugTestTags.shared
 
+@CircuitInject(BuildConfigDebugScreen.self, BuildConfigDebugUiState.self)
 struct BuildConfigDebugView: View {
     let state: BuildConfigDebugUiState
     @Environment(\.mockDonaldsColors) private var colors

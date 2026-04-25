@@ -34,8 +34,32 @@ The iOS app is a thin SwiftUI shell that consumes shared KMP presenters from the
 ### Entry Point
 
 - `MockDonaldsApp.swift` -- `@main` App struct with TabView wired to KMP Screen objects
-- `AppDelegate.swift` -- Creates `CircuitIos` with `IosApp` (from KMP) and registers `ScreenUiFactory` mappings for all screens
+- `AppDelegate.swift` -- Creates `CircuitIos` with `IosApp` (from KMP) and consumes `CircuitIos.generatedFactories()` — the per-screen `ScreenUiFactory` list is auto-generated, no hand-maintained registration table here
+- `Generated/GeneratedCircuitFactories.swift` -- regenerated on every build by the `CircuitFactoryRegistry` Run Script Phase. Walks every `*.swift` under `iosApp/iosApp/`, finds SwiftUI views annotated with `@CircuitInject(Screen.self, UiState.self)`, and emits an `extension CircuitIos { static func generatedFactories() -> [UiFactory] }`. Tracks `#if DEBUG` nesting so debug-only screens stay debug-only.
 - Deep links handled via `.onOpenURL` -> `AppDelegate.handleDeepLink` -> `IosApp.deepLink(uri:)`
+
+### `@CircuitInject` (Swift macro)
+
+Each SwiftUI feature view declares its Screen → UiState mapping at the call site:
+
+```swift
+import CircuitMacros
+
+@CircuitInject(HomeScreen.self, HomeUiState.self)
+struct HomeView: View {
+    let state: HomeUiState
+    var body: some View { /* ... */ }
+}
+```
+
+The macro itself is a peer macro returning `[]` — its sole job is compile-time validation that the referenced KMP `Screen` / `UiState` types exist. The actual factory wiring is done by `CircuitFactoryRegistry`, a SwiftSyntax-based codegen tool that scans the source tree at build time. See `.agents/standards/ios-interop.md` for full details.
+
+| Package | Location | Purpose |
+|---|---|---|
+| `CircuitMacros` | `iosApp/CircuitMacros/` | The `@CircuitInject` peer macro (SwiftSyntax macro plugin); imported by every feature view |
+| `CircuitFactoryRegistry` | `build-tooling/CircuitFactoryRegistry/` | Build-time codegen executable that scans for `@CircuitInject` sites and emits `GeneratedCircuitFactories.swift` |
+
+The registry lives outside `iosApp/` so its macOS-targeted SwiftPM manifest doesn't get auto-discovered as an iOS dependency. See each package's `AGENTS.md` for internals.
 
 ### Circuit Bridge (iosApp/Circuit/)
 

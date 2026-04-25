@@ -1,8 +1,10 @@
+import CircuitMacros
 import SwiftUI
 import ComposeApp
 
 private let tags = RecentsTestTags.shared
 
+@CircuitInject(RecentsScreen.self, RecentsUiState.self)
 struct RecentsView: View {
     let state: RecentsUiState
     @Environment(\.mockDonaldsColors) private var colors

@@ -8,12 +8,16 @@ Per-feature Ktor HTTP client factory with baked-in platform infrastructure. Each
 
 ```
 core/network/
-  api/   — HttpClientFactory, ClientConfig DSL, NetworkException, AuthMode, SensorDataProvider
+  api/
+    commonMain/   — HttpClientFactory, ClientConfig DSL, NetworkException, AuthMode, SensorDataProvider
+    iosMain/      — AkamaiSensorBridge (Kotlin contract implemented in Swift)
   impl/
     commonMain/   — HttpClientFactoryImpl (baked-in plugins), HttpClientProvider, JsonProvider
     androidMain/  — AkamaiSensorDataProviderAndroid (real SDK drop-in point)
-    iosMain/      — AkamaiSensorBridge, AkamaiSensorDataProviderIos (Swift bridge wires through ProdAppGraph.Factory)
+    iosMain/      — AkamaiSensorDataProviderIos (delegates to AkamaiSensorBridge supplied via ProdAppGraph.Factory)
 ```
+
+`AkamaiSensorBridge` lives in `api/iosMain` so it exports to Swift as `ApiAkamaiSensorBridge` (Kotlin/Native module-prefix convention for transitively-visible types). `SwiftAkamaiSensorBridge` in `iosApp/iosApp/Akamai/` conforms to that protocol; the implementation is wired into the DI graph via `ProdAppGraph.Factory` from `IosApp`.
 
 ## Public API (api module)
 
@@ -23,6 +27,7 @@ core/network/
 | `ClientConfig` | DSL class — `baseUrl`, `authMode`, `requestTimeout`, `connectTimeout`, `socketTimeout`, `headers`, `ktorConfig` escape hatch |
 | `AuthMode` | Enum — `BEARER` (default) or `NONE` (public endpoints) |
 | `SensorDataProvider` | `suspend fun currentSensorData(): String` — supplies the Akamai Bot Manager token the factory attaches to every request |
+| `AkamaiSensorBridge` (iosMain) | Kotlin contract for the iOS Akamai SDK, mirroring `HarnessIosBridge`. Implemented in Swift (`SwiftAkamaiSensorBridge`); supplied to DI via `ProdAppGraph.Factory`. Exported to Swift as `ApiAkamaiSensorBridge` (api-module prefix). |
 | `NetworkException` | Sealed class — `HttpError`, `Timeout`, `NoConnectivity`, `Serialization`, `Unknown` |
 
 ## Implementation (impl module)
@@ -33,8 +38,7 @@ core/network/
 | `HttpClientProvider` | `@ContributesTo` interface providing the singleton base `HttpClient` (default engine per platform) |
 | `JsonProvider` | `@ContributesTo` interface providing singleton `Json` instance with `ignoreUnknownKeys`, `isLenient`, `encodeDefaults`, `explicitNulls = false` |
 | `AkamaiSensorDataProviderAndroid` | `androidMain` `@ContributesBinding` — takes `Application`. POC default returns empty; swap the body for a call into the Akamai Bot Manager Android SDK once the AAR is dropped into `core/network/impl/libs/`. |
-| `AkamaiSensorBridge` | `iosMain` interface — Kotlin contract for the iOS Akamai SDK, mirroring the `HarnessIosBridge` pattern. Implemented in Swift (`SwiftAkamaiSensorBridge`), supplied to the DI graph via `ProdAppGraph.Factory`. |
-| `AkamaiSensorDataProviderIos` | `iosMain` `@ContributesBinding` — delegates `currentSensorData()` to the injected `AkamaiSensorBridge`. |
+| `AkamaiSensorDataProviderIos` | `iosMain` `@ContributesBinding` — delegates `currentSensorData()` to the `AkamaiSensorBridge` (defined in `core:network:api`). |
 
 ## Usage
 
