@@ -84,6 +84,7 @@
 		EBCC6A59A2A2CA48D608A308 /* NavigationStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 311677DB2B257F0E5C6E92D1 /* NavigationStateManager.swift */; };
 		EC9D51B8D24EEF7328ACD3FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1720870E51445F47D3045A0 /* Assets.xcassets */; };
 		F6B1193D7257CB20613D07B0 /* FeatureFlagsDebugStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9326C56F33FB477DDBFD79E9 /* FeatureFlagsDebugStateRobot.swift */; };
+		F7C33B50A94DA01F2E82C280 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 245434685F34A9A15B1AC406 /* libsqlite3.tbd */; };
 		F9C809119EFD3FA9536BA13D /* BuildConfigDebugViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D7CAFCCA0176EC307EAD50 /* BuildConfigDebugViewTest.swift */; };
 		FDE52B8D57A097A60A4CF366 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6C1F485E0CF8BB70C9DDD2 /* AppDelegate.swift */; };
 		FF534E6859935FA65484EF52 /* DeepLinkJourneyTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E15AA486EA93D15102E8E45 /* DeepLinkJourneyTest.swift */; };
@@ -132,6 +133,7 @@
 		20445B074FA2A57FD5799CA4 /* ProfileStateRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStateRobot.swift; sourceTree = "<group>"; };
 		236744B8615A52FCF06E62CE /* StartupPerformanceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupPerformanceTest.swift; sourceTree = "<group>"; };
 		23B7B4AC32296EDB4BCA6E72 /* CircuitContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircuitContent.swift; sourceTree = "<group>"; };
+		245434685F34A9A15B1AC406 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		26BBEA5809BB072FE3AACD05 /* WelcomeViewRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewRobot.swift; sourceTree = "<group>"; };
 		26C068CAB6EFD4E7772347D1 /* PlaceholderUnitTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderUnitTest.swift; sourceTree = "<group>"; };
 		278596ADA9C8CE73D603EE2B /* MoreViewRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreViewRobot.swift; sourceTree = "<group>"; };
@@ -246,6 +248,7 @@
 				445C052442747365B7CB2124 /* KMPNativeCoroutinesCore in Frameworks */,
 				B7C4F6137AC8345E71E92063 /* FeatureFlagBridge in Frameworks */,
 				379D4C6DBBA934A8EF44CDDE /* CircuitMacros in Frameworks */,
+				F7C33B50A94DA01F2E82C280 /* libsqlite3.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -404,6 +407,14 @@
 			path = Configuration;
 			sourceTree = "<group>";
 		};
+		3666012298E772D226418813 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				245434685F34A9A15B1AC406 /* libsqlite3.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		38B69C3F79CD97858CF7B609 = {
 			isa = PBXGroup;
 			children = (
@@ -415,6 +426,7 @@
 				1F89104FB695BB395DE5803D /* MockDonalds */,
 				2BE9D1071031C3FC069C34FC /* Packages */,
 				B1720870E51445F47D3045A0 /* Assets.xcassets */,
+				3666012298E772D226418813 /* Frameworks */,
 				94C98B8B3A2BFC1966447269 /* Products */,
 			);
 			sourceTree = "<group>";

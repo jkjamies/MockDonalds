@@ -135,6 +135,7 @@ targets:
         product: FeatureFlagBridge
       - package: CircuitMacros
         product: CircuitMacros
+      - sdk: libsqlite3.tbd
     preBuildScripts:
       - name: Build Kotlin framework via Gradle
         basedOnDependencyAnalysis: false

@@ -13,11 +13,12 @@ A Kotlin Multiplatform (KMP) reference app showcasing a clean, scalable architec
 | [CenterPost](core/centerpost/) | — | Business logic framework (coroutine interactors). Adapted from [Strata](https://github.com/jkjamies/MESA-Android) |
 | [Molecule](https://github.com/cashapp/molecule) | 2.2.0 | Bridges `@Composable` presenters to `StateFlow` for iOS |
 | [KMP-NativeCoroutines](https://github.com/rickclephas/KMP-NativeCoroutines) | 1.0.2 | Bridges Kotlin `StateFlow` to Swift `AsyncSequence` |
-| [Coil](https://coil-kt.github.io/coil/) | 3.1.0 | Image loading (Compose) |
-| [Ktor](https://ktor.io/) | 3.1.1 | HTTP client (KMP) |
+| [Coil](https://coil-kt.github.io/coil/) | 3.4.0 | Image loading (Compose) |
+| [Ktor](https://ktor.io/) | 3.4.3 | HTTP client (KMP) |
+| [SQLDelight](https://cashapp.github.io/sqldelight/) | 2.3.2 | KMP relational persistence — single shared `AppDatabase`, feature-owned `.sq` schemas |
 | [BuildKonfig](https://github.com/yshrsmz/BuildKonfig) | 0.18.0 | Compile-time `AppBuildConfig` generation for market/env variants |
 | [Kotest](https://kotest.io/) | 6.1.11 | Test framework (BehaviorSpec, assertions, KMP) |
-| [Turbine](https://github.com/cashapp/turbine) | 1.2.0 | Flow testing |
+| [Turbine](https://github.com/cashapp/turbine) | 1.2.1 | Flow testing |
 | [Circuit Test](https://slackhq.github.io/circuit/) | 0.33.1 | Presenter testing (`presenterTestOf`, `FakeNavigator`) |
 | [Konsist](https://docs.konsist.lemonappdev.com/) | 0.17.3 | Kotlin architecture test enforcement |
 | [Harmonize](https://github.com/perrystreetsoftware/Harmonize) | 0.9.0 | Swift/iOS architecture test enforcement |
