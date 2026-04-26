@@ -24,7 +24,7 @@ No emulator or simulator required. These are fast (~10s each) and should always 
 
 ## Konsist (Kotlin)
 
-33 architecture test classes in `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/`. All use Kotest BehaviorSpec and scan the project with `Konsist.scopeFromProject()`.
+34 architecture test classes in `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/`. All use Kotest BehaviorSpec and scan the project with `Konsist.scopeFromProject()`.
 
 ### Test Categories
 
@@ -43,6 +43,7 @@ No emulator or simulator required. These are fast (~10s each) and should always 
 | core/ | `CoreMetroConventionsTest` | core:metro must not import from features or impl modules. |
 | core/ | `CoreStringsConventionsTest` | core:strings is resources-only (no Kotlin source, androidMain only). No feature `build.gradle.kts` declares `:core:strings` — the presentation plugin auto-wires it on `androidMain`. |
 | core/ | `BuildConfigSchemaParityTest` | `AppBuildConfig` ↔ `Defaults.properties` key parity (camelCase ↔ SCREAMING_SNAKE_CASE). Every market directory covers the same set of envs. Catches schema drift in PRs without invoking the full `validateAllMarkets` Gradle task. |
+| core/ | `PersistenceConventionsTest` | `app.cash.sqldelight.*` imports restricted to `core:persistence` (api/impl/test), the `composeApp` aggregator, and feature `impl/data/`. Keeps SQLDelight runtime out of presentation/domain and prevents non-data modules from reaching past repositories into raw queries. |
 | core/ | `AgentDocumentationTest` | Every feature/core module has AGENTS.md. Skills have SKILL.md. |
 | layers/ | `ApiLayerTest` | Api data classes are immutable. @Serializable only in api/data/network. No MutableStateFlow in public APIs. |
 | layers/ | `DataLayerTest` | Repository interfaces in domain. RepositoryImpl in data with @ContributesBinding. Repository functions return Flow. DataSource classes in correct directories (remote/ or local/). DTOs must be @Serializable data classes in remote/ package. |

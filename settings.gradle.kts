@@ -45,6 +45,9 @@ include(":core:build-config:api")
 include(":core:build-config:impl")
 include(":core:build-config:test")
 include(":core:strings")
+include(":core:persistence:api")
+include(":core:persistence:impl")
+include(":core:persistence:test")
 
 // Feature modules — auto-discovered, architecture-enforced submodules.
 // Debug-only features (e.g. `debug-menu`) are filtered at runtime via

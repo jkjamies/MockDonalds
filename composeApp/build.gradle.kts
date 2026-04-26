@@ -6,10 +6,26 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.metro)
     alias(libs.plugins.kmp.nativecoroutines)
+    alias(libs.plugins.sqldelight)
 }
 
 metro {
     enableCircuitCodegen.set(true)
+}
+
+// SQLDelight aggregator — composeApp owns the single application-wide `AppDatabase`.
+// Features contribute their own `.sq` schemas inside `features/{name}/impl/data/`
+// (each applying the SQLDelight plugin and declaring the same `AppDatabase` name).
+// Add `dependency(project(":features:<name>:impl:data"))` here when a feature
+// starts contributing tables. Mirrors Slack/Cash App's single-DB-with-feature-owned-
+// schemas pattern: composeApp is the leaf consumer that already imports every feature,
+// so this preserves the "core never imports features" Konsist boundary.
+sqldelight {
+    databases {
+        create("AppDatabase") {
+            packageName.set("com.mockdonalds.app.persistence")
+        }
+    }
 }
 
 kotlin {
@@ -81,6 +97,7 @@ kotlin {
             implementation(project(":core:theme"))
             implementation(project(":core:network:impl"))
             implementation(project(":core:build-config:impl"))
+            implementation(project(":core:persistence:impl"))
 
             // Circuit
             implementation(libs.circuit.foundation)

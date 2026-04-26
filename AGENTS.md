@@ -11,7 +11,7 @@ Kotlin Multiplatform reference app. Shared Kotlin business logic with native UI 
 | CenterPost | Business logic framework (coroutine-based interactors) |
 | Ktor | HTTP networking |
 | Kotest | Test framework (BehaviorSpec, property testing) |
-| Konsist | Kotlin architecture test enforcement (22 test classes in `testing/architecture-check/`) |
+| Konsist | Kotlin architecture test enforcement (34 test classes in `testing/architecture-check/`) |
 | Harmonize | iOS/Swift architecture test enforcement |
 | Compose Multiplatform | Android: Compose UI rendering. iOS: Compose runtime only (state via Molecule) — SwiftUI renders natively |
 | Molecule | Bridges `@Composable` presenter functions to `StateFlow` for iOS (Compose runtime, not UI) |
@@ -35,6 +35,7 @@ core/
   circuit/             — TabScreen, ProtectedScreen, FlowScreen, Parcelize expect/actual, CircuitProviders
   metro/               — AppGraph interface (shared DI contract)
   network/             — HttpClientFactory (api/) + impl with baked-in plugins (api/impl split)
+  persistence/         — DatabaseDriverFactory (api/) + AndroidSqliteDriver/NativeSqliteDriver actuals (impl/) + FakeDatabaseDriverFactory (test/). The single `AppDatabase` is aggregated in `composeApp`; feature-owned `.sq` schemas live in `features/{name}/impl/data/src/commonMain/sqldelight/`.
   strings/             — Android-only `R.string` resources populated by `pullTranslations` (Phrase). iOS reads its own `iosApp/iosApp/Resources/{locale}.lproj/` files.
   theme/               — MockDonaldsTheme, colors, typography, dimens, AdaptiveLayout
   test-fixtures/       — TestCenterPostDispatchers, KotestProjectConfig, StateRobot base
