@@ -1,8 +1,10 @@
+import CircuitMacros
 import SwiftUI
 import ComposeApp
 
 private let tags = WelcomeTestTags.shared
 
+@CircuitInject(WelcomeScreen.self, WelcomeUiState.self)
 struct WelcomeView: View {
     let state: WelcomeUiState
     @Environment(\.mockDonaldsColors) private var colors

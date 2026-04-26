@@ -1,8 +1,10 @@
+import CircuitMacros
 import SwiftUI
 import ComposeApp
 
 private let tags = ScanTestTags.shared
 
+@CircuitInject(ScanScreen.self, ScanUiState.self)
 struct ScanView: View {
     let state: ScanUiState
     @State private var gradientAngle: Double = 0

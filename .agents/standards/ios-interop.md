@@ -218,16 +218,87 @@ In `composeApp/build.gradle.kts`, the iOS framework auto-exports for each featur
 - `api:navigation` — Screen objects, TestTags
 - `impl:presentation` — UiState, Event sealed classes, presenter types
 
-Plus `core:circuit` for shared Circuit types (TabScreen, ProtectedScreen).
+Plus `core:circuit` for shared Circuit types (TabScreen, ProtectedScreen), and `core:feature-flag:impl` for the `HarnessIosBridge` contract (see "Native Swift bridge pattern" below).
 
-## ScreenUiFactory Registration (AppDelegate.swift)
+## Native Swift bridge pattern
 
-`AppDelegate` creates `CircuitIos` with an array of `ScreenUiFactory<Screen, UiState>` entries:
+Used when an iOS vendor SDK has no pure-Kotlin binding and we want to avoid CocoaPods and `expect/actual` FFI. Precedent: Harness Feature Flags (`core:feature-flag:impl`).
+
+**Contract**: a Kotlin interface in the core module's `iosMain` (e.g., `HarnessIosBridge`). Listener callbacks are bridged to `Flow` via `callbackFlow` in a Kotlin impl that depends on the interface.
+
+**Swift side** is split across two locations because a local SPM package **cannot import the `ComposeApp` framework** (that framework is produced by Gradle's `embedAndSignAppleFrameworkForXcode` and linked into the `iosApp` Xcode target only — SPM packages are resolved before it exists):
+
+- **SPM package** colocated in the core module under `{module}/impl/swift/` — owns the vendor SDK dependency and all vendor-specific work (SDK init, variation reads, listener registration). Exposes a Swift-native public API (e.g., `HarnessClient`). **Does not import `ComposeApp`.**
+- **iosApp target adapter** (e.g., `iosApp/iosApp/Harness/SwiftHarnessBridge.swift`) — a thin class that imports both `ComposeApp` (for the Kotlin interface) and the SPM product, conforms to the Kotlin interface, and delegates to the SPM client. This is the only place where Swift code crosses the Kotlin boundary.
+
+**Wiring**:
+- Export the core module from the ComposeApp framework (`export(project(":core:xxx:impl"))`) and switch its dependency to `api(...)` in `composeApp/commonMain`, so Swift can reach the interface.
+- Add the local package to `iosApp/project.yml` under `packages:` (`path: ../core/{module}/impl/swift`) and list its product under `targets.iosApp.dependencies`.
+- Pass the Swift adapter instance into Kotlin via a `@DependencyGraph.Factory` on the iOS-specific `ProdAppGraph` (see "Per-platform AppGraph" below).
+
+**Keep the bridge minimal**. It should expose only what the Kotlin-side `RemoteFeatureFlagSource` (or equivalent abstraction) needs — not the vendor SDK's surface.
+
+## Per-platform AppGraph
+
+`ProdAppGraph` is platform-specific, not shared:
+
+| Source set | Factory parameter | Purpose |
+|------------|-------------------|---------|
+| `composeApp/androidMain/AppGraph.kt` | `@Provides Application` | Android SDK init (e.g., Harness `CfClient.initialize(context, …)`) |
+| `composeApp/iosMain/AppGraph.kt` | `@Provides HarnessIosBridge` (and any other Swift-provided bridges) | Injecting Swift-owned instances into the Kotlin graph |
+
+Callers use `createGraphFactory<ProdAppGraph.Factory>().create(…)` rather than `createGraph<ProdAppGraph>()`. This pattern generalizes whenever either platform needs host-owned types (Application, Swift bridges) as DI inputs.
+
+## ScreenUiFactory Registration via `@CircuitInject` (Swift macro)
+
+`AppDelegate` consumes a generated factory list — authors do **not** edit `AppDelegate.swift`
+to register new screens. Instead, every SwiftUI view annotates itself with `@CircuitInject`,
+mirroring Kotlin's presenter/UI registration on Android:
+
 ```swift
-ScreenUiFactory<HomeScreen, HomeUiState> { HomeView(state: $0) }
+import CircuitMacros
+
+@CircuitInject(HomeScreen.self, HomeUiState.self)
+struct HomeView: View {
+    let state: HomeUiState
+    var body: some View { … }
+}
 ```
-Each factory matches on Screen type and casts the state. Adding a new screen requires a new
-`ScreenUiFactory` entry in `AppDelegate.swift`.
+
+A pre-build script scans `iosApp/**/*.swift`, extracts every `@CircuitInject` site, and emits
+`iosApp/iosApp/Generated/GeneratedCircuitFactories.swift`, an extension on `CircuitIos` that
+exposes `static func generatedFactories() -> [UiFactory]`. `AppDelegate` wires it as:
+
+```swift
+return CircuitIos(iosApp: iosApp, uiFactories: CircuitIos.generatedFactories())
+```
+
+**Two SPM packages back this:**
+
+| Package | Location | Role |
+|---------|----------|------|
+| `CircuitMacros` | `iosApp/CircuitMacros/` | Declares `@CircuitInject` (peer macro). Consumed by the iosApp Xcode target. iOS-only platforms array; the macro plugin builds for the host (macOS) automatically. |
+| `CircuitFactoryRegistry` | `build-tooling/CircuitFactoryRegistry/` | Executable that parses Swift source via SwiftSyntax and emits the generated factories file. macOS-only, deliberately outside `iosApp/` so Xcode's SwiftPM driver doesn't try to load its manifest. |
+
+The peer macro returns `[]` — its purpose is compile-time type validation (typos in
+`HomeScreen.self`/`HomeUiState.self` fail the Swift build). The registry executable does the
+actual codegen.
+
+**`@CircuitInject` annotations honour `#if DEBUG`.** The registry visitor tracks `#if DEBUG`
+nesting and emits debug entries inside an `#if DEBUG` block in the generated file, matching
+the source's gating exactly. Debug-only screens (`DebugMenuView`, `BuildConfigDebugView`,
+`FeatureFlagsDebugView`) keep their file-level `#if DEBUG` and the registry mirrors that.
+
+**Build-script env hygiene.** The pre-build script runs `swift build` on the registry
+executable. Xcode's iOS build environment exports `SDKROOT=iphonesimulator`, which would
+leak into SwiftPM's macOS manifest evaluator and produce the cryptic
+`error: 'circuitfactoryregistry': Invalid manifest`. The script `unset`s `SDKROOT`,
+`PLATFORM_NAME`, `EFFECTIVE_PLATFORM_NAME`, `TARGET_DEVICE_PLATFORM_NAME`, and `TOOLCHAINS`
+before invoking `swift build`. Any future "build a host tool from an iOS run script" must do
+the same.
+
+See `iosApp/CircuitMacros/AGENTS.md` and `build-tooling/CircuitFactoryRegistry/AGENTS.md`
+for the macro plugin internals and registry tool internals respectively.
 
 ## iOS Robot Pattern Differences
 

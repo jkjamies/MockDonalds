@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Translations are pulled from Phrase by ./gradlew :core:strings:pullTranslations.
+         This file is a placeholder until the Phrase API integration is wired. -->
+    <string name="placeholder">MockDonalds</string>
+</resources>

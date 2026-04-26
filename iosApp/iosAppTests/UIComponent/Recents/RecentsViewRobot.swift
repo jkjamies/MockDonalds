@@ -38,14 +38,12 @@ final class RecentsViewRobot {
         try body.find(viewWithAccessibilityIdentifier: tags.LIST)
         try body.find(viewWithAccessibilityIdentifier: "\(tags.ITEM)-1")
         try body.find(viewWithAccessibilityIdentifier: "\(tags.ITEM)-2")
-        try body.find(viewWithAccessibilityIdentifier: tags.BACK_BUTTON)
     }
 
     func assertLoadingScreen() throws {
         let view = createLoadingView()
         let body = try view.inspect()
         try body.find(viewWithAccessibilityIdentifier: tags.SCREEN)
-        try body.find(viewWithAccessibilityIdentifier: tags.BACK_BUTTON)
         #expect(throws: Error.self) {
             try body.find(viewWithAccessibilityIdentifier: self.tags.LIST)
         }
@@ -59,7 +57,6 @@ final class RecentsViewRobot {
         let body = try view.inspect()
         try body.find(viewWithAccessibilityIdentifier: tags.SCREEN)
         try body.find(viewWithAccessibilityIdentifier: tags.EMPTY)
-        try body.find(viewWithAccessibilityIdentifier: tags.BACK_BUTTON)
         #expect(throws: Error.self) {
             try body.find(viewWithAccessibilityIdentifier: self.tags.LIST)
         }
@@ -70,22 +67,21 @@ final class RecentsViewRobot {
         let body = try view.inspect()
         try body.find(viewWithAccessibilityIdentifier: tags.SCREEN)
         try body.find(viewWithAccessibilityIdentifier: tags.LIST)
-        try body.find(viewWithAccessibilityIdentifier: tags.BACK_BUTTON)
     }
 
     // MARK: - Event Verification
 
     func simulateBackTap() {
         let state = stateRobot.defaultState()
-        if let success = state as? RecentsUiStateSuccess {
-            success.eventSink(RecentsEventOnBackTapped())
+        if let success = state as? RecentsUiState.Success {
+            success.eventSink(RecentsEvent.OnBackTapped())
         }
     }
 
     func simulateItemTap(id: String) {
         let state = stateRobot.defaultState()
-        if let success = state as? RecentsUiStateSuccess {
-            success.eventSink(RecentsEventOnItemTapped(id: id))
+        if let success = state as? RecentsUiState.Success {
+            success.eventSink(RecentsEvent.OnItemTapped(id: id))
         }
     }
 

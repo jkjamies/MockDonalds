@@ -21,6 +21,12 @@ When context is provided, replace placeholders with real values everywhere: UiSt
 
 Templates are available in `.agents/templates/new-spec.md` for structured input.
 
+## Pre-flight: Grill the Spec
+
+When the user provides a spec via `@file`, scan it for unresolved markers before scaffolding (see the grill-me skill for the full marker list): `<!-- TODO -->` placeholders, empty `- [ ]` AC items, empty required header fields, raw template placeholder prose, `...` table cells, or unconfirmed reverse-spec presumptions (`presumably` / `appears to`). If any are present, **stop and run `/grill-me @{spec}` first**, then resume this skill.
+
+The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before producing output, so a marker-laden spec usually means the spec was hand-authored from a template or has gone stale. Skip the pre-flight only if the user explicitly says "skip the grill" — in that case, surface unresolved markers as `// TODO` comments in the generated code and call them out in the final summary.
+
 ## Reference Standards
 
 - Naming: `.agents/standards/naming-conventions.md`
@@ -42,10 +48,14 @@ Use existing screens in `features/order/` as the pattern reference.
 | `{Screen}Presenter.kt` | impl/presentation/src/commonMain | @CircuitInject + @Inject + @Composable |
 | `{Screen}UiState.kt` | impl/presentation/src/commonMain | Data class : CircuitUiState + sealed Event |
 | `{Screen}Ui.kt` | impl/presentation/src/androidMain | @CircuitInject Composable |
+| `{Screen}View.swift` | iosApp/iosApp/Features/{Feature}/ | SwiftUI View with `@CircuitInject({Screen}.self, {Screen}UiState.self)` (drives factory codegen — no AppDelegate edit) |
 | `{Screen}PresenterTest.kt` | impl/presentation/src/commonTest | BehaviorSpec with presenterTestOf |
 | `{Screen}UiTest.kt` | impl/presentation/src/androidDeviceTest | BehaviorSpec with UiRobot |
 | `{Screen}UiRobot.kt` | impl/presentation/src/androidDeviceTest | Robot with StateRobot |
 | `{Screen}StateRobot.kt` | impl/presentation/src/androidDeviceTest | Extends core StateRobot |
+| `{Screen}ViewTest.swift` | iosApp/iosAppTests/UIComponent/{Feature}/ | Swift Testing + ViewInspector Robot pattern |
+| `{Screen}ViewRobot.swift` | iosApp/iosAppTests/UIComponent/{Feature}/ | `@MainActor final class` with ViewInspector |
+| `{Screen}StateRobot.swift` | iosApp/iosAppTests/UIComponent/{Feature}/ | Extends `BaseStateRobot` |
 
 ## Screen Type Selection
 
@@ -60,6 +70,7 @@ Use existing screens in `features/order/` as the pattern reference.
 - UiState must implement `CircuitUiState` and include `eventSink: ({Event}) -> Unit`
 - Events must be `sealed class` (not `sealed interface`) for iOS interop
 - Ui functions must have `@CircuitInject({Screen}::class, AppScope::class)` and `@Composable`
+- SwiftUI Views must `import CircuitMacros` and carry `@CircuitInject({Screen}.self, {Screen}UiState.self)` — `CircuitFactoryRegistry` codegen picks it up at build time, so `AppDelegate.swift` never needs editing. See `.agents/standards/ios-interop.md`.
 
 ## Post-Change Verification — MANDATORY
 

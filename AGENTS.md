@@ -11,7 +11,7 @@ Kotlin Multiplatform reference app. Shared Kotlin business logic with native UI 
 | CenterPost | Business logic framework (coroutine-based interactors) |
 | Ktor | HTTP networking |
 | Kotest | Test framework (BehaviorSpec, property testing) |
-| Konsist | Kotlin architecture test enforcement (22 test classes in `testing/architecture-check/`) |
+| Konsist | Kotlin architecture test enforcement (34 test classes in `testing/architecture-check/`) |
 | Harmonize | iOS/Swift architecture test enforcement |
 | Compose Multiplatform | Android: Compose UI rendering. iOS: Compose runtime only (state via Molecule) — SwiftUI renders natively |
 | Molecule | Bridges `@Composable` presenter functions to `StateFlow` for iOS (Compose runtime, not UI) |
@@ -30,11 +30,13 @@ features/{name}/
 
 core/
   auth/                — AuthManager interface (api/) + InMemoryAuthManager (impl/)
-  build-config/        — Compile-time market/env config (BuildKonfig-backed AppBuildConfig facade; -Pmarket/-Penv)
+  build-config/        — Compile-time market/env/buildType config, api/impl/test split (AppBuildConfig facade + `isDebug` extension in api/, BuildKonfig+validateAllMarkets in impl/, FakeAppBuildConfig in test/; variant selection delegated to build-logic/`BuildVariantResolver` — `-P` flags, AGP variant task names, or defaults)
   centerpost/          — CenterPostInteractor, CenterPostSubjectInteractor, CenterPostDispatchers
   circuit/             — TabScreen, ProtectedScreen, FlowScreen, Parcelize expect/actual, CircuitProviders
   metro/               — AppGraph interface (shared DI contract)
   network/             — HttpClientFactory (api/) + impl with baked-in plugins (api/impl split)
+  persistence/         — DatabaseDriverFactory (api/) + AndroidSqliteDriver/NativeSqliteDriver actuals (impl/) + FakeDatabaseDriverFactory (test/). The single `AppDatabase` is aggregated in `composeApp`; feature-owned `.sq` schemas live in `features/{name}/impl/data/src/commonMain/sqldelight/`.
+  strings/             — Android-only `R.string` resources populated by `pullTranslations` (Phrase). iOS reads its own `iosApp/iosApp/Resources/{locale}.lproj/` files.
   theme/               — MockDonaldsTheme, colors, typography, dimens, AdaptiveLayout
   test-fixtures/       — TestCenterPostDispatchers, KotestProjectConfig, StateRobot base
 ```
@@ -135,10 +137,11 @@ xcodebuild test -scheme iOSApp -testPlan E2ETests -destination '...'            
 
 | Plugin | Used By | Adds |
 |--------|---------|------|
-| `mockdonalds.kmp.library` | api modules | Base KMP setup, Kotest |
+| `mockdonalds.kmp.library` | api modules, single-target core modules | Base KMP setup, Kotest |
 | `mockdonalds.kmp.domain` | impl/domain modules | Metro DI (`@ContributesBinding`) |
 | `mockdonalds.kmp.data` | impl/data modules | Metro DI + kotlinx.serialization |
-| `mockdonalds.kmp.presentation` | impl/presentation modules | Compose Multiplatform + Circuit codegen |
+| `mockdonalds.kmp.presentation` | impl/presentation modules | Compose Multiplatform + Circuit codegen + auto-adds `core:strings` to `androidMain` |
+| `mockdonalds.phrase` | `core:strings` | Registers `pullTranslations` Gradle task pulling Phrase translations into Android XML + iOS `.lproj` files |
 
 ## Skills
 
@@ -228,6 +231,7 @@ Detailed reference documents in `.agents/standards/`:
 | [convention-plugins.md](.agents/standards/convention-plugins.md) | Plugin hierarchy, what each plugin provides, auto-wiring |
 | [feature-scaffolding.md](.agents/standards/feature-scaffolding.md) | Step-by-step guide to add a new feature, checklist |
 | [build-config.md](.agents/standards/build-config.md) | Compile-time market/env config (`core:build-config`): BuildKonfig schema, `AppBuildConfig` facade, Harness boundary, add-a-field workflow |
+| [markets.md](.agents/standards/markets.md) | Cross-cutting market concept: the 5 markets, how each surfaces across Android (applicationId), iOS (bundle ID, xcconfig), CI axis, future localization/analytics/store listings |
 
 ## Self-Updating Documentation
 

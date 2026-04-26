@@ -8,9 +8,16 @@ Per-feature Ktor HTTP client factory with baked-in platform infrastructure. Each
 
 ```
 core/network/
-  api/   — HttpClientFactory, ClientConfig DSL, NetworkException, AuthMode
-  impl/  — HttpClientFactoryImpl (baked-in plugins), JsonProvider
+  api/
+    commonMain/   — HttpClientFactory, ClientConfig DSL, NetworkException, AuthMode, SensorDataProvider
+    iosMain/      — AkamaiSensorBridge (Kotlin contract implemented in Swift)
+  impl/
+    commonMain/   — HttpClientFactoryImpl (baked-in plugins), HttpClientProvider, JsonProvider
+    androidMain/  — AkamaiSensorDataProviderAndroid (real SDK drop-in point)
+    iosMain/      — AkamaiSensorDataProviderIos (delegates to AkamaiSensorBridge supplied via ProdAppGraph.Factory)
 ```
+
+`AkamaiSensorBridge` lives in `api/iosMain` so it exports to Swift as `ApiAkamaiSensorBridge` (Kotlin/Native module-prefix convention for transitively-visible types). `SwiftAkamaiSensorBridge` in `iosApp/iosApp/Akamai/` conforms to that protocol; the implementation is wired into the DI graph via `ProdAppGraph.Factory` from `IosApp`.
 
 ## Public API (api module)
 
@@ -18,15 +25,20 @@ core/network/
 |------|-------------|
 | `HttpClientFactory` | `fun interface` — creates per-feature `HttpClient` instances via DSL config |
 | `ClientConfig` | DSL class — `baseUrl`, `authMode`, `requestTimeout`, `connectTimeout`, `socketTimeout`, `headers`, `ktorConfig` escape hatch |
-| `AuthMode` | Enum — `BEARER` (default, future: auto-refresh on 401) or `NONE` (public endpoints) |
+| `AuthMode` | Enum — `BEARER` (default) or `NONE` (public endpoints) |
+| `SensorDataProvider` | `suspend fun currentSensorData(): String` — supplies the Akamai Bot Manager token the factory attaches to every request |
+| `AkamaiSensorBridge` (iosMain) | Kotlin contract for the iOS Akamai SDK, mirroring `HarnessIosBridge`. Implemented in Swift (`SwiftAkamaiSensorBridge`); supplied to DI via `ProdAppGraph.Factory`. Exported to Swift as `ApiAkamaiSensorBridge` (api-module prefix). |
 | `NetworkException` | Sealed class — `HttpError`, `Timeout`, `NoConnectivity`, `Serialization`, `Unknown` |
 
 ## Implementation (impl module)
 
 | Type | Description |
 |------|-------------|
-| `HttpClientFactoryImpl` | `@ContributesBinding` factory. Bakes in: JSON content negotiation, `X-App-Id` header, `X-Market` header, dev logging (non-prod), `HttpTimeout`. Features configure via DSL. |
+| `HttpClientFactoryImpl` | `@SingleIn(AppScope)` `@ContributesBinding` factory. Takes a shared base `HttpClient` whose engine is re-used by every derived per-feature client (via `baseClient.config { }`). Bakes in: JSON content negotiation, `X-App-Id` / `X-Market` / `User-Agent` headers, dev logging (non-prod), `HttpTimeout`, `HttpCookies`, `HttpRequestRetry` (5xx + 429, exponential with `Retry-After`), Akamai sensor-data header, Akamai debug `Pragma` headers (non-prod), and — when `AuthMode.BEARER` — Ktor's `Auth` plugin wired to `AuthManager`. Features configure via DSL. |
+| `HttpClientProvider` | `@ContributesTo` interface providing the singleton base `HttpClient` (default engine per platform) |
 | `JsonProvider` | `@ContributesTo` interface providing singleton `Json` instance with `ignoreUnknownKeys`, `isLenient`, `encodeDefaults`, `explicitNulls = false` |
+| `AkamaiSensorDataProviderAndroid` | `androidMain` `@ContributesBinding` — takes `Application`. POC default returns empty; swap the body for a call into the Akamai Bot Manager Android SDK once the AAR is dropped into `core/network/impl/libs/`. |
+| `AkamaiSensorDataProviderIos` | `iosMain` `@ContributesBinding` — delegates `currentSensorData()` to the `AkamaiSensorBridge` (defined in `core:network:api`). |
 
 ## Usage
 
@@ -55,15 +67,19 @@ Per-service base URLs come from `AppBuildConfig` market properties (`menuBaseUrl
 - **ContentNegotiation** — JSON via kotlinx.serialization
 - **X-App-Id header** — per-market app identifier from `AppBuildConfig`
 - **X-Market header** — market code from `AppBuildConfig`
+- **User-Agent** — explicit agent string derived from `AppBuildConfig` (`appName/env-market (buildType)`); never uses Ktor's engine-default UA (Akamai Bot Manager keys off UA shape)
 - **HttpTimeout** — defaults: request 15s, connect 5s, socket 10s (overridable via DSL)
+- **HttpCookies** — per-client cookie jar; `Set-Cookie` responses are preserved and replayed on subsequent requests on the same client. Required so Akamai session cookies (`ak_bmsc`, `AKA_A2`) stay pinned to the same edge node across retries.
+- **HttpRequestRetry** — retries 5xx and 429 up to 3 times, exponential backoff, `Retry-After` respected.
+- **Akamai sensor data** — `SensorDataProvider.currentSensorData()` is called per request; when non-empty, attached as the `X-acf-sensor-data` header. Android binding takes `Application` and calls the Akamai Bot Manager SDK once wired; iOS binding delegates to a Swift bridge. Both return empty by default so the header is omitted until the real SDK is in place.
+- **Akamai debug Pragma headers** — `akamai-x-cache-on`, `akamai-x-cache-remote-on`, `akamai-x-get-true-cache-key`, `akamai-x-get-cache-key` added in non-prod (env ≠ `prod`) for edge troubleshooting; omitted in prod.
 - **Logging** — `LogLevel.HEADERS` in non-prod, `LogLevel.NONE` in prod
+- **Auth (bearer)** — installed when `AuthMode.BEARER`. `loadTokens`/`refreshTokens` delegate to `AuthManager`; cross-client refresh coordination lives in `AuthManager` (one refresh call for concurrent 401 bursts across clients). Skipped when `AuthMode.NONE`.
+- **Cache-header pass-through** — Ktor does not mutate `Cache-Control`, `ETag`, `If-None-Match`, or `If-Modified-Since` on outbound requests; features using conditional GETs can set these directly via `HttpRequestBuilder.headers`.
 
-## Future (stubbed/planned)
+## Shared Engine
 
-- **Auth (bearer + refresh)** — `AuthMode.BEARER` is declared but auth plugin not yet wired. Will integrate with `core:auth` `AuthManager` for token injection and 401 refresh with `Mutex`-coordinated concurrent refresh.
-- **Akamai headers** — always-on, every request. Plugin placeholder for SDK integration.
-- **Retry with backoff** — configurable retry policy.
-- **Error mapping** — HTTP errors mapped to `NetworkException` subtypes.
+The factory holds one `HttpClient` as its base. Each `create()` call returns a derived client via `baseClient.config { }`, which shares the underlying engine (connection pool, TLS config) with the base. Per-feature clients remain isolated for plugin/header/timeout configuration but do not duplicate engine resources.
 
 ## Rules
 

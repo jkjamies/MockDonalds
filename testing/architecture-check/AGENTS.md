@@ -21,7 +21,7 @@ All tests use Kotest BehaviorSpec (Given/Then style) and scan the project with `
 | core/ | DependencyGraphScopeTest | @DependencyGraph only in consumer modules (composeApp, navint-tests). CircuitProviders only in core:circuit. AppGraph interface only in core:metro. |
 | core/ | CoreMetroConventionsTest | core:metro must not import from feature modules. core:metro must not import from impl modules. |
 | core/ | AnalyticsConventionsTest | Presenters must use `TrackAnalyticsEvent` interactor, not `AnalyticsDispatcher` directly. Domain/data must use `AnalyticsDispatcher`, not the interactor. |
-| core/ | FeatureFlagConventionsTest | Presenters must use `ObserveFeatureFlag` interactor, not `FeatureFlagProvider` directly. Domain/data must use `FeatureFlagProvider`, not the interactor. |
+| core/ | FeatureFlagConventionsTest | Presenters must read flags via `FeatureFlagProvider.rememberFlag(flag)` — direct `.isEnabled(...)` / `.observe(...)` calls in presentation are forbidden. Domain/data must use `FeatureFlagProvider` directly and must not reference the Composable `rememberFlag`. |
 | core/ | BuildConfigCoverageTest | Every market config JSON has required fields. Build config values are consistent across markets. |
 | core/ | AgentDocumentationTest | Every feature and core module has AGENTS.md. Root AGENTS.md exists. .agents/skills/ directory exists with SKILL.md per skill. .gemini/settings.json references AGENTS.md. |
 | layers/ | ApiLayerTest | Data classes in api are immutable (val only). @Serializable only in api/data/network. No MutableStateFlow in public APIs. api:domain has no Circuit dependency. DTOs only in data/network modules. |
@@ -29,10 +29,10 @@ All tests use Kotest BehaviorSpec (Given/Then style) and scan the project with `
 | layers/ | DomainLayerTest | Abstract use cases (CenterPostInteractor/CenterPostSubjectInteractor) in api modules. Impl classes in domain modules with @ContributesBinding, extending their abstract parent. |
 | layers/ | PresentationLayerTest | Presenters have @CircuitInject. One public function per presenter file. Presenters do not depend on repositories directly. UiState implements CircuitUiState with eventSink property. |
 | testing/ | TestDoubleConventionsTest | Fakes live in dedicated test modules (not commonTest). Every abstract use case has a Fake. Test doubles prefixed with Fake or Test. No mockk in commonTest. |
-| testing/ | TestModuleDITest | All Fake classes in feature test modules have @ContributesBinding(AppScope::class) and @Inject constructor. No @ContributesBinding in commonTest source sets. |
+| testing/ | TestModuleDITest | All Fake classes in feature test modules have @ContributesBinding(AppScope::class). Fakes with @ContributesBinding must NOT also declare @Inject — Metro infers it. No @ContributesBinding in commonTest source sets. |
 | testing/ | TestFileNamingTest | Test classes end with Test/Tests. All specs extend BehaviorSpec. No runBlocking, runTest, or UnconfinedTestDispatcher in tests. |
 | testing/ | TestModuleCoverageTest | Every feature has a dedicated test module. Every use case Impl, presenter, and RepositoryImpl has a corresponding test file. Every feature TestTags referenced in at least one e2e test. |
-| testing/ | TestBoundaryTest | Feature UI tests must not use real Navigator or call resetRoot()/goTo(). navint-tests must not import feature-level UiRobot/StateRobot or from impl/domain or impl/data. e2e-tests must not import from feature test/ modules or impl/domain or impl/data. Journey tests end with JourneyTest, benchmarks end with Benchmark. |
+| testing/ | TestBoundaryTest | Feature UI tests must not use real Navigator or call resetRoot()/goTo(). navint-tests must not import feature-level UiRobot/StateRobot or from impl/domain or impl/data. e2e-tests must not import from feature test/ modules or impl/domain or impl/data. Journey tests in testing/e2e-tests/suites/ end with JourneyTest. Benchmark files in testing/benchmarks/ end with Benchmark. |
 | testing/ | UiTestConventionsTest | Every *Ui.kt has a *UiTest in androidDeviceTest. Robot pattern: UiTest -> UiRobot -> StateRobot. UiRobots wrap in MockDonaldsTheme, provide LocalWindowSizeClass, have landscape methods. TestTags objects in api module. |
 
 ## Running

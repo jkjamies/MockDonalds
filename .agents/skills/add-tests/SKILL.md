@@ -63,11 +63,11 @@ If a new user journey, deep link, or tab navigation flow was added, check whethe
 - Tests interact via UI Automator (`By.desc(testTag)`) — no direct code access
 - TestTags come from `features/*/api/navigation/`
 
-If a startup performance concern exists, check `testing/e2e-tests/src/main/kotlin/.../benchmarks/`:
+If a startup performance concern exists, check `testing/benchmarks/src/main/kotlin/com/mockdonalds/app/benchmarks/` (separate module, minified target):
 - Benchmark files end with `Benchmark.kt`
 - Uses `MacrobenchmarkRule` with `StartupTimingMetric()`
 
-See `.agents/standards/testing-e2e.md` for e2e-tests conventions and `testing/e2e-tests/AGENTS.md` for module details.
+See `.agents/standards/testing-e2e.md` for e2e-tests conventions, `testing/e2e-tests/AGENTS.md` for journey-test details, and `testing/benchmarks/AGENTS.md` for macrobenchmark details.
 
 ### 6. Post-Change Verification — MANDATORY
 

@@ -17,6 +17,10 @@ dependencyResolutionManagement {
 
 rootProject.name = "MockDonalds"
 
+// Build tooling (JVM-only, not part of the shipped app)
+include(":build-tooling:ksp-build-config-registry")
+include(":build-tooling:ksp-fake-app-build-config")
+
 // App
 include(":androidApp")
 include(":composeApp")
@@ -37,9 +41,17 @@ include(":core:analytics:api")
 include(":core:analytics:impl")
 include(":core:analytics:test")
 include(":core:metro")
-include(":core:build-config")
+include(":core:build-config:api")
+include(":core:build-config:impl")
+include(":core:build-config:test")
+include(":core:strings")
+include(":core:persistence:api")
+include(":core:persistence:impl")
+include(":core:persistence:test")
 
-// Feature modules — auto-discovered, architecture-enforced submodules
+// Feature modules — auto-discovered, architecture-enforced submodules.
+// Debug-only features (e.g. `debug-menu`) are filtered at runtime via
+// `AppBuildConfig.buildType` rather than stripped from the module graph.
 rootDir.resolve("features").listFiles()
     ?.filter { it.isDirectory }
     ?.map { it.name }
@@ -57,3 +69,4 @@ rootDir.resolve("features").listFiles()
 include(":testing:architecture-check")
 include(":testing:navint-tests")
 include(":testing:e2e-tests")
+include(":testing:benchmarks")

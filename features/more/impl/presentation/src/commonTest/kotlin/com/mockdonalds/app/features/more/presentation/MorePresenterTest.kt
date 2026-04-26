@@ -1,5 +1,6 @@
 package com.mockdonalds.app.features.more.presentation
 
+import com.mockdonalds.app.core.buildconfig.test.FakeAppBuildConfig
 import com.mockdonalds.app.core.test.TestCenterPostDispatchers
 import com.mockdonalds.app.features.profile.api.navigation.ProfileScreen
 import com.mockdonalds.app.features.more.api.navigation.MoreScreen
@@ -16,6 +17,7 @@ class MorePresenterTest : BehaviorSpec({
         val fakeGetMoreContent = FakeGetMoreContent()
         val dispatchers = TestCenterPostDispatchers()
         val navigator = FakeNavigator(MoreScreen)
+        val buildConfig = FakeAppBuildConfig()
 
         When("the presenter emits state") {
             Then("it should start with empty defaults then populate") {
@@ -25,6 +27,8 @@ class MorePresenterTest : BehaviorSpec({
                             navigator = navigator,
                             getMoreContent = fakeGetMoreContent,
                             dispatchers = dispatchers,
+                            tabExtensions = emptySet(),
+                            buildConfig = buildConfig,
                         )
                     },
                 ) {
@@ -46,6 +50,8 @@ class MorePresenterTest : BehaviorSpec({
                             navigator = navigator,
                             getMoreContent = fakeGetMoreContent,
                             dispatchers = dispatchers,
+                            tabExtensions = emptySet(),
+                            buildConfig = buildConfig,
                         )
                     },
                 ) {
@@ -65,6 +71,8 @@ class MorePresenterTest : BehaviorSpec({
                             navigator = navigator,
                             getMoreContent = fakeGetMoreContent,
                             dispatchers = dispatchers,
+                            tabExtensions = emptySet(),
+                            buildConfig = buildConfig,
                         )
                     },
                 ) {
@@ -84,6 +92,8 @@ class MorePresenterTest : BehaviorSpec({
                             navigator = navigator,
                             getMoreContent = fakeGetMoreContent,
                             dispatchers = dispatchers,
+                            tabExtensions = emptySet(),
+                            buildConfig = buildConfig,
                         )
                     },
                 ) {

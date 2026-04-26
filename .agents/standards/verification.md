@@ -6,7 +6,7 @@ The `verify` skill has three scopes, each for a different purpose.
 
 **`diff` (default):** scoped to changed modules only. Fastest option — use during iterative development. Target: ~5–15s.
 
-**`full`:** whole project — lint, unit tests, architecture checks, and one debug build per platform against the default market (`us-dev`). Target: under ~60s warm, under ~2 min cold. Run after any code change as the standard verification.
+**`full`:** whole project — lint, unit tests, architecture checks, and one debug build per platform against the default market/env (`us-int`). Target: under ~60s warm, under ~2 min cold. Run after any code change as the standard verification.
 
 **`all`:** everything — every test level, every variant, every market × env combo, both platforms. Target: thorough, not fast. Run before opening a PR or when the change warrants maximum confidence.
 
@@ -20,17 +20,17 @@ Locally you almost never need any of that. If your change didn't touch R8 rules,
 
 **On iOS targets specifically:** `iosArm64` is the App Store binary, `iosSimulatorArm64` is what devs and CI run tests on, `iosX64` is the legacy Intel simulator. `verify full` only needs `iosSimulatorArm64`. `verify all` should cover `iosArm64` + `iosSimulatorArm64`. `iosX64` is vestigial — Apple has been Apple-Silicon-default since 2020 and KMP compile bugs almost never hit x64 uniquely. Drop it unless someone's actively developing on an Intel Mac.
 
-**On the market matrix:** every market compiles the same Kotlin source; the only thing that changes is which `.properties` file gets merged into BuildKonfig. Building every combo locally proves something real (parse + merge + downstream recompile) but it's `verify all`'s job, not the dev loop's. The cheap gate that catches schema/format drift across every combo without compiling is `./gradlew :core:build-config:validateAllMarkets` (driven by the `validate-all-markets` skill) — a lightweight configuration-cache-friendly Gradle task that runs as a pre-flight check in both `verify full` and `verify all`.
+**On the market matrix:** every market compiles the same Kotlin source; the only thing that changes is which `.properties` file gets merged into BuildKonfig. Building every combo locally proves something real (parse + merge + downstream recompile) but it's `verify all`'s job, not the dev loop's. The cheap gate that catches schema/format drift across every combo without compiling is `./gradlew :core:build-config:impl:validateAllMarkets` (driven by the `validate-all-markets` skill) — a lightweight configuration-cache-friendly Gradle task that runs as a pre-flight check in both `verify full` and `verify all`.
 
 ## Full Scope (the `verify full` pipeline)
 
-Eight steps, symmetric across both platforms: lint → unit → architecture → debug build, plus a pre-flight market-config check. Parameterized by `market` (default `us`) and `env` (default `dev`); only the two debug build steps use those parameters. Stop and fix failures before proceeding.
+Eight steps, symmetric across both platforms: lint → unit → architecture → debug build, plus a pre-flight market-config check. Parameterized by `market` (default `us`) and `env` (default `int`); only the two debug build steps use those parameters. Envs are `int`, `mte`, `prod`. Stop and fix failures before proceeding.
 
 **Pre-flight — `validate-all-markets`:**
 ```bash
-./gradlew :core:build-config:validateAllMarkets
+./gradlew :core:build-config:impl:validateAllMarkets
 ```
-Gradle task on `:core:build-config`. Parses every `core/build-config/markets/*.properties` against `Defaults.properties` and enforces the rules in [build-config.md → Validation rules](build-config.md#validation-rules). Aggregates every violation in one pass and fails the build with the full list. Configuration-cache compatible; executes every invocation (no `upToDateWhen` skip) because the validation logic itself isn't an input to the task — if rules in `build.gradle.kts` change but no `.properties` file does, we still need the new rules to fire against existing files. Warm runs complete in under a second. Owned by the [`validate-all-markets`](../skills/validate-all-markets/SKILL.md) skill. Runs before step 1 because if a combo file is malformed, every downstream step builds against stale or wrong config.
+Gradle task on `:core:build-config:impl`. Parses every `core/build-config/impl/markets/*.properties` against `Defaults.properties` and enforces the rules in [build-config.md → Validation rules](build-config.md#validation-rules). Aggregates every violation in one pass and fails the build with the full list. Configuration-cache compatible; executes every invocation (no `upToDateWhen` skip) because the validation logic itself isn't an input to the task — if rules in `build.gradle.kts` change but no `.properties` file does, we still need the new rules to fire against existing files. Warm runs complete in under a second. Owned by the [`validate-all-markets`](../skills/validate-all-markets/SKILL.md) skill. Runs before step 1 because if a combo file is malformed, every downstream step builds against stale or wrong config.
 
 > **Note:** The `verify` skill's `diff` scope uses the Diff Decision Logic (below) to run only the subset of these steps relevant to what changed.
 
@@ -61,16 +61,16 @@ Gradle task on `:core:build-config`. Parses every `core/build-config/markets/*.p
    ```bash
    ./gradlew :androidApp:assembleDebug -Pmarket=$MARKET -Penv=$ENV
    ```
-   Default `us-dev`. One combo, one build type. Proves the shared Kotlin compiles for Android and the app links. No market matrix.
+   Default `us-int`. One combo, one build type. Proves the shared Kotlin compiles for Android and the app links. No market matrix.
 8. **iOS debug build** (simulator-arm64 only, from `market`/`env` params):
    ```bash
    xcodebuild build \
      -scheme iOSApp \
-     -configuration ${MARKET_UPPER}-${ENV_TITLE} \
+     -configuration ${MARKET_UPPER}-${ENV_TITLE}-Debug \
      -destination 'platform=iOS Simulator,name=iPhone 16' \
      -sdk iphonesimulator
    ```
-   Simulator-arm64 only. Skips `iosArm64` (device) and `iosX64` (legacy Intel sim) — those are CI's job. Configuration name: `us` + `dev` → `US-Dev`, `de` + `prod` → `DE-Prod`.
+   Simulator-arm64 only. Skips `iosArm64` (device) and `iosX64` (legacy Intel sim) — those are CI's job. Configuration name format is `${MARKET_UPPER}-${ENV_TITLE}-${BuildType}` where build type is `Debug` or `Release` — e.g. `us` + `int` → `US-Int-Debug`, `de` + `prod` → `DE-Prod-Debug`. Run `xcodebuild -list -project iosApp/iosApp.xcodeproj` to enumerate the full set of configurations Xcodegen emits.
 
 ### What `verify full` deliberately does NOT run
 
@@ -87,7 +87,7 @@ Only when the change specifically touches:
 - R8/Proguard keep-rules → `./gradlew :androidApp:assembleRelease`
 - `expect`/`actual` source-set splits → build both platforms explicitly
 - cinterop `.def` files → build `iosArm64` too
-- `core:build-config` schema, combo files, or a new market → build at least one non-default combo (`-Pmarket=de -Penv=prod`)
+- `core:build-config:impl` schema, combo files, or a new market → build at least one non-default combo (`-Pmarket=de -Penv=prod`)
 - Circuit navigation wiring, deep links, or presenter graph changes → also run navint-tests
 - Full user journeys or startup performance work → also run e2e-tests
 
@@ -99,17 +99,17 @@ Run these steps in order after any code change. Stop and fix failures before pro
 
 Fully symmetric across both platforms, organized by concern: lint → unit → architecture → UI component → nav/int → e2e → build. Every box has one Android + one iOS step. A pre-flight `validate-all-markets` check runs before step 1.
 
-**Pre-flight — `validate-all-markets`:** `./gradlew :core:build-config:validateAllMarkets` — see [build-config.md → Validation rules](build-config.md#validation-rules) and the [`validate-all-markets`](../skills/validate-all-markets/SKILL.md) skill. Gates the entire pipeline; fails fast if any combo file drifts from the schema.
+**Pre-flight — `validate-all-markets`:** `./gradlew :core:build-config:impl:validateAllMarkets` — see [build-config.md → Validation rules](build-config.md#validation-rules) and the [`validate-all-markets`](../skills/validate-all-markets/SKILL.md) skill. Gates the entire pipeline; fails fast if any combo file drifts from the schema.
 
 
 ```
-  lint          unit          arch          ui-component   nav/int       e2e           build
- ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐    ┌─────────┐   ┌─────────┐   ┌─────────┐
- │1.Detekt │   │3.Kotest │   │5.Konsist│   │7.Androd │    │9.AndNvi │   │11.AndE2E│   │13.asmbl │
- │2.SwiftL.│   │4.iOSUnit│   │6.Harmon.│   │8.iOSUI  │    │10.iOSNvi│   │12.iOSE2E│   │  every  │
- └─────────┘   └─────────┘   └─────────┘   └─────────┘    └─────────┘   └─────────┘   └─────────┘
-   ~20s          ~60s          ~20s         ~varies        ~varies       ~varies        ~5min
-                                             (device)      (device)      (device)
+  lint          unit          arch          ui-component   nav/int       e2e           benchmark     build
+ ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐    ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐
+ │1.Detekt │   │3.Kotest │   │5.Konsist│   │7.Androd │    │9.AndNvi │   │11.AndE2E│   │13.AndMB │   │15.asmbl │
+ │2.SwiftL.│   │4.iOSUnit│   │6.Harmon.│   │8.iOSUI  │    │10.iOSNvi│   │12.iOSE2E│   │14.iOSBnc│   │  every  │
+ └─────────┘   └─────────┘   └─────────┘   └─────────┘    └─────────┘   └─────────┘   └─────────┘   └─────────┘
+   ~20s          ~60s          ~20s         ~varies        ~varies       ~varies      ~varies         ~5min
+                                             (device)      (device)      (device)     (phys+sim)
 ```
 
 1. **Detekt** (Kotlin lint): `./gradlew detektMetadataCommonMain`
@@ -124,7 +124,9 @@ Fully symmetric across both platforms, organized by concern: lint → unit → a
 10. **iOS navint-tests** (`NavIntTests` test plan, requires simulator): `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'`
 11. **Android e2e-tests** (full user journeys, requires device/emulator): `./gradlew :testing:e2e-tests:connectedAndroidTest`
 12. **iOS e2e-tests** (`E2ETests` test plan, requires simulator): `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'`
-13. **Assemble** (every target × every variant): `./gradlew assemble`
+13. **Android macrobenchmarks** (startup + frame-timing against minified `benchmark` variant, requires **physical** Android device — emulator is blocked by androidx.benchmark). Self-instrumenting decouples the test APK from the target, so install the target first: `./gradlew :androidApp:installCoreIntBenchmark :testing:benchmarks:connectedBenchmarkAndroidTest`
+14. **iOS benchmarks** (`Benchmarks` test plan — `XCTApplicationLaunchMetric` launch-time tests in `iosApp/iosAppBenchmarks/`, requires simulator or device): `xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 16'`
+15. **Assemble** (every target × every variant): `./gradlew assemble`
 
 ## Diff Scope (the `verify diff` pipeline)
 
@@ -158,6 +160,8 @@ git diff --name-only                       # uncommitted changes on main
 | `iosApp/iosAppTests/NavInt/` | `xcodebuild test -scheme iOSApp -testPlan NavIntTests ...` (requires simulator) |
 | `testing/e2e-tests/` | `:testing:e2e-tests:connectedAndroidTest` (requires device/emulator) |
 | `iosApp/iosAppE2ETests/` | `xcodebuild test -scheme iOSApp -testPlan E2ETests ...` (requires simulator) |
+| `testing/benchmarks/` | `:androidApp:installCoreIntBenchmark :testing:benchmarks:connectedBenchmarkAndroidTest` (requires **physical** Android device) |
+| `iosApp/iosAppBenchmarks/` | `xcodebuild test -scheme iOSApp -testPlan Benchmarks ...` (requires simulator or device) |
 
 ### Diff Decision Logic
 
@@ -171,6 +175,8 @@ git diff --name-only                       # uncommitted changes on main
 7. If `iosApp/iosApp/Circuit/` or `iosApp/iosAppTests/NavInt/` changed: run `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'` (requires simulator; flag for pre-merge if simulator unavailable).
 8. If `testing/e2e-tests/` changed: run `./gradlew :testing:e2e-tests:connectedAndroidTest` (requires device/emulator; flag for pre-merge if unavailable).
 9. If `iosApp/iosAppE2ETests/` changed: run `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'` (requires simulator; flag for pre-merge if unavailable).
+9a. If `testing/benchmarks/` changed: run `./gradlew :androidApp:installCoreIntBenchmark :testing:benchmarks:connectedBenchmarkAndroidTest` (requires **physical** Android device — emulator is blocked by androidx.benchmark; defer to `verify all` if no device available).
+9b. If `iosApp/iosAppBenchmarks/` changed: run `xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 16'` (requires simulator).
 10. If `build.gradle.kts` or `settings.gradle.kts` changed: run `./gradlew assemble`.
 11. If only markdown/documentation changed: architecture tests only (step 1).
 
@@ -178,7 +184,7 @@ git diff --name-only                       # uncommitted changes on main
 
 ### Detekt
 - Reports: rule name + `file:line` (e.g., `MaxLineLength at MyFile.kt:42`)
-- Auto-correct available: `./gradlew detektMetadataCommonMain --auto-correct`
+- **On failure: run autofix first**, then re-run lint. The convention plugin sets `autoCorrect = true`, so `./gradlew detektMetadataCommonMain` auto-fixes formatting issues silently. The `--auto-correct` flag is redundant but harmless. After autofix, re-stage any modified files. Only report remaining violations after autofix has run
 - Common issues: trailing commas, import ordering, line length (120 warn / 200 error)
 
 ### Kotest (Unit Tests)
@@ -212,7 +218,7 @@ git diff --name-only                       # uncommitted changes on main
 
 ### SwiftLint
 - Reports: rule name + `file:line` (e.g., `Force Unwrapping Violation at HomeView.swift:15`)
-- Auto-fix available: `swiftlint --fix --config .swiftlint.yml`
+- **On failure: run autofix first**, then re-run lint. SwiftLint's `--fix` is opt-in (unlike Detekt), so explicitly run `swiftlint --fix --config .swiftlint.yml` whenever lint reports violations. After autofix, re-stage modified files and re-run `swiftlint --config .swiftlint.yml` to see the remainder. Only report violations that survive autofix
 - Excludes `Circuit/` bridge code (force casts required for KMP interop)
 
 ### navint-tests (Navigation & Integration Tests)
@@ -231,19 +237,33 @@ git diff --name-only                       # uncommitted changes on main
 
 ### e2e-tests (End-to-End Tests)
 - Reports: JUnit4 test name + UI Automator assertion detail
-- Failures indicate broken user journeys — screen transitions, deep link handling, tab navigation, auth gating, or startup performance regression
-- Journey tests in `testing/e2e-tests/src/main/kotlin/.../suites/` end with `JourneyTest`; benchmarks in `benchmarks/` end with `Benchmark`
+- Failures indicate broken user journeys — screen transitions, deep link handling, tab navigation, or auth gating
+- Journey tests in `testing/e2e-tests/src/main/kotlin/.../suites/` end with `JourneyTest`
 - Requires a connected Android device/emulator; run `./gradlew :testing:e2e-tests:connectedAndroidTest`
 - Tests use UI Automator with `By.desc(testTag)` — check `AppRobot.kt` for the test helper and `features/*/api/navigation/` for TestTags
-- Benchmarks use `MacrobenchmarkRule` with Perfetto traces for startup timing
+
+### benchmarks (Android Macrobenchmarks)
+- Reports: JUnit4 test name + androidx.benchmark metric output + Perfetto trace
+- Failures indicate startup/frame-timing regression or configuration drift (minification, build type, signing)
+- Benchmark files in `testing/benchmarks/src/main/kotlin/.../benchmarks/` end with `Benchmark`
+- Requires a **physical** Android device (emulator refuses by default); install the target first, then run benchmarks: `./gradlew :androidApp:installCoreIntBenchmark :testing:benchmarks:connectedBenchmarkAndroidTest`
+- Separate module from e2e-tests because it targets the minified `benchmark` variant and cannot share Compose UI test deps with journey tests
+- Uses `MacrobenchmarkRule` with Perfetto traces; self-instrumenting so benchmark runs out-of-process against R8-minified target
 
 ### iOS e2e-tests (iOS End-to-End Tests)
 - Reports: XCTest test name + XCUIElement assertion detail
-- Failures indicate broken iOS user journeys — tab navigation, deep link handling, auth gating, or startup performance regression
-- Journey tests in `iosApp/iosAppE2ETests/Suites/` end with `JourneyTest`; benchmarks in `Benchmarks/` end with `PerformanceTest`
+- Failures indicate broken iOS user journeys — tab navigation, deep link handling, or auth gating
+- Journey tests in `iosApp/iosAppE2ETests/Suites/` end with `JourneyTest`
 - Requires an iOS Simulator; run `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'`
 - Tests use XCUITest with accessibility identifiers matching KMP TestTags (raw string constants — process-isolated)
 - Uses `AppRobot` for all app interactions — check `iosApp/iosAppE2ETests/Robots/AppRobot.swift`
+
+### iOS benchmarks (iOS Performance Tests)
+- Reports: XCTest test name + `XCTApplicationLaunchMetric` average/stddev
+- Failures indicate startup-time regression or XCTest performance baseline drift
+- Benchmark files in `iosApp/iosAppBenchmarks/` end with `PerformanceTest` or `Benchmark` (Harmonize-enforced)
+- Requires an iOS Simulator or device; run `xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 16'`
+- Separate target from `iosAppE2ETests` so performance runs stay isolated from functional journeys
 
 ## IDE Troubleshooting
 

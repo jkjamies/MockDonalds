@@ -245,12 +245,12 @@ Get{Feature}Content
 
 ## Feature Flags
 
-<!-- Flags that gate behavior. Defined as FeatureFlag instances in api/domain. -->
+<!-- Flags that gate behavior. Defined as FeatureFlag instances in api/domain, each paired with a `@ContributesIntoSet` FeatureFlagDefinition so the debug-menu flag viewer enumerates them. Use namespaced keys (`{feature}.{flag_name}`) and pick a FlagLifecycle (Experiment / KillSwitch / Ops / Permanent). -->
 
-| Flag Key | Default | Description |
-|----------|---------|-------------|
-| `{name}_enabled` | `false` | Gates entire feature visibility |
-| `{name}_v2_layout` | `false` | Enables redesigned layout |
+| Flag Key | Default | Owner | Lifecycle | Description |
+|----------|---------|-------|-----------|-------------|
+| `{feature}.enabled` | `false` | `{feature}` | `KillSwitch` | Gates entire feature visibility |
+| `{feature}.v2_layout` | `false` | `{feature}` | `Experiment` | Enables redesigned layout |
 
 ---
 

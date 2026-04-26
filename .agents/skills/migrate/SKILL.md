@@ -17,6 +17,12 @@ The user may provide additional context in three ways — all are optional:
 2. **`@file` reference** — e.g., `/migrate @specs/auth-to-oauth2.md`. The CLI resolves the file and includes its content. Extract from/to states, scope, phasing, and rollback plan from the spec. Template: `.agents/templates/migrate-spec.md`.
 3. **Inline description** — free text describing the migration.
 
+## Pre-flight: Grill the Spec
+
+When the user provides a spec via `@file`, scan it for unresolved markers before scaffolding (see the grill-me skill for the full marker list): `<!-- TODO -->` placeholders, empty `- [ ]` AC items, empty required header fields, raw template placeholder prose, `...` table cells, or unconfirmed reverse-spec presumptions (`presumably` / `appears to`). If any are present, **stop and run `/grill-me @{spec}` first**, then resume this skill.
+
+The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before producing output, so a marker-laden spec usually means the spec was hand-authored from a template or has gone stale. Skip the pre-flight only if the user explicitly says "skip the grill" — in that case, surface unresolved markers as `// TODO` comments in the generated code and call them out in the final summary.
+
 ## Reference Standards
 
 - Architecture & module structure: `.agents/standards/architecture.md`
@@ -47,10 +53,21 @@ Choose based on scope and risk. Default to **phased** for anything touching more
 
 - Add new abstractions alongside existing ones
 - Create bridge/adapter if old and new must coexist
-- Wire feature flag to toggle between old and new paths if applicable:
+- Wire feature flag to toggle between old and new paths if applicable. Use the namespaced `{feature}.{flag}` key convention and contribute a `FeatureFlagDefinition` so the debug-menu enumerates the migration flag:
   ```kotlin
-  val flag = FeatureFlag(key = "use_new_{thing}", defaultValue = false)
+  object {Feature}Flags {
+      val useNewThing = FeatureFlag(key = "{feature}.use_new_thing", defaultValue = false)
+  }
+
+  @ContributesIntoSet(AppScope::class)
+  class UseNewThingFlagDefinition : FeatureFlagDefinition {
+      override val flag = {Feature}Flags.useNewThing
+      override val description = "Routes {thing} through the new impl during migration"
+      override val owner = "{feature}"
+      override val lifecycle = FlagLifecycle.Experiment
+  }
   ```
+  Remove both the flag and its definition in step 6 once the migration lands.
 
 ### 4. Migrate Consumers
 

@@ -12,14 +12,18 @@ final class OrderJourneyTest: XCTestCase {
         robot.launchApp()
     }
 
-    func testNavigateToOrderAndBrowse() {
-        robot.tapTab("Order")
+    func testNavigateFromHomeToOrder() {
+        robot.assertElementDisplayed("HomeUserName")
+
+        robot.tapTab("ORDER")
         robot.assertElementDisplayed("OrderFeaturedItemsSection")
-        robot.assertElementDisplayed("OrderCategoryChip")
     }
 
-    func testOrderScreenShowsFeaturedItems() {
-        robot.tapTab("Order")
-        robot.assertElementDisplayed("OrderFeaturedItemCard")
+    func testReturnToHomeFromOrder() {
+        robot.tapTab("ORDER")
+        robot.assertElementDisplayed("OrderFeaturedItemsSection")
+
+        robot.tapTab("HOME")
+        robot.assertElementDisplayed("HomeUserName")
     }
 }

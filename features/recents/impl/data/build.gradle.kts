@@ -10,7 +10,7 @@ kotlin {
             implementation(project(":features:recents:api:domain"))
             implementation(project(":features:recents:impl:domain"))
             implementation(project(":core:network:api"))
-            implementation(project(":core:build-config"))
+            implementation(project(":core:build-config:api"))
         }
     }
 }

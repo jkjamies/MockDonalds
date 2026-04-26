@@ -398,12 +398,14 @@ final class TestConventionsTest: XCTestCase {
         )
     }
 
-    func testE2EBenchmarksEndWithPerformanceTest() {
-        let e2eScope = Harmonize.testCode().on("iosApp/iosAppE2ETests/Benchmarks")
-        let e2eSources = e2eScope.sources()
-        guard e2eSources.isNotEmpty else { return }
+    // MARK: - Benchmark Target Conventions
 
-        let testClasses = e2eScope.classes()
+    func testBenchmarksEndWithPerformanceTest() {
+        let benchScope = Harmonize.testCode().on("iosApp/iosAppBenchmarks")
+        let benchSources = benchScope.sources()
+        guard benchSources.isNotEmpty else { return }
+
+        let testClasses = benchScope.classes()
             .filter { $0.inheritanceTypesNames.contains("XCTestCase") }
 
         let violators = testClasses.filter {
@@ -412,7 +414,88 @@ final class TestConventionsTest: XCTestCase {
 
         XCTAssertTrue(
             violators.isEmpty,
-            "E2E benchmark classes in Benchmarks/ must end with 'PerformanceTest' or 'Benchmark':\n\(violators.map { $0.name }.joined(separator: "\n"))"
+            "Benchmark classes in iosAppBenchmarks/ must end with 'PerformanceTest' or 'Benchmark':\n\(violators.map { $0.name }.joined(separator: "\n"))"
+        )
+    }
+
+    func testBenchmarksExtendXCTestCase() {
+        let benchScope = Harmonize.testCode().on("iosApp/iosAppBenchmarks")
+        let benchSources = benchScope.sources()
+        guard benchSources.isNotEmpty else { return }
+
+        let testClasses = benchScope.classes()
+            .filter { $0.name.hasSuffix("PerformanceTest") || $0.name.hasSuffix("Benchmark") }
+
+        let violators = testClasses.filter { !$0.inheritanceTypesNames.contains("XCTestCase") }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "Benchmark classes must extend XCTestCase (XCUITest process isolation):\n\(violators.map { $0.name }.joined(separator: "\n"))"
+        )
+    }
+
+    func testBenchmarksDoNotImportSwiftTesting() {
+        let benchScope = Harmonize.testCode().on("iosApp/iosAppBenchmarks")
+        let benchSources = benchScope.sources()
+        guard benchSources.isNotEmpty else { return }
+
+        let violators = benchSources.filter { $0.source.contains("import Testing") }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "Benchmarks must use XCTest (not Swift Testing) — XCTApplicationLaunchMetric needs XCTest:\n\(violators.map { $0.fileName ?? "unknown" }.joined(separator: "\n"))"
+        )
+    }
+
+    func testBenchmarksDoNotImportViewInspector() {
+        let benchScope = Harmonize.testCode().on("iosApp/iosAppBenchmarks")
+        let benchSources = benchScope.sources()
+        guard benchSources.isNotEmpty else { return }
+
+        let violators = benchSources.filter { $0.source.contains("import ViewInspector") }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "Benchmarks must not import ViewInspector — they measure a launched process, not a view tree:\n\(violators.map { $0.fileName ?? "unknown" }.joined(separator: "\n"))"
+        )
+    }
+
+    func testBenchmarksUseMeasureAPI() {
+        let benchScope = Harmonize.testCode().on("iosApp/iosAppBenchmarks")
+        let benchSources = benchScope.sources()
+        guard benchSources.isNotEmpty else { return }
+
+        let violators = benchSources.filter { !$0.source.contains("measure(") }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "Benchmark files must call measure(metrics:) with an XCTMetric (e.g., XCTApplicationLaunchMetric):\n\(violators.map { $0.fileName ?? "unknown" }.joined(separator: "\n"))"
+        )
+    }
+
+    func testBenchmarksDoNotUseAppRobot() {
+        let benchScope = Harmonize.testCode().on("iosApp/iosAppBenchmarks")
+        let benchSources = benchScope.sources()
+        guard benchSources.isNotEmpty else { return }
+
+        let violators = benchSources.filter { $0.source.contains("AppRobot") }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "Benchmarks must not use AppRobot — journeys live in iosAppE2ETests/. Benchmarks exercise launch only:\n\(violators.map { $0.fileName ?? "unknown" }.joined(separator: "\n"))"
+        )
+    }
+
+    func testBenchmarksDoNotContainPrintStatements() {
+        let benchScope = Harmonize.testCode().on("iosApp/iosAppBenchmarks")
+        let benchSources = benchScope.sources()
+        guard benchSources.isNotEmpty else { return }
+
+        let violators = benchSources.filter { $0.source.contains("print(") }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "Benchmarks must not contain print statements — rely on XCTMetric output:\n\(violators.map { $0.fileName ?? "unknown" }.joined(separator: "\n"))"
         )
     }
 

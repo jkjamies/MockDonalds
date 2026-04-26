@@ -19,6 +19,12 @@ The user may provide additional context in three ways — all are optional:
 2. **`@file` reference** — e.g., `/add-api-endpoint @specs/deals-api.md`. The CLI resolves the file and includes its content. Extract endpoint path, method, auth mode, request/response shapes, and error handling from the spec. Template: `.agents/templates/new-spec.md` (API / Network section).
 3. **Inline description** — free text with endpoint details.
 
+## Pre-flight: Grill the Spec
+
+When the user provides a spec via `@file`, scan it for unresolved markers before scaffolding (see the grill-me skill for the full marker list): `<!-- TODO -->` placeholders, empty `- [ ]` AC items, empty required header fields, raw template placeholder prose, `...` table cells, or unconfirmed reverse-spec presumptions (`presumably` / `appears to`). If any are present, **stop and run `/grill-me @{spec}` first**, then resume this skill.
+
+The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before producing output, so a marker-laden spec usually means the spec was hand-authored from a template or has gone stale. Skip the pre-flight only if the user explicitly says "skip the grill" — in that case, surface unresolved markers as `// TODO` comments in the generated code and call them out in the final summary.
+
 ## Reference Standards
 
 - Network patterns: `.agents/standards/architecture.md` (data layer section)
@@ -141,7 +147,7 @@ class {Feature}RepositoryImpl(
 Ensure `impl/data/build.gradle.kts` has:
 ```kotlin
 implementation(project(":core:network:api"))
-implementation(project(":core:build-config"))
+implementation(project(":core:build-config:api"))
 ```
 
 ### 7. Build Config (if new base URL needed)

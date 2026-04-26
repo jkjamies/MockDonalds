@@ -6,10 +6,26 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.metro)
     alias(libs.plugins.kmp.nativecoroutines)
+    alias(libs.plugins.sqldelight)
 }
 
 metro {
     enableCircuitCodegen.set(true)
+}
+
+// SQLDelight aggregator — composeApp owns the single application-wide `AppDatabase`.
+// Features contribute their own `.sq` schemas inside `features/{name}/impl/data/`
+// (each applying the SQLDelight plugin and declaring the same `AppDatabase` name).
+// Add `dependency(project(":features:<name>:impl:data"))` here when a feature
+// starts contributing tables. Mirrors Slack/Cash App's single-DB-with-feature-owned-
+// schemas pattern: composeApp is the leaf consumer that already imports every feature,
+// so this preserves the "core never imports features" Konsist boundary.
+sqldelight {
+    databases {
+        create("AppDatabase") {
+            packageName.set("com.mockdonalds.app.persistence")
+        }
+    }
 }
 
 kotlin {
@@ -32,7 +48,7 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
 
-            // Export feature modules for iOS consumption (auto-discovered)
+            // Export feature modules for iOS consumption (auto-discovered).
             rootDir.resolve("features").listFiles()
                 ?.filter { it.isDirectory }
                 ?.map { it.name }
@@ -43,6 +59,8 @@ kotlin {
                     export(project(":features:$feature:impl:presentation"))
                 }
             export(project(":core:circuit"))
+            export(project(":core:feature-flag:impl"))
+            export(project(":core:build-config:api"))
         }
     }
 
@@ -55,7 +73,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
 
-            // Feature modules (auto-discovered, architecture-enforced wiring)
+            // Feature modules (auto-discovered, architecture-enforced wiring).
             rootDir.resolve("features").listFiles()
                 ?.filter { it.isDirectory }
                 ?.map { it.name }
@@ -73,12 +91,13 @@ kotlin {
             api(project(":core:metro"))
             implementation(project(":core:analytics:impl"))
             implementation(project(":core:auth:impl"))
-            implementation(project(":core:feature-flag:impl"))
+            api(project(":core:feature-flag:impl"))
             implementation(project(":core:centerpost"))
             implementation(project(":core:circuit"))
             implementation(project(":core:theme"))
             implementation(project(":core:network:impl"))
-            implementation(project(":core:build-config"))
+            implementation(project(":core:build-config:impl"))
+            implementation(project(":core:persistence:impl"))
 
             // Circuit
             implementation(libs.circuit.foundation)

@@ -6,6 +6,8 @@ import XCTest
 /// - View structs conform to View protocol
 /// - Every View struct imports ComposeApp for shared KMP state
 /// - Every View struct has a `state` property (the UiState from shared code)
+/// - Every View struct carries `@CircuitInject(Screen.self, UiState.self)` and imports `CircuitMacros`
+///   (drives `CircuitFactoryRegistry` codegen — a missing annotation silently drops the view from the registry)
 /// - Views do not import UIKit (pure SwiftUI)
 /// - Views do not contain force unwraps, force casts, or force try
 /// - Views do not use Combine or DispatchQueue (async/await only)
@@ -193,4 +195,53 @@ final class ViewConventionsTest: XCTestCase {
             "Views must use shared KMP TestTags for accessibility identifiers, not hardcoded strings:\n\(violators.map { $0.fileName ?? "unknown" }.joined(separator: "\n"))"
         )
     }
+
+    // MARK: - Circuit Factory Registration
+
+    /// Catches the silent-failure mode where adding a View without `@CircuitInject` drops it
+    /// from `GeneratedCircuitFactories.swift` and surfaces only as a runtime navigator failure.
+    /// Validates the annotation is present, imports CircuitMacros, and references types
+    /// ending in `Screen` / `UiState` (catches typos like `HomeScren.self`).
+    func testViewsAreAnnotatedWithCircuitInject() {
+        let sources = scope.sources()
+            .filter { source in
+                let fileName = source.fileName?.replacingOccurrences(of: ".swift", with: "")
+                return source.structs().contains(where: { $0.name == fileName })
+            }
+
+        XCTAssertTrue(sources.isNotEmpty, "Expected to find View source files")
+
+        let circuitInjectPattern = #"@CircuitInject\(\s*([A-Za-z0-9_]+)\.self\s*,\s*([A-Za-z0-9_]+)\.self\s*\)"#
+        let regex = try? NSRegularExpression(pattern: circuitInjectPattern)
+
+        let violators = sources.compactMap { source -> String? in
+            let fileName = source.fileName ?? "unknown"
+            guard source.imports().contains(where: { $0.name == "CircuitMacros" }) else {
+                return "\(fileName): missing `import CircuitMacros`"
+            }
+            let body = source.source
+            let range = NSRange(body.startIndex..., in: body)
+            guard let match = regex?.firstMatch(in: body, range: range),
+                  match.numberOfRanges == 3,
+                  let screenRange = Range(match.range(at: 1), in: body),
+                  let stateRange = Range(match.range(at: 2), in: body) else {
+                return "\(fileName): missing `@CircuitInject(Screen.self, UiState.self)` annotation"
+            }
+            let screenType = String(body[screenRange])
+            let stateType = String(body[stateRange])
+            if !screenType.hasSuffix("Screen") {
+                return "\(fileName): @CircuitInject first arg `\(screenType)` must end in `Screen`"
+            }
+            if !stateType.hasSuffix("UiState") {
+                return "\(fileName): @CircuitInject second arg `\(stateType)` must end in `UiState`"
+            }
+            return nil
+        }
+
+        XCTAssertTrue(
+            violators.isEmpty,
+            "Views must carry `@CircuitInject(Screen.self, UiState.self)` and import CircuitMacros — a missing annotation silently drops the view from the generated factory registry:\n\(violators.joined(separator: "\n"))"
+        )
+    }
+
 }

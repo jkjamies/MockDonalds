@@ -33,12 +33,13 @@ graph TB
         CircuitCore["circuit"]
         FeatureFlag["feature-flag (api/impl/test)"]
         Network["network (api/impl)"]
+        Strings["strings (Android-only resources, Phrase-fed)"]
         Theme["theme"]
         TestFixtures["test-fixtures"]
     end
 
-    composeApp --> androidApp
-    composeApp --> iosApp
+    androidApp --> composeApp
+    iosApp --> composeApp
     composeApp --> features
     composeApp --> core
     features --> core
@@ -51,11 +52,11 @@ graph TB
                     │            composeApp               │
                     │  ProdAppGraph (Metro DI) + Circuit   │
                     │  Wires all feature modules together  │
-                    └──────────┬──────────┬───────────────┘
+                    └──────────▲──────────▲───────────────┘
                  Android       │          │          iOS
               ┌────────────────┘          └──────────────────┐
               │                                              │
-     ┌────────▼────────┐                          ┌─────────▼─────────┐
+     ┌────────┴────────┐                          ┌─────────┴─────────┐
      │   androidApp    │                          │      iosApp       │
      │   MainActivity  │                          │  SwiftUI Views    │
      │   Compose UI    │                          │  Circuit bridge   │
@@ -96,6 +97,7 @@ MockDonalds/
 │   ├── network/
 │   │   ├── api/                        # HttpClientFactory, ClientConfig DSL, AuthMode, NetworkException
 │   │   └── impl/                       # HttpClientFactoryImpl (baked-in plugins), JsonProvider
+│   ├── strings/                        # Android R.string resources (Phrase-fed); iOS reads its own .lproj files in iosApp/
 │   ├── test-fixtures/                  # TestCenterPostDispatchers, KotestProjectConfig, StateRobot
 │   └── theme/                          # Design system (Colors, Theme, Dimens, Typography)
 │
@@ -122,7 +124,8 @@ MockDonalds/
         ├── mockdonalds.kmp.library.gradle.kts       # Base KMP (api modules)
         ├── mockdonalds.kmp.domain.gradle.kts        # KMP + Metro
         ├── mockdonalds.kmp.data.gradle.kts          # KMP + Metro + Serialization
-        └── mockdonalds.kmp.presentation.gradle.kts  # KMP + Compose + Metro + Circuit codegen
+        ├── mockdonalds.kmp.presentation.gradle.kts  # KMP + Compose + Metro + Circuit codegen + auto core:strings on androidMain
+        └── mockdonalds.phrase.gradle.kts            # pullTranslations task (Phrase → Android XML + iOS .lproj)
 ```
 
 ## Layer Dependency Rules
@@ -174,11 +177,11 @@ graph TB
         end
     end
 
-    ApiDomain --> ImplDomain
-    ImplDomain --> ImplData
-    ApiDomain --> ImplPres
-    ApiNav --> ImplPres
-    ApiDomain --> TestMod
+    ImplDomain --> ApiDomain
+    ImplData --> ImplDomain
+    ImplPres --> ApiDomain
+    ImplPres --> ApiNav
+    TestMod --> ApiDomain
 
     style api fill:#e8f5e9
     style impl fill:#fff3e0
@@ -278,14 +281,16 @@ Core modules (`core/*`) must NEVER import from feature modules (`features/*`). T
 
 ## Core Module Consumption Patterns
 
-**Rule: Presenters always use CenterPost interactors. Domain/data always use the provider interface directly.** This applies to all core modules with api/impl — no exceptions.
+**Rule: Presenters always use CenterPost interactors. Domain/data always use the provider interface directly.** This is the default for all core modules with api/impl. One documented exception: `core:feature-flag` (see below).
 
 | Core Module | Presenter Layer | Domain/Data Layer |
 |-------------|----------------|-------------------|
-| `core:feature-flag` | `ObserveFeatureFlag` (CenterPostSubjectInteractor) | `FeatureFlagProvider` (interface) |
+| `core:feature-flag` | `FeatureFlagProvider.rememberFlag(flag)` (Composable extension) | `FeatureFlagProvider` (interface) |
 | `core:analytics` | `TrackAnalyticsEvent` (CenterPostInteractor) | `AnalyticsDispatcher` (interface) |
 
-For fire-and-forget interactors (analytics), the `inProgress` loading state goes uncollected — zero overhead. The value: structured execution, error handling, timeout protection, dispatcher correctness. Keeping the rule absolute means no exceptions to remember.
+For fire-and-forget interactors (analytics), the `inProgress` loading state goes uncollected — zero overhead. The value: structured execution, error handling, timeout protection, dispatcher correctness.
+
+**Feature-flag carve-out:** flag reads are cheap, synchronous at the source, and routinely plural per screen (3–5 flags in one presenter is common). A `CenterPostSubjectInteractor` handles "one param, one stream" and would force N injections for N flags. Instead, presenters inject `FeatureFlagProvider` and call the Composable extension `rememberFlag(flag)` per flag — one DI param, one line per flag, per-flag recomposition isolation. Konsist forbids direct `.isEnabled(...)` / `.observe(...)` calls in presentation to preserve the reactive Compose-state boundary. See `.agents/standards/centerpost.md` for the detailed rationale.
 
 Note: `core:auth` currently exposes only `AuthManager` (interface) with no interactor — auth is consumed by `AuthInterceptor` (infrastructure in composeApp), not by presenters directly. If presenters need auth state reactively in the future, an interactor should be added.
 
@@ -296,7 +301,8 @@ Note: `core:auth` currently exposes only `AuthManager` (interface) with no inter
 | `mockdonalds.kmp.library` | api/*, core/* | Base KMP (Android SDK 36/min 26, iOS targets, JVM 17), Parcelize, KSP, Kotest, Detekt, auto `:core:test-fixtures` in commonTest |
 | `mockdonalds.kmp.domain` | impl/domain | Everything in library + Metro DI (`@ContributesBinding` support) |
 | `mockdonalds.kmp.data` | impl/data | Everything in library + Metro DI + kotlinx.serialization |
-| `mockdonalds.kmp.presentation` | impl/presentation | Everything in library + Compose Multiplatform + Compose Compiler + Metro DI with Circuit codegen (`enableCircuitCodegen`), Circuit dependencies, Material3, Coil, androidDeviceTest support |
+| `mockdonalds.kmp.presentation` | impl/presentation | Everything in library + Compose Multiplatform + Compose Compiler + Metro DI with Circuit codegen (`enableCircuitCodegen`), Circuit dependencies, Material3, Coil, androidDeviceTest support, **auto-adds `core:strings` to `androidMain`** |
+| `mockdonalds.phrase` | `core:strings` | Registers the `pullTranslations` task (Phrase API → Android XML + iOS `.lproj/Localizable.strings`) |
 | `mockdonalds.detekt` | (transitive via library) | Detekt with `config/detekt/detekt.yml`, parallel execution, auto-correct, formatting plugin |
 
 ## Gradle Module Wiring

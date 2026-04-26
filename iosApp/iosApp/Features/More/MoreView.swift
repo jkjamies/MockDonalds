@@ -1,8 +1,10 @@
+import CircuitMacros
 import SwiftUI
 import ComposeApp
 
 private let tags = MoreTestTags.shared
 
+@CircuitInject(MoreScreen.self, MoreUiState.self)
 struct MoreView: View {
     let state: MoreUiState
     @Environment(\.mockDonaldsColors) private var colors
@@ -50,6 +52,7 @@ struct MoreView: View {
             .padding(MockDimens.spacingXl)
             .background(colors.surfaceContainerLow)
             .cornerRadius(MockDimens.radiusMd)
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier(tags.PROFILE_SECTION)
             .onTapGesture {
                 state.eventSink(MoreEvent.ProfileClicked())
@@ -126,6 +129,7 @@ struct MoreView: View {
                     }
                 }
             }
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier(tags.MENU_LIST)
         }
     }

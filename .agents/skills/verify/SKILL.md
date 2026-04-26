@@ -7,7 +7,7 @@ description: Verification pipeline with three scopes — diff (default, changed 
 
 Prove the code you just wrote is correct. Three scopes, one skill.
 
-**Parameters**: scope (optional, default `diff`), market (optional, default `us`), env (optional, default `dev`)
+**Parameters**: scope (optional, default `diff`), market (optional, default `us`), env (optional, default `int`). Envs are `int`, `mte`, `prod`.
 
 **Usage examples**:
 ```
@@ -54,9 +54,9 @@ Target runtime: under ~60s warm, under ~2 min cold.
 ### Parameters
 
 - `market` (optional, default `us`) — which market to build (`us`, `de`, ...).
-- `env` (optional, default `dev`) — which env to build (`dev`, `prod`, ...).
+- `env` (optional, default `int`) — which env to build (`int`, `mte`, `prod`).
 
-iOS configuration name is `{MARKET-uppercase}-{Env-titlecase}` — `us` + `dev` → `US-Dev`, `de` + `prod` → `DE-Prod`.
+iOS configuration name is `{MARKET-uppercase}-{Env-titlecase}-{Debug|Release}` — `us` + `int` → `US-Int-Debug`, `de` + `prod` → `DE-Prod-Debug`. Run `xcodebuild -list -project iosApp/iosApp.xcodeproj` to enumerate the full set Xcodegen emits — passing a config without the `-Debug`/`-Release` suffix silently falls through to the default `US-Prod-Release`.
 
 ### Steps
 
@@ -64,9 +64,9 @@ Run the steps listed in `.agents/standards/verification.md` → "Local (the `ver
 
 Summary (see the standard for exact commands):
 
-0. **Pre-flight: `./gradlew :core:build-config:validateAllMarkets`** — runs first because malformed combo files invalidate every downstream step.
-1. Detekt — Kotlin lint
-2. SwiftLint — Swift style
+0. **Pre-flight: `./gradlew :core:build-config:impl:validateAllMarkets`** — runs first because malformed combo files invalidate every downstream step.
+1. Detekt — Kotlin lint (auto-correct runs automatically; re-stage modified files; only report violations that survive autofix)
+2. SwiftLint — Swift style (on violations, run `swiftlint --fix --config .swiftlint.yml`, re-stage, then re-run lint; only report violations that survive autofix)
 3. Kotest — Kotlin pure-logic unit tests (Android host)
 4. iOS unit tests — Swift Testing pure-logic, `UnitTests` plan, `iosAppTests/Unit/` (requires simulator)
 5. Konsist — Kotlin architecture
@@ -94,9 +94,9 @@ Run the full pipeline from `.agents/standards/verification.md` → "Full Pipelin
 
 Summary (see the standard for exact commands):
 
-0. **Pre-flight: `./gradlew :core:build-config:validateAllMarkets`** — gates the entire pipeline.
-1. Detekt — Kotlin lint
-2. SwiftLint — Swift style
+0. **Pre-flight: `./gradlew :core:build-config:impl:validateAllMarkets`** — gates the entire pipeline.
+1. Detekt — Kotlin lint (auto-correct runs automatically; re-stage modified files; only report violations that survive autofix)
+2. SwiftLint — Swift style (on violations, run `swiftlint --fix --config .swiftlint.yml`, re-stage, then re-run lint; only report violations that survive autofix)
 3. Kotest — Kotlin pure-logic unit tests (Android host)
 4. iOS unit tests — Swift Testing pure-logic, `UnitTests` plan, `iosAppTests/Unit/` (requires simulator)
 5. Konsist — Kotlin architecture
@@ -107,16 +107,18 @@ Summary (see the standard for exact commands):
 10. iOS navint tests (requires simulator)
 11. Android e2e tests (requires device/emulator)
 12. iOS e2e tests (requires simulator)
-13. `./gradlew assemble` — every target × every variant
+13. Android macrobenchmarks — `:testing:benchmarks:connectedBenchmarkAndroidTest` (requires physical Android device)
+14. iOS benchmarks — `Benchmarks` test plan, `iosApp/iosAppBenchmarks/` (requires simulator)
+15. `./gradlew assemble` — every target × every variant
 
 ### Market matrix
 
-The pre-flight `validate-all-markets` step covers schema/format drift across every combo without compiling. If the change also touches Kotlin code that consumes config (e.g. `AppBuildConfigImpl`, anything reading `BuildConfig.*`), additionally build each Phase 1 combo (`us-dev`, `us-prod`, `de-dev`, `de-prod`) to prove the merge → BuildKonfig → compile chain still resolves end-to-end.
+The pre-flight `validate-all-markets` step covers schema/format drift across every combo without compiling. If the change also touches Kotlin code that consumes config (e.g. `AppBuildConfigImpl`, anything reading `BuildConfig.*`), additionally build each Phase 1 combo (`us-int`, `us-prod`, `de-int`, `de-prod`) to prove the merge → BuildKonfig → compile chain still resolves end-to-end.
 
 ### When to use
 
 - Before opening a PR, as a last sanity check
-- When the change touches R8/Proguard keep-rules, `expect`/`actual` splits, cinterop `.def` files, or `core:build-config` schema
+- When the change touches R8/Proguard keep-rules, `expect`/`actual` splits, cinterop `.def` files, or `core:build-config:impl` schema
 - When `full` passed but CI failed and you want to reproduce locally
 - See `.agents/standards/verification.md` → "When to escalate" for the exact trigger list
 

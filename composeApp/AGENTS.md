@@ -8,9 +8,10 @@ Application shell that wires all feature modules together. Contains platform ent
 
 ### commonMain
 
+> `ProdAppGraph` is **not** in commonMain. It is defined per-platform (see androidMain / iosMain below) because each platform's factory takes a host-owned type (`Application` on Android, `HarnessIosBridge` on iOS). The `AppGraph` interface and `CircuitProviders` live in `core:metro` and `core:circuit` respectively.
+
 | File | Purpose |
 |------|---------|
-| `AppGraph.kt` | `ProdAppGraph` — extends `AppGraph` (from `core:metro`) with `@DependencyGraph(AppScope)`. The `AppGraph` interface and `CircuitProviders` live in `core:metro` and `core:circuit` respectively. |
 | `navigation/DeepLinkParser.kt` | Parses URI paths into Screen lists. `findTabByTag()` resolves tab screens. `createDeepLinkParser()` registers all tab screens plus profile/login routes. |
 | `navigation/NavigationInterceptor.kt` | `NavigationInterceptor` interface with `interceptGoTo`/`interceptResetRoot` returning `InterceptResult` (Skip or Rewrite). |
 | `navigation/AuthInterceptor.kt` | Redirects `ProtectedScreen` navigation to `LoginScreen` when user is not authenticated. |
@@ -22,7 +23,8 @@ Application shell that wires all feature modules together. Contains platform ent
 
 | File | Purpose |
 |------|---------|
-| `App.kt` | `MockDonaldsApp` composable -- creates `ProdAppGraph`, sets up `rememberSaveableBackStack(root = HomeScreen)`, wires `InterceptingNavigator` with `AuthInterceptor`, handles deep link intents, renders `NavigableCircuitContent` with gesture navigation and `MockDonaldsBottomNavigation`. |
+| `AppGraph.kt` | `ProdAppGraph` with `@DependencyGraph.Factory` taking `@Provides Application`. Invoked via `createGraphFactory<ProdAppGraph.Factory>().create(application)`. |
+| `App.kt` | `MockDonaldsApp` composable -- takes `Application`, creates `ProdAppGraph` via its factory, sets up `rememberSaveableBackStack(root = HomeScreen)`, wires `InterceptingNavigator` with `AuthInterceptor`, handles deep link intents, renders `NavigableCircuitContent` with gesture navigation and `MockDonaldsBottomNavigation`. |
 | `MockDonaldsBottomNavigation.kt` | Custom bottom nav bar with glass effect. Uses `TabScreen.tag` for route matching. |
 | `MockDonaldsIcons.kt` | Custom `ImageVector` icons for bottom navigation tabs. |
 
@@ -30,7 +32,8 @@ Application shell that wires all feature modules together. Contains platform ent
 
 | File | Purpose |
 |------|---------|
-| `bridge/IosApp.kt` | iOS entry point. Creates `AppGraph`, `BridgeNavigator`, `InterceptingNavigator` with `AuthInterceptor`. Exposes `presenterBridge(screen)` for Swift and `deepLink(uri)` with tab-aware routing. |
+| `AppGraph.kt` | `ProdAppGraph` with `@DependencyGraph.Factory` taking `@Provides HarnessIosBridge` (Swift-provided via `SwiftHarnessBridge`). Invoked via `createGraphFactory<ProdAppGraph.Factory>().create(harnessIosBridge)` from `IosApp`. |
+| `bridge/IosApp.kt` | iOS entry point. Accepts `HarnessIosBridge` from Swift, creates `AppGraph` via factory, `BridgeNavigator`, `InterceptingNavigator` with `AuthInterceptor`. Exposes `presenterBridge(screen)` for Swift and `deepLink(uri)` with tab-aware routing. |
 | `bridge/BridgeNavigator.kt` | iOS `Navigator` implementation using `Channel<List<NavigationAction>>`. Batches synchronous navigator calls via `dispatch_async(dispatch_get_main_queue())` to avoid SwiftUI animation artifacts. Detects `FlowScreen` in `goTo()` and emits `PresentFlow` instead of `GoTo`. Accepts optional `onSwitchTab` callback for analytics. `notifyTabSelected(tag)` is called from Swift on user tab taps; `suppressTabCallback` flag prevents double-tracking on deep-link-initiated tab switches. |
 | `bridge/NavigationAction.kt` | Sealed class: GoTo, Pop, ResetRoot, SwitchTab, DeepLink, PresentFlow, DismissFlow. Actions are batched into lists for single-frame SwiftUI updates. |
 | `bridge/CircuitPresenterKotlinBridge.kt` | Bridges Circuit presenters to `StateFlow` via Molecule (`launchMolecule`). Annotated with `@NativeCoroutinesState` for Swift async observation. |
@@ -44,6 +47,10 @@ The `build.gradle.kts` auto-discovers feature modules by scanning the `features/
 3. **Core exports** -- Exports `:core:circuit` for shared Circuit types (Screen, TabScreen, ProtectedScreen)
 
 Adding a new feature module to `features/` automatically wires it into the app -- no manual dependency edits needed.
+
+### iOS-side parallel: `@CircuitInject` auto-registration
+
+Android resolves Screen → Composable Ui via `@CircuitInject` on the Compose `Ui` function (Metro/Circuit codegen handles the factory). iOS gets the same auto-discovery via the `@CircuitInject` Swift macro on each SwiftUI view — `CircuitFactoryRegistry` (a build-time SwiftSyntax codegen tool) scans the source tree, finds annotated views, and emits `iosApp/iosApp/Generated/GeneratedCircuitFactories.swift`. `AppDelegate` consumes it via `CircuitIos.generatedFactories()`. Adding a new screen on iOS requires only the `@CircuitInject(Screen.self, UiState.self)` annotation on the SwiftUI view — no manual `AppDelegate.swift` edit. See `.agents/standards/ios-interop.md` and `iosApp/AGENTS.md`.
 
 ## Navigation Flow
 

@@ -1,28 +1,33 @@
 [versions]
-agp = "9.1.0"
+agp = "9.1.1"
 kotlin = "2.3.20"
-coil = "3.1.0"
+coil = "3.4.0"
 compose-multiplatform = "1.10.3"
 circuit = "0.33.1"
 metro = "0.13.2"
 molecule = "2.2.0"
 kmp-nativecoroutines = "1.0.2"
-kotlinx-coroutines = "1.10.1"
-kotlinx-serialization = "1.8.0"
-ktor = "3.1.1"
+kotlinx-coroutines = "1.10.2"
+kotlinx-serialization = "1.11.0"
+ktor = "3.4.3"
 ksp = "2.3.6"
 kotest = "6.1.11"
 konsist = "0.17.3"
 detekt = "1.23.8"
-turbine = "1.2.0"
-androidx-activity = "1.10.1"
-androidx-lifecycle = "2.8.7"
-androidx-splashscreen = "1.0.1"
-androidx-compose-material3-windowsizeclass = "1.3.2"
-androidx-test-runner = "1.6.2"
-androidx-benchmark-macro = "1.3.4"
+turbine = "1.2.1"
+androidx-activity = "1.13.0"
+androidx-lifecycle = "2.10.0"
+androidx-splashscreen = "1.2.0"
+androidx-compose-material3-windowsizeclass = "1.4.0"
+androidx-test-runner = "1.7.0"
+androidx-test-ext-junit = "1.3.0"
+androidx-benchmark-macro = "1.4.1"
 androidx-uiautomator = "2.3.0"
 buildkonfig = "0.18.0"
+kotlinpoet = "2.2.0"
+harness-ff-android = "2.2.7"
+desugar-jdk-libs = "2.1.5"
+sqldelight = "2.3.2"
 
 [libraries]
 # Circuit
@@ -53,7 +58,9 @@ ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref =
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref = "ktor" }
 ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
+ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
 ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
 # Coil
@@ -77,8 +84,27 @@ androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-r
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-splashscreen" }
 androidx-compose-material3-windowsizeclass = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "androidx-compose-material3-windowsizeclass" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test-runner" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "androidx-benchmark-macro" }
 androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "androidx-uiautomator" }
+
+# Harness (Feature Flags)
+harness-ff-android = { group = "io.harness", name = "ff-android-client-sdk", version.ref = "harness-ff-android" }
+
+# Desugaring (required by Harness SDK)
+desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
+
+# SQLDelight (KMP relational persistence — single shared DB, feature-owned .sq schemas)
+sqldelight-runtime = { group = "app.cash.sqldelight", name = "runtime", version.ref = "sqldelight" }
+sqldelight-coroutines-extensions = { group = "app.cash.sqldelight", name = "coroutines-extensions", version.ref = "sqldelight" }
+sqldelight-android-driver = { group = "app.cash.sqldelight", name = "android-driver", version.ref = "sqldelight" }
+sqldelight-native-driver = { group = "app.cash.sqldelight", name = "native-driver", version.ref = "sqldelight" }
+sqldelight-sqlite-driver = { group = "app.cash.sqldelight", name = "sqlite-driver", version.ref = "sqldelight" }
+
+# KSP + KotlinPoet (for in-repo symbol processors)
+ksp-symbol-processing-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
+kotlinpoet = { group = "com.squareup", name = "kotlinpoet", version.ref = "kotlinpoet" }
+kotlinpoet-ksp = { group = "com.squareup", name = "kotlinpoet-ksp", version.ref = "kotlinpoet" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -86,6 +112,7 @@ android-test = { id = "com.android.test", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
@@ -96,3 +123,4 @@ kotest = { id = "io.kotest", version.ref = "kotest" }
 kmp-nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version.ref = "kmp-nativecoroutines" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }

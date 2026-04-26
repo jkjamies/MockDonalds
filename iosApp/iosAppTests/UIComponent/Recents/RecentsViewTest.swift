@@ -28,11 +28,11 @@ import ComposeApp
 
     @Test func backTapEmitsEvent() {
         robot.simulateBackTap()
-        robot.assertLastEvent(RecentsEventOnBackTapped())
+        robot.assertLastEvent(RecentsEvent.OnBackTapped())
     }
 
     @Test func itemTapEmitsEvent() {
         robot.simulateItemTap(id: "1")
-        robot.assertLastEvent(RecentsEventOnItemTapped(id: "1"))
+        robot.assertLastEvent(RecentsEvent.OnItemTapped(id: "1"))
     }
 }

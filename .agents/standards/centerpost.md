@@ -292,32 +292,24 @@ fun HomePresenter(
 
 ## Core Module Interactor Guidance
 
-All core modules with api/impl MUST expose CenterPost interactors for presenter consumption. This rule is absolute — even fire-and-forget operations go through interactors from presenters.
+Core modules with api/impl expose CenterPost interactors for presenter consumption by default. Even fire-and-forget operations go through interactors from presenters — the value is structured error handling, timeout protection, dispatcher correctness, and consistency. One documented exception: `core:feature-flag` (see carve-out below).
 
 **Choose the interactor type based on the operation:**
 
 | Operation Type | Interactor | Example |
 |---------------|-----------|---------|
-| Streaming / observable state | `CenterPostSubjectInteractor` | `ObserveFeatureFlag` — presenters react to flag changes |
+| Streaming / observable state | `CenterPostSubjectInteractor` | `GetHomeContent` — presenter reacts to combined repository flows |
 | One-shot async or fire-and-forget | `CenterPostInteractor` | `TrackAnalyticsEvent` — structured execution for event tracking |
 
 **Why even fire-and-forget?** The value isn't loading state (which goes uncollected — opt-in, zero overhead). It's:
 - Structured error handling — if the real SDK throws, `CenterPostResult.Failure` catches it
 - Timeout protection — a hung SDK call doesn't block forever
 - Dispatcher correctness — work runs on the right dispatcher
-- Consistency — presenters always use interactors, no exceptions to remember
+- Consistency — presenters default to interactors; only documented carve-outs skip them
 
 **Domain and data layers always inject the provider interface directly** — never the interactor. Interactors are a presenter-layer concern. Domain/data use the synchronous provider API.
 
 ```kotlin
-// STREAMING: core:feature-flag
-// Presenter — uses CenterPostSubjectInteractor
-observeFeatureFlag(MyFlags.NEW_FEATURE)
-val enabled by observeFeatureFlag.flow.collectAsState(initial = false)
-
-// Repository — uses provider directly
-val endpoint = if (featureFlags.isEnabled(MyFlags.NEW_API)) "/v2" else "/v1"
-
 // FIRE-AND-FORGET: core:analytics
 // Presenter — uses CenterPostInteractor (ignores loading state)
 val centerPost = rememberCenterPost(dispatchers)
@@ -326,6 +318,33 @@ centerPost { trackAnalyticsEvent(MyEvent.ButtonTapped) }
 // Repository — uses dispatcher directly
 analyticsDispatcher.track(MyEvent.DataFetched)
 ```
+
+### Carve-out: `core:feature-flag`
+
+Flag reads are the one documented exception to "presenters always use CenterPost interactors." Instead, presenters inject `FeatureFlagProvider` and call the Composable extension `rememberFlag(flag)`:
+
+```kotlin
+// core:feature-flag
+// Presenter — uses Composable extension (NOT a CenterPost interactor)
+@CircuitInject(MyScreen::class, AppScope::class)
+@Inject
+@Composable
+fun MyPresenter(featureFlags: FeatureFlagProvider): MyUiState {
+    val newApi   by featureFlags.rememberFlag(MyFlags.NEW_API)
+    val rollout  by featureFlags.rememberFlag(MyFlags.ROLLOUT)
+    // ...
+}
+
+// Repository — uses provider directly (same as before)
+val endpoint = if (featureFlags.isEnabled(MyFlags.NEW_API)) "/v2" else "/v1"
+```
+
+**Why the carve-out?** The CenterPost rationale doesn't apply to flag reads:
+- No error surface — flag observation is an in-memory Flow that doesn't fail meaningfully
+- No timeout concern — reads are synchronous at the source
+- No dispatcher concern — presenter-side consumption is Compose state, not background work
+
+And the CenterPost shape actively hurts here: `CenterPostSubjectInteractor` is "one param, one stream" (uses `flatMapLatest`), so N flags require N injected interactor instances. Presenters commonly need 3–5 flags; the Composable extension reduces that to 1 DI param plus one line per flag with per-flag recomposition isolation. Konsist forbids `.isEnabled(...)` / `.observe(...)` in presentation so the reactive Compose-state boundary stays intact. New core modules default to the interactor rule; new carve-outs need explicit justification here.
 
 ## Anti-Patterns
 

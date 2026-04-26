@@ -15,7 +15,7 @@ Shared Metro DI graph contract. Defines the `AppGraph` interface that both produ
 - `core:circuit` — provides `Circuit` type and `CircuitProviders` (factory aggregation)
 - `core:analytics:api` — provides `AnalyticsDispatcher` interface
 - `core:auth:api` — provides `AuthManager` interface
-- `core:build-config` — provides `AppBuildConfig` (market/env configuration)
+- `core:build-config:api` — provides `AppBuildConfig` interface (market/env configuration facade)
 
 ## Design
 

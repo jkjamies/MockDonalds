@@ -10,7 +10,9 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":core:network:api"))
-            implementation(project(":core:build-config"))
+            implementation(project(":core:auth:api"))
+            implementation(project(":core:build-config:api"))
+            implementation(libs.ktor.client.auth)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.serialization.json)
@@ -21,6 +23,9 @@ kotlin {
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+        }
+        commonTest.dependencies {
+            implementation(libs.ktor.client.mock)
         }
     }
 }
