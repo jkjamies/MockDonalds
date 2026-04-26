@@ -14,14 +14,14 @@ struct RecentsView: View {
 
     var body: some View {
         Group {
-            if let _ = state as? RecentsUiState.Loading {
+            if state is RecentsUiState.Loading {
                 VStack {
                     Spacer()
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: colors.primary))
                     Spacer()
                 }
-            } else if let _ = state as? RecentsUiState.Empty {
+            } else if state is RecentsUiState.Empty {
                 VStack {
                     Spacer()
                     emptyStateView

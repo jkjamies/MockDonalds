@@ -114,16 +114,29 @@ Parse the input and map extracted information onto template sections. Work throu
 Populate every section where the input provides enough information. Follow these rules:
 
 - **Fill confidently** — if the AC clearly describes something, map it to the right section with concrete details
-- **Fill partially** — if the AC implies something but lacks specifics, fill what you can and add `<!-- TODO: [what's missing and why the implementer needs to decide] -->` markers
-- **Leave as TODO** — if a section has zero signal from the AC, keep the template's placeholder structure with `<!-- TODO: no signal in AC — [what to consider] -->` so the implementer knows to fill it
-- **Don't invent** — never fabricate endpoint paths, field names, or UI layouts that aren't grounded in the input. It's better to leave a TODO than to guess wrong
+- **Mark gaps for the grill (step 7)** — if the AC implies something but lacks specifics, fill what you can and tag the gap internally with `<!-- TODO: [what's missing] -->`. These markers are temporary working state; they MUST be resolved during the grill step before the spec is finalized
+- **Don't leave silent gaps** — if a section has zero signal from the AC, do not skip it; tag it with `<!-- TODO: no signal in AC — [what the user needs to decide] -->` so the grill step targets it
+- **Don't invent** — never fabricate endpoint paths, field names, or UI layouts that aren't grounded in the input. Tag the gap and let the grill resolve it; never guess
 - **Acceptance criteria are unchecked** — AC items in the spec use `- [ ]` (unchecked), never `- [x]`. The spec describes work to be done, not work already completed
 - **Preserve Out of Scope** — if the AC defines out-of-scope items, carry them into the template's Out of Scope section verbatim. This prevents scope creep during implementation
 - **Preserve Constraints** — if the AC mentions constraints, technical considerations, or implementation guidance (e.g., "keep the data layer clean for future swap"), carry them into the Constraints & Considerations section
 - **Use project conventions** — when filling technical sections, follow the naming patterns and architecture documented in CLAUDE.md and `.agents/standards/`. For example, use `CenterPostSubjectInteractor` for streaming use cases, the `{Name}RemoteDataSource` / `{Name}RemoteDataSourceImpl` pattern for data sources. For TestTags, read an existing feature's TestTags file to match the actual naming convention used in the codebase (e.g., PascalCase vs snake_case)
 - **Preserve AC language** — keep the PM's terminology in Business Context and Acceptance Criteria sections. Translate to technical terms in the implementation sections
 
-### 7. Append Original Requirements
+### 7. Grill Until Clean
+
+Before finalizing, scan the in-progress spec for unresolved markers and resolve every one with the user. Follow the grill-me skill on the working spec:
+
+- Scan for `<!-- TODO -->` markers, empty `- [ ]` AC items, empty required header fields, raw template placeholders, and `...` table cells
+- Order branches by dependency (identity → business context → domain → API → use cases → repo → screen → cross-cutting)
+- Explore the codebase before asking — confirm answers from sibling features, conventions, and existing infrastructure
+- Ask one question at a time, always with a recommended answer and the tradeoff
+- Write each resolution back into the spec immediately
+- Append a `## Decisions` section logging every resolved question + rationale
+
+The conversion is not done until the spec is grill-clean. **No `<!-- TODO -->` markers may survive into final output.** If the user explicitly defers a decision, log it under `### Deferred` in the Decisions section with the reason — do not leave it as a TODO.
+
+### 8. Append Original Requirements
 
 At the bottom of the spec, after all template sections, add a reference section preserving the original input:
 
@@ -146,22 +159,23 @@ At the bottom of the spec, after all template sections, add a reference section 
 
 This keeps the spec as the primary artifact while maintaining traceability to the PM's original language.
 
-### 8. Present the Result
+### 9. Present the Result
 
 Output the complete spec. Tell the user:
 
 1. Which spec type was used (and why, if inferred)
-2. Which sections were filled vs left as TODO
-3. Suggested next step — which skill to run with this spec (e.g., `/add-feature @specs/{name}.md`, `/update order @specs/order-change.md`)
+2. How many decisions were grilled (and how many, if any, were deferred — call out deferred ones explicitly)
+3. Suggested next step — which skill to run with this spec (e.g., `/add-feature @specs/{name}.md`, `/update order @specs/order-change.md`). Because the grill step ran, the spec is implementation-ready; consumer skills can scaffold without further interrogation.
 
-The user can save the output as a file (e.g., `specs/{name}-spec.md`) and refine before feeding to an implementation skill.
+The user can save the output as a file (e.g., `specs/{name}-spec.md`) before feeding to the implementation skill.
 
 ## Key Rules
 
 - **The spec is the artifact, not the AC** — the output should be immediately usable by implementation skills without referencing the original AC
 - **Infer confidently, flag uncertainty** — when the content clearly points to a spec type, just use it. When ambiguous, ask
-- **Don't over-fill** — a TODO marker is more valuable than a wrong guess. The implementer will fill gaps with domain knowledge you don't have
-- **Stay grounded** — every filled section should trace back to something in the input. If you can't point to the source, it's invention
+- **Grill until clean — never punt TODOs forward** — the conversion is not done while gaps remain. Every unresolved decision must be answered (or explicitly deferred with a logged reason) before the spec is finalized. `<!-- TODO -->` markers are working state for step 6 only; they MUST NOT survive into final output
+- **Don't invent — grill instead** — when the AC doesn't ground a value, do not guess. Ask the user during step 7, with a recommended answer and the tradeoff
+- **Stay grounded** — every filled section should trace back to either the input or a grill answer. If you can't point to a source, it's invention
 - **Use project vocabulary** — this codebase has specific patterns (CenterPost, Circuit, Metro, etc.). Use them in technical sections so the spec reads natively
 - **Respect the template** — don't add sections that aren't in the template or skip sections that are. Delete-if-not-applicable instructions from the template headers still apply
 

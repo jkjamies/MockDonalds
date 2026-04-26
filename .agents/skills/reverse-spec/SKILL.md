@@ -180,13 +180,30 @@ At the bottom of the spec, add a section:
 - [business logic that seems intentional but unclear why]
 ```
 
+### 6. Grill Until Clean
+
+A reverse-spec is built from inference, so it accumulates `presumably` / `appears to` / `unclear why` markers and a Questions for the Team section. Before finalizing, walk every one of these with the user. Follow the grill-me skill on the working spec, with reverse-spec-specific marker targets:
+
+- Every `presumably` / `appears to` / `seems to` qualifier in any section
+- Every entry under Discrepancies & Observations → Questions for the Team
+- Every entry under Incomplete Implementations and Potential Tech Debt where intent is unclear
+- Every "unclear why" or "intent not obvious" annotation
+
+For each, present the codebase evidence, propose your best interpretation, and ask the user to confirm or correct. Write each resolution back into the spec immediately:
+
+- Replace `presumably X` with `X` (and cite the user as the source) when confirmed
+- Rewrite the section if the user corrects the inference
+- Move unresolvable items to a `### Deferred` subsection with a note on what would unblock them (e.g., "needs PM input", "needs git archaeology beyond available history")
+
+Append a `## Decisions` section above the existing `## Discrepancies & Observations` section logging every confirmation/correction with rationale. The reverse-spec is not done while presumptions remain unconfirmed.
+
 ## Output Format
 
-The output should be a complete, filled-in spec that could be saved as a file and used as input to other skills (`/update`, `/migrate`, `/add-tests`). The user can:
+The output should be a complete, grill-confirmed spec that could be saved as a file and used as input to other skills (`/update`, `/migrate`, `/add-tests`). Because the grill step ran, presumptions have been resolved against the user's actual knowledge — the spec describes what IS, not what was inferred. The user can:
 
 1. **Read it** — understand the feature quickly
 2. **Save it** — `specs/{feature}-reverse-spec.md` for reference
-3. **Feed it forward** — use as input to `/update` or `/migrate` for the next change
+3. **Feed it forward** — use as input to `/update` or `/migrate` for the next change (no re-grilling needed)
 4. **Compare it** — diff against AGENTS.md to find documentation drift
 5. **Share it** — hand to a teammate as a briefing document
 
@@ -194,10 +211,11 @@ The output should be a complete, filled-in spec that could be saved as a file an
 
 - **Report what IS, not what SHOULD BE** — this is archaeology, not design
 - **Cite your sources** — reference file paths and line numbers for every claim
-- **Flag uncertainty** — if you're inferring intent, say "presumably" or "appears to"
+- **Flag uncertainty during inference, then grill it out** — `presumably` / `appears to` qualifiers are working state for steps 1–5; step 6 must resolve every one with the user. The final spec should not contain unconfirmed inferences (except deferred items in the Decisions log)
 - **Don't skip tests** — test assertions are the most reliable source of truth
 - **Check git blame for context** — commit messages often explain "why"
 - **Note staleness** — if AGENTS.md contradicts the code, the code wins
+- **Grill until clean — never punt presumptions forward** — the reverse is not done while inferences remain unconfirmed. Every `presumably` / `appears to` / `unclear why` must be resolved (or explicitly deferred with a logged reason) before the spec is finalized
 
 ## No Verification Needed
 

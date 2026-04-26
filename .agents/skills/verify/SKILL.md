@@ -65,8 +65,8 @@ Run the steps listed in `.agents/standards/verification.md` → "Local (the `ver
 Summary (see the standard for exact commands):
 
 0. **Pre-flight: `./gradlew :core:build-config:impl:validateAllMarkets`** — runs first because malformed combo files invalidate every downstream step.
-1. Detekt — Kotlin lint
-2. SwiftLint — Swift style
+1. Detekt — Kotlin lint (auto-correct runs automatically; re-stage modified files; only report violations that survive autofix)
+2. SwiftLint — Swift style (on violations, run `swiftlint --fix --config .swiftlint.yml`, re-stage, then re-run lint; only report violations that survive autofix)
 3. Kotest — Kotlin pure-logic unit tests (Android host)
 4. iOS unit tests — Swift Testing pure-logic, `UnitTests` plan, `iosAppTests/Unit/` (requires simulator)
 5. Konsist — Kotlin architecture
@@ -95,8 +95,8 @@ Run the full pipeline from `.agents/standards/verification.md` → "Full Pipelin
 Summary (see the standard for exact commands):
 
 0. **Pre-flight: `./gradlew :core:build-config:impl:validateAllMarkets`** — gates the entire pipeline.
-1. Detekt — Kotlin lint
-2. SwiftLint — Swift style
+1. Detekt — Kotlin lint (auto-correct runs automatically; re-stage modified files; only report violations that survive autofix)
+2. SwiftLint — Swift style (on violations, run `swiftlint --fix --config .swiftlint.yml`, re-stage, then re-run lint; only report violations that survive autofix)
 3. Kotest — Kotlin pure-logic unit tests (Android host)
 4. iOS unit tests — Swift Testing pure-logic, `UnitTests` plan, `iosAppTests/Unit/` (requires simulator)
 5. Konsist — Kotlin architecture

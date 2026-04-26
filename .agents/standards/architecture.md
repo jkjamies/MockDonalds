@@ -38,8 +38,8 @@ graph TB
         TestFixtures["test-fixtures"]
     end
 
-    composeApp --> androidApp
-    composeApp --> iosApp
+    androidApp --> composeApp
+    iosApp --> composeApp
     composeApp --> features
     composeApp --> core
     features --> core
@@ -52,11 +52,11 @@ graph TB
                     │            composeApp               │
                     │  ProdAppGraph (Metro DI) + Circuit   │
                     │  Wires all feature modules together  │
-                    └──────────┬──────────┬───────────────┘
+                    └──────────▲──────────▲───────────────┘
                  Android       │          │          iOS
               ┌────────────────┘          └──────────────────┐
               │                                              │
-     ┌────────▼────────┐                          ┌─────────▼─────────┐
+     ┌────────┴────────┐                          ┌─────────┴─────────┐
      │   androidApp    │                          │      iosApp       │
      │   MainActivity  │                          │  SwiftUI Views    │
      │   Compose UI    │                          │  Circuit bridge   │
@@ -177,11 +177,11 @@ graph TB
         end
     end
 
-    ApiDomain --> ImplDomain
-    ImplDomain --> ImplData
-    ApiDomain --> ImplPres
-    ApiNav --> ImplPres
-    ApiDomain --> TestMod
+    ImplDomain --> ApiDomain
+    ImplData --> ImplDomain
+    ImplPres --> ApiDomain
+    ImplPres --> ApiNav
+    TestMod --> ApiDomain
 
     style api fill:#e8f5e9
     style impl fill:#fff3e0

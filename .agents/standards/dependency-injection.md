@@ -144,11 +144,11 @@ graph TB
         UiFactory["@CircuitInject<br/>generates Ui.Factory<br/>@ContributesIntoSet"]
     end
 
-    UCImpl --> AppGraph
-    RepoImpl --> AppGraph
-    PresFactory --> Multibinds
-    UiFactory --> Multibinds
-    Multibinds --> Circuit
+    AppGraph --> UCImpl
+    AppGraph --> RepoImpl
+    Multibinds --> PresFactory
+    Multibinds --> UiFactory
+    Circuit --> Multibinds
 ```
 
 ```

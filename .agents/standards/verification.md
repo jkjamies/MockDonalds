@@ -184,7 +184,7 @@ git diff --name-only                       # uncommitted changes on main
 
 ### Detekt
 - Reports: rule name + `file:line` (e.g., `MaxLineLength at MyFile.kt:42`)
-- Auto-correct available: `./gradlew detektMetadataCommonMain --auto-correct`
+- **On failure: run autofix first**, then re-run lint. The convention plugin sets `autoCorrect = true`, so `./gradlew detektMetadataCommonMain` auto-fixes formatting issues silently. The `--auto-correct` flag is redundant but harmless. After autofix, re-stage any modified files. Only report remaining violations after autofix has run
 - Common issues: trailing commas, import ordering, line length (120 warn / 200 error)
 
 ### Kotest (Unit Tests)
@@ -218,7 +218,7 @@ git diff --name-only                       # uncommitted changes on main
 
 ### SwiftLint
 - Reports: rule name + `file:line` (e.g., `Force Unwrapping Violation at HomeView.swift:15`)
-- Auto-fix available: `swiftlint --fix --config .swiftlint.yml`
+- **On failure: run autofix first**, then re-run lint. SwiftLint's `--fix` is opt-in (unlike Detekt), so explicitly run `swiftlint --fix --config .swiftlint.yml` whenever lint reports violations. After autofix, re-stage modified files and re-run `swiftlint --config .swiftlint.yml` to see the remainder. Only report violations that survive autofix
 - Excludes `Circuit/` bridge code (force casts required for KMP interop)
 
 ### navint-tests (Navigation & Integration Tests)
