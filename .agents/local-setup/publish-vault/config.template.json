@@ -1,0 +1,30 @@
+{
+  "_TODO": "Copy this file to ~/.claude/skills/publish-vault/config.json and fill in default_vault_path. Delete this _TODO key once done. The skill refuses to run while default_vault_path starts with 'TODO:'.",
+  "default_vault_path": "TODO: /absolute/path/to/your/Obsidian/Projects",
+  "use_project_subfolder": true,
+  "vault_layout": "nested",
+  "include_globs": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    ".agents/**/*.md",
+    ".claude/**/*.md",
+    "docs/**/*.md",
+    "README.md",
+    "ARCHITECTURE.md",
+    "CONTRIBUTING.md"
+  ],
+  "exclude_globs": [
+    ".git/**",
+    "node_modules/**",
+    "build/**",
+    ".gradle/**",
+    "Pods/**",
+    "DerivedData/**",
+    "dist/**",
+    "target/**",
+    "vendor/**",
+    ".venv/**",
+    "__pycache__/**"
+  ],
+  "prompt_version": 2
+}
