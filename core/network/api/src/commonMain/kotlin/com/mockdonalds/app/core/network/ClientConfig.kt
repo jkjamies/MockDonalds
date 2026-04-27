@@ -12,7 +12,11 @@ import kotlin.time.Duration.Companion.seconds
  */
 class ClientConfig {
 
-    /** Base URL for all requests made by this client. Required for most features. */
+    /**
+     * Base URL for all requests made by this client. Required when [authMode] is [AuthMode.BEARER]
+     * — the bearer token is host-pinned to this URL's host and protocol so credentials cannot
+     * leak to absolute-URL requests pointing at other hosts.
+     */
     var baseUrl: String? = null
 
     /** Auth mode for this client. Defaults to [AuthMode.BEARER]. */
@@ -50,7 +54,11 @@ class ClientConfig {
 
 /** Auth mode for a client created by [HttpClientFactory]. */
 enum class AuthMode {
-    /** Bearer token auth with automatic refresh on 401. */
+    /**
+     * Bearer token auth with automatic refresh on 401. Token is scoped to the client's
+     * [ClientConfig.baseUrl] host + protocol; cross-host requests through the same client get no
+     * `Authorization` header. Requires [ClientConfig.baseUrl] to be non-null.
+     */
     BEARER,
 
     /** No auth headers. Use for public/unauthenticated endpoints (login, bootstrap). */

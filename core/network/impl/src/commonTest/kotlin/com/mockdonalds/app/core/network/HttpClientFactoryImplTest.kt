@@ -1,8 +1,10 @@
 package com.mockdonalds.app.core.network
 
+import com.mockdonalds.app.core.auth.AuthTokens
 import com.mockdonalds.app.core.buildconfig.AppBuildConfig
 import com.mockdonalds.app.core.test.FakeAuthManager
 import com.mockdonalds.app.core.test.FakeSensorDataProvider
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldNotContain
@@ -12,7 +14,11 @@ import io.kotest.matchers.string.shouldContain
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -47,10 +53,11 @@ class HttpClientFactoryImplTest : BehaviorSpec({
         engine: MockEngine,
         env: String = "dev",
         sensor: FakeSensorDataProvider = FakeSensorDataProvider(),
+        authManager: FakeAuthManager = FakeAuthManager(),
     ): HttpClientFactoryImpl = HttpClientFactoryImpl(
         appBuildConfig = buildConfig(env),
         json = json,
-        authManager = FakeAuthManager(),
+        authManager = authManager,
         sensorDataProvider = sensor,
         baseClient = HttpClient(engine),
     )
@@ -64,23 +71,26 @@ class HttpClientFactoryImplTest : BehaviorSpec({
             val b = factory.create { baseUrl = "https://b.mockdonalds.com" }
 
             Then("each is a distinct HttpClient sharing the same engine") {
-                a shouldNotBe b
-                a.engine shouldBe b.engine
-                a.close()
-                b.close()
+                try {
+                    a shouldNotBe b
+                    a.engine shouldBe b.engine
+                } finally {
+                    a.close()
+                    b.close()
+                }
             }
         }
 
         When("the ktorConfig escape hatch is used") {
-            var escapeHatchCalled = false
-            val engine = MockEngine { respond(content = "", status = HttpStatusCode.OK) }
-            factoryWith(engine).create {
-                baseUrl = "https://order-api.mockdonalds.com"
-                ktorConfig { escapeHatchCalled = true }
-            }
-
             Then("the block is invoked") {
-                escapeHatchCalled shouldBe true
+                var escapeHatchCalled = false
+                val engine = MockEngine { respond(content = "", status = HttpStatusCode.OK) }
+                factoryWith(engine).create {
+                    baseUrl = "https://order-api.mockdonalds.com"
+                    ktorConfig { escapeHatchCalled = true }
+                }.use {
+                    escapeHatchCalled shouldBe true
+                }
             }
         }
     }
@@ -95,12 +105,12 @@ class HttpClientFactoryImplTest : BehaviorSpec({
                     respond(content = "", status = HttpStatusCode.OK)
                 }
                 val sensor = FakeSensorDataProvider(data = "sensor-token-xyz")
-                val client = factoryWith(engine, sensor = sensor).create {
+                factoryWith(engine, sensor = sensor).create {
                     baseUrl = "https://menu-api.mockdonalds.com"
                     authMode = AuthMode.NONE
+                }.use { client ->
+                    client.get("/menu")
                 }
-
-                client.get("/menu")
                 captured shouldBe "sensor-token-xyz"
             }
         }
@@ -112,12 +122,12 @@ class HttpClientFactoryImplTest : BehaviorSpec({
                     captured = request.headers["X-acf-sensor-data"]
                     respond(content = "", status = HttpStatusCode.OK)
                 }
-                val client = factoryWith(engine).create {
+                factoryWith(engine).create {
                     baseUrl = "https://menu-api.mockdonalds.com"
                     authMode = AuthMode.NONE
+                }.use { client ->
+                    client.get("/menu")
                 }
-
-                client.get("/menu")
                 captured shouldBe null
             }
         }
@@ -129,12 +139,12 @@ class HttpClientFactoryImplTest : BehaviorSpec({
                     pragmas = request.headers.getAll("Pragma").orEmpty()
                     respond(content = "", status = HttpStatusCode.OK)
                 }
-                val client = factoryWith(engine, env = "dev").create {
+                factoryWith(engine, env = "dev").create {
                     baseUrl = "https://menu-api.mockdonalds.com"
                     authMode = AuthMode.NONE
+                }.use { client ->
+                    client.get("/menu")
                 }
-
-                client.get("/menu")
                 pragmas shouldContainAll listOf(
                     "akamai-x-cache-on",
                     "akamai-x-get-true-cache-key",
@@ -149,12 +159,12 @@ class HttpClientFactoryImplTest : BehaviorSpec({
                     pragmas = request.headers.getAll("Pragma").orEmpty()
                     respond(content = "", status = HttpStatusCode.OK)
                 }
-                val client = factoryWith(engine, env = "prod").create {
+                factoryWith(engine, env = "prod").create {
                     baseUrl = "https://menu-api.mockdonalds.com"
                     authMode = AuthMode.NONE
+                }.use { client ->
+                    client.get("/menu")
                 }
-
-                client.get("/menu")
                 pragmas shouldNotContain "akamai-x-cache-on"
             }
         }
@@ -170,12 +180,12 @@ class HttpClientFactoryImplTest : BehaviorSpec({
                     userAgent = request.headers[HttpHeaders.UserAgent]
                     respond(content = "", status = HttpStatusCode.OK)
                 }
-                val client = factoryWith(engine, env = "stage").create {
+                factoryWith(engine, env = "stage").create {
                     baseUrl = "https://menu-api.mockdonalds.com"
                     authMode = AuthMode.NONE
+                }.use { client ->
+                    client.get("/menu")
                 }
-
-                client.get("/menu")
                 appId shouldBe "us-mockdonalds-mobile-stage"
                 market shouldBe "us"
                 userAgent!! shouldContain "MockDonalds/stage-us (debug)"
@@ -205,13 +215,13 @@ class HttpClientFactoryImplTest : BehaviorSpec({
                         respond(content = "", status = HttpStatusCode.OK)
                     }
                 }
-                val client = factoryWith(engine).create {
+                factoryWith(engine).create {
                     baseUrl = "https://menu-api.mockdonalds.com"
                     authMode = AuthMode.NONE
+                }.use { client ->
+                    client.get("/menu")
+                    client.get("/menu")
                 }
-
-                client.get("/menu")
-                client.get("/menu")
 
                 observed[0] shouldBe null
                 observed[1]!! shouldContain "ak_bmsc=session-123"
@@ -232,12 +242,12 @@ class HttpClientFactoryImplTest : BehaviorSpec({
                         respond(content = "ok", status = HttpStatusCode.OK)
                     }
                 }
-                val client = factoryWith(engine).create {
+                val response: HttpResponse = factoryWith(engine).create {
                     baseUrl = "https://menu-api.mockdonalds.com"
                     authMode = AuthMode.NONE
+                }.use { client ->
+                    client.get("/menu")
                 }
-
-                val response: HttpResponse = client.get("/menu")
                 response.status shouldBe HttpStatusCode.OK
                 calls shouldBe 3
             }
@@ -258,15 +268,284 @@ class HttpClientFactoryImplTest : BehaviorSpec({
                         respond(content = "ok", status = HttpStatusCode.OK)
                     }
                 }
-                val client = factoryWith(engine).create {
+                val response: HttpResponse = factoryWith(engine).create {
                     baseUrl = "https://menu-api.mockdonalds.com"
                     authMode = AuthMode.NONE
                     requestTimeout = 30.seconds
+                }.use { client ->
+                    client.get("/menu")
                 }
-
-                val response: HttpResponse = client.get("/menu")
                 response.status shouldBe HttpStatusCode.OK
                 calls shouldBe 2
+            }
+        }
+
+        When("a POST receives 503") {
+            Then("the request is NOT retried (writes are not idempotent)") {
+                var calls = 0
+                val engine = MockEngine {
+                    calls++
+                    respond(
+                        content = "",
+                        status = HttpStatusCode.ServiceUnavailable,
+                        headers = headersOf(HttpHeaders.RetryAfter, "0"),
+                    )
+                }
+                val response: HttpResponse = factoryWith(engine).create {
+                    baseUrl = "https://order-api.mockdonalds.com"
+                    authMode = AuthMode.NONE
+                }.use { client ->
+                    client.post("/orders")
+                }
+                response.status shouldBe HttpStatusCode.ServiceUnavailable
+                calls shouldBe 1
+            }
+        }
+
+        When("a POST receives 429") {
+            Then("the request is NOT retried (writes are not idempotent)") {
+                var calls = 0
+                val engine = MockEngine {
+                    calls++
+                    respond(
+                        content = "",
+                        status = HttpStatusCode.TooManyRequests,
+                        headers = headersOf(HttpHeaders.RetryAfter, "0"),
+                    )
+                }
+                val response: HttpResponse = factoryWith(engine).create {
+                    baseUrl = "https://order-api.mockdonalds.com"
+                    authMode = AuthMode.NONE
+                }.use { client ->
+                    client.post("/orders")
+                }
+                response.status shouldBe HttpStatusCode.TooManyRequests
+                calls shouldBe 1
+            }
+        }
+
+        When("a POST carries an Idempotency-Key and receives 503") {
+            Then("the request is retried because the backend can dedupe") {
+                var calls = 0
+                val engine = MockEngine {
+                    calls++
+                    if (calls < 2) {
+                        respond(
+                            content = "",
+                            status = HttpStatusCode.ServiceUnavailable,
+                            headers = headersOf(HttpHeaders.RetryAfter, "0"),
+                        )
+                    } else {
+                        respond(content = "ok", status = HttpStatusCode.OK)
+                    }
+                }
+                val response: HttpResponse = factoryWith(engine).create {
+                    baseUrl = "https://order-api.mockdonalds.com"
+                    authMode = AuthMode.NONE
+                    requestTimeout = 30.seconds
+                }.use { client ->
+                    client.post("/orders") {
+                        header("Idempotency-Key", "order-abc-123")
+                    }
+                }
+                response.status shouldBe HttpStatusCode.OK
+                calls shouldBe 2
+            }
+        }
+
+        When("a PUT receives 503") {
+            Then("the request is retried (PUT is idempotent)") {
+                var calls = 0
+                val engine = MockEngine {
+                    calls++
+                    if (calls < 2) {
+                        respond(
+                            content = "",
+                            status = HttpStatusCode.ServiceUnavailable,
+                            headers = headersOf(HttpHeaders.RetryAfter, "0"),
+                        )
+                    } else {
+                        respond(content = "ok", status = HttpStatusCode.OK)
+                    }
+                }
+                val response: HttpResponse = factoryWith(engine).create {
+                    baseUrl = "https://account-api.mockdonalds.com"
+                    authMode = AuthMode.NONE
+                    requestTimeout = 30.seconds
+                }.use { client ->
+                    client.put("/profile")
+                }
+                response.status shouldBe HttpStatusCode.OK
+                calls shouldBe 2
+            }
+        }
+
+        When("a DELETE receives 503") {
+            Then("the request is retried (DELETE is idempotent)") {
+                var calls = 0
+                val engine = MockEngine {
+                    calls++
+                    if (calls < 2) {
+                        respond(
+                            content = "",
+                            status = HttpStatusCode.ServiceUnavailable,
+                            headers = headersOf(HttpHeaders.RetryAfter, "0"),
+                        )
+                    } else {
+                        respond(content = "", status = HttpStatusCode.NoContent)
+                    }
+                }
+                val response: HttpResponse = factoryWith(engine).create {
+                    baseUrl = "https://account-api.mockdonalds.com"
+                    authMode = AuthMode.NONE
+                    requestTimeout = 30.seconds
+                }.use { client ->
+                    client.delete("/profile")
+                }
+                response.status shouldBe HttpStatusCode.NoContent
+                calls shouldBe 2
+            }
+        }
+
+        When("the server returns 501 Not Implemented") {
+            Then("the request is NOT retried (501 is not transient)") {
+                var calls = 0
+                val engine = MockEngine {
+                    calls++
+                    respond(content = "", status = HttpStatusCode.NotImplemented)
+                }
+                val response: HttpResponse = factoryWith(engine).create {
+                    baseUrl = "https://menu-api.mockdonalds.com"
+                    authMode = AuthMode.NONE
+                }.use { client ->
+                    client.get("/menu")
+                }
+                response.status shouldBe HttpStatusCode.NotImplemented
+                calls shouldBe 1
+            }
+        }
+
+        When("the server returns 500") {
+            Then("the request is NOT retried (500 is ambiguous and may indicate a write succeeded)") {
+                var calls = 0
+                val engine = MockEngine {
+                    calls++
+                    respond(content = "", status = HttpStatusCode.InternalServerError)
+                }
+                val response: HttpResponse = factoryWith(engine).create {
+                    baseUrl = "https://menu-api.mockdonalds.com"
+                    authMode = AuthMode.NONE
+                }.use { client ->
+                    client.get("/menu")
+                }
+                response.status shouldBe HttpStatusCode.InternalServerError
+                calls shouldBe 1
+            }
+        }
+    }
+
+    Given("bearer token host scoping") {
+
+        val devTokens = AuthTokens(accessToken = "live-access", refreshToken = "live-refresh")
+
+        When("a BEARER client makes a request to its own baseUrl host") {
+            Then("the Authorization header is attached") {
+                var auth: String? = null
+                val engine = MockEngine { request ->
+                    auth = request.headers[HttpHeaders.Authorization]
+                    respond(content = "", status = HttpStatusCode.OK)
+                }
+                factoryWith(
+                    engine = engine,
+                    authManager = FakeAuthManager(tokens = devTokens, isAuthenticated = true),
+                ).create {
+                    baseUrl = "https://order-api.mockdonalds.com"
+                    authMode = AuthMode.BEARER
+                }.use { client ->
+                    client.get("/orders")
+                }
+                auth shouldBe "Bearer live-access"
+            }
+        }
+
+        When("a BEARER client makes a request to a different absolute-URL host") {
+            Then("the Authorization header is NOT attached (token does not leak)") {
+                var auth: String? = "not-touched"
+                val engine = MockEngine { request ->
+                    auth = request.headers[HttpHeaders.Authorization]
+                    respond(content = "", status = HttpStatusCode.OK)
+                }
+                factoryWith(
+                    engine = engine,
+                    authManager = FakeAuthManager(tokens = devTokens, isAuthenticated = true),
+                ).create {
+                    baseUrl = "https://order-api.mockdonalds.com"
+                    authMode = AuthMode.BEARER
+                }.use { client ->
+                    client.get("https://attacker.example.com/steal")
+                }
+                auth shouldBe null
+            }
+        }
+
+        When("a BEARER client is configured without a baseUrl") {
+            Then("creation fails fast (BEARER requires a host to scope the token)") {
+                val engine = MockEngine { respond(content = "", status = HttpStatusCode.OK) }
+                val factory = factoryWith(engine)
+
+                shouldThrow<IllegalStateException> {
+                    factory.create { authMode = AuthMode.BEARER }
+                }
+            }
+        }
+    }
+
+    Given("bearer auth flow") {
+
+        val expiredTokens = AuthTokens(accessToken = "expired-access", refreshToken = "old-refresh")
+        val refreshedTokens = AuthTokens(accessToken = "new-access", refreshToken = "new-refresh")
+
+        When("the matching-host server returns 401 with a Bearer challenge") {
+            Then("the client refreshes exactly once and retries with the new token") {
+                val observedAuth = mutableListOf<String?>()
+                var calls = 0
+                val engine = MockEngine { request ->
+                    calls++
+                    observedAuth += request.headers[HttpHeaders.Authorization]
+                    if (calls == 1) {
+                        respond(
+                            content = "",
+                            status = HttpStatusCode.Unauthorized,
+                            headers = headersOf(
+                                HttpHeaders.WWWAuthenticate,
+                                "Bearer realm=\"api\"",
+                            ),
+                        )
+                    } else {
+                        respond(content = "ok", status = HttpStatusCode.OK)
+                    }
+                }
+                val authManager = FakeAuthManager(
+                    tokens = expiredTokens,
+                    refreshResult = refreshedTokens,
+                    isAuthenticated = true,
+                )
+
+                val response: HttpResponse = factoryWith(
+                    engine = engine,
+                    authManager = authManager,
+                ).create {
+                    baseUrl = "https://order-api.mockdonalds.com"
+                    authMode = AuthMode.BEARER
+                }.use { client ->
+                    client.get("/orders")
+                }
+
+                response.status shouldBe HttpStatusCode.OK
+                calls shouldBe 2
+                authManager.refreshCallCount shouldBe 1
+                observedAuth[0] shouldBe "Bearer expired-access"
+                observedAuth[1] shouldBe "Bearer new-access"
             }
         }
     }

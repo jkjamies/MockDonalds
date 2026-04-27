@@ -7,6 +7,7 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.UserAgent
@@ -20,6 +21,8 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.header
+import io.ktor.http.HttpMethod
+import io.ktor.http.Url
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
@@ -68,24 +71,12 @@ class HttpClientFactoryImpl(
 
             install(HttpCookies)
 
-            install(HttpRequestRetry) {
-                retryIf(maxRetries = MAX_RETRIES) { _, response ->
-                    response.status.value in SERVER_ERROR_RANGE ||
-                        response.status.value == STATUS_TOO_MANY_REQUESTS
-                }
-                exponentialDelay(respectRetryAfterHeader = true)
-            }
+            installRequestRetry()
 
             install(sensorHeaderPlugin)
 
             if (config.authMode == AuthMode.BEARER) {
-                install(Auth) {
-                    bearer {
-                        loadTokens { authManager.currentTokens()?.toBearer() }
-                        refreshTokens { authManager.refresh()?.toBearer() }
-                        sendWithoutRequest { true }
-                    }
-                }
+                installBearerAuth(config.baseUrl)
             }
 
             defaultRequest {
@@ -102,6 +93,48 @@ class HttpClientFactoryImpl(
         }
     }
 
+    private fun HttpClientConfig<*>.installRequestRetry() {
+        install(HttpRequestRetry) {
+            retryIf(maxRetries = MAX_RETRIES) { request, response ->
+                val retryableStatus = response.status.value in RETRYABLE_SERVER_ERRORS ||
+                    response.status.value == STATUS_TOO_MANY_REQUESTS
+                val retrySafe = request.method in IDEMPOTENT_METHODS ||
+                    request.headers.contains(HEADER_IDEMPOTENCY_KEY)
+                retryableStatus && retrySafe
+            }
+            retryOnExceptionIf(maxRetries = MAX_RETRIES) { request, _ ->
+                request.method in IDEMPOTENT_METHODS ||
+                    request.headers.contains(HEADER_IDEMPOTENCY_KEY)
+            }
+            exponentialDelay(respectRetryAfterHeader = true)
+        }
+    }
+
+    private fun HttpClientConfig<*>.installBearerAuth(baseUrl: String?) {
+        val authorized = Url(
+            checkNotNull(baseUrl) {
+                "AuthMode.BEARER requires baseUrl to be set so the bearer token " +
+                    "can be scoped to a single host."
+            },
+        )
+        install(Auth) {
+            bearer {
+                loadTokens { authManager.currentTokens()?.toBearer() }
+                refreshTokens {
+                    val responded = response.call.request.url
+                    val matches = responded.host.equals(authorized.host, ignoreCase = true) &&
+                        responded.protocol == authorized.protocol
+                    if (!matches) return@refreshTokens null
+                    authManager.refresh()?.toBearer()
+                }
+                sendWithoutRequest { request ->
+                    request.url.host.equals(authorized.host, ignoreCase = true) &&
+                        request.url.protocol == authorized.protocol
+                }
+            }
+        }
+    }
+
     private fun AuthTokens.toBearer(): BearerTokens =
         BearerTokens(accessToken = accessToken, refreshToken = refreshToken)
 
@@ -110,9 +143,23 @@ class HttpClientFactoryImpl(
         const val HEADER_MARKET = "X-Market"
         const val HEADER_AKAMAI_SENSOR = "X-acf-sensor-data"
         const val HEADER_PRAGMA = "Pragma"
+        const val HEADER_IDEMPOTENCY_KEY = "Idempotency-Key"
         const val MAX_RETRIES = 3
         const val STATUS_TOO_MANY_REQUESTS = 429
-        val SERVER_ERROR_RANGE = 500..599
+
+        // Only methods that are idempotent under RFC 9110 §9.2.2 may be retried automatically.
+        // Writes (POST, PATCH) opt in via Idempotency-Key so the backend can dedupe.
+        val IDEMPOTENT_METHODS = setOf(
+            HttpMethod.Get,
+            HttpMethod.Head,
+            HttpMethod.Options,
+            HttpMethod.Put,
+            HttpMethod.Delete,
+        )
+
+        // Narrowed from blanket 5xx: 501 and 505 are non-transient, 500 is ambiguous.
+        // Akamai/origin failures we actually expect to retry are 502/503/504.
+        val RETRYABLE_SERVER_ERRORS = setOf(502, 503, 504)
 
         val AKAMAI_DEBUG_PRAGMAS = listOf(
             "akamai-x-cache-on",
