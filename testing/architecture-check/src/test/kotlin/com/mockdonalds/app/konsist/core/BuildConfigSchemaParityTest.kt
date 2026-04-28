@@ -50,6 +50,9 @@ class BuildConfigSchemaParityTest : BehaviorSpec({
         }
 
     fun loadProps(file: File): Set<String> {
+        assert(file.exists()) {
+            "Required properties file missing: ${file.relativeTo(projectRoot)}"
+        }
         val props = Properties()
         file.inputStream().use { props.load(it) }
         return props.stringPropertyNames()

@@ -178,8 +178,11 @@ targets:
           unset SDKROOT PLATFORM_NAME EFFECTIVE_PLATFORM_NAME TARGET_DEVICE_PLATFORM_NAME TOOLCHAINS
           swift build -c release --product CircuitFactoryRegistry
           BIN="$(swift build -c release --product CircuitFactoryRegistry --show-bin-path)/CircuitFactoryRegistry"
+          # Pipe NUL-separated paths via stdin instead of xargs so the generator
+          # runs in a single invocation. xargs would fan out past ARG_MAX, and
+          # each fan-out would truncate $OUTPUT — silently dropping entries.
           find "$SRCROOT/iosApp" -name '*.swift' -not -path '*/Generated/*' -print0 \
-            | xargs -0 "$BIN" --output "$OUTPUT"
+            | "$BIN" --paths-from-stdin --output "$OUTPUT"
 
   iosAppTests:
     type: bundle.unit-test

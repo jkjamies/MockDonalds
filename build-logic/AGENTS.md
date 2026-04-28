@@ -60,8 +60,11 @@ Inputs (all optional Gradle properties / env vars):
 - `-Pmarket=…` — selects the market when Phrase is organized per market
 
 The task currently throws a clear "skeleton — not wired to Phrase API" error;
-implementing the HTTP call is the next milestone for localization. Outputs are declared
-as `@OutputDirectory` so Gradle's build cache can short-circuit re-runs.
+implementing the HTTP call is the next milestone for localization. Inputs and outputs
+are declared with `@Input` / `@OutputDirectory`, which lets Gradle skip re-runs via
+up-to-date checks within a workspace. Build-cache participation (cross-workspace
+sharing) requires `@CacheableTask`; add that once the Phrase API call is wired and
+output is deterministic.
 
 ### mockdonalds.detekt.gradle.kts
 

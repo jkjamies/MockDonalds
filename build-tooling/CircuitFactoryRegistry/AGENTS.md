@@ -15,7 +15,7 @@ build-tooling/CircuitFactoryRegistry/
 ├── Package.swift                                # macOS-only (.macOS(.v14)) executable + lib
 ├── Sources/
 │   ├── CircuitFactoryRegistry/
-│   │   └── main.swift                           # Thin CLI wrapper: parses --output and source paths
+│   │   └── main.swift                           # Thin CLI wrapper: parses --output, --paths-from-stdin, and source paths
 │   └── CircuitFactoryRegistryCore/
 │       ├── CircuitInjectVisitor.swift           # SyntaxVisitor walking @CircuitInject sites
 │       ├── RegistryEmitter.swift                # Emits the generated Swift source
@@ -28,7 +28,7 @@ build-tooling/CircuitFactoryRegistry/
 | Target | Kind | Purpose |
 |---|---|---|
 | `CircuitFactoryRegistryCore` | `.target` | Pure-logic library: `CircuitInjectVisitor`, `RegistryEmitter`, `RegistryGenerator`. Unit-testable without Xcode. |
-| `CircuitFactoryRegistry` | `.executableTarget` | CLI shell: parses `--output <path> <input.swift…>` and writes to disk. |
+| `CircuitFactoryRegistry` | `.executableTarget` | CLI shell: parses `--output <path>` plus inputs (positional `<input.swift…>` or `--paths-from-stdin` for NUL-separated lists piped from `find -print0`) and writes to disk. |
 | `CircuitFactoryRegistryCoreTests` | `.testTarget` | Swift Testing suite. Run via `swift test --package-path build-tooling/CircuitFactoryRegistry`. |
 
 ## How It Works
@@ -37,7 +37,9 @@ build-tooling/CircuitFactoryRegistry/
    - `unset` Xcode's iOS-build env vars
    - `cd build-tooling/CircuitFactoryRegistry`
    - `swift build -c release --product CircuitFactoryRegistry`
-   - `find iosApp/iosApp -name '*.swift' -not -path '*/Generated/*' | xargs CircuitFactoryRegistry --output iosApp/iosApp/Generated/GeneratedCircuitFactories.swift`
+   - `find iosApp/iosApp -name '*.swift' -not -path '*/Generated/*' -print0 | CircuitFactoryRegistry --paths-from-stdin --output iosApp/iosApp/Generated/GeneratedCircuitFactories.swift`
+
+   The list is piped through stdin rather than `xargs` so the generator runs in a single invocation regardless of project size — `xargs` would fan out into multiple invocations once the path list exceeds `ARG_MAX`, and each invocation truncates the output file, silently dropping earlier entries.
 
 2. **`RegistryGenerator.generate(sourcePaths:)`** parses each `.swift` file with `SwiftParser` and walks it with `CircuitInjectVisitor`.
 

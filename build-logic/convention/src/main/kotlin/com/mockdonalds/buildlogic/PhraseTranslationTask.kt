@@ -15,9 +15,11 @@ import org.gradle.api.tasks.TaskAction
  * (per-locale `values{-locale}/strings.xml`) plus iOS `.lproj/Localizable.strings`,
  * driven by the `mockdonalds.phrase` convention plugin.
  *
- * The task is declared as cacheable via its typed `@OutputDirectory` properties so
- * Gradle's build cache can short-circuit re-runs when neither the configured locales
- * nor the Phrase project version changed.
+ * The typed `@Input` and `@OutputDirectory` properties let Gradle skip re-execution
+ * when nothing changed inside a workspace (up-to-date checks). They do NOT opt the
+ * task into Gradle's build cache — that requires `@CacheableTask` (or
+ * `outputs.cacheIf { … }`). Add that annotation once the Phrase API call is wired
+ * and the output is deterministic for a given input set.
  */
 abstract class PhraseTranslationTask : DefaultTask() {
 
