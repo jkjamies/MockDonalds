@@ -13,6 +13,7 @@ kotlin {
             api(project(":core:analytics:api"))
             api(project(":core:auth:api"))
             api(project(":core:build-config:api"))
+            api(project(":core:logger:api"))
         }
     }
 }

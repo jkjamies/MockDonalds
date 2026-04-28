@@ -28,6 +28,7 @@ kotlinpoet = "2.2.0"
 harness-ff-android = "2.2.7"
 desugar-jdk-libs = "2.1.5"
 sqldelight = "2.3.2"
+kermit = "2.0.4"
 
 [libraries]
 # Circuit
@@ -100,6 +101,10 @@ sqldelight-coroutines-extensions = { group = "app.cash.sqldelight", name = "coro
 sqldelight-android-driver = { group = "app.cash.sqldelight", name = "android-driver", version.ref = "sqldelight" }
 sqldelight-native-driver = { group = "app.cash.sqldelight", name = "native-driver", version.ref = "sqldelight" }
 sqldelight-sqlite-driver = { group = "app.cash.sqldelight", name = "sqlite-driver", version.ref = "sqldelight" }
+
+# Kermit (Touchlab) — structured logging
+kermit = { group = "co.touchlab", name = "kermit", version.ref = "kermit" }
+kermit-test = { group = "co.touchlab", name = "kermit-test", version.ref = "kermit" }
 
 # KSP + KotlinPoet (for in-repo symbol processors)
 ksp-symbol-processing-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }

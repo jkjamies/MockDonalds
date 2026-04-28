@@ -44,7 +44,9 @@ fun MockDonaldsApp(
     deepLinkIntent: Intent? = null,
 ) {
     val graph = remember(application) {
-        createGraphFactory<ProdAppGraph.Factory>().create(application)
+        createGraphFactory<ProdAppGraph.Factory>().create(application).also {
+            it.loggerInitializer.initialize()
+        }
     }
 
     val deepLinkParser = remember { createDeepLinkParser() }

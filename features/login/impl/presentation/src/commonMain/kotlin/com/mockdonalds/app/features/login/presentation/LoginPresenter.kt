@@ -9,6 +9,7 @@ import com.mockdonalds.app.core.auth.AuthManager
 import com.mockdonalds.app.core.centerpost.CenterPostDispatchers
 import com.mockdonalds.app.core.centerpost.collectAsState
 import com.mockdonalds.app.core.centerpost.rememberCenterPost
+import com.mockdonalds.app.core.logger.featureLogger
 import com.mockdonalds.app.features.login.api.domain.GetLoginContent
 import com.mockdonalds.app.features.login.api.navigation.LoginScreen
 import com.mockdonalds.app.features.login.api.navigation.WelcomeScreen
@@ -16,6 +17,8 @@ import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.Navigator
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
+
+private val log = featureLogger("Login")
 
 @CircuitInject(LoginScreen::class, AppScope::class)
 @Inject
@@ -39,11 +42,18 @@ fun LoginPresenter(
             when (event) {
                 is LoginEvent.EmailChanged -> email = event.value
                 is LoginEvent.SignInConfirmed -> {
+                    log.i { "Sign-in confirmed" }
                     authManager.login()
                     navigator.goTo(WelcomeScreen(returnTo = screen.returnTo))
                 }
-                is LoginEvent.AppleSignInClicked -> centerPost { }
-                is LoginEvent.GoogleSignInClicked -> centerPost { }
+                is LoginEvent.AppleSignInClicked -> {
+                    log.d { "Apple sign-in tapped" }
+                    centerPost { }
+                }
+                is LoginEvent.GoogleSignInClicked -> {
+                    log.d { "Google sign-in tapped" }
+                    centerPost { }
+                }
                 is LoginEvent.DismissClicked -> navigator.pop()
             }
         },

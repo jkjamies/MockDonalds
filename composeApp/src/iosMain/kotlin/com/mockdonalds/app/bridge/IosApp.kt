@@ -23,6 +23,7 @@ class IosApp(
 ) {
     private val graph = createGraphFactory<ProdAppGraph.Factory>()
         .create(harnessIosBridge, akamaiSensorBridge)
+        .also { it.loggerInitializer.initialize() }
 
     val circuit: Circuit get() = graph.circuit
 

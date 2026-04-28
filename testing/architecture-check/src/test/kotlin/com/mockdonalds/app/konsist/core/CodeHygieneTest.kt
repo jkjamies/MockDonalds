@@ -69,6 +69,20 @@ class CodeHygieneTest : BehaviorSpec({
                 "System.out/System.err are not allowed in production code:\n$names"
             }
         }
+
+        Then("raw co.touchlab.kermit imports are confined to core:logger") {
+            val violators = productionFiles
+                .filter { !it.resideInPath("..core/logger..") }
+                .filter { file ->
+                    file.imports.any { it.name.startsWith("co.touchlab.kermit") }
+                }
+
+            assert(violators.isEmpty()) {
+                val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
+                "Raw co.touchlab.kermit imports are only allowed in core:logger — " +
+                    "use the Logger / Severity / LogWriter typealiases from core:logger:api:\n$names"
+            }
+        }
     }
 
     Given("no blocking calls") {

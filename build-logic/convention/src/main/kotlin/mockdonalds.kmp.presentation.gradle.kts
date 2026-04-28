@@ -32,6 +32,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(compose.runtime)
+                implementation(project(":core:logger:api"))
 
                 implementation(catalog.findLibrary("circuit-foundation").get())
                 api(catalog.findLibrary("circuit-runtime-presenter").get())

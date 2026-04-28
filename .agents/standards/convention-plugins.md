@@ -7,9 +7,12 @@ Convention plugins in `build-logic/convention/` eliminate boilerplate across 20+
 ```
 mockdonalds.kmp.library (base)
   ├── mockdonalds.kmp.domain      = library + Metro DI
+  │                                 + auto-wires core:logger:api on commonMain
   ├── mockdonalds.kmp.data        = library + Metro DI + Serialization
+  │                                 + auto-wires core:logger:api on commonMain
   └── mockdonalds.kmp.presentation = library + Compose + Metro DI + Circuit codegen + Coil
                                      + auto-wires core:strings on androidMain
+                                     + auto-wires core:logger:api on commonMain
 
 mockdonalds.detekt (applied transitively via library)
 mockdonalds.phrase  (standalone, applied only to core:strings — registers pullTranslations task)
@@ -122,6 +125,15 @@ applying module's `androidMain` source set. Feature presentation `build.gradle.k
 do **not** declare this dependency themselves — `stringResource(R.string.…)` is available
 in any Compose UI in `androidMain` without per-module setup. iOS source sets never see
 `core:strings`, so the iOS framework export stays untouched.
+
+### `core:logger:api` auto-wiring
+
+`mockdonalds.kmp.domain`, `.data`, and `.presentation` all add `implementation(project(":core:logger:api"))`
+to `commonMain`. Feature impl modules can `import com.mockdonalds.app.core.logger.Logger` (and
+`Severity`, `LogWriter`, `featureLogger`) without declaring the dependency. `core:logger:impl`
+itself is excluded from the `kmp.domain` auto-wire to avoid a self-edge — it declares its api
+dependency explicitly. The Kermit SDK is hidden behind the api typealiases; raw `co.touchlab.kermit.*`
+imports outside `core:logger` are rejected by Konsist (`CodeHygieneTest`).
 
 ## mockdonalds.phrase
 

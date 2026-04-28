@@ -98,6 +98,7 @@ kotlin {
             implementation(project(":core:network:impl"))
             implementation(project(":core:build-config:impl"))
             implementation(project(":core:persistence:impl"))
+            implementation(project(":core:logger:impl"))
 
             // Circuit
             implementation(libs.circuit.foundation)

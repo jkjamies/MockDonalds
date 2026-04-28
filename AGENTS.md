@@ -138,9 +138,9 @@ xcodebuild test -scheme iOSApp -testPlan E2ETests -destination '...'            
 | Plugin | Used By | Adds |
 |--------|---------|------|
 | `mockdonalds.kmp.library` | api modules, single-target core modules | Base KMP setup, Kotest |
-| `mockdonalds.kmp.domain` | impl/domain modules | Metro DI (`@ContributesBinding`) |
-| `mockdonalds.kmp.data` | impl/data modules | Metro DI + kotlinx.serialization |
-| `mockdonalds.kmp.presentation` | impl/presentation modules | Compose Multiplatform + Circuit codegen + auto-adds `core:strings` to `androidMain` |
+| `mockdonalds.kmp.domain` | impl/domain modules | Metro DI (`@ContributesBinding`) + auto-adds `core:logger:api` to `commonMain` |
+| `mockdonalds.kmp.data` | impl/data modules | Metro DI + kotlinx.serialization + auto-adds `core:logger:api` to `commonMain` |
+| `mockdonalds.kmp.presentation` | impl/presentation modules | Compose Multiplatform + Circuit codegen + auto-adds `core:strings` to `androidMain` and `core:logger:api` to `commonMain` |
 | `mockdonalds.phrase` | `core:strings` | Registers `pullTranslations` Gradle task pulling Phrase translations into Android XML + iOS `.lproj` files |
 
 ## Skills
