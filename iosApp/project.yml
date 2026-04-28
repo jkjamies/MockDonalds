@@ -155,6 +155,12 @@ targets:
             -PbuildType="$KOTLIN_FRAMEWORK_BUILD_TYPE"
       - name: Generate Circuit factory registry
         basedOnDependencyAnalysis: false
+        # Declared so Xcode's build graph orders this phase before Sources
+        # compiles GeneratedCircuitFactories.swift. The output dir is gitignored
+        # (.gitignore: iosApp/iosApp/Generated/), so without this the compile
+        # phase can race the script on a clean checkout.
+        outputFiles:
+          - $(SRCROOT)/iosApp/Generated/GeneratedCircuitFactories.swift
         script: |
           # Scans every Swift source under iosApp/ for @CircuitInject and emits
           # iosApp/Generated/GeneratedCircuitFactories.swift, which extends
