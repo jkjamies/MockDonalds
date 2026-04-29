@@ -1,8 +1,5 @@
 package com.mockdonalds.app.core.centerpost
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
@@ -29,12 +26,4 @@ public abstract class CenterPostSubjectInteractor<P : Any, T> {
     }
 
     protected abstract fun createObservable(params: P): Flow<T>
-}
-
-@Composable
-public fun <T> CenterPostSubjectInteractor<Unit, T>.collectAsState(
-    initial: T? = null,
-): State<T?> {
-    invoke(Unit)
-    return flow.collectAsState(initial = initial)
 }

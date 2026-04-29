@@ -58,8 +58,8 @@ packages:
   ViewInspector:
     url: https://github.com/nalexn/ViewInspector.git
     majorVersion: 0.10.0
-  FeatureFlagBridge:
-    path: ../core/feature-flag/impl/swift
+  RemoteConfigBridge:
+    path: ../core/remote-config/impl/swift
   CircuitMacros:
     path: CircuitMacros
 
@@ -131,8 +131,8 @@ targets:
         product: KMPNativeCoroutinesAsync
       - package: KMP-NativeCoroutines
         product: KMPNativeCoroutinesCore
-      - package: FeatureFlagBridge
-        product: FeatureFlagBridge
+      - package: RemoteConfigBridge
+        product: RemoteConfigBridge
       - package: CircuitMacros
         product: CircuitMacros
       - sdk: libsqlite3.tbd

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import com.mockdonalds.app.core.buildconfig.AppBuildConfig
 import com.mockdonalds.app.core.buildconfig.asFields
 import com.mockdonalds.app.core.centerpost.CenterPostDispatchers
-import com.mockdonalds.app.core.centerpost.rememberCenterPost
+import com.mockdonalds.app.core.presentation.centerpost.rememberCenterPost
 import com.mockdonalds.app.features.debugmenu.api.navigation.BuildConfigDebugScreen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.Navigator

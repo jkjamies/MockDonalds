@@ -88,7 +88,7 @@ If yes, explore and propose the answer instead of asking blind:
 | Cross-feature dependencies | Read the target feature's `api/domain` and `api/navigation` modules |
 | Screen type (Screen vs ProtectedScreen vs FlowScreen vs TabScreen) | Read existing screens with similar auth/flow patterns |
 | Repository return types | Read sibling features' repositories |
-| Feature flag lifecycle conventions | Read `core/feature-flag/api/.../FlagLifecycle.kt` and existing flags |
+| Feature flag lifecycle conventions | Read `core/remote-config/api/.../FeatureFlagDefinition.kt` (FlagLifecycle enum) and existing flags |
 | Convention plugin to use | Read `build-logic/convention/.../*.kt` and CLAUDE.md plugin table |
 
 When you find a grounded answer, present it as a confirmation rather than a question:

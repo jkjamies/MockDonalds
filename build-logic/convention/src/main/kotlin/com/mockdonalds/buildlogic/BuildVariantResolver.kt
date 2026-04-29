@@ -15,7 +15,7 @@ import org.gradle.api.invocation.Gradle
 //      task names as a last-resort fallback for buildType).
 //
 // When adding a new market or env, update `variantRe` below — this is the only place the alternation
-// lives. `core:build-config:impl` and `core:feature-flag:impl` both read through this object.
+// lives. `core:build-config:impl` and `core:remote-config:impl` both read through this object.
 object BuildVariantResolver {
     private val variantRe = Regex("""(?i)(us|ca|de|au|core)(Int|Mte|Prod)(Debug|Release)""")
     private val releaseTaskRe = Regex("""[a-z]Release(?=[A-Z]|$)""")

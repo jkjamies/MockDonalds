@@ -24,7 +24,7 @@ core/analytics/test  -> FakeAnalyticsDispatcher, FakeTrackAnalyticsEvent for con
 
 ## Consumption Pattern
 
-Same dual-access pattern as `core:feature-flag`:
+Same dual-access pattern as `core:remote-config`:
 
 **Presenters** use the `TrackAnalyticsEvent` CenterPost interactor:
 

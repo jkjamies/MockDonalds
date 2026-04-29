@@ -6,7 +6,7 @@ Compile-time market, environment, and build-type configuration. Emits flat `Buil
 
 ## Module structure (api / impl / test)
 
-Split into three leaf modules matching `core:feature-flag`, `core:analytics`, `core:auth`:
+Split into three leaf modules matching `core:remote-config`, `core:analytics`, `core:auth`:
 
 | Module | Gradle coordinate | Contains | Depended on by |
 |---|---|---|---|
@@ -29,7 +29,7 @@ The api module is contract-only (no Metro, no BuildKonfig). Only `impl` rebuilds
 
 ## Selection
 
-Both KMP build files — `core/build-config/impl/build.gradle.kts` and `core/feature-flag/impl/build.gradle.kts` — delegate to the shared `BuildVariantResolver` (`build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt`). Three-rung resolution chain:
+Both KMP build files — `core/build-config/impl/build.gradle.kts` and `core/remote-config/impl/build.gradle.kts` — delegate to the shared `BuildVariantResolver` (`build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt`). Three-rung resolution chain:
 
 | Rung | Signal | Who sends it |
 |---|---|---|
@@ -90,7 +90,7 @@ core/build-config/
 
 1. Create the subfolder `impl/markets/{market}/` and add `{market}-int.properties`, `{market}-mte.properties`, `{market}-prod.properties` (every env must exist — `validateAllMarkets` enforces symmetry).
 2. Register the Android flavor in `androidApp/build.gradle.kts`: `create("{market}") { dimension = "market"; applicationIdSuffix = ".{market}" }`.
-3. Extend the market alternation in the shared resolver `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` (one regex edit — both `:core:build-config:impl` and `:core:feature-flag:impl` pick it up automatically).
+3. Extend the market alternation in the shared resolver `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` (one regex edit — both `:core:build-config:impl` and `:core:remote-config:impl` pick it up automatically).
 4. Add 6 iOS xcconfigs in `iosApp/Configuration/{market}/` (`{MARKET}-{Env}-{Debug,Release}.xcconfig` — 3 envs × 2 build types).
 5. Update `iosApp/project.yml`: add 6 entries under top-level `configs:` (Debug→`debug`, Release→`release`) and 6 `configFiles:` entries under each of the three targets (`iosApp`, `iosAppTests`, `iosAppE2ETests`). Pattern is already established — copy an existing market's block.
 6. Regenerate the Xcode project: `cd iosApp && xcodegen generate`. Verify with `xcodebuild -list` (should show 6 new configurations).

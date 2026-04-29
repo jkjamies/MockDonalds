@@ -66,7 +66,7 @@
 		AE36E7CF9D661FB4AA8689BE /* TabSwitchingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D047837D95196BDBFB0F889 /* TabSwitchingTest.swift */; };
 		B13C05324F1DB5C7FC11AEEC /* RecentsStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = C799102DEE0851DAB3F96DD7 /* RecentsStateRobot.swift */; };
 		B4D16BAC8848A6512EB71110 /* GuestJourneyTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90671FDFBBB2E3A1D45C5FBB /* GuestJourneyTest.swift */; };
-		B7C4F6137AC8345E71E92063 /* FeatureFlagBridge in Frameworks */ = {isa = PBXBuildFile; productRef = E25C52EF17D26989C68AAFCE /* FeatureFlagBridge */; };
+		B7C4F6137AC8345E71E92063 /* RemoteConfigBridge in Frameworks */ = {isa = PBXBuildFile; productRef = AD213F304373E3C48CFCAD4F /* RemoteConfigBridge */; };
 		B9BC59FEF59CF0DCD01F7AAF /* ScanViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C22F6BEDB0F029ED12E6C55 /* ScanViewTest.swift */; };
 		BE1116CAA2524E4B9C57A25D /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C6ACFBF27E73AFE38D5CE2 /* ScanView.swift */; };
 		C08659A09878F2140B96A954 /* PlaceholderUnitTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C068CAB6EFD4E7772347D1 /* PlaceholderUnitTest.swift */; };
@@ -129,7 +129,7 @@
 		150CD59E086139540505DF6D /* CORE-Int-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "CORE-Int-Debug.xcconfig"; sourceTree = "<group>"; };
 		1AF3C5A20D1D8B5FFA6105E1 /* DebugMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugMenuView.swift; sourceTree = "<group>"; };
 		1DDCBBCAC60BD215B06058CA /* RewardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardsView.swift; sourceTree = "<group>"; };
-		1E02C7D2F4AB4196F0D8F99B /* swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = swift; path = "../core/feature-flag/impl/swift"; sourceTree = SOURCE_ROOT; };
+		1E02C7D2F4AB4196F0D8F99B /* swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = swift; path = "../core/remote-config/impl/swift"; sourceTree = SOURCE_ROOT; };
 		20445B074FA2A57FD5799CA4 /* ProfileStateRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStateRobot.swift; sourceTree = "<group>"; };
 		236744B8615A52FCF06E62CE /* StartupPerformanceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupPerformanceTest.swift; sourceTree = "<group>"; };
 		23B7B4AC32296EDB4BCA6E72 /* CircuitContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircuitContent.swift; sourceTree = "<group>"; };
@@ -246,7 +246,7 @@
 			files = (
 				1C81D6F669B7BB6D2FFCCEB3 /* KMPNativeCoroutinesAsync in Frameworks */,
 				445C052442747365B7CB2124 /* KMPNativeCoroutinesCore in Frameworks */,
-				B7C4F6137AC8345E71E92063 /* FeatureFlagBridge in Frameworks */,
+				B7C4F6137AC8345E71E92063 /* RemoteConfigBridge in Frameworks */,
 				379D4C6DBBA934A8EF44CDDE /* CircuitMacros in Frameworks */,
 				F7C33B50A94DA01F2E82C280 /* libsqlite3.tbd in Frameworks */,
 			);
@@ -841,7 +841,7 @@
 			packageProductDependencies = (
 				0BACEB90EE28C3C163DE3C96 /* KMPNativeCoroutinesAsync */,
 				0A471EF06FD56D009B863370 /* KMPNativeCoroutinesCore */,
-				E25C52EF17D26989C68AAFCE /* FeatureFlagBridge */,
+				AD213F304373E3C48CFCAD4F /* RemoteConfigBridge */,
 				53482F78C1E269AB5B0DEF11 /* CircuitMacros */,
 			);
 			productName = iosApp;
@@ -910,7 +910,7 @@
 				70ED8E483A5F2D6B21FC96CF /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
 				23783E62FBAF093ECF8DF72C /* XCRemoteSwiftPackageReference "ViewInspector" */,
 				1183E3A2087C19058A5BF3B4 /* XCLocalSwiftPackageReference "CircuitMacros" */,
-				37FEDABE1C343E10AF4C6C0A /* XCLocalSwiftPackageReference "../core/feature-flag/impl/swift" */,
+				F1E51B110A51F4D735083C29 /* XCLocalSwiftPackageReference "../core/remote-config/impl/swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 94C98B8B3A2BFC1966447269 /* Products */;
@@ -5872,9 +5872,9 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = CircuitMacros;
 		};
-		37FEDABE1C343E10AF4C6C0A /* XCLocalSwiftPackageReference "../core/feature-flag/impl/swift" */ = {
+		F1E51B110A51F4D735083C29 /* XCLocalSwiftPackageReference "../core/remote-config/impl/swift" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = "../core/feature-flag/impl/swift";
+			relativePath = "../core/remote-config/impl/swift";
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -5912,9 +5912,9 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = CircuitMacros;
 		};
-		E25C52EF17D26989C68AAFCE /* FeatureFlagBridge */ = {
+		AD213F304373E3C48CFCAD4F /* RemoteConfigBridge */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = FeatureFlagBridge;
+			productName = RemoteConfigBridge;
 		};
 		EC9CEAB90B09506A7CBD4DF5 /* ViewInspector */ = {
 			isa = XCSwiftPackageProductDependency;

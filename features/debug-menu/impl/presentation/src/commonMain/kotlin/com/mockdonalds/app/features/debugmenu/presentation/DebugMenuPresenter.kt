@@ -2,7 +2,7 @@ package com.mockdonalds.app.features.debugmenu.presentation
 
 import androidx.compose.runtime.Composable
 import com.mockdonalds.app.core.centerpost.CenterPostDispatchers
-import com.mockdonalds.app.core.centerpost.rememberCenterPost
+import com.mockdonalds.app.core.presentation.centerpost.rememberCenterPost
 import com.mockdonalds.app.features.debugmenu.api.navigation.BuildConfigDebugScreen
 import com.mockdonalds.app.features.debugmenu.api.navigation.DebugMenuScreen
 import com.mockdonalds.app.features.debugmenu.api.navigation.FeatureFlagsDebugScreen

@@ -218,11 +218,11 @@ In `composeApp/build.gradle.kts`, the iOS framework auto-exports for each featur
 - `api:navigation` — Screen objects, TestTags
 - `impl:presentation` — UiState, Event sealed classes, presenter types
 
-Plus `core:circuit` for shared Circuit types (TabScreen, ProtectedScreen), and `core:feature-flag:impl` for the `HarnessIosBridge` contract (see "Native Swift bridge pattern" below).
+Plus `core:circuit` for shared Circuit types (TabScreen, ProtectedScreen), and `core:remote-config:impl` for the `HarnessIosBridge` contract (see "Native Swift bridge pattern" below).
 
 ## Native Swift bridge pattern
 
-Used when an iOS vendor SDK has no pure-Kotlin binding and we want to avoid CocoaPods and `expect/actual` FFI. Precedent: Harness Feature Flags (`core:feature-flag:impl`).
+Used when an iOS vendor SDK has no pure-Kotlin binding and we want to avoid CocoaPods and `expect/actual` FFI. Precedent: Harness Feature Flags (`core:remote-config:impl`).
 
 **Contract**: a Kotlin interface in the core module's `iosMain` (e.g., `HarnessIosBridge`). Listener callbacks are bridged to `Flow` via `callbackFlow` in a Kotlin impl that depends on the interface.
 
@@ -236,7 +236,7 @@ Used when an iOS vendor SDK has no pure-Kotlin binding and we want to avoid Coco
 - Add the local package to `iosApp/project.yml` under `packages:` (`path: ../core/{module}/impl/swift`) and list its product under `targets.iosApp.dependencies`.
 - Pass the Swift adapter instance into Kotlin via a `@DependencyGraph.Factory` on the iOS-specific `ProdAppGraph` (see "Per-platform AppGraph" below).
 
-**Keep the bridge minimal**. It should expose only what the Kotlin-side `RemoteFeatureFlagSource` (or equivalent abstraction) needs — not the vendor SDK's surface.
+**Keep the bridge minimal**. It should expose only what the Kotlin-side `RemoteConfigSource` (or equivalent abstraction) needs — not the vendor SDK's surface.
 
 ## Per-platform AppGraph
 

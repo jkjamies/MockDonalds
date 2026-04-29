@@ -14,7 +14,7 @@ kotlin {
             implementation(project(":features:more:api:navigation"))
             implementation(project(":core:centerpost"))
             implementation(project(":core:theme"))
-            api(project(":core:feature-flag:api"))
+            api(project(":core:remote-config:api"))
             api(project(":core:build-config:api"))
         }
         commonTest.dependencies {

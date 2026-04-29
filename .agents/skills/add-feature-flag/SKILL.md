@@ -5,7 +5,9 @@ description: "Add a feature flag to gate behavior — flag definition, presenter
 
 # Add Feature Flag
 
-> **Infrastructure status**: `core:feature-flag` provides `FeatureFlag` data class, `FeatureFlagProvider` interface (synchronous `isEnabled` + reactive `observe(flag): Flow<Boolean>`), and the Composable extension `FeatureFlagProvider.rememberFlag(flag): State<Boolean>` (presenter-only entry point — Konsist forbids direct `.isEnabled(...)` / `.observe(...)` calls in presentation). Production binding is Harness Feature Flags — `HarnessRemoteFeatureFlagSourceImpl` on Android (direct SDK via `io.harness:ff-android-client-sdk`) and on iOS (Kotlin interface `HarnessIosBridge` implemented by `SwiftHarnessBridge` in the colocated Swift package `core/feature-flag/impl/swift/`). Client ID per env comes from BuildKonfig (`FeatureFlagBuildConfig.HARNESS_CLIENT_ID`).
+> **Infrastructure status**: `core:remote-config` provides `FeatureFlag` data class, `RemoteConfigProvider` interface (synchronous `isEnabled` + reactive `observe(flag): Flow<Boolean>`, plus `getConfig` / `observeConfig` for typed `RemoteConfig<T>` siblings), and the Composable extension `RemoteConfigProvider.rememberFlag(flag): State<Boolean>` (presenter-only entry point — Konsist forbids direct `.isEnabled(...)` / `.observe(...)` calls in presentation). Production binding is Harness — `HarnessRemoteConfigSourceImpl` on Android (direct SDK via `io.harness:ff-android-client-sdk`) and on iOS (Kotlin interface `HarnessIosBridge` implemented by `SwiftHarnessBridge` in the colocated Swift package `core/remote-config/impl/swift/`). Client ID per env comes from BuildKonfig (`RemoteConfigBuildConfig.HARNESS_CLIENT_ID`).
+>
+> This skill scaffolds **boolean flags only**. Typed configuration values (`RemoteConfig.StringConfig` / `LongConfig` / `DoubleConfig` / `JsonConfig<T>`) follow the same shape but are added ad-hoc — see `core/remote-config/AGENTS.md` for the typed-config pattern.
 
 Add a feature flag to gate behavior in a feature.
 
@@ -27,11 +29,11 @@ The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before produ
 
 ## Reference
 
-- Core feature-flag module: `core/feature-flag/AGENTS.md`
-- `FeatureFlag` definition: `core/feature-flag/api/src/commonMain/.../FeatureFlag.kt`
-- `FeatureFlagProvider` interface: `core/feature-flag/api/src/commonMain/.../FeatureFlagProvider.kt`
-- `rememberFlag` Composable extension: `core/feature-flag/api/src/commonMain/.../RememberFlag.kt`
-- Carve-out rationale (why no CenterPost interactor for flags): `.agents/standards/centerpost.md` → "Carve-out: core:feature-flag"
+- Core remote-config module: `core/remote-config/AGENTS.md`
+- `FeatureFlag` definition: `core/remote-config/api/src/commonMain/.../FeatureFlag.kt`
+- `RemoteConfigProvider` interface: `core/remote-config/api/src/commonMain/.../RemoteConfigProvider.kt`
+- `rememberFlag` Composable extension: `core/presentation/src/commonMain/kotlin/com/mockdonalds/app/core/presentation/remoteconfig/RememberFlag.kt`
+- Carve-out rationale (why no CenterPost interactor for flags): `.agents/standards/centerpost.md` → "Carve-out: core:remote-config"
 
 ## Files to Create / Modify
 
@@ -42,9 +44,9 @@ The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before produ
 ```kotlin
 package com.mockdonalds.app.features.{feature}.api.domain
 
-import com.mockdonalds.app.core.featureflag.FeatureFlag
-import com.mockdonalds.app.core.featureflag.FeatureFlagDefinition
-import com.mockdonalds.app.core.featureflag.FlagLifecycle
+import com.mockdonalds.app.core.remoteconfig.FeatureFlag
+import com.mockdonalds.app.core.remoteconfig.FeatureFlagDefinition
+import com.mockdonalds.app.core.remoteconfig.FlagLifecycle
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoSet
 
@@ -75,22 +77,22 @@ The dot-namespace groups flags by feature in the debug menu and Harness dashboar
 
 ### 2. Presenter Observation — `impl/presentation/`
 
-Presenters inject `FeatureFlagProvider` and read each flag via the Composable extension `rememberFlag(flag)`. Direct `.isEnabled(...)` / `.observe(...)` calls from presentation are Konsist-forbidden — `rememberFlag` is the only presenter-facing read API.
+Presenters inject `RemoteConfigProvider` and read each flag via the Composable extension `rememberFlag(flag)`. Direct `.isEnabled(...)` / `.observe(...)` calls from presentation are Konsist-forbidden — `rememberFlag` is the only presenter-facing read API.
 
 ```kotlin
 @CircuitInject({Feature}Screen::class, AppScope::class)
 @Inject
 @Composable
 fun {Feature}Presenter(
-    featureFlags: FeatureFlagProvider,  // ← inject once, read N flags
+    remoteConfig: RemoteConfigProvider,  // ← inject once, read N flags
     dispatchers: CenterPostDispatchers,
     // ... other dependencies
 ): {Feature}UiState {
     val centerPost = rememberCenterPost(dispatchers)
 
     // Reactive — UI updates when flag changes remotely. One line per flag.
-    val isCarouselEnabled by featureFlags.rememberFlag({Feature}Flags.{flagName})
-    // val otherFlag by featureFlags.rememberFlag({Feature}Flags.{otherFlag})
+    val isCarouselEnabled by remoteConfig.rememberFlag({Feature}Flags.{flagName})
+    // val otherFlag by remoteConfig.rememberFlag({Feature}Flags.{otherFlag})
 
     return {Feature}UiState(
         showCarousel = isCarouselEnabled,
@@ -103,14 +105,14 @@ Scales flat: 1 flag or 10, the presenter signature doesn't change and each flag 
 
 ### 3. Domain/Data Checks (if needed) — `impl/domain/` or `impl/data/`
 
-Domain and data layers inject `FeatureFlagProvider` directly and call `.isEnabled(...)` or `.observe(...)`. `rememberFlag` is Composable-only and Konsist-forbidden outside presentation.
+Domain and data layers inject `RemoteConfigProvider` directly and call `.isEnabled(...)` or `.observe(...)`. `rememberFlag` is Composable-only and Konsist-forbidden outside presentation.
 
 ```kotlin
 class {Name}Impl(
-    private val featureFlagProvider: FeatureFlagProvider,  // ← inject
+    private val remoteConfig: RemoteConfigProvider,  // ← inject
 ) : {Name}() {
     override fun createObservable(params: Unit): Flow<{Result}> {
-        return if (featureFlagProvider.isEnabled({Feature}Flags.{flagName})) {
+        return if (remoteConfig.isEnabled({Feature}Flags.{flagName})) {
             repository.getNewData()
         } else {
             repository.getLegacyData()
@@ -154,19 +156,19 @@ if (state.showCarousel) {
 
 ### Unit Tests
 
-Presenter tests inject `FakeFeatureFlagProvider` — the same fake serves both `rememberFlag` (presenter) and direct `.isEnabled(...)` / `.observe(...)` (domain/data) reads.
+Presenter tests inject `FakeRemoteConfigProvider` — the same fake serves both `rememberFlag` (presenter) and direct `.isEnabled(...)` / `.observe(...)` (domain/data) reads.
 
 ```kotlin
 class {Feature}PresenterTest : BehaviorSpec({
     Given("carousel flag is enabled") {
-        val featureFlags = FakeFeatureFlagProvider()
-        featureFlags.setEnabled({Feature}Flags.carouselEnabled, true)
-        // ... construct presenter with featureFlags, assert carousel shown
+        val remoteConfig = FakeRemoteConfigProvider()
+        remoteConfig.setEnabled({Feature}Flags.carouselEnabled, true)
+        // ... construct presenter with remoteConfig, assert carousel shown
     }
 
     Given("carousel flag is disabled") {
-        val featureFlags = FakeFeatureFlagProvider()
-        featureFlags.setEnabled({Feature}Flags.carouselEnabled, false)
+        val remoteConfig = FakeRemoteConfigProvider()
+        remoteConfig.setEnabled({Feature}Flags.carouselEnabled, false)
         // ... assert carousel hidden
     }
 })
@@ -186,7 +188,7 @@ Given("carousel is enabled") {
 `api/domain/build.gradle.kts` needs:
 ```kotlin
 commonMain.dependencies {
-    api(project(":core:feature-flag:api"))
+    api(project(":core:remote-config:api"))
 }
 ```
 
@@ -196,8 +198,8 @@ commonMain.dependencies {
 - **Every production flag must ship a `FeatureFlagDefinition` contribution** — `@ContributesIntoSet(AppScope::class)` — so the debug-menu enumerates it
 - **Use namespaced keys** (`feature.flag_name`) so the registry can group by feature
 - **Pick a `FlagLifecycle`**: `Experiment` for A/B tests, `KillSwitch` for operational toggles, `Ops` for infra knobs, `Permanent` for config that outlives a release
-- **Presenters read flags via `featureFlags.rememberFlag(flag)`** — reactive Composable extension, one DI param for N flags
-- **Domain/data use `FeatureFlagProvider.isEnabled(...)` / `.observe(...)`** — synchronous or Flow, direct injection
+- **Presenters read flags via `remoteConfig.rememberFlag(flag)`** — reactive Composable extension, one DI param for N flags
+- **Domain/data use `RemoteConfigProvider.isEnabled(...)` / `.observe(...)`** — synchronous or Flow, direct injection
 - **Never** call `.isEnabled(...)` / `.observe(...)` from presentation — Konsist-enforced
 - **Never** reference `rememberFlag` from domain/data — Konsist-enforced (Composable-only)
 - **Always test both flag states** — on and off

@@ -1,6 +1,6 @@
 import SwiftUI
 import ComposeApp
-import FeatureFlagBridge
+import RemoteConfigBridge
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
 

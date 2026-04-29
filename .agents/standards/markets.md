@@ -56,7 +56,7 @@ android {
 }
 ```
 
-So selecting `deIntDebug` in the Build Variants window (or running `./gradlew :androidApp:assembleDeProdRelease`) produces `com.mockdonalds.app.de`, a distinct Play Store app. The explicit CLI form `-Pmarket=de -Penv=prod -PbuildType=release` still works and is the path iOS uses. Both paths converge in the shared resolver — `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — which `:core:build-config:impl` and `:core:feature-flag:impl` call at configure time to pick the right `.properties` files. `versionCode` / `versionName` are currently market-agnostic; if future store submission policy requires per-market versioning, that belongs in `androidApp/build.gradle.kts` next to the flavor declarations.
+So selecting `deIntDebug` in the Build Variants window (or running `./gradlew :androidApp:assembleDeProdRelease`) produces `com.mockdonalds.app.de`, a distinct Play Store app. The explicit CLI form `-Pmarket=de -Penv=prod -PbuildType=release` still works and is the path iOS uses. Both paths converge in the shared resolver — `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — which `:core:build-config:impl` and `:core:remote-config:impl` call at configure time to pick the right `.properties` files. `versionCode` / `versionName` are currently market-agnostic; if future store submission policy requires per-market versioning, that belongs in `androidApp/build.gradle.kts` next to the flavor declarations.
 
 ### iOS
 

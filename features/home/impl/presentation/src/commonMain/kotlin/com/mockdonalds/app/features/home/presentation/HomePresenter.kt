@@ -3,8 +3,8 @@ package com.mockdonalds.app.features.home.presentation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.mockdonalds.app.core.centerpost.CenterPostDispatchers
-import com.mockdonalds.app.core.centerpost.collectAsState
-import com.mockdonalds.app.core.centerpost.rememberCenterPost
+import com.mockdonalds.app.core.presentation.centerpost.collectAsState
+import com.mockdonalds.app.core.presentation.centerpost.rememberCenterPost
 import com.mockdonalds.app.features.home.api.domain.GetHomeContent
 import com.mockdonalds.app.features.home.api.navigation.HomeScreen
 import com.slack.circuit.codegen.annotations.CircuitInject

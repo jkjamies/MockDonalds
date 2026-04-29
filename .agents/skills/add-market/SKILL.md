@@ -85,7 +85,7 @@ Must pass before continuing. If it fails, fix the combo files — symmetry is no
 
 ### 3. Register the Android flavor and extend the shared resolver
 
-Two small edits make the new market selectable from Android Studio's Build Variants window and let `:core:build-config:impl` / `:core:feature-flag:impl` resolve it from AGP variant task names.
+Two small edits make the new market selectable from Android Studio's Build Variants window and let `:core:build-config:impl` / `:core:remote-config:impl` resolve it from AGP variant task names.
 
 **a. `androidApp/build.gradle.kts`** — add one market flavor inside `productFlavors { … }`:
 
@@ -101,7 +101,7 @@ AGP will now expose 6 new rows (`{market}IntDebug`, `{market}IntRelease`, `{mark
 private val variantRe = Regex("""(?i)(us|ca|de|au|core|{market})(Int|Mte|Prod)(Debug|Release)""")
 ```
 
-This is the single place the market list lives. Both `:core:build-config:impl` and `:core:feature-flag:impl` call `BuildVariantResolver.market(project)` / `.env(project)` / `.buildType(project)` — no other `build.gradle.kts` needs editing.
+This is the single place the market list lives. Both `:core:build-config:impl` and `:core:remote-config:impl` call `BuildVariantResolver.market(project)` / `.env(project)` / `.buildType(project)` — no other `build.gradle.kts` needs editing.
 
 Smoke-verify at configure time:
 

@@ -54,14 +54,14 @@ A multibind contract (`@ContributesTo(AppScope::class) interface FooProviders { 
 The rule: when `impl` declares a `@Multibinds` slot via a `@ContributesTo` interface, **`test` declares a parallel copy** — same scope, same slot signature, different package. Metro consolidates multibind slots by type + scope + qualifier (not by interface name), so both declarations resolve to the same `Set<Foo>` slot at compile time. Prod graphs pull the `impl` copy; test graphs pull the `test` copy; neither graph sees the other's copy.
 
 ```kotlin
-// core/feature-flag/impl — seen by prod graph
+// core/remote-config/impl — seen by prod graph
 @ContributesTo(AppScope::class)
 interface FeatureFlagDefinitionProviders {
     @Multibinds(allowEmpty = true)
     fun featureFlagDefinitions(): Set<FeatureFlagDefinition>
 }
 
-// core/feature-flag/test — seen by test graphs that depend on api + test (not impl)
+// core/remote-config/test — seen by test graphs that depend on api + test (not impl)
 @ContributesTo(AppScope::class)
 interface FeatureFlagDefinitionProviders {
     @Multibinds(allowEmpty = true)
@@ -244,7 +244,7 @@ interface ProdAppGraph : AppGraph {
 - `@DependencyGraph(AppScope::class)` marks it as the root graph.
 - `@ContributesTo(AppScope::class)` on `CircuitProviders` merges it into the graph.
 - `@Multibinds` collects all `Presenter.Factory` and `Ui.Factory` instances contributed by `@CircuitInject` across all feature modules.
-- Every `@ContributesBinding(AppScope::class)` class is automatically included in the graph. Platform-specific bindings (e.g., `HarnessRemoteFeatureFlagSourceImpl` per source set) are aggregated into the same `RemoteFeatureFlagSource` slot per target.
+- Every `@ContributesBinding(AppScope::class)` class is automatically included in the graph. Platform-specific bindings (e.g., `HarnessRemoteConfigSourceImpl` per source set) are aggregated into the same `RemoteConfigSource` slot per target.
 - Callers use `createGraphFactory<ProdAppGraph.Factory>().create(…)` instead of `createGraph<ProdAppGraph>()`.
 
 ## Lazy<T> / Provider<T>

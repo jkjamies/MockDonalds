@@ -292,7 +292,7 @@ fun HomePresenter(
 
 ## Core Module Interactor Guidance
 
-Core modules with api/impl expose CenterPost interactors for presenter consumption by default. Even fire-and-forget operations go through interactors from presenters — the value is structured error handling, timeout protection, dispatcher correctness, and consistency. One documented exception: `core:feature-flag` (see carve-out below).
+Core modules with api/impl expose CenterPost interactors for presenter consumption by default. Even fire-and-forget operations go through interactors from presenters — the value is structured error handling, timeout protection, dispatcher correctness, and consistency. One documented exception: `core:remote-config` (see carve-out below).
 
 **Choose the interactor type based on the operation:**
 
@@ -319,32 +319,34 @@ centerPost { trackAnalyticsEvent(MyEvent.ButtonTapped) }
 analyticsDispatcher.track(MyEvent.DataFetched)
 ```
 
-### Carve-out: `core:feature-flag`
+### Carve-out: `core:remote-config`
 
-Flag reads are the one documented exception to "presenters always use CenterPost interactors." Instead, presenters inject `FeatureFlagProvider` and call the Composable extension `rememberFlag(flag)`:
+Flag and typed-config reads are the one documented exception to "presenters always use CenterPost interactors." Instead, presenters inject `RemoteConfigProvider` and call the Composable extensions `rememberFlag(flag)` / `rememberConfig(config)`:
 
 ```kotlin
-// core:feature-flag
-// Presenter — uses Composable extension (NOT a CenterPost interactor)
+// core:remote-config
+// Presenter — uses Composable extensions (NOT CenterPost interactors)
 @CircuitInject(MyScreen::class, AppScope::class)
 @Inject
 @Composable
-fun MyPresenter(featureFlags: FeatureFlagProvider): MyUiState {
-    val newApi   by featureFlags.rememberFlag(MyFlags.NEW_API)
-    val rollout  by featureFlags.rememberFlag(MyFlags.ROLLOUT)
+fun MyPresenter(remoteConfig: RemoteConfigProvider): MyUiState {
+    val newApi      by remoteConfig.rememberFlag(MyFlags.NEW_API)
+    val rollout     by remoteConfig.rememberFlag(MyFlags.ROLLOUT)
+    val maxRetries  by remoteConfig.rememberConfig(MyConfigs.MAX_RETRIES)
     // ...
 }
 
 // Repository — uses provider directly (same as before)
-val endpoint = if (featureFlags.isEnabled(MyFlags.NEW_API)) "/v2" else "/v1"
+val endpoint = if (remoteConfig.isEnabled(MyFlags.NEW_API)) "/v2" else "/v1"
+val retries  = remoteConfig.getConfig(MyConfigs.MAX_RETRIES)
 ```
 
-**Why the carve-out?** The CenterPost rationale doesn't apply to flag reads:
-- No error surface — flag observation is an in-memory Flow that doesn't fail meaningfully
+**Why the carve-out?** The CenterPost rationale doesn't apply to remote-config reads:
+- No error surface — observation is an in-memory Flow that doesn't fail meaningfully
 - No timeout concern — reads are synchronous at the source
 - No dispatcher concern — presenter-side consumption is Compose state, not background work
 
-And the CenterPost shape actively hurts here: `CenterPostSubjectInteractor` is "one param, one stream" (uses `flatMapLatest`), so N flags require N injected interactor instances. Presenters commonly need 3–5 flags; the Composable extension reduces that to 1 DI param plus one line per flag with per-flag recomposition isolation. Konsist forbids `.isEnabled(...)` / `.observe(...)` in presentation so the reactive Compose-state boundary stays intact. New core modules default to the interactor rule; new carve-outs need explicit justification here.
+And the CenterPost shape actively hurts here: `CenterPostSubjectInteractor` is "one param, one stream" (uses `flatMapLatest`), so N keys require N injected interactor instances. Presenters commonly need 3–5 keys; the Composable extensions reduce that to 1 DI param plus one line per key with per-key recomposition isolation. Konsist forbids `.isEnabled(...)` / `.observe(...)` / `.getConfig(...)` / `.observeConfig(...)` in presentation so the reactive Compose-state boundary stays intact. New core modules default to the interactor rule; new carve-outs need explicit justification here.
 
 ## Anti-Patterns
 

@@ -61,7 +61,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-        // Required by io.harness:ff-android-client-sdk (see core/feature-flag/AGENTS.md).
+        // Required by io.harness:ff-android-client-sdk (see core/remote-config/AGENTS.md).
         isCoreLibraryDesugaringEnabled = true
     }
 

@@ -5,8 +5,8 @@ import androidx.compose.runtime.getValue
 import com.mockdonalds.app.core.buildconfig.AppBuildConfig
 import com.mockdonalds.app.core.buildconfig.isDebug
 import com.mockdonalds.app.core.centerpost.CenterPostDispatchers
-import com.mockdonalds.app.core.centerpost.collectAsState
-import com.mockdonalds.app.core.centerpost.rememberCenterPost
+import com.mockdonalds.app.core.presentation.centerpost.collectAsState
+import com.mockdonalds.app.core.presentation.centerpost.rememberCenterPost
 import com.mockdonalds.app.features.more.api.domain.GetMoreContent
 import com.mockdonalds.app.features.more.api.domain.MoreMenuItem
 import com.mockdonalds.app.features.more.api.navigation.MoreScreen

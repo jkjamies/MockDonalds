@@ -1,9 +1,9 @@
 package com.mockdonalds.app.features.debugmenu.presentation
 
-import com.mockdonalds.app.core.featureflag.FeatureFlag
-import com.mockdonalds.app.core.featureflag.FeatureFlagDefinition
-import com.mockdonalds.app.core.featureflag.FlagLifecycle
-import com.mockdonalds.app.core.featureflag.test.FakeFeatureFlagProvider
+import com.mockdonalds.app.core.remoteconfig.FeatureFlag
+import com.mockdonalds.app.core.remoteconfig.FeatureFlagDefinition
+import com.mockdonalds.app.core.remoteconfig.FlagLifecycle
+import com.mockdonalds.app.core.remoteconfig.test.FakeRemoteConfigProvider
 import com.mockdonalds.app.core.test.TestCenterPostDispatchers
 import com.mockdonalds.app.features.debugmenu.api.navigation.FeatureFlagsDebugScreen
 import com.slack.circuit.test.FakeNavigator
@@ -25,7 +25,7 @@ class FeatureFlagsDebugPresenterTest : BehaviorSpec({
                             navigator = navigator,
                             dispatchers = dispatchers,
                             definitions = emptySet(),
-                            featureFlags = FakeFeatureFlagProvider(),
+                            remoteConfig = FakeRemoteConfigProvider(),
                         )
                     },
                 ) {
@@ -41,7 +41,7 @@ class FeatureFlagsDebugPresenterTest : BehaviorSpec({
                 val navigator = FakeNavigator(FeatureFlagsDebugScreen, FeatureFlagsDebugScreen)
                 val flagA = FeatureFlag(key = "order.new_checkout", defaultValue = false)
                 val flagB = FeatureFlag(key = "account.new_profile", defaultValue = true)
-                val provider = FakeFeatureFlagProvider()
+                val provider = FakeRemoteConfigProvider()
                 provider.setEnabled(flagA, enabled = true)
                 presenterTestOf(
                     presentFunction = {
@@ -52,7 +52,7 @@ class FeatureFlagsDebugPresenterTest : BehaviorSpec({
                                 TestFlagDefinition(flagA, "new checkout", "order", FlagLifecycle.Experiment),
                                 TestFlagDefinition(flagB, "new profile", "account", FlagLifecycle.KillSwitch),
                             ),
-                            featureFlags = provider,
+                            remoteConfig = provider,
                         )
                     },
                 ) {
@@ -78,7 +78,7 @@ class FeatureFlagsDebugPresenterTest : BehaviorSpec({
                             navigator = navigator,
                             dispatchers = dispatchers,
                             definitions = emptySet(),
-                            featureFlags = FakeFeatureFlagProvider(),
+                            remoteConfig = FakeRemoteConfigProvider(),
                         )
                     },
                 ) {

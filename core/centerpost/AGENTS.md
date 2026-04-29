@@ -11,11 +11,10 @@ state tracking. Features must never use raw `CoroutineScope.launch` or `async`.
 | Type | Description |
 |------|-------------|
 | `CenterPostInteractor<P, R>` | Abstract class for one-shot suspend operations. Provides `inProgress: Flow<Boolean>` loading state, configurable timeout (default 5 min), and returns `CenterPostResult<R>`. Subclass implements `doWork(params)`. |
-| `CenterPostSubjectInteractor<P, T>` | Abstract class for streaming/observable operations. Emits via `flow: Flow<T>` using `flatMapLatest`. Subclass implements `createObservable(params)`. Has `collectAsState()` Compose extension. |
+| `CenterPostSubjectInteractor<P, T>` | Abstract class for streaming/observable operations. Emits via `flow: Flow<T>` using `flatMapLatest`. Subclass implements `createObservable(params)`. Composable `collectAsState()` extension lives in `:core:presentation`. |
 | `CenterPostResult<T>` | Sealed interface: `Success(data)` / `Failure(error)`. Provides `onSuccess`, `onFailure`, `map`, `flatMap`, `fold`, `getOrNull`, `getOrDefault`, `getOrElse`, `recover`. |
 | `CenterPostDispatchers` | Interface abstracting `default`, `io`, `main` dispatchers. `DefaultCenterPostDispatchers` bound via `@ContributesBinding`. |
-| `CenterPost` | Compose-scoped launcher created via `rememberCenterPost(dispatchers)`. Provides `invoke()` (fire-and-forget Job) and `withResult()` (Deferred of CenterPostResult). |
-| `rememberCenterPost()` | `@Composable` factory that scopes a `CenterPost` to the composition. |
+| `CenterPost` | Coroutine launcher built from a `CoroutineScope` + `CenterPostDispatchers`. Provides `invoke()` (fire-and-forget Job) and `withResult()` (Deferred of CenterPostResult). Construction is via the `:core:presentation` Composable factory `rememberCenterPost(dispatchers)`; this module stays Compose-free. |
 | `centerPostRunCatching()` | Like `runCatching` but rethrows `CancellationException` and wraps all other throwables in `CenterPostResult`. |
 | `CenterPostException` | Abstract base exception for all CenterPost errors. |
 | `CenterPostExecutionException` | Wraps unexpected throwables caught during execution. |
@@ -52,9 +51,13 @@ class ObserveCartInteractor @Inject constructor(
 ### Compose-scoped fire-and-forget
 
 ```kotlin
+import com.mockdonalds.app.core.presentation.centerpost.rememberCenterPost
+
 val centerPost = rememberCenterPost(dispatchers)
 centerPost { repo.syncData() }
 ```
+
+`rememberCenterPost` (and `CenterPostSubjectInteractor.collectAsState`) live in `:core:presentation` so this module stays Compose-free. Both are auto-wired into every feature `impl/presentation` module via the `mockdonalds.kmp.presentation` plugin.
 
 ## Rules
 

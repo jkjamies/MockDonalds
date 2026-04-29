@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.mockdonalds.app.core.auth.AuthManager
 import com.mockdonalds.app.core.centerpost.CenterPostDispatchers
-import com.mockdonalds.app.core.centerpost.collectAsState
-import com.mockdonalds.app.core.centerpost.rememberCenterPost
+import com.mockdonalds.app.core.presentation.centerpost.collectAsState
+import com.mockdonalds.app.core.presentation.centerpost.rememberCenterPost
 import com.mockdonalds.app.features.profile.api.domain.GetProfileContent
 import com.mockdonalds.app.features.profile.api.navigation.ProfileScreen
 import com.slack.circuit.codegen.annotations.CircuitInject

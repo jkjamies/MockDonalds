@@ -15,7 +15,7 @@ Compile-time market + environment configuration lives in `core:build-config` (sp
 
 ## Selection
 
-Selection is centralized in a single shared resolver — `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — which both `:core:build-config:impl` and `:core:feature-flag:impl` call into as `BuildVariantResolver.market(project)` / `.env(project)` / `.buildType(project)`. The resolver applies a three-stage signal chain, giving both platforms equivalent UX:
+Selection is centralized in a single shared resolver — `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — which both `:core:build-config:impl` and `:core:remote-config:impl` call into as `BuildVariantResolver.market(project)` / `.env(project)` / `.buildType(project)`. The resolver applies a three-stage signal chain, giving both platforms equivalent UX:
 
 1. **Explicit `-P` property** (`-Pmarket`, `-Penv`, `-PbuildType`) — wins everything. Used by iOS's preBuildScript (which forwards `$MARKET` / `$ENV` / `$KOTLIN_FRAMEWORK_BUILD_TYPE` from the active xcconfig) and by CI / ad-hoc CLI invocations.
 2. **AGP variant task name parsing** — when a Gradle invocation contains a task like `assembleUsIntDebug`, `compileUsIntDebugKotlin`, or `connectedUsIntDebugAndroidTest`, the resolver extracts `market`/`env`/`buildType` from the camelCase triple via `(?i)(us|ca|de|au|core)(Int|Mte|Prod)(Debug|Release)`. This is how Android Studio's Build Variants dropdown feeds into BuildKonfig — picking `usIntDebug` in the IDE runs `:androidApp:assembleUsIntDebug`, which the resolver sees.
@@ -224,7 +224,7 @@ Each market adds **6 iOS build configurations** (3 envs × 2 build types), **3 A
    ```kotlin
    create("{market}") { dimension = "market"; applicationIdSuffix = ".{market}" }
    ```
-   Android Studio's Build Variants window will then expose 6 new rows (`{market}IntDebug`, `{market}IntRelease`, …, `{market}ProdRelease`). `applicationId` resolves to `com.mockdonalds.app.{market}` automatically. **Also** extend the market alternation in the shared resolver — `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — so the task-name parser recognizes the new market. This is the single place the `(us|ca|de|au|core)` list lives; both `:core:build-config:impl` and `:core:feature-flag:impl` consume it.
+   Android Studio's Build Variants window will then expose 6 new rows (`{market}IntDebug`, `{market}IntRelease`, …, `{market}ProdRelease`). `applicationId` resolves to `com.mockdonalds.app.{market}` automatically. **Also** extend the market alternation in the shared resolver — `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — so the task-name parser recognizes the new market. This is the single place the `(us|ca|de|au|core)` list lives; both `:core:build-config:impl` and `:core:remote-config:impl` consume it.
 
 3. **iOS xcconfigs.** Create `iosApp/Configuration/{market}/` with all 6 files:
    ```
@@ -306,7 +306,7 @@ The split is deliberate: `validate-all-markets` runs in milliseconds against `.p
 - `.agents/standards/markets.md` — cross-cutting market concept: what a market is and how it surfaces across Android, iOS, CI, localization, analytics
 - `core/build-config/api/build.gradle.kts` — pure facade module build script
 - `core/build-config/impl/build.gradle.kts` — the merge + BuildKonfig wiring; `validateAllMarkets` task config (`knownEnvs`, market/env regexes) lives here
-- `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — shared `(market, env, buildType)` resolver consumed by both `:core:build-config:impl` and `:core:feature-flag:impl`; the `(us|ca|de|au|core)` and `(Int|Mte|Prod)` alternations live here
+- `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — shared `(market, env, buildType)` resolver consumed by both `:core:build-config:impl` and `:core:remote-config:impl`; the `(us|ca|de|au|core)` and `(Int|Mte|Prod)` alternations live here
 - `core/build-config/test/build.gradle.kts` — test-fixtures module build script
 - `core/build-config/AGENTS.md` — module-level summary for agents
 - `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigCoverageTest.kt` — the facade coverage rule (smoke-test refs + `@DebugConfigField` presence)

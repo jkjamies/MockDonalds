@@ -1,6 +1,6 @@
 package com.mockdonalds.app.features.debugmenu.presentation
 
-import com.mockdonalds.app.core.featureflag.FlagLifecycle
+import com.mockdonalds.app.core.remoteconfig.FlagLifecycle
 import com.slack.circuit.runtime.CircuitUiState
 
 data class FeatureFlagsDebugUiState(

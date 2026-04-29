@@ -1,8 +1,5 @@
 package com.mockdonalds.app.core.centerpost
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
@@ -11,7 +8,7 @@ import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
-public class CenterPost internal constructor(
+public class CenterPost(
     private val scope: CoroutineScope,
     private val dispatchers: CenterPostDispatchers,
 ) {
@@ -30,10 +27,4 @@ public class CenterPost internal constructor(
     }.also {
         check(!it.isCancelled) { "CenterPost launch failed — scope already cancelled" }
     }
-}
-
-@Composable
-public fun rememberCenterPost(dispatchers: CenterPostDispatchers): CenterPost {
-    val scope = rememberCoroutineScope()
-    return remember(dispatchers) { CenterPost(scope, dispatchers) }
 }
