@@ -24,7 +24,7 @@ Locally you almost never need any of that. If your change didn't touch R8 rules,
 
 ## Full Scope (the `verify full` pipeline)
 
-Eight steps, symmetric across both platforms: lint → unit → architecture → debug build, plus a pre-flight market-config check. Parameterized by `market` (default `us`) and `env` (default `int`); only the two debug build steps use those parameters. Envs are `int`, `mte`, `prod`. Stop and fix failures before proceeding.
+Eight steps, symmetric across both platforms: lint → unit → architecture → debug build, plus a pre-flight market-config check. Parameterized by `market` (default `us`) and `env` (default `int`); only the two debug build steps (7 and 8) use those parameters. Envs are `int`, `mte`, `prod`. Stop and fix failures before proceeding.
 
 **Pre-flight — `validate-all-markets`:**
 ```bash
@@ -41,7 +41,7 @@ Gradle task on `:core:build-config:impl`. Parses every `core/build-config/impl/m
  │1.Detekt │   │3.Kotest │   │5.Konsist│    │7.Android│
  │2.SwiftL.│   │4.iOSUnit│   │6.Harmon.│    │ 8.iOS   │
  └─────────┘   └─────────┘   └─────────┘    └─────────┘
-   ~20s          ~60s          ~20s           ~50s
+   ~20s          ~60s          ~20s           ~60s
 ```
 
 1. **Detekt** (Kotlin lint): `./gradlew detektMetadataCommonMain`
@@ -52,7 +52,7 @@ Gradle task on `:core:build-config:impl`. Parses every `core/build-config/impl/m
    xcodebuild test \
      -scheme iOSApp \
      -testPlan UnitTests \
-     -destination 'platform=iOS Simulator,name=iPhone 16'
+     -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
    ```
    Currently a single `PlaceholderUnitTest` (`1 + 1 == 2`) — the plumbing is wired so real iOS-side pure-logic tests drop into `iosApp/iosAppTests/Unit/` without any build-system work. Most shared business logic lives in KMP Kotlin and is covered by Kotest (step 3); this slot is reserved for Swift-only helpers (e.g. `NavigationStateManager` pure-state transforms, format helpers) as iOS-only code grows.
 5. **Konsist** (Kotlin architecture): `./gradlew :testing:architecture-check:test`
@@ -64,13 +64,24 @@ Gradle task on `:core:build-config:impl`. Parses every `core/build-config/impl/m
    Default `us-int`. One combo, one build type. Proves the shared Kotlin compiles for Android and the app links. No market matrix.
 8. **iOS debug build** (simulator-arm64 only, from `market`/`env` params):
    ```bash
-   xcodebuild build \
+   xcodebuild archive \
      -scheme iOSApp \
      -configuration ${MARKET_UPPER}-${ENV_TITLE}-Debug \
-     -destination 'platform=iOS Simulator,name=iPhone 16' \
-     -sdk iphonesimulator
+     -destination 'generic/platform=iOS Simulator' \
+     -archivePath build/iOSApp-${MARKET}-${ENV}-debug.xcarchive \
+     CODE_SIGNING_ALLOWED=NO
    ```
-   Simulator-arm64 only. Skips `iosArm64` (device) and `iosX64` (legacy Intel sim) — those are CI's job. Configuration name format is `${MARKET_UPPER}-${ENV_TITLE}-${BuildType}` where build type is `Debug` or `Release` — e.g. `us` + `int` → `US-Int-Debug`, `de` + `prod` → `DE-Prod-Debug`. Run `xcodebuild -list -project iosApp/iosApp.xcodeproj` to enumerate the full set of configurations Xcodegen emits.
+   Proves the iOS app compiles and links for the configured market/env Debug config. Configuration name format is `${MARKET_UPPER}-${ENV_TITLE}-${BuildType}` — e.g. `us` + `int` → `US-Int-Debug`, `de` + `prod` → `DE-Prod-Debug`. Run `xcodebuild -list -project iosApp/iosApp.xcodeproj` to enumerate the full set of configurations Xcodegen emits.
+
+   **Why `archive` and not `build`:** Xcode 26.x has a known regression where `xcodebuild build` mis-routes SPM `.macro` targets (in our case `CircuitMacrosPlugin`) to the iOS Simulator instead of the host (macOS), causing `Unable to find module dependency: 'SwiftSyntax'` (26.3) or `external macro implementation type 'CircuitMacrosPlugin.CircuitInjectMacro' could not be found ... produced malformed response` (26.4.1). `xcodebuild archive` uses a different build graph that handles macros correctly; this is also the action Fastlane (`build_app`/`gym`) and most CI/distribution pipelines wrap. The action name is misleading — `archive` is not Release-only, it just packages whatever configuration you pass into an `.xcarchive`. We use `CODE_SIGNING_ALLOWED=NO` so local runs don't need a signing identity.
+
+   <!-- TODO(xcode-macros-build-bug): re-evaluate `xcodebuild build` once Apple ships a fix.
+        - Swift Forums (Xcode 26.4 symptom): https://forums.swift.org/t/macro-malformed-response-xcode-26-3-on-macos-26-4/85558
+        - Swift Forums (root cause discussion): https://forums.swift.org/t/xcodebuild-attempts-to-build-macro-package-with-wrong-arch/76340
+        - Swift Forums (Xcode 26 explicit-modules thread): https://forums.swift.org/t/xcode-26-unable-to-find-module-dependency/80516
+        Re-test on each Xcode point release with: `xcodebuild build -scheme iOSApp -configuration US-Int-Debug -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -sdk iphonesimulator`. Bug is fixed when this returns `** BUILD SUCCEEDED **` against a CircuitMacros-consuming target. -->
+
+   **Simulator name (step 4):** `iPhone 17 Pro` is the current Xcode 26.4 default. Update if `xcrun simctl list devices available` returns a different latest sim. Step 8 uses `generic/platform=iOS Simulator` so it doesn't pin a specific sim and can run on any host.
 
 ### What `verify full` deliberately does NOT run
 
@@ -115,17 +126,17 @@ Fully symmetric across both platforms, organized by concern: lint → unit → a
 1. **Detekt** (Kotlin lint): `./gradlew detektMetadataCommonMain`
 2. **SwiftLint** (Swift style): `swiftlint --config .swiftlint.yml`
 3. **Kotest** (Kotlin pure-logic unit tests, Android host — all shared logic): `./gradlew testAndroidHostTest`
-4. **iOS unit tests** (`UnitTests` test plan — Swift Testing pure-logic tests in `iosApp/iosAppTests/Unit/`, requires simulator): `xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'`
+4. **iOS unit tests** (`UnitTests` test plan — Swift Testing pure-logic tests in `iosApp/iosAppTests/Unit/`, requires simulator): `xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`
 5. **Konsist** (Kotlin architecture): `./gradlew :testing:architecture-check:test`
 6. **Harmonize** (iOS architecture): `swift test --package-path iosApp/ArchitectureCheck`
 7. **Android UI component tests** (Compose Robot pattern on per-feature presentation modules, requires emulator): `./gradlew connectedAndroidDeviceTest`
-8. **iOS UI component tests** (`UIComponentTests` test plan — ViewInspector Robot-pattern view tests in `iosApp/iosAppTests/UIComponent/`, requires simulator): `xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 16'`
+8. **iOS UI component tests** (`UIComponentTests` test plan — ViewInspector Robot-pattern view tests in `iosApp/iosAppTests/UIComponent/`, requires simulator): `xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`
 9. **Android navint-tests** (navigation & integration, requires emulator): `./gradlew :testing:navint-tests:connectedAndroidDeviceTest`
-10. **iOS navint-tests** (`NavIntTests` test plan, requires simulator): `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'`
+10. **iOS navint-tests** (`NavIntTests` test plan, requires simulator): `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`
 11. **Android e2e-tests** (full user journeys, requires device/emulator): `./gradlew :testing:e2e-tests:connectedAndroidTest`
-12. **iOS e2e-tests** (`E2ETests` test plan, requires simulator): `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'`
+12. **iOS e2e-tests** (`E2ETests` test plan, requires simulator): `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`
 13. **Android macrobenchmarks** (startup + frame-timing against minified `benchmark` variant, requires **physical** Android device — emulator is blocked by androidx.benchmark). Self-instrumenting decouples the test APK from the target, so install the target first: `./gradlew :androidApp:installCoreIntBenchmark :testing:benchmarks:connectedBenchmarkAndroidTest`
-14. **iOS benchmarks** (`Benchmarks` test plan — `XCTApplicationLaunchMetric` launch-time tests in `iosApp/iosAppBenchmarks/`, requires simulator or device): `xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 16'`
+14. **iOS benchmarks** (`Benchmarks` test plan — `XCTApplicationLaunchMetric` launch-time tests in `iosApp/iosAppBenchmarks/`, requires simulator or device): `xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`
 15. **Assemble** (every target × every variant): `./gradlew assemble`
 
 ## Diff Scope (the `verify diff` pipeline)
@@ -169,14 +180,14 @@ git diff --name-only                       # uncommitted changes on main
 2. If Kotlin source files changed: run `detektMetadataCommonMain` + scoped unit tests.
 3. If Swift files changed: run `swiftlint --config .swiftlint.yml` + `swift test --package-path iosApp/ArchitectureCheck`.
 4. If `features/{name}/impl/presentation/src/androidMain/` or `androidDeviceTest/` changed: run `./gradlew :features:{name}:impl:presentation:connectedAndroidDeviceTest` (Android UI component tests, requires emulator; flag for pre-merge if emulator unavailable).
-5. If `iosApp/iosApp/Features/` or `iosApp/iosAppTests/UIComponent/` changed: run `xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 16'` (iOS UI component tests = ViewInspector view tests, requires simulator; flag for pre-merge if simulator unavailable).
-5a. If `iosApp/iosAppTests/Unit/` changed: run `xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'` (iOS pure-logic unit tests, requires simulator).
+5. If `iosApp/iosApp/Features/` or `iosApp/iosAppTests/UIComponent/` changed: run `xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'` (iOS UI component tests = ViewInspector view tests, requires simulator; flag for pre-merge if simulator unavailable).
+5a. If `iosApp/iosAppTests/Unit/` changed: run `xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'` (iOS pure-logic unit tests, requires simulator).
 6. If `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` changed: run `./gradlew :testing:navint-tests:connectedAndroidDeviceTest` (requires emulator; flag for pre-merge if emulator unavailable).
-7. If `iosApp/iosApp/Circuit/` or `iosApp/iosAppTests/NavInt/` changed: run `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'` (requires simulator; flag for pre-merge if simulator unavailable).
+7. If `iosApp/iosApp/Circuit/` or `iosApp/iosAppTests/NavInt/` changed: run `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'` (requires simulator; flag for pre-merge if simulator unavailable).
 8. If `testing/e2e-tests/` changed: run `./gradlew :testing:e2e-tests:connectedAndroidTest` (requires device/emulator; flag for pre-merge if unavailable).
-9. If `iosApp/iosAppE2ETests/` changed: run `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'` (requires simulator; flag for pre-merge if unavailable).
+9. If `iosApp/iosAppE2ETests/` changed: run `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'` (requires simulator; flag for pre-merge if unavailable).
 9a. If `testing/benchmarks/` changed: run `./gradlew :androidApp:installCoreIntBenchmark :testing:benchmarks:connectedBenchmarkAndroidTest` (requires **physical** Android device — emulator is blocked by androidx.benchmark; defer to `verify all` if no device available).
-9b. If `iosApp/iosAppBenchmarks/` changed: run `xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 16'` (requires simulator).
+9b. If `iosApp/iosAppBenchmarks/` changed: run `xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 17 Pro'` (requires simulator).
 10. If `build.gradle.kts` or `settings.gradle.kts` changed: run `./gradlew assemble`.
 11. If only markdown/documentation changed: architecture tests only (step 1).
 
@@ -196,14 +207,14 @@ git diff --name-only                       # uncommitted changes on main
 - Reports: Swift Testing suite/test name + assertion detail
 - Failures indicate broken Swift-side pure logic (helpers, formatters, state transforms)
 - Test files live in `iosApp/iosAppTests/Unit/` and use `struct` with `@Test` functions (Swift Testing, not XCTest). No ViewInspector, no SwiftUI rendering.
-- Requires an iOS Simulator; run `xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'`
+- Requires an iOS Simulator; run `xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`
 - Currently holds a single `PlaceholderUnitTest` (`1 + 1 == 2`) until real Swift-side pure logic grows. Most business logic lives in KMP Kotlin and is covered by Kotest.
 
 ### iOS UI Component Tests (Swift Testing + ViewInspector)
 - Reports: Swift Testing suite/test name + assertion detail
 - Failures indicate broken SwiftUI view rendering, state binding, or interaction handling
 - Test files in `iosApp/iosAppTests/UIComponent/` use `@Suite @MainActor struct` (Swift Testing) and the Robot pattern (`UiTest` → `UiRobot` → `StateRobot`)
-- Requires an iOS Simulator; run `xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 16'`
+- Requires an iOS Simulator; run `xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`
 - Uses ViewInspector to walk the SwiftUI view tree; check the matching view in `iosApp/iosApp/Features/`
 
 ### Konsist (Architecture Tests)
@@ -232,7 +243,7 @@ git diff --name-only                       # uncommitted changes on main
 - Reports: Swift Testing suite/test name + assertion detail
 - Failures indicate broken iOS navigation state management — `NavigationStateManager` logic, tab switching, deep link routing, or auth flow handling
 - Test files in `iosApp/iosAppTests/NavInt/` use `@Suite @MainActor struct` (Swift Testing, not XCTest)
-- Requires an iOS Simulator; run `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'`
+- Requires an iOS Simulator; run `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`
 - These tests verify state transitions only (no ViewInspector) — check `iosApp/iosApp/Circuit/NavigationStateManager.swift`
 
 ### e2e-tests (End-to-End Tests)
@@ -254,7 +265,7 @@ git diff --name-only                       # uncommitted changes on main
 - Reports: XCTest test name + XCUIElement assertion detail
 - Failures indicate broken iOS user journeys — tab navigation, deep link handling, or auth gating
 - Journey tests in `iosApp/iosAppE2ETests/Suites/` end with `JourneyTest`
-- Requires an iOS Simulator; run `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'`
+- Requires an iOS Simulator; run `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`
 - Tests use XCUITest with accessibility identifiers matching KMP TestTags (raw string constants — process-isolated)
 - Uses `AppRobot` for all app interactions — check `iosApp/iosAppE2ETests/Robots/AppRobot.swift`
 
@@ -262,7 +273,7 @@ git diff --name-only                       # uncommitted changes on main
 - Reports: XCTest test name + `XCTApplicationLaunchMetric` average/stddev
 - Failures indicate startup-time regression or XCTest performance baseline drift
 - Benchmark files in `iosApp/iosAppBenchmarks/` end with `PerformanceTest` or `Benchmark` (Harmonize-enforced)
-- Requires an iOS Simulator or device; run `xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 16'`
+- Requires an iOS Simulator or device; run `xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`
 - Separate target from `iosAppE2ETests` so performance runs stay isolated from functional journeys
 
 ## IDE Troubleshooting

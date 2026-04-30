@@ -111,7 +111,7 @@ iOS benchmark files in `iosApp/iosAppBenchmarks/` must end with `PerformanceTest
 iOS benchmarks live in a **dedicated Xcode target** `iosAppBenchmarks` (mirroring Gradle's `:testing:benchmarks` module split). Files live in `iosApp/iosAppBenchmarks/` and run under the `Benchmarks` test plan — separate from the journey-only `E2ETests` plan so performance runs stay isolated from functional correctness. Tests extend `XCTestCase` and use `measure(metrics:)` with `XCTApplicationLaunchMetric`, `XCTOSSignpostMetric`, or other `XCTMetric` types.
 
 ```bash
-xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 16'
+xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 
 | | Android | iOS |

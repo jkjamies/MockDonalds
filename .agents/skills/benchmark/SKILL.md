@@ -148,14 +148,14 @@ Perfetto traces land in `testing/benchmarks/build/outputs/connected_android_test
 
 ```bash
 xcodebuild test -scheme iOSApp -testPlan Benchmarks \
-  -destination 'platform=iOS Simulator,name=iPhone 16'
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 
 Performance results appear in the Xcode test report; traces via Instruments `xctrace`:
 
 ```bash
 xcrun xctrace record \
-  --device 'iPhone 16' \
+  --device 'iPhone 17 Pro' \
   --template 'App Launch' \
   --output ./traces/{feature}_launch.trace \
   --launch -- /path/to/iOSApp.app

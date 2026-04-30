@@ -52,12 +52,12 @@ Each test validates:
 
 ### Prerequisites
 
-An iOS Simulator must be available (e.g., iPhone 16).
+An iOS Simulator must be available (e.g., iPhone 17 Pro).
 
 ### Run All iOS UI Tests
 
 ```bash
-xcodebuild test -project iosApp/iosApp.xcodeproj -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 16'
+xcodebuild test -project iosApp/iosApp.xcodeproj -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 
 ### Test Structure

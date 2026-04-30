@@ -139,7 +139,7 @@ iOS E2E tests live in `iosApp/iosAppE2ETests/` as a separate XCUITest target. Th
 
 ```bash
 # All iOS e2e tests
-xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'
+xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 
 ### Structure

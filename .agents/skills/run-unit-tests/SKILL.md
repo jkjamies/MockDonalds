@@ -20,7 +20,7 @@ After modifying any Kotlin source files in `impl/domain`, `impl/data`, or `impl/
 
 ### iOS pure-logic (requires simulator)
 ```bash
-xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'
+xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 Runs the Swift Testing tests in `iosApp/iosAppTests/Unit/`. Currently holds a single `PlaceholderUnitTest` (`1 + 1 == 2`) — the plumbing is wired so real iOS-side pure-logic tests drop into that directory without any build-system work. Most business logic lives in KMP Kotlin and is covered by Kotest above.
 

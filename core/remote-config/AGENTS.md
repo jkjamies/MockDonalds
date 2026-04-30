@@ -131,11 +131,11 @@ Keys are namespaced (`order.checkout_v2`, `my.max_retries`) so the debug UI can 
   |---|---|---|
   | `FeatureFlag` | Boolean | native bool variation |
   | `RemoteConfig.StringConfig` | String | native string variation |
-  | `RemoteConfig.DoubleConfig` | Number | native number variation (Double-typed) |
-  | `RemoteConfig.LongConfig` | **String** (numeric content) | preserves full 64-bit precision — Harness `numberVariation` is Double-typed and loses values above 2^53 |
+  | `RemoteConfig.DoubleConfig` | **String** (numeric content) | Harness `numberVariation` is typed inconsistently across SDKs (Android 2.2.7 → `Double` lossy above 2^53; iOS 1.3.x → `Int`, truncates fractional values). Routing through `stringVariation` keeps both platforms exact and symmetric. |
+  | `RemoteConfig.LongConfig` | **String** (numeric content) | Same reason as `DoubleConfig` — `numberVariation` cannot represent every `Long` exactly on either platform. |
   | `RemoteConfig.JsonConfig<T>` | **String** (JSON-encoded content) | keeps platform-specific dict/JSONObject types out of the bridge surface; Kotlin handles encode/decode via `KSerializer<T>` |
 
-  Both `LongConfig` and `JsonConfig` are routed through `stringVariation` under the hood on both platforms. `BooleanConfig` (i.e. `FeatureFlag`), `StringConfig`, and `DoubleConfig` use their natively-matching Harness types.
+  `DoubleConfig`, `LongConfig`, and `JsonConfig` are all routed through `stringVariation` under the hood on both platforms. `BooleanConfig` (i.e. `FeatureFlag`) and `StringConfig` use their natively-matching Harness types.
 - **Graph wiring**: `ProdAppGraph` is platform-specific (`composeApp/{androidMain,iosMain}/AppGraph.kt`). Android factory takes `Application`; iOS factory takes `HarnessIosBridge`. No `ProdAppGraph` in commonMain.
 
 ## Rules

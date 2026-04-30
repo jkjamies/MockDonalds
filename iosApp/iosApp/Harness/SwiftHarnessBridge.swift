@@ -17,13 +17,17 @@ final class SwiftHarnessBridge: HarnessIosBridge {
     }
 
     func longVariation(key: String, defaultValue: Int64) -> Int64 {
-        // Routed through stringVariation (not numberVariation) to preserve full
-        // 64-bit precision — Harness numberVariation is Double-typed and loses
-        // precision for values above 2^53.
+        // Routed through stringVariation to preserve full 64-bit precision.
+        // Harness iOS SDK 1.3.x numberVariation is Int-typed; even where Int is
+        // 64-bit, going through a numeric flag type loses cross-platform parity
+        // with Android (whose SDK exposes numberVariation as Double, lossy above
+        // 2^53). String-typed dashboard flags keep both platforms exact.
         Int64(client.stringVariation(key: key, defaultValue: String(defaultValue))) ?? defaultValue
     }
 
     func doubleVariation(key: String, defaultValue: Double) -> Double {
+        // HarnessClient.numberVariation routes through stringVariation under
+        // the hood — see comment there. Dashboard flag must be String-typed.
         client.numberVariation(key: key, defaultValue: defaultValue)
     }
 

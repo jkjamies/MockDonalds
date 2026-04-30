@@ -70,7 +70,7 @@ class HarnessRemoteConfigSourceImpl(
     override fun <T> getConfig(config: RemoteConfig<T>): T = when (config) {
         is RemoteConfig.StringConfig -> client.stringVariation(config.key, config.default)
         is RemoteConfig.LongConfig   -> client.stringVariation(config.key, config.default.toString()).toLongOrNull() ?: config.default
-        is RemoteConfig.DoubleConfig -> client.numberVariation(config.key, config.default)
+        is RemoteConfig.DoubleConfig -> client.stringVariation(config.key, config.default.toString()).toDoubleOrNull() ?: config.default
         is RemoteConfig.JsonConfig<*> -> decodeJson(config as RemoteConfig.JsonConfig<T>)
     } as T
 

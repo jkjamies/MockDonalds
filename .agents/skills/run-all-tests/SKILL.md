@@ -34,7 +34,7 @@ swiftlint --config .swiftlint.yml
 
 ### 4. iOS unit tests (Swift Testing, pure-logic — requires simulator)
 ```bash
-xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'
+xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 Runs the `UnitTests` test plan (`iosApp/iosAppTests/Unit/`). Currently a single `PlaceholderUnitTest`; real iOS-side pure-logic tests drop into that directory without any plumbing work.
 
@@ -56,7 +56,7 @@ Compose Robot-pattern tests on per-feature presentation modules. Skip if no emul
 
 ### 8. iOS UI component tests (ViewInspector, requires simulator)
 ```bash
-xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 16'
+xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 Runs the `UIComponentTests` test plan (`iosApp/iosAppTests/UIComponent/` — ViewInspector Robot pattern, same conceptual level as Android Compose UI component tests). Skip if no simulator is available.
 
@@ -68,7 +68,7 @@ Navigation & integration tests using real Circuit presenters + fake data layer. 
 
 ### 10. iOS navint-tests (requires simulator)
 ```bash
-xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'
+xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 Swift Testing navigation state transitions, tab switching, deep links, auth flows. Skip if no simulator is available.
 
@@ -80,7 +80,7 @@ Full user journeys + startup benchmarks via UI Automator. Skip if no device/emul
 
 ### 12. iOS e2e-tests (requires simulator)
 ```bash
-xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'
+xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 Process-isolated XCUITest journey tests + startup benchmarks. Skip if no simulator is available.
 

@@ -37,9 +37,14 @@ public final class HarnessClient {
         return client.stringVariation(evaluationId: key, defaultValue: defaultValue)
     }
 
+    // Routed through stringVariation (not numberVariation) to preserve full
+    // Double precision — Harness iOS SDK 1.3.x exposes numberVariation as
+    // Int-typed, which would truncate fractional values. The dashboard flag
+    // must be String-typed with numeric content (matches LongConfig).
     public func numberVariation(key: String, defaultValue: Double) -> Double {
         ensureInitialized()
-        return client.numberVariation(evaluationId: key, defaultValue: defaultValue)
+        let raw = client.stringVariation(evaluationId: key, defaultValue: String(defaultValue))
+        return Double(raw) ?? defaultValue
     }
 
     // JSON crosses the bridge as a JSON-encoded string; backed by stringVariation

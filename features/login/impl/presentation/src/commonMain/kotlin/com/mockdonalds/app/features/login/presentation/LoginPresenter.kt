@@ -7,9 +7,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.mockdonalds.app.core.auth.AuthManager
 import com.mockdonalds.app.core.centerpost.CenterPostDispatchers
+import com.mockdonalds.app.core.logger.featureLogger
 import com.mockdonalds.app.core.presentation.centerpost.collectAsState
 import com.mockdonalds.app.core.presentation.centerpost.rememberCenterPost
-import com.mockdonalds.app.core.logger.featureLogger
 import com.mockdonalds.app.features.login.api.domain.GetLoginContent
 import com.mockdonalds.app.features.login.api.navigation.LoginScreen
 import com.mockdonalds.app.features.login.api.navigation.WelcomeScreen

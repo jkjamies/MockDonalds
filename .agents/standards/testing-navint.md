@@ -74,7 +74,7 @@ navint-tests does NOT depend on:
 
 ```bash
 # iOS navint tests (requires simulator)
-xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'
+xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 
 ### Key Characteristics

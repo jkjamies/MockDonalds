@@ -3,9 +3,9 @@ package com.mockdonalds.app.features.debugmenu.presentation
 import androidx.compose.runtime.Composable
 import com.mockdonalds.app.core.centerpost.CenterPostDispatchers
 import com.mockdonalds.app.core.presentation.centerpost.rememberCenterPost
+import com.mockdonalds.app.core.presentation.remoteconfig.rememberFlag
 import com.mockdonalds.app.core.remoteconfig.FeatureFlagDefinition
 import com.mockdonalds.app.core.remoteconfig.RemoteConfigProvider
-import com.mockdonalds.app.core.presentation.remoteconfig.rememberFlag
 import com.mockdonalds.app.features.debugmenu.api.navigation.FeatureFlagsDebugScreen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.Navigator

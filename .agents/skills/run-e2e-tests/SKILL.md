@@ -59,13 +59,13 @@ Runs against the debug target (unminified, full Compose UI test deps available).
 
 ### Prerequisites
 
-An iOS Simulator (e.g., iPhone 16).
+An iOS Simulator (e.g., iPhone 17 Pro).
 
 ### Run All iOS E2E Tests
 
 ```bash
 xcodebuild test -scheme iOSApp -testPlan E2ETests \
-  -destination 'platform=iOS Simulator,name=iPhone 16'
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 
 The `E2ETests` test plan covers journey suites only (`Suites/`). Performance benchmarks live in the separate `iosAppBenchmarks` target and run via the `Benchmarks` test plan — see `/benchmark`.

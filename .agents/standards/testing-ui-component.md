@@ -18,7 +18,7 @@ UI component tests verify individual screen rendering and user interactions usin
 ./gradlew connectedAndroidDeviceTest                                      # All features
 
 # iOS UI tests (requires simulator)
-xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 16'
+xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 
 ## Android Robot Pattern
