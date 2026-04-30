@@ -39,6 +39,9 @@ interface AppBuildConfig {
     @DebugConfigField(Group.Urls)
     val storeBaseUrl: String
 
+    @DebugConfigField(Group.Urls)
+    val nutritionUrl: String
+
     @DebugConfigField(Group.Localization)
     val locale: String
 

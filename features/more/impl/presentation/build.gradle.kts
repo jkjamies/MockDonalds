@@ -14,6 +14,7 @@ kotlin {
             implementation(project(":features:more:api:navigation"))
             implementation(project(":features:profile:api:navigation"))
             implementation(project(":features:recents:api:navigation"))
+            implementation(project(":features:nutrition:api:navigation"))
             implementation(project(":core:build-config:api"))
             implementation(project(":core:centerpost"))
             implementation(project(":core:theme"))

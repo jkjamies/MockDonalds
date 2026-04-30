@@ -69,6 +69,11 @@ class AppBuildConfigTest : BehaviorSpec({
                 config.storeBaseUrl shouldMatch Regex("^https://.+")
             }
 
+            Then("nutritionUrl is an https URL") {
+                config.nutritionUrl shouldNotBe ""
+                config.nutritionUrl shouldMatch Regex("^https://.+")
+            }
+
             Then("locale is a BCP-47-shaped tag") {
                 config.locale shouldMatch Regex("^[a-z]{2}-[A-Z]{2}$")
             }

@@ -11,6 +11,7 @@ import com.mockdonalds.app.features.more.api.domain.GetMoreContent
 import com.mockdonalds.app.features.more.api.domain.MoreMenuItem
 import com.mockdonalds.app.features.more.api.navigation.MoreScreen
 import com.mockdonalds.app.features.more.api.navigation.MoreTabExtension
+import com.mockdonalds.app.features.nutrition.api.navigation.NutritionScreen
 import com.mockdonalds.app.features.profile.api.navigation.ProfileScreen
 import com.mockdonalds.app.features.recents.api.navigation.RecentsScreen
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -47,8 +48,11 @@ fun MorePresenter(
                     val extension = extensionsById[event.id]
                     if (extension != null) {
                         extension.onClick(navigator)
-                    } else if (event.id == "1") {
-                        navigator.goTo(RecentsScreen)
+                    } else {
+                        when (event.id) {
+                            "1" -> navigator.goTo(RecentsScreen)
+                            "3" -> navigator.goTo(NutritionScreen)
+                        }
                     }
                 }
             }

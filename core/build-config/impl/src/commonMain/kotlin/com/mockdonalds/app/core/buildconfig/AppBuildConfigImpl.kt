@@ -19,6 +19,7 @@ class AppBuildConfigImpl : AppBuildConfig {
     override val accountBaseUrl: String = BuildConfig.ACCOUNT_BASE_URL
     override val rewardsBaseUrl: String = BuildConfig.REWARDS_BASE_URL
     override val storeBaseUrl: String = BuildConfig.STORE_BASE_URL
+    override val nutritionUrl: String = BuildConfig.NUTRITION_URL
     override val locale: String = BuildConfig.LOCALE
     override val currency: String = BuildConfig.CURRENCY
 }

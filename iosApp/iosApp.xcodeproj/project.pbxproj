@@ -37,6 +37,7 @@
 		570F45213EF71355FD402BEC /* WelcomeViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563C81E44CA5F0FBD4C102CE /* WelcomeViewTest.swift */; };
 		5D0C8999610310D3724CBD88 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9525FA09F3DF3E4B035DE2DD /* WebView.swift */; };
 		6135A6BF56DBB3F75E9B5BFB /* StateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFF33FB51AA42C12A5D12273 /* StateRobot.swift */; };
+		6394272874975638D8DAA026 /* NutritionViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = B16954652FF6564CF77F44FD /* NutritionViewRobot.swift */; };
 		6533BBB376DB768E004FDF71 /* OrderViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D13E1A5E73407A119485C5A4 /* OrderViewRobot.swift */; };
 		67AA1420B23598BC6C80F965 /* CircuitNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A1B45E4946D851F1A85120 /* CircuitNavigator.swift */; };
 		6C984A52389B4405C5D6F9BC /* RewardsStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5E2C924246CD2D275361A8D /* RewardsStateRobot.swift */; };
@@ -56,6 +57,7 @@
 		93FA73BD49EABDD9CB20974D /* ProfileViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BF512A524F962526CBFBD7 /* ProfileViewTest.swift */; };
 		9511EE705A0FDD1ADA45EC15 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F4C67459CBC2CDC9D3D33C /* ProfileView.swift */; };
 		9614DF57D4F3EDFF198FB2D6 /* CircuitContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B7B4AC32296EDB4BCA6E72 /* CircuitContent.swift */; };
+		97325C45FCE304B80D9D5D53 /* NutritionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA11E4EC3D33B21EC239698 /* NutritionView.swift */; };
 		9B314DF1B31D97D38BF95FAA /* ScanViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E62FF7A9A24BC9CB908D02 /* ScanViewRobot.swift */; };
 		9CEE6F38C3A3B33469A02B7A /* AdaptiveLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 910C7E718B1A2BF3BF62972A /* AdaptiveLayout.swift */; };
 		9ED9498463DC1DA344DCF800 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BD3D9FD8AD8D8B90DB7528 /* LoginView.swift */; };
@@ -79,12 +81,14 @@
 		D69FC88016F05FD3B9A1A6FD /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B32E1749C096CF28B113D18D /* WelcomeView.swift */; };
 		D8CFD50752C25C34E17A1810 /* MockDonaldsTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEAFBC0A9A7E027934A6EE7 /* MockDonaldsTheme.swift */; };
 		D92730FBF992C2AB643847B9 /* FeatureFlagsDebugViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51452D1E8493A309EB8CE060 /* FeatureFlagsDebugViewRobot.swift */; };
+		DADCBA24E9FD46A2056B9ACC /* NutritionStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D24EB5EB6939979F9324842 /* NutritionStateRobot.swift */; };
 		DE2F6DE6227DCA077CFF40D9 /* FeatureFlagsDebugViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C98902D9F9B5E721BF4BE366 /* FeatureFlagsDebugViewTest.swift */; };
 		E007187FB60BA8E9A087102E /* DebugMenuViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511EAF7B53390045400D08AD /* DebugMenuViewRobot.swift */; };
 		E699815F789C319198C41D6E /* WelcomeViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26BBEA5809BB072FE3AACD05 /* WelcomeViewRobot.swift */; };
 		E8BEE027C5D289022EC74C18 /* GeneratedCircuitFactories.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA3868741B3910775933E12 /* GeneratedCircuitFactories.swift */; };
 		EBCC6A59A2A2CA48D608A308 /* NavigationStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 311677DB2B257F0E5C6E92D1 /* NavigationStateManager.swift */; };
 		EC9D51B8D24EEF7328ACD3FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1720870E51445F47D3045A0 /* Assets.xcassets */; };
+		F2EB093BB757B5DEA400B2F9 /* NutritionViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880C395F209181674F0D0A2E /* NutritionViewTest.swift */; };
 		F6B1193D7257CB20613D07B0 /* FeatureFlagsDebugStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9326C56F33FB477DDBFD79E9 /* FeatureFlagsDebugStateRobot.swift */; };
 		F7C33B50A94DA01F2E82C280 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 245434685F34A9A15B1AC406 /* libsqlite3.tbd */; };
 		F9C809119EFD3FA9536BA13D /* BuildConfigDebugViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D7CAFCCA0176EC307EAD50 /* BuildConfigDebugViewTest.swift */; };
@@ -132,6 +136,7 @@
 		1AF3C5A20D1D8B5FFA6105E1 /* DebugMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugMenuView.swift; sourceTree = "<group>"; };
 		1DDCBBCAC60BD215B06058CA /* RewardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardsView.swift; sourceTree = "<group>"; };
 		1E02C7D2F4AB4196F0D8F99B /* swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = swift; path = "../core/remote-config/impl/swift"; sourceTree = SOURCE_ROOT; };
+		1EA11E4EC3D33B21EC239698 /* NutritionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionView.swift; sourceTree = "<group>"; };
 		20445B074FA2A57FD5799CA4 /* ProfileStateRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStateRobot.swift; sourceTree = "<group>"; };
 		236744B8615A52FCF06E62CE /* StartupPerformanceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupPerformanceTest.swift; sourceTree = "<group>"; };
 		23B7B4AC32296EDB4BCA6E72 /* CircuitContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircuitContent.swift; sourceTree = "<group>"; };
@@ -164,6 +169,7 @@
 		5A0060A33A6D2B2BB2B5D8C9 /* US-Mte-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "US-Mte-Release.xcconfig"; sourceTree = "<group>"; };
 		5A1ACFBB194AF87192185DFA /* AU-Mte-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "AU-Mte-Release.xcconfig"; sourceTree = "<group>"; };
 		5AA3868741B3910775933E12 /* GeneratedCircuitFactories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedCircuitFactories.swift; sourceTree = "<group>"; };
+		5D24EB5EB6939979F9324842 /* NutritionStateRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionStateRobot.swift; sourceTree = "<group>"; };
 		5D64A50286110F80717DCEE7 /* AU-Int-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "AU-Int-Debug.xcconfig"; sourceTree = "<group>"; };
 		5E15AA486EA93D15102E8E45 /* DeepLinkJourneyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkJourneyTest.swift; sourceTree = "<group>"; };
 		62B7572E1FA45E1825C9080D /* CORE-Mte-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "CORE-Mte-Release.xcconfig"; sourceTree = "<group>"; };
@@ -181,6 +187,7 @@
 		828E71F748D98B94883C8C3D /* AU-Int-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "AU-Int-Release.xcconfig"; sourceTree = "<group>"; };
 		86038AE1032E284E79B32AD6 /* iosApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		87557534CE32244A62688878 /* CORE-Prod-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "CORE-Prod-Debug.xcconfig"; sourceTree = "<group>"; };
+		880C395F209181674F0D0A2E /* NutritionViewTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionViewTest.swift; sourceTree = "<group>"; };
 		88A2BDF9F4CB5BB23F2F72B8 /* DebugMenuViewTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugMenuViewTest.swift; sourceTree = "<group>"; };
 		8B6C1F485E0CF8BB70C9DDD2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		90671FDFBBB2E3A1D45C5FBB /* GuestJourneyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuestJourneyTest.swift; sourceTree = "<group>"; };
@@ -203,6 +210,7 @@
 		AD24D430BD8610C3D4EA6A37 /* HomeStateRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeStateRobot.swift; sourceTree = "<group>"; };
 		AD53D4D4F7CAD22F69B973E2 /* DeepLinkNavigationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkNavigationTest.swift; sourceTree = "<group>"; };
 		AEA0D590A963BF54058FF52D /* FeatureFlagsDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagsDebugView.swift; sourceTree = "<group>"; };
+		B16954652FF6564CF77F44FD /* NutritionViewRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionViewRobot.swift; sourceTree = "<group>"; };
 		B1720870E51445F47D3045A0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B1CE1ED8A6091A2CA4DE405E /* US-Mte-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "US-Mte-Debug.xcconfig"; sourceTree = "<group>"; };
 		B32E1749C096CF28B113D18D /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
@@ -274,6 +282,7 @@
 				EF828A349B945442C2FE144A /* Home */,
 				06C6B140D6BF7D0440F43844 /* Login */,
 				000E75EBCA17CDDD0B158A73 /* More */,
+				E5FDEF82F99C25D86A49224A /* Nutrition */,
 				89FE041FD6D3E990366B335D /* Order */,
 				F76DDE300C90C0F43D8228CE /* Profile */,
 				0DC38F25F3D0BC0D897319D6 /* Recents */,
@@ -523,6 +532,16 @@
 			path = DebugMenu;
 			sourceTree = "<group>";
 		};
+		548999077C284011DB4160FF /* Nutrition */ = {
+			isa = PBXGroup;
+			children = (
+				5D24EB5EB6939979F9324842 /* NutritionStateRobot.swift */,
+				B16954652FF6564CF77F44FD /* NutritionViewRobot.swift */,
+				880C395F209181674F0D0A2E /* NutritionViewTest.swift */,
+			);
+			path = Nutrition;
+			sourceTree = "<group>";
+		};
 		5BBC69DC3853BC0B7297B9D0 /* core */ = {
 			isa = PBXGroup;
 			children = (
@@ -577,6 +596,7 @@
 				F0C2FC9536A2BFC99069952C /* Home */,
 				C27233340D57D269491CAE14 /* Login */,
 				C49246C46DC6511838975227 /* More */,
+				548999077C284011DB4160FF /* Nutrition */,
 				BDFB19FAAE17053A3D7C986F /* Order */,
 				B2C4DA9E9FF5D380356C7520 /* Profile */,
 				C5CF234D77298B1961B3424B /* Recents */,
@@ -778,6 +798,14 @@
 				BD5E9E2442BA96EEA8DE5F89 /* CA-Prod-Release.xcconfig */,
 			);
 			path = ca;
+			sourceTree = "<group>";
+		};
+		E5FDEF82F99C25D86A49224A /* Nutrition */ = {
+			isa = PBXGroup;
+			children = (
+				1EA11E4EC3D33B21EC239698 /* NutritionView.swift */,
+			);
+			path = Nutrition;
 			sourceTree = "<group>";
 		};
 		EF828A349B945442C2FE144A /* Home */ = {
@@ -1043,6 +1071,7 @@
 				D8CFD50752C25C34E17A1810 /* MockDonaldsTheme.swift in Sources */,
 				C83A6FDF9A4D8F0E0E7BEBD0 /* MoreView.swift in Sources */,
 				EBCC6A59A2A2CA48D608A308 /* NavigationStateManager.swift in Sources */,
+				97325C45FCE304B80D9D5D53 /* NutritionView.swift in Sources */,
 				71E995A91AEDCE09BF178AEF /* OrderView.swift in Sources */,
 				9511EE705A0FDD1ADA45EC15 /* ProfileView.swift in Sources */,
 				50C5711A063A3111C71E7FDC /* RecentsView.swift in Sources */,
@@ -1081,6 +1110,9 @@
 				2D4DE01415099A8C1B1F8B19 /* MoreViewRobot.swift in Sources */,
 				120CA82FACD15A3ECEB68D0A /* MoreViewTest.swift in Sources */,
 				8E4CC96F501925E2A5C373FB /* NavigationStateManagerTest.swift in Sources */,
+				DADCBA24E9FD46A2056B9ACC /* NutritionStateRobot.swift in Sources */,
+				6394272874975638D8DAA026 /* NutritionViewRobot.swift in Sources */,
+				F2EB093BB757B5DEA400B2F9 /* NutritionViewTest.swift in Sources */,
 				164EE57CA0223DBD695F8B0E /* OrderStateRobot.swift in Sources */,
 				6533BBB376DB768E004FDF71 /* OrderViewRobot.swift in Sources */,
 				A85AE0B79BC7BC4BBF179C00 /* OrderViewTest.swift in Sources */,
