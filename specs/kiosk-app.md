@@ -60,8 +60,7 @@ androidApp (existing AGP application — unchanged)
 
 kioskApp (NEW — AGP application, Android-only)
   └─▶ kioskComposeApp (NEW — KMP library, Android target only)
-        ├─▶ features/order/{api/domain, api/navigation,
-        │                   impl/data, impl/domain}      ← reused menu domain
+        ├─▶ features/shared/menu/{api/domain, impl/data, impl/domain}      ← reused menu domain
         ├─▶ features/kiosk/attract/*                     ← NEW (auto-discovered from features/kiosk/)
         ├─▶ features/kiosk/identify/*                    ← NEW
         ├─▶ features/kiosk/order/*                       ← NEW
@@ -96,13 +95,13 @@ A peer `kioskComposeApp` library keeps dependency graphs disjoint at compile tim
   - `MockDonaldsKioskApp.kt` — `@Composable` root: `MockDonaldsTheme` → bare `rememberCircuitNavigator` (no `InterceptingNavigator`, no `AuthInterceptor`, no `DeepLinkParser`, no bottom bar) + idle-reset effect + `NavigableCircuitContent`.
   - `ProdKioskAppGraph.kt` — `@DependencyGraph(AppScope::class) interface ProdKioskAppGraph : AppGraph { val kioskIdleTimer: KioskIdleTimer; @Factory fun create(@Provides application: Application): ProdKioskAppGraph }`.
 - `commonMain/sqldelight/` — kiosk's own `AppDatabase` (separate from consumer's; kiosk runs in a separate Android process anyway).
-- `build.gradle.kts` — explicit `core:*` deps + auto-discovers `features/kiosk/*` + explicit `features/order/{api,impl/data,impl/domain}` reuse.
+- `build.gradle.kts` — explicit `core:*` deps + auto-discovers `features/kiosk/*` + explicit `features/shared/menu/{api/domain,impl/data,impl/domain}` reuse.
 
 **`features/kiosk/attract/`** — full 6-module feature for the ad-loop attract screen (see Per-Feature Specs below).
 
 **`features/kiosk/identify/`** — full 6-module feature for phone-number/QR/skip identification.
 
-**`features/kiosk/order/`** — full 6-module feature for the kiosk order screen. Reuses `features/order/api/domain.GetOrderContent`; adds richer fields to `OrderContent` only if needed.
+**`features/kiosk/order/`** — full 6-module feature for the kiosk order screen. Reuses `features/shared/menu/api/domain.GetOrderContent`; adds richer fields to `OrderContent` only if needed.
 
 ---
 
@@ -317,10 +316,10 @@ kotlin {
                 }
 
             // Reused consumer menu domain — NOT presentation
-            api(project(":features:order:api:domain"))
-            api(project(":features:order:api:navigation"))
-            implementation(project(":features:order:impl:data"))
-            implementation(project(":features:order:impl:domain"))
+            api(project(":features:shared:menu:api:domain"))
+            api(project(":features:mobile:order:api:navigation"))
+            implementation(project(":features:shared:menu:impl:data"))
+            implementation(project(":features:shared:menu:impl:domain"))
 
             // Core
             api(project(":core:circuit"))
@@ -645,12 +644,12 @@ object IdentifyTestTags {
 
 Reference images: **Image 3** (Burgers grid with vertical sidebar of categories, Big Mac/Hamburger/McDouble/Quarter Pounder grid with calories + price, Back + Scan Offer top-right buttons), **Image 4** (Around the World Menu, 3-col grid, $0.00 / Cart / Pay button at bottom).
 
-#### Domain Models — extend `features/order/api/domain` additively
+#### Domain Models — extend `features/shared/menu/api/domain` additively
 
 The existing `OrderContent` shape is too thin for kiosk. Add fields additively (consumer benefits too — current consumer order screen would happily render images and calories if available):
 
 ```kotlin
-// features/order/api/domain/OrderModels.kt — additions
+// features/shared/menu/api/domain/OrderModels.kt — additions
 
 data class MenuCategory(
     val id: String,
@@ -677,11 +676,11 @@ data class OrderContent(
 )
 ```
 
-`features/order/impl/data.OrderRepositoryImpl` populates the new fields with the same fake data it currently exposes (extended to ~5 items per category). The existing consumer `OrderPresenter` ignores the new fields — backwards compatible.
+`features/shared/menu/impl/data.OrderRepositoryImpl` populates the new fields with the same fake data it currently exposes (extended to ~5 items per category). The existing consumer `OrderPresenter` ignores the new fields — backwards compatible.
 
 #### Use Cases
 
-Reuse `features/order/api/domain.GetOrderContent` unchanged. No new use case for v1.
+Reuse `features/shared/menu/api/domain.GetOrderContent` unchanged. No new use case for v1.
 
 #### Screen & UI
 
@@ -987,9 +986,9 @@ Per the project's 5 test levels:
 | **Unit (Kotlin, Kotest BehaviorSpec, JVM)** | `AttractPresenterTest`, `IdentifyPresenterTest`, `KioskOrderPresenterTest`. Repository tests for each feature's `impl/data`. Use-case impl tests (`GetAttractContentImplTest`, `IdentifyByPhoneNumberImplTest`, etc.). `KioskIdleTimerTest`. Each abstract use case ships a Fake in `features/kiosk/{name}/test/`. |
 | **UI Component (Compose, Robot pattern)** | `androidDeviceTest/` Robot triplet for each screen: `AttractUiTest`+`AttractUiRobot`+`AttractStateRobot`, same for Identify and KioskOrder. Asserts test tags, state→UI plumbing, button-tap event dispatch. |
 | **Architecture (Konsist)** | New rules listed in §Build Infrastructure / Konsist. Existing 6-module-shape rules auto-cover `features/kiosk/*`. |
-| **Nav/Int** | New kiosk navint suite in `:testing:navint-tests` covering: (a) `Attract.touch` → Identify presented, (b) `Identify.skip` → KioskOrder presented as root, (c) `Identify.phone_submit` → KioskOrder presented as root, (d) idle expiry on Identify resets to Attract, (e) idle expiry on KioskOrder resets to Attract. |
-| **E2E** | New kiosk journey test in `:testing:e2e-tests` driving the full flow against a connected emulator with the kiosk APK installed. |
-| **Benchmark** | Cold-start macrobenchmark from launcher → AttractScreen rendered. Warm transition Attract → Identify → KioskOrder. Lives in `:testing:benchmarks` alongside the consumer benchmarks. |
+| **Nav/Int** | New kiosk navint suite in `:testing:mobile:navint-tests` covering: (a) `Attract.touch` → Identify presented, (b) `Identify.skip` → KioskOrder presented as root, (c) `Identify.phone_submit` → KioskOrder presented as root, (d) idle expiry on Identify resets to Attract, (e) idle expiry on KioskOrder resets to Attract. |
+| **E2E** | New kiosk journey test in `:testing:mobile:e2e-tests` driving the full flow against a connected emulator with the kiosk APK installed. |
+| **Benchmark** | Cold-start macrobenchmark from launcher → AttractScreen rendered. Warm transition Attract → Identify → KioskOrder. Lives in `:testing:mobile:benchmarks` alongside the consumer benchmarks. |
 
 Sentinel data hygiene: tests use placeholder image URLs from `https://example.test/` (RFC2606 reserved) so no real network calls.
 
@@ -1009,7 +1008,7 @@ Sentinel data hygiene: tests use placeholder image URLs from `https://example.te
 - `core:persistence:impl` — `DatabaseDriverFactory` (kiosk-owned `AppDatabase`).
 - `core:theme` — `MockDonaldsTheme`, `MockDimens`, `MaterialTheme.colorScheme`.
 - `core:strings` — kiosk-specific keys (Phrase-fed).
-- `features/order/api/domain` + `impl/{data, domain}` — reused menu domain.
+- `features/shared/menu/api/domain` + `impl/{data, domain}` — reused menu domain.
 
 **Imported by**:
 - `kioskComposeApp` only. **No cross-imports between consumer composeApp and any kiosk feature.**
@@ -1042,7 +1041,7 @@ Sentinel data hygiene: tests use placeholder image URLs from `https://example.te
 5. Tests.
 
 ### Phase 4 — `features/kiosk/order`
-1. Extend `features/order/api/domain.OrderModels` additively (new `MenuItem` model, `itemsByCategory` map, optional `iconUrl` on `MenuCategory`). Update `OrderRepositoryImpl` to populate. Verify consumer order screen still builds and renders.
+1. Extend `features/shared/menu/api/domain.OrderModels` additively (new `MenuItem` model, `itemsByCategory` map, optional `iconUrl` on `MenuCategory`). Update `OrderRepositoryImpl` to populate. Verify consumer order screen still builds and renders.
 2. Scaffold `features/kiosk/order` 6-module split.
 3. Implement `KioskOrderPresenter` consuming `GetOrderContent`.
 4. Implement `KioskOrderUi.kt` (NavigationRail + grid + cart bar).
@@ -1121,7 +1120,7 @@ Sentinel data hygiene: tests use placeholder image URLs from `https://example.te
 | 15 | `MoreTabExtension`-style debug-menu integration for kiosk? | **No**. Kiosk has no `More` surface; debug-menu is consumer-only. | Out of scope for kiosk MVP. A separate kiosk-debug-overlay (long-press corner gesture) could be added later if needed for in-restaurant troubleshooting. |
 | 16 *(grilled)* | Should kiosk mirror the consumer's full 30-variant matrix (5 markets × 3 envs × 2 build types + benchmark), or narrow it? | **Mirror — full 30 variants**. | The market/env variations represent the same shared software adapting to different deployments, not separate codebases. Each kiosk hardware unit ships one variant, but the build matrix mirrors how kiosks adapt across the global fleet. Kept symmetric with `BuildVariantResolver`'s existing regex and consumer CI. |
 | 17 *(grilled)* | `applicationId` base — sibling, nested, or shared with consumer? | **`com.mockdonalds.kiosk`** (sibling to `com.mockdonalds.app`). | Reads as a separate product line on a device's app list (which it is); keeps consumer namespace untouched; matches the project's existing pattern of `com.mockdonalds.{surface}` for distinct AGP namespaces. |
-| 18 *(grilled)* | `OrderContent` schema — extend additively, isolate kiosk in its own model, or defer? | **Extend `features/order/api/domain` additively**, framed as menu-domain evolution (not kiosk-specific contortion). | Real menu data is hierarchical per-market JSON; the current `OrderContent` shape is a placeholder. Both consumer and kiosk render by category, so the extension serves both surfaces. New shape: `MenuItem(id, categoryId, name, priceFormatted, calories, imageUrl, description, tags)` + `itemsByCategory: Map<String, List<MenuItem>>` on `OrderContent`; existing `featuredItems` retained for backward compat. Future backend integration will expand further (modifiers, variants, allergens) — same domain, additive growth. |
+| 18 *(grilled)* | `OrderContent` schema — extend additively, isolate kiosk in its own model, or defer? | **Extend `features/shared/menu/api/domain` additively**, framed as menu-domain evolution (not kiosk-specific contortion). | Real menu data is hierarchical per-market JSON; the current `OrderContent` shape is a placeholder. Both consumer and kiosk render by category, so the extension serves both surfaces. New shape: `MenuItem(id, categoryId, name, priceFormatted, calories, imageUrl, description, tags)` + `itemsByCategory: Map<String, List<MenuItem>>` on `OrderContent`; existing `featuredItems` retained for backward compat. Future backend integration will expand further (modifiers, variants, allergens) — same domain, additive growth. |
 | 19 *(grilled)* | Country dial-code source of truth for the identify keypad? | **Add `phoneCountryDialCode` as a per-market field in `core:build-config`** (`/add-config-field`). | Matches every other per-market config field's pattern (`locale`, `currency`, `baseUrl`); compile-time per-market resolution; `IdentifyRepositoryImpl` just reads `appBuildConfig.phoneCountryDialCode`. Per-market values: `us`/`ca` → `+1`, `de` → `+49`, `au` → `+61`. |
 | 20 *(grilled)* | Attract `Ad` model — keep `backgroundColorHex`? Bilingual overlay v1? | **Drop `backgroundColorHex`**; **English-only overlay** (`"Touch to Order"`) v1, defer bilingual. | `backgroundColorHex` was speculative — full-bleed photography from Image 1/2 covers the screen, no flat backdrops needed. Bilingual handling depends on Phrase / per-market string wiring that isn't in scope for kiosk MVP; defer until localization infra is addressed. |
 | 21 *(grilled)* | KioskOrder "Back" button + "Cancel" cart-bar button v1 behavior? | **Both `BackPressed` and `CancelOrderPressed` → `resetRoot(AttractScreen)`** in v1. | No parent screen exists post-identify; "back" means "abandon the order." Both buttons collapse to the same session-reset action until item-detail / cart-review sub-screens land (then "back" becomes intra-order navigation, "cancel" stays session-reset). |

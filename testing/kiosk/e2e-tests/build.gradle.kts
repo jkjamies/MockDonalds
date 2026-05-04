@@ -28,13 +28,11 @@ dependencies {
     implementation(libs.androidx.test.runner)
     implementation(libs.androidx.uiautomator)
 
-    // TestTags from kiosk feature api/navigation modules. Kiosk-only — no consumer
-    // feature tags are pulled in here.
-    rootDir.resolve("features/kiosk").listFiles()
-        ?.filter { it.isDirectory }
-        ?.map { it.name }
-        ?.sorted()
-        ?.forEach { feature ->
-            implementation(project(":features:kiosk:$feature:api:navigation"))
-        }
+    // TestTags from kiosk feature api/navigation modules. Kiosk-only — no mobile
+    // feature tags pulled in here. Walks `features/kiosk/` for any api/navigation
+    // submodule with a build.gradle.kts.
+    rootDir.resolve("features/kiosk").walkTopDown()
+        .filter { dir -> dir.isDirectory && dir.resolve("build.gradle.kts").exists() }
+        .filter { it.relativeTo(rootDir).path.endsWith("/api/navigation") }
+        .forEach { implementation(project(":" + it.relativeTo(rootDir).path.replace("/", ":"))) }
 }

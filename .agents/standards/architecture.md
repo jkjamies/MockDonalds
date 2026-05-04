@@ -267,14 +267,14 @@ Cross-feature imports are ONLY permitted through `api/` modules. Enforced by `La
 
 Correct:
 ```kotlin
-// In features/order/impl/presentation/
+// In features/mobile/home/impl/presentation/
 import com.mockdonalds.app.features.home.api.navigation.HomeScreen  // api module -- allowed
 import com.mockdonalds.app.features.login.api.domain.AuthStatus     // api module -- allowed
 ```
 
 Incorrect:
 ```kotlin
-// In features/order/impl/presentation/
+// In features/mobile/home/impl/presentation/
 import com.mockdonalds.app.features.home.domain.HomeRepository      // impl/domain -- FORBIDDEN
 import com.mockdonalds.app.features.home.data.HomeRepositoryImpl    // impl/data -- FORBIDDEN
 import com.mockdonalds.app.features.home.presentation.HomeUiState   // impl/presentation -- FORBIDDEN

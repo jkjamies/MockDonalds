@@ -1,7 +1,7 @@
 # testing/kiosk/e2e-tests
 
 ## Purpose
-End-to-end journey tests for the kiosk app. Mirrors `:testing:e2e-tests` (consumer) but instruments against `:kioskApp` instead of `:androidApp`. Driven via UI Automator + accessibility identifiers (the `*TestTags` constants from `features/kiosk/*/api/navigation/`).
+End-to-end journey tests for the kiosk app. Mirrors `:testing:mobile:e2e-tests` (consumer) but instruments against `:kioskApp` instead of `:androidApp`. Driven via UI Automator + accessibility identifiers (the `*TestTags` constants from `features/kiosk/*/api/navigation/`).
 
 ## Key Types
 

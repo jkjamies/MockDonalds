@@ -14,13 +14,13 @@ Macrobenchmarks measure production-representative runtime performance (startup, 
 
 ```bash
 # All Android macrobenchmarks — physical device required, emulator blocked
-./gradlew :testing:benchmarks:connectedBenchmarkAndroidTest
+./gradlew :testing:mobile:benchmarks:connectedBenchmarkAndroidTest
 
 # Market/env-specific variant
-./gradlew :testing:benchmarks:connectedCoreIntBenchmarkAndroidTest
+./gradlew :testing:mobile:benchmarks:connectedCoreIntBenchmarkAndroidTest
 
 # Local smoke-test on emulator (noisy, never CI)
-./gradlew :testing:benchmarks:connectedBenchmarkAndroidTest \
+./gradlew :testing:mobile:benchmarks:connectedBenchmarkAndroidTest \
   -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.suppressErrors=EMULATOR
 ```
 
@@ -34,7 +34,7 @@ Macrobenchmarks measure production-representative runtime performance (startup, 
 - **Variant filter**: `androidComponents.beforeVariants { enable = false }` for every non-benchmark variant — only benchmark APKs are produced
 - **Runner**: JUnit4 `@RunWith(AndroidJUnit4::class)` — instrumented tests
 - **Element access**: UI Automator (`By.desc(testTag)`) — no direct access to target-app classes (R8 renames them anyway)
-- **Location**: `testing/benchmarks/src/main/kotlin/com/mockdonalds/app/benchmarks/`
+- **Location**: `testing/mobile/benchmarks/src/main/kotlin/com/mockdonalds/app/benchmarks/`
 
 ## Dependencies
 
@@ -100,7 +100,7 @@ Add or update macrobenchmarks when:
 ### Konsist
 
 Boundary rule in `TestBoundaryTest`:
-- Benchmark files in `testing/benchmarks/` must end with `Benchmark`
+- Benchmark files in `testing/mobile/benchmarks/` must end with `Benchmark`
 
 ### Harmonize
 
@@ -108,7 +108,7 @@ iOS benchmark files in `iosApp/iosAppBenchmarks/` must end with `PerformanceTest
 
 ## iOS Layout
 
-iOS benchmarks live in a **dedicated Xcode target** `iosAppBenchmarks` (mirroring Gradle's `:testing:benchmarks` module split). Files live in `iosApp/iosAppBenchmarks/` and run under the `Benchmarks` test plan — separate from the journey-only `E2ETests` plan so performance runs stay isolated from functional correctness. Tests extend `XCTestCase` and use `measure(metrics:)` with `XCTApplicationLaunchMetric`, `XCTOSSignpostMetric`, or other `XCTMetric` types.
+iOS benchmarks live in a **dedicated Xcode target** `iosAppBenchmarks` (mirroring Gradle's `:testing:mobile:benchmarks` module split). Files live in `iosApp/iosAppBenchmarks/` and run under the `Benchmarks` test plan — separate from the journey-only `E2ETests` plan so performance runs stay isolated from functional correctness. Tests extend `XCTestCase` and use `measure(metrics:)` with `XCTApplicationLaunchMetric`, `XCTOSSignpostMetric`, or other `XCTMetric` types.
 
 ```bash
 xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
@@ -116,8 +116,8 @@ xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS S
 
 | | Android | iOS |
 |---|---|---|
-| Module / target | `:testing:benchmarks` (Gradle) | `iosAppBenchmarks` (Xcode) |
-| Location | `testing/benchmarks/` | `iosApp/iosAppBenchmarks/` |
+| Module / target | `:testing:mobile:benchmarks` (Gradle) | `iosAppBenchmarks` (Xcode) |
+| Location | `testing/mobile/benchmarks/` | `iosApp/iosAppBenchmarks/` |
 | Target variant | `benchmark` (R8-minified) | Release build in XCUITest |
 | Framework | Macrobenchmark + Perfetto | XCTMetric + XCTApplicationLaunchMetric |
 | Test plan | Gradle task | `Benchmarks.xctestplan` |

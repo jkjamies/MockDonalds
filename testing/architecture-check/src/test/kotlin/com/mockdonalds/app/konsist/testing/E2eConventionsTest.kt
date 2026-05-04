@@ -4,7 +4,7 @@ import com.lemonappdev.konsist.api.Konsist
 import io.kotest.core.spec.style.BehaviorSpec
 
 /**
- * Enforces e2e journey conventions in testing/e2e-tests/.
+ * Enforces e2e journey conventions in testing/mobile/e2e-tests/.
  *
  * E2E tests drive the real, un-minified debug app via UI Automator and must not know anything
  * about the internal structure of the code — no imports from impl modules, no fakes, all cross-screen
@@ -79,7 +79,7 @@ class E2eConventionsTest : BehaviorSpec({
 
             assert(violators.isEmpty()) {
                 val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
-                "E2E robot files must live in testing/e2e-tests/src/main/kotlin/.../robots/:\n$names"
+                "E2E robot files must live in testing/mobile/e2e-tests/src/main/kotlin/.../robots/:\n$names"
             }
         }
     }

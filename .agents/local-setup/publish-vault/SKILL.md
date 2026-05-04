@@ -228,7 +228,7 @@ After all notes are derived, do a single pass over every derived note in the vau
 1. Build a map of `{ source filename → vault note title }` and `{ source path → vault note title }` from the manifest. Titles are folder-independent — wikilinks resolve by title regardless of folder location.
 2. For each note, scan the body for:
    - Bare filename references (e.g., `architecture.md`, `OrderPresenter.kt`)
-   - Path references (e.g., `.agents/standards/architecture.md`, `features/order/AGENTS.md`)
+   - Path references (e.g., `.agents/standards/architecture.md`, `features/mobile/home/AGENTS.md`)
    - Module paths in backticks (e.g., `core:network`)
 3. Where a referenced item maps to a vault note, rewrite it as `[[Note Title]]`
 4. Leave unmatched references alone.

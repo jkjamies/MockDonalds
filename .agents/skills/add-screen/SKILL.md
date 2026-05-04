@@ -37,7 +37,7 @@ The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before produ
 
 ## Reference Implementation
 
-Use existing screens in `features/order/` as the pattern reference.
+Use existing screens in `features/mobile/home/` as the pattern reference.
 
 ## Files to Create
 

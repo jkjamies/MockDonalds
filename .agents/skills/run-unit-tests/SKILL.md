@@ -56,4 +56,4 @@ Valid core modules: `auth:api`, `auth:impl`, `centerpost`, `circuit`, `network`,
 
 ## Out of Scope
 
-Navigation and integration tests in `testing/navint-tests/` are **not** unit tests. They run on a connected Android emulator via `./gradlew :testing:navint-tests:connectedAndroidDeviceTest` and use JUnit4 `@RunWith(AndroidJUnit4::class)` rather than Kotest BehaviorSpec. Do not include them in the unit test run.
+Navigation and integration tests in `testing/mobile/navint-tests/` are **not** unit tests. They run on a connected Android emulator via `./gradlew :testing:mobile:navint-tests:connectedAndroidDeviceTest` and use JUnit4 `@RunWith(AndroidJUnit4::class)` rather than Kotest BehaviorSpec. Do not include them in the unit test run.

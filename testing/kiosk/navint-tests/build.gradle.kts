@@ -41,25 +41,19 @@ kotlin {
             implementation(project(":core:theme"))
             implementation(project(":core:test-fixtures"))
 
-            // Kiosk feature modules — real presenters + UI, fake data layer.
-            // Auto-discovered from features/kiosk/, mirrors composeApp's pattern
-            // but with test/ instead of impl/domain + impl/data.
-            rootDir.resolve("features/kiosk").listFiles()
-                ?.filter { it.isDirectory }
-                ?.map { it.name }
-                ?.sorted()
-                ?.forEach { feature ->
-                    api(project(":features:kiosk:$feature:api:domain"))
-                    api(project(":features:kiosk:$feature:api:navigation"))
-                    api(project(":features:kiosk:$feature:impl:presentation"))
-                    api(project(":features:kiosk:$feature:test"))
-                }
-
-            // Reused consumer menu domain — real presenters consume `GetOrderContent`,
-            // backed by features/order/test fakes (`FakeGetOrderContent`).
-            api(project(":features:order:api:domain"))
-            api(project(":features:order:api:navigation"))
-            api(project(":features:order:test"))
+            // Kiosk + shared feature modules — real presenters + UI, fake data layer.
+            // navint graphs use fakes (from `test/`) as the sole bindings for abstract
+            // use cases, so impl/data + impl/domain are skipped to avoid duplicate
+            // Metro bindings. Everything else gets `api` so the test source set sees it.
+            listOf("kiosk", "shared").forEach { grouping ->
+                rootDir.resolve("features/$grouping").walkTopDown()
+                    .filter { dir -> dir.isDirectory && dir.resolve("build.gradle.kts").exists() }
+                    .forEach { module ->
+                        val rel = module.relativeTo(rootDir).path
+                        if (rel.endsWith("/impl/data") || rel.endsWith("/impl/domain")) return@forEach
+                        api(project(":" + rel.replace("/", ":")))
+                    }
+            }
 
             // Circuit
             implementation(libs.circuit.foundation)

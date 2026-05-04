@@ -106,16 +106,28 @@ class AgentDocumentationTest : BehaviorSpec({
     }
 
     Given("feature module agent documentation") {
-        Then("every feature should have an AGENTS.md file") {
+        Then("every feature group and every feature should have an AGENTS.md file") {
+            // Path layout: `features/{grouping}/{name}/AGENTS.md`.
+            //   `features/{grouping}/AGENTS.md` is also expected (group-level overview).
+            val knownGroupings = setOf("mobile", "kiosk", "shared")
             val featuresDir = projectRoot.resolve("features")
-            val violators = featuresDir.listFiles()
-                ?.filter { it.isDirectory }
-                ?.filter { !it.resolve("AGENTS.md").exists() }
-                ?.map { it.name }
-                ?: emptyList()
+
+            val violators = mutableListOf<String>()
+
+            knownGroupings.forEach { grouping ->
+                val groupDir = featuresDir.resolve(grouping)
+                if (!groupDir.exists()) return@forEach
+                if (!groupDir.resolve("AGENTS.md").exists()) {
+                    violators += "features/$grouping/"
+                }
+                groupDir.listFiles()
+                    ?.filter { it.isDirectory }
+                    ?.filter { !it.resolve("AGENTS.md").exists() }
+                    ?.forEach { violators += "features/$grouping/${it.name}/" }
+            }
 
             assert(violators.isEmpty()) {
-                "Feature modules missing AGENTS.md:\n${violators.joinToString("\n") { "  features/$it/" }}"
+                "Feature modules missing AGENTS.md:\n${violators.joinToString("\n") { "  $it" }}"
             }
         }
     }

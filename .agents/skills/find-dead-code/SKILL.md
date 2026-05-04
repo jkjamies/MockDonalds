@@ -14,7 +14,7 @@ Surface code that exists but isn't used — so you can delete it. This skill rep
 /find-dead-code                    # whole project
 /find-dead-code order              # single feature
 /find-dead-code core:network       # core module
-/find-dead-code features/order/impl/presentation  # specific submodule
+/find-dead-code features/mobile/home/impl/presentation  # specific submodule
 ```
 
 When a scope is provided, all checks (Detekt, TestTags, Screens, Fakes) are restricted to that module/feature. This is faster and produces focused results — useful after a targeted change or during code review of a specific area.
@@ -42,9 +42,9 @@ When a scope argument is provided, resolve it to a filesystem path:
 | Input | Resolves to | Detekt task |
 |-------|------------|-------------|
 | (none) | whole project | `./gradlew detekt` |
-| `order` | `features/order/` | `./gradlew :features:order:detekt` (all submodules) |
+| `order` | `features/mobile/home/` | `./gradlew :features:mobile:order:detekt` (all submodules) |
 | `core:network` | `core/network/` | `./gradlew :core:network:detekt` (all submodules) |
-| `features/order/impl/presentation` | that directory | `./gradlew :features:order:impl:presentation:detekt` |
+| `features/mobile/home/impl/presentation` | that directory | `./gradlew :features:mobile:order:impl:presentation:detekt` |
 
 For grep-based checks (TestTags, Screens, Fakes), restrict the search directory to the resolved path. **Always search the whole project for references** — a declaration is only dead if nothing anywhere references it.
 

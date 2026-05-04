@@ -1,9 +1,9 @@
 package com.mockdonalds.app.features.kiosk.order.presentation
 
 import com.mockdonalds.app.core.test.StateRobot
-import com.mockdonalds.app.features.order.api.domain.CartSummary
-import com.mockdonalds.app.features.order.api.domain.MenuCategory
-import com.mockdonalds.app.features.order.api.domain.MenuItem
+import com.mockdonalds.app.features.shared.menu.api.domain.CartSummary
+import com.mockdonalds.app.features.shared.menu.api.domain.MenuCategory
+import com.mockdonalds.app.features.shared.menu.api.domain.MenuItem
 
 class KioskOrderStateRobot : StateRobot<KioskOrderUiState, KioskOrderEvent>() {
 

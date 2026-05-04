@@ -8,8 +8,8 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":features:kiosk:order:api:domain"))
-            api(project(":features:order:api:domain"))
-            api(project(":features:order:test"))
+            api(project(":features:shared:menu:api:domain"))
+            api(project(":features:shared:menu:test"))
             api(project(":core:test-fixtures"))
         }
     }

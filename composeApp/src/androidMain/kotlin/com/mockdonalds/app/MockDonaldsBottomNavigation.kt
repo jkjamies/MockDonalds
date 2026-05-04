@@ -32,11 +32,11 @@ import androidx.compose.ui.unit.sp
 import com.mockdonalds.app.core.theme.adaptiveBottomNavHeight
 import com.mockdonalds.app.core.theme.isCompactHeight
 import com.mockdonalds.app.core.theme.glassEffect
-import com.mockdonalds.app.features.home.api.navigation.HomeScreen
-import com.mockdonalds.app.features.more.api.navigation.MoreScreen
-import com.mockdonalds.app.features.order.api.navigation.OrderScreen
-import com.mockdonalds.app.features.rewards.api.navigation.RewardsScreen
-import com.mockdonalds.app.features.scan.api.navigation.ScanScreen
+import com.mockdonalds.app.features.mobile.home.api.navigation.HomeScreen
+import com.mockdonalds.app.features.mobile.more.api.navigation.MoreScreen
+import com.mockdonalds.app.features.mobile.order.api.navigation.OrderScreen
+import com.mockdonalds.app.features.mobile.rewards.api.navigation.RewardsScreen
+import com.mockdonalds.app.features.mobile.scan.api.navigation.ScanScreen
 
 data class BottomNavItem(
     val label: String,

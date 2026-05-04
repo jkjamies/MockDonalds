@@ -5,7 +5,7 @@ Android-only AGP application target for in-restaurant self-order kiosks (vertica
 
 ## Cross-app Boundary
 - Hosted features: `features/kiosk/{attract, identify, order}` only — Konsist (`KioskBoundaryTest`) enforces.
-- Reuses: `features/order/api/*` (menu domain) + everything in `core/*`.
+- Reuses: `features/shared/menu/*` (the multi-host menu domain) + everything in `core/*`.
 - Forbidden: any `features/{home, more, rewards, profile, recents, scan, login, debug-menu, nutrition}` import; any `TabScreen` reference.
 
 ## Files

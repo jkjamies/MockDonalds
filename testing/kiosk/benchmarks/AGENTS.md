@@ -1,7 +1,7 @@
 # testing/kiosk/benchmarks
 
 ## Purpose
-Macrobenchmarks for the kiosk app (cold/warm startup → AttractScreen). Mirrors `:testing:benchmarks` (consumer) but targets `:kioskApp`'s `benchmark` build variant (R8-minified, profileable for Perfetto).
+Macrobenchmarks for the kiosk app (cold/warm startup → AttractScreen). Mirrors `:testing:mobile:benchmarks` (consumer) but targets `:kioskApp`'s `benchmark` build variant (R8-minified, profileable for Perfetto).
 
 ## Key Types
 

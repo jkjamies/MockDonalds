@@ -4,90 +4,65 @@ import com.lemonappdev.konsist.api.Konsist
 import io.kotest.core.spec.style.BehaviorSpec
 
 /**
- * Enforces the static separation between consumer surfaces (`androidApp` /
- * `composeApp` / `features/{home,more,rewards,profile,recents,scan,login,
- * debug-menu,nutrition}`) and kiosk surfaces (`kioskApp` / `kioskComposeApp` /
- * `features/kiosk/{attract,identify,order}`).
+ * Enforces the absolute static separation between consumer and kiosk surfaces.
  *
- * Without these rules the two surfaces would be free to import each other
- * across module boundaries, and the only safety net would be R8 dead-code
- * stripping — which is debug-build-fragile and silently masks regressions.
+ * **Mobile and kiosk never import each other.** All cross-host reuse goes
+ * through `features/shared/{name}` — features whose actual screens or data layers
+ * are consumed by both apps. The classic example is `features/shared/menu/`,
+ * which holds `OrderContent`, `MenuItem`, `GetOrderContent`, `OrderRepository`,
+ * etc.; both `features/mobile/order/` and `features/kiosk/order/` consume that
+ * shared domain via their own (app-specific) presenters and screens.
  *
- * See specs/kiosk-app.md → "Konsist additions — new tests in `:testing:architecture-check`".
+ * | From → To             | Allowed? |
+ * |-----------------------|----------|
+ * | mobile → mobile       | ✓        |
+ * | mobile → shared       | ✓        |
+ * | mobile → kiosk        | ✗        |
+ * | kiosk → kiosk         | ✓        |
+ * | kiosk → shared        | ✓        |
+ * | kiosk → mobile        | ✗        |
+ * | shared → shared       | ✓        |
+ * | shared → mobile       | ✗ (would pin shared to consumer specifics)        |
+ * | shared → kiosk        | ✗ (would pin shared to kiosk specifics)          |
+ *
+ * Consumer host (`composeApp`, `androidApp`) and kiosk host (`kioskApp`,
+ * `kioskComposeApp`) follow the same rule: each may only consume features
+ * within its own grouping plus `features/shared/{name}`.
+ *
+ * Without this Konsist enforcement, the only safety net would be R8 dead-code
+ * stripping — debug-build-fragile, silently masks regressions, easily bypassed
+ * by anyone willing to add a manual `implementation(project(...))`.
+ *
+ * See [`features/AGENTS.md`](../../../../../../../../features/AGENTS.md) for the
+ * grouping convention; [`specs/kiosk-app.md`](../../../../../../../../specs/kiosk-app.md)
+ * for the kiosk integration spec.
  */
 class KioskBoundaryTest : BehaviorSpec({
 
-    val consumerOnlyFeatures = setOf(
-        "home", "more", "rewards", "profile", "recents", "scan", "login", "debug-menu", "nutrition",
-    )
+    Given("the absolute mobile ↔ kiosk import ban") {
 
-    val consumerOnlyImportPrefixes = consumerOnlyFeatures.map { feature ->
-        // debug-menu's package segment is "debugmenu" — kebab → camel-ish per project convention.
-        "com.mockdonalds.app.features.${feature.replace("-", "")}"
-    }
-
-    Given("the consumer ↔ kiosk module boundary") {
-
-        Then("composeApp must not import any features.kiosk.* symbol") {
+        Then("composeApp + androidApp + features/mobile/* must not import features.kiosk.*") {
             val violators = Konsist.scopeFromProject()
                 .files
-                .filter { it.resideInPath("..composeApp..") }
+                .filter {
+                    it.resideInPath("..composeApp..") ||
+                        it.resideInPath("..androidApp..") ||
+                        it.resideInPath("..features/mobile/..")
+                }
                 .flatMap { file ->
                     file.imports
-                        .filter { it.name.startsWith("com.mockdonalds.app.features.kiosk") }
+                        .filter { it.name.startsWith("com.mockdonalds.app.features.kiosk.") }
                         .map { "  ${file.path}: ${it.name}" }
                 }
 
             assert(violators.isEmpty()) {
-                "composeApp (consumer host) must not import kiosk feature symbols. " +
-                    "Move the import to kioskComposeApp instead:\n" +
+                "Consumer surfaces must not import any kiosk feature symbol. Cross-host " +
+                    "reuse goes through features/shared/* only:\n" +
                     violators.joinToString("\n")
             }
         }
 
-        Then("kioskApp + kioskComposeApp must not import any consumer-only feature symbol") {
-            val violators = Konsist.scopeFromProject()
-                .files
-                .filter { it.resideInPath("..kioskApp..") || it.resideInPath("..kioskComposeApp..") }
-                .flatMap { file ->
-                    file.imports
-                        .filter { import ->
-                            consumerOnlyImportPrefixes.any { prefix -> import.name.startsWith(prefix) }
-                        }
-                        .map { "  ${file.path}: ${it.name}" }
-                }
-
-            assert(violators.isEmpty()) {
-                "kiosk host must not import consumer-only feature symbols (home/more/rewards/" +
-                    "profile/recents/scan/login/debug-menu/nutrition). Reuse must go through " +
-                    "shared core/* modules or features/order/api/* only:\n" +
-                    violators.joinToString("\n")
-            }
-        }
-
-        Then("features/kiosk/* must not import any consumer-only feature symbol") {
-            val violators = Konsist.scopeFromProject()
-                .files
-                .filter { it.resideInPath("..features/kiosk/..") }
-                .flatMap { file ->
-                    file.imports
-                        .filter { import ->
-                            consumerOnlyImportPrefixes.any { prefix -> import.name.startsWith(prefix) }
-                        }
-                        .map { "  ${file.path}: ${it.name}" }
-                }
-
-            assert(violators.isEmpty()) {
-                "kiosk feature modules must not import consumer-only feature symbols. " +
-                    "Reuse must go through core/* or features/order/api/* only:\n" +
-                    violators.joinToString("\n")
-            }
-        }
-
-        Then("kiosk host + kiosk features must not reference any TabScreen implementation") {
-            // TabScreen is the consumer bottom-nav primitive. Kiosk has no tab navigation;
-            // the visible NavigationRail in KioskOrder is screen-internal Material UI driven
-            // by presenter state, not a Circuit-level TabScreen.
+        Then("kioskApp + kioskComposeApp + features/kiosk/* must not import features.mobile.*") {
             val violators = Konsist.scopeFromProject()
                 .files
                 .filter {
@@ -97,12 +72,35 @@ class KioskBoundaryTest : BehaviorSpec({
                 }
                 .flatMap { file ->
                     file.imports
-                        .filter { it.name.endsWith(".TabScreen") || it.name.contains(".TabScreen") }
+                        .filter { it.name.startsWith("com.mockdonalds.app.features.mobile.") }
                         .map { "  ${file.path}: ${it.name}" }
                 }
 
             assert(violators.isEmpty()) {
-                "kiosk surfaces must not reference TabScreen — kiosk has no tab navigation:\n" +
+                "Kiosk surfaces must not import any mobile feature symbol. Cross-host " +
+                    "reuse goes through features/shared/* only — extract the genuinely " +
+                    "shared parts (data layer, use cases) into features/shared/{name}/:\n" +
+                    violators.joinToString("\n")
+            }
+        }
+
+        Then("features/shared/* must not import features.mobile.* or features.kiosk.*") {
+            val violators = Konsist.scopeFromProject()
+                .files
+                .filter { it.resideInPath("..features/shared/..") }
+                .flatMap { file ->
+                    file.imports
+                        .filter {
+                            it.name.startsWith("com.mockdonalds.app.features.mobile.") ||
+                                it.name.startsWith("com.mockdonalds.app.features.kiosk.")
+                        }
+                        .map { "  ${file.path}: ${it.name}" }
+                }
+
+            assert(violators.isEmpty()) {
+                "features/shared/* must not depend on either mobile or kiosk specifics — " +
+                    "shared features are app-agnostic by definition. If a shared feature " +
+                    "needs to know about an app surface, it isn't actually shared:\n" +
                     violators.joinToString("\n")
             }
         }

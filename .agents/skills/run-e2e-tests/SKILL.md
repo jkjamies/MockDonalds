@@ -1,6 +1,6 @@
 ---
 name: run-e2e-tests
-description: Run Android and iOS end-to-end journey tests. Android uses `:testing:e2e-tests` against the debug target with UI Automator. iOS uses the E2ETests test plan via xcodebuild. Requires a connected device/emulator (Android) or simulator (iOS). Use after modifying navigation, deep links, auth gating, or full-flow behavior.
+description: Run Android and iOS end-to-end journey tests. Android uses `:testing:mobile:e2e-tests` against the debug target with UI Automator. iOS uses the E2ETests test plan via xcodebuild. Requires a connected device/emulator (Android) or simulator (iOS). Use after modifying navigation, deep links, auth gating, or full-flow behavior.
 ---
 
 # Run E2E Tests
@@ -22,7 +22,7 @@ A connected Android device or running emulator.
 ### Run All Android E2E Tests
 
 ```bash
-./gradlew :testing:e2e-tests:connectedAndroidTest
+./gradlew :testing:mobile:e2e-tests:connectedAndroidTest
 ```
 
 Runs against the debug target (unminified, full Compose UI test deps available). Emulator is fine; benchmarks are not in this module.
@@ -30,20 +30,20 @@ Runs against the debug target (unminified, full Compose UI test deps available).
 ### Market/Env Variants
 
 ```bash
-./gradlew :testing:e2e-tests:connectedCoreIntDebugAndroidTest   # core market, int env
-./gradlew :testing:e2e-tests:connectedUsDevDebugAndroidTest     # us market, dev env
+./gradlew :testing:mobile:e2e-tests:connectedCoreIntDebugAndroidTest   # core market, int env
+./gradlew :testing:mobile:e2e-tests:connectedUsDevDebugAndroidTest     # us market, dev env
 ```
 
 ### Run a Specific Suite
 
 ```bash
-./gradlew :testing:e2e-tests:connectedAndroidTest \
+./gradlew :testing:mobile:e2e-tests:connectedAndroidTest \
   -Pandroid.testInstrumentationRunnerArguments.class=com.mockdonalds.app.e2e.suites.GuestJourneyTest
 ```
 
 ### Test Structure
 
-- Journey tests live in `testing/e2e-tests/src/main/kotlin/com/mockdonalds/app/e2e/suites/`
+- Journey tests live in `testing/mobile/e2e-tests/src/main/kotlin/com/mockdonalds/app/e2e/suites/`
 - Files end with `JourneyTest` (Konsist-enforced)
 - Use `@RunWith(AndroidJUnit4::class)` and `AppRobot` for all interactions
 - Element access via `By.desc(testTag)` — TestTags imported from `features/*/api/navigation`
@@ -52,7 +52,7 @@ Runs against the debug target (unminified, full Compose UI test deps available).
 ### Interpreting Results
 
 - Output: JUnit4 test name + UI Automator assertion detail
-- Reports: `testing/e2e-tests/build/reports/androidTests/connected/`
+- Reports: `testing/mobile/e2e-tests/build/reports/androidTests/connected/`
 - Common failure modes: deep link resolution broken, TestTag renamed without updating the journey, auth gating regression, tab navigation state lost
 
 ## iOS Journey Tests
@@ -87,5 +87,5 @@ The `E2ETests` test plan covers journey suites only (`Suites/`). Performance ben
 ## Standard Reference
 
 - Android + iOS journey conventions: `.agents/standards/testing-e2e.md`
-- Android module: `testing/e2e-tests/AGENTS.md`
+- Android module: `testing/mobile/e2e-tests/AGENTS.md`
 - Related skills: `/run-ui-tests` (single-screen UI component tests), `/run-all-tests` (full pipeline)

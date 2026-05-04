@@ -131,11 +131,11 @@ Fully symmetric across both platforms, organized by concern: lint → unit → a
 6. **Harmonize** (iOS architecture): `swift test --package-path iosApp/ArchitectureCheck`
 7. **Android UI component tests** (Compose Robot pattern on per-feature presentation modules, requires emulator): `./gradlew connectedAndroidDeviceTest`
 8. **iOS UI component tests** (`UIComponentTests` test plan — ViewInspector Robot-pattern view tests in `iosApp/iosAppTests/UIComponent/`, requires simulator): `xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`
-9. **Android navint-tests** (navigation & integration, requires emulator): `./gradlew :testing:navint-tests:connectedAndroidDeviceTest`
+9. **Android navint-tests** (navigation & integration, requires emulator): `./gradlew :testing:mobile:navint-tests:connectedAndroidDeviceTest`
 10. **iOS navint-tests** (`NavIntTests` test plan, requires simulator): `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`
-11. **Android e2e-tests** (full user journeys, requires device/emulator): `./gradlew :testing:e2e-tests:connectedAndroidTest`
+11. **Android e2e-tests** (full user journeys, requires device/emulator): `./gradlew :testing:mobile:e2e-tests:connectedAndroidTest`
 12. **iOS e2e-tests** (`E2ETests` test plan, requires simulator): `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`
-13. **Android macrobenchmarks** (startup + frame-timing against minified `benchmark` variant, requires **physical** Android device — emulator is blocked by androidx.benchmark). Self-instrumenting decouples the test APK from the target, so install the target first: `./gradlew :androidApp:installCoreIntBenchmark :testing:benchmarks:connectedBenchmarkAndroidTest`
+13. **Android macrobenchmarks** (startup + frame-timing against minified `benchmark` variant, requires **physical** Android device — emulator is blocked by androidx.benchmark). Self-instrumenting decouples the test APK from the target, so install the target first: `./gradlew :androidApp:installCoreIntBenchmark :testing:mobile:benchmarks:connectedBenchmarkAndroidTest`
 14. **iOS benchmarks** (`Benchmarks` test plan — `XCTApplicationLaunchMetric` launch-time tests in `iosApp/iosAppBenchmarks/`, requires simulator or device): `xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`
 15. **Assemble** (every target × every variant): `./gradlew assemble`
 
@@ -165,13 +165,13 @@ git diff --name-only                       # uncommitted changes on main
 | `iosApp/iosAppTests/UIComponent/` | `xcodebuild test -scheme iOSApp -testPlan UIComponentTests ...` (iOS UI component tests = ViewInspector view tests, requires simulator) |
 | `iosApp/iosAppTests/Unit/` | `xcodebuild test -scheme iOSApp -testPlan UnitTests ...` (iOS pure-logic unit tests, requires simulator) |
 | `testing/architecture-check/` | `:testing:architecture-check:test` |
-| `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` | `:testing:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
-| `testing/navint-tests/` | `:testing:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
+| `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` | `:testing:mobile:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
+| `testing/mobile/navint-tests/` | `:testing:mobile:navint-tests:connectedAndroidDeviceTest` (requires emulator) |
 | `iosApp/iosApp/Circuit/` | `xcodebuild test -scheme iOSApp -testPlan NavIntTests ...` (requires simulator) |
 | `iosApp/iosAppTests/NavInt/` | `xcodebuild test -scheme iOSApp -testPlan NavIntTests ...` (requires simulator) |
-| `testing/e2e-tests/` | `:testing:e2e-tests:connectedAndroidTest` (requires device/emulator) |
+| `testing/mobile/e2e-tests/` | `:testing:mobile:e2e-tests:connectedAndroidTest` (requires device/emulator) |
 | `iosApp/iosAppE2ETests/` | `xcodebuild test -scheme iOSApp -testPlan E2ETests ...` (requires simulator) |
-| `testing/benchmarks/` | `:androidApp:installCoreIntBenchmark :testing:benchmarks:connectedBenchmarkAndroidTest` (requires **physical** Android device) |
+| `testing/mobile/benchmarks/` | `:androidApp:installCoreIntBenchmark :testing:mobile:benchmarks:connectedBenchmarkAndroidTest` (requires **physical** Android device) |
 | `iosApp/iosAppBenchmarks/` | `xcodebuild test -scheme iOSApp -testPlan Benchmarks ...` (requires simulator or device) |
 
 ### Diff Decision Logic
@@ -182,11 +182,11 @@ git diff --name-only                       # uncommitted changes on main
 4. If `features/{name}/impl/presentation/src/androidMain/` or `androidDeviceTest/` changed: run `./gradlew :features:{name}:impl:presentation:connectedAndroidDeviceTest` (Android UI component tests, requires emulator; flag for pre-merge if emulator unavailable).
 5. If `iosApp/iosApp/Features/` or `iosApp/iosAppTests/UIComponent/` changed: run `xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'` (iOS UI component tests = ViewInspector view tests, requires simulator; flag for pre-merge if simulator unavailable).
 5a. If `iosApp/iosAppTests/Unit/` changed: run `xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'` (iOS pure-logic unit tests, requires simulator).
-6. If `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` changed: run `./gradlew :testing:navint-tests:connectedAndroidDeviceTest` (requires emulator; flag for pre-merge if emulator unavailable).
+6. If `features/{name}/impl/presentation/` or `features/{name}/api/navigation/` changed: run `./gradlew :testing:mobile:navint-tests:connectedAndroidDeviceTest` (requires emulator; flag for pre-merge if emulator unavailable).
 7. If `iosApp/iosApp/Circuit/` or `iosApp/iosAppTests/NavInt/` changed: run `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'` (requires simulator; flag for pre-merge if simulator unavailable).
-8. If `testing/e2e-tests/` changed: run `./gradlew :testing:e2e-tests:connectedAndroidTest` (requires device/emulator; flag for pre-merge if unavailable).
+8. If `testing/mobile/e2e-tests/` changed: run `./gradlew :testing:mobile:e2e-tests:connectedAndroidTest` (requires device/emulator; flag for pre-merge if unavailable).
 9. If `iosApp/iosAppE2ETests/` changed: run `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 17 Pro'` (requires simulator; flag for pre-merge if unavailable).
-9a. If `testing/benchmarks/` changed: run `./gradlew :androidApp:installCoreIntBenchmark :testing:benchmarks:connectedBenchmarkAndroidTest` (requires **physical** Android device — emulator is blocked by androidx.benchmark; defer to `verify all` if no device available).
+9a. If `testing/mobile/benchmarks/` changed: run `./gradlew :androidApp:installCoreIntBenchmark :testing:mobile:benchmarks:connectedBenchmarkAndroidTest` (requires **physical** Android device — emulator is blocked by androidx.benchmark; defer to `verify all` if no device available).
 9b. If `iosApp/iosAppBenchmarks/` changed: run `xcodebuild test -scheme iOSApp -testPlan Benchmarks -destination 'platform=iOS Simulator,name=iPhone 17 Pro'` (requires simulator).
 10. If `build.gradle.kts` or `settings.gradle.kts` changed: run `./gradlew assemble`.
 11. If only markdown/documentation changed: architecture tests only (step 1).
@@ -235,8 +235,8 @@ git diff --name-only                       # uncommitted changes on main
 ### navint-tests (Navigation & Integration Tests)
 - Reports: JUnit4 test name + assertion/exception detail
 - Failures indicate broken navigation flows, incorrect Circuit presenter wiring, or missing fake setup
-- Test files in `testing/navint-tests/src/androidDeviceTest/kotlin/` end with `NavigationTest` or `IntegrationTest`
-- Requires a connected Android emulator; run `./gradlew :testing:navint-tests:connectedAndroidDeviceTest`
+- Test files in `testing/mobile/navint-tests/src/androidDeviceTest/kotlin/` end with `NavigationTest` or `IntegrationTest`
+- Requires a connected Android emulator; run `./gradlew :testing:mobile:navint-tests:connectedAndroidDeviceTest`
 - These tests use real Circuit presenters and fakes — check `features/{name}/test/` for fake implementations
 
 ### iOS navint-tests (iOS Navigation & Integration Tests)
@@ -249,15 +249,15 @@ git diff --name-only                       # uncommitted changes on main
 ### e2e-tests (End-to-End Tests)
 - Reports: JUnit4 test name + UI Automator assertion detail
 - Failures indicate broken user journeys — screen transitions, deep link handling, tab navigation, or auth gating
-- Journey tests in `testing/e2e-tests/src/main/kotlin/.../suites/` end with `JourneyTest`
-- Requires a connected Android device/emulator; run `./gradlew :testing:e2e-tests:connectedAndroidTest`
+- Journey tests in `testing/mobile/e2e-tests/src/main/kotlin/.../suites/` end with `JourneyTest`
+- Requires a connected Android device/emulator; run `./gradlew :testing:mobile:e2e-tests:connectedAndroidTest`
 - Tests use UI Automator with `By.desc(testTag)` — check `AppRobot.kt` for the test helper and `features/*/api/navigation/` for TestTags
 
 ### benchmarks (Android Macrobenchmarks)
 - Reports: JUnit4 test name + androidx.benchmark metric output + Perfetto trace
 - Failures indicate startup/frame-timing regression or configuration drift (minification, build type, signing)
-- Benchmark files in `testing/benchmarks/src/main/kotlin/.../benchmarks/` end with `Benchmark`
-- Requires a **physical** Android device (emulator refuses by default); install the target first, then run benchmarks: `./gradlew :androidApp:installCoreIntBenchmark :testing:benchmarks:connectedBenchmarkAndroidTest`
+- Benchmark files in `testing/mobile/benchmarks/src/main/kotlin/.../benchmarks/` end with `Benchmark`
+- Requires a **physical** Android device (emulator refuses by default); install the target first, then run benchmarks: `./gradlew :androidApp:installCoreIntBenchmark :testing:mobile:benchmarks:connectedBenchmarkAndroidTest`
 - Separate module from e2e-tests because it targets the minified `benchmark` variant and cannot share Compose UI test deps with journey tests
 - Uses `MacrobenchmarkRule` with Perfetto traces; self-instrumenting so benchmark runs out-of-process against R8-minified target
 
@@ -309,7 +309,7 @@ What changed?
   │
   ├── Only tests changed ──► Detekt + Kotest + Konsist (or SwiftLint + iOS unit tests + Harmonize)
   │     │                    (skip debug builds — tests compile as part of test tasks)
-  │     └── testing/navint-tests/ changed?
+  │     └── testing/mobile/navint-tests/ changed?
   │           └── Yes ──► run navint-tests (requires emulator)
   │
   ├── Only build.gradle.kts / settings.gradle.kts ──► Konsist + `./gradlew assemble`

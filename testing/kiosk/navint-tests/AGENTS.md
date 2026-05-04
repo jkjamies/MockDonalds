@@ -1,7 +1,7 @@
 # testing/kiosk/navint-tests
 
 ## Purpose
-Navigation + integration tests for the kiosk surface. Mirrors `:testing:navint-tests` (consumer) but auto-discovers `features/kiosk/*` instead, plus the reused `features/order` test fakes. Real Circuit presenters with fake data layer — no network, no real backend.
+Navigation + integration tests for the kiosk surface. Mirrors `:testing:mobile:navint-tests` (consumer) but auto-discovers `features/kiosk/*` instead, plus the reused `features/order` test fakes. Real Circuit presenters with fake data layer — no network, no real backend.
 
 ## Key Types
 

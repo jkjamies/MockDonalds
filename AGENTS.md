@@ -41,8 +41,8 @@ core/
   test-fixtures/       — TestCenterPostDispatchers, KotestProjectConfig, StateRobot base
 ```
 
-testing/navint-tests/         — Navigation + integration tests (real presenters, fake data, real Circuit)
-testing/e2e-tests/            — End-to-end journey tests + benchmarks (real everything, UI Automator)
+testing/mobile/navint-tests/         — Navigation + integration tests (real presenters, fake data, real Circuit)
+testing/mobile/e2e-tests/            — End-to-end journey tests + benchmarks (real everything, UI Automator)
 
 Features (consumer app): `debug-menu`, `home`, `login`, `more`, `nutrition`, `order`, `profile`, `recents`, `rewards`, `scan`
 
@@ -128,9 +128,9 @@ xcodebuild test -scheme iOSApp -testPlan UnitTests -destination '...'           
 swift test --package-path iosApp/ArchitectureCheck            # 6.  Architecture (Harmonize)
 ./gradlew connectedAndroidDeviceTest                          # 7.  UI component tests (Android, emulator)
 xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination '...'    # 8.  UI component tests (iOS, simulator — ViewInspector)
-./gradlew :testing:navint-tests:connectedAndroidDeviceTest    # 9.  Nav/int tests (Android, emulator)
+./gradlew :testing:mobile:navint-tests:connectedAndroidDeviceTest    # 9.  Nav/int tests (Android, emulator)
 xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination '...'         # 10. Nav/int tests (iOS, simulator)
-./gradlew :testing:e2e-tests:connectedAndroidTest             # 11. E2E tests (Android, device/emulator)
+./gradlew :testing:mobile:e2e-tests:connectedAndroidTest             # 11. E2E tests (Android, device/emulator)
 xcodebuild test -scheme iOSApp -testPlan E2ETests -destination '...'            # 12. E2E tests (iOS, simulator)
 ./gradlew assemble                                            # 13. Full build
 ```
@@ -263,8 +263,8 @@ Per-module AGENTS.md files load via JIT context when you access files in those d
 - `features/{name}/AGENTS.md` — feature business context, key types, cross-feature deps
 - `core/{module}/AGENTS.md` — module purpose, public API, usage patterns
 - `testing/architecture-check/AGENTS.md` — architecture test categories and how to add rules
-- `testing/navint-tests/AGENTS.md` — navigation + integration test infrastructure, NavIntAppGraph
-- `testing/e2e-tests/AGENTS.md` — end-to-end journey tests, AppRobot, benchmarks
+- `testing/mobile/navint-tests/AGENTS.md` — navigation + integration test infrastructure, NavIntAppGraph
+- `testing/mobile/e2e-tests/AGENTS.md` — end-to-end journey tests, AppRobot, benchmarks
 - `iosApp/AGENTS.md` — Swift bridge patterns, Harmonize tests
 - `build-logic/AGENTS.md` — convention plugin details
 - `composeApp/AGENTS.md` — app entry points, navigation wiring, deep links

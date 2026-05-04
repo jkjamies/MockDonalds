@@ -10,7 +10,7 @@ import com.mockdonalds.app.core.presentation.centerpost.collectAsState
 import com.mockdonalds.app.core.presentation.centerpost.rememberCenterPost
 import com.mockdonalds.app.features.kiosk.attract.api.navigation.AttractScreen
 import com.mockdonalds.app.features.kiosk.order.api.navigation.KioskOrderScreen
-import com.mockdonalds.app.features.order.api.domain.GetOrderContent
+import com.mockdonalds.app.features.shared.menu.api.domain.GetOrderContent
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.Navigator
 import dev.zacsweers.metro.AppScope

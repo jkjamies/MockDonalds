@@ -44,25 +44,17 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
 
-            // Kiosk feature modules — auto-discovered from features/kiosk/.
-            // No-op until phase 2 lands the first kiosk feature.
-            rootDir.resolve("features/kiosk").listFiles()
-                ?.filter { it.isDirectory }
-                ?.map { it.name }
-                ?.sorted()
-                ?.forEach { feature ->
-                    api(project(":features:kiosk:$feature:api:domain"))
-                    api(project(":features:kiosk:$feature:api:navigation"))
-                    implementation(project(":features:kiosk:$feature:impl:data"))
-                    implementation(project(":features:kiosk:$feature:impl:domain"))
-                    api(project(":features:kiosk:$feature:impl:presentation"))
-                }
-
-            // Reused consumer menu domain — NOT presentation.
-            api(project(":features:order:api:domain"))
-            api(project(":features:order:api:navigation"))
-            implementation(project(":features:order:impl:data"))
-            implementation(project(":features:order:impl:domain"))
+            // Kiosk + shared feature modules — pick up every Gradle submodule under
+            // `features/{kiosk,shared}/`. Host is an app entry point, no transitive
+            // consumers, so `implementation` for all. test/ goes to navint-tests,
+            // not the host. No mobile/* dependency: cross-host sharing goes through
+            // `features/shared/`. KioskBoundaryTest enforces.
+            listOf("kiosk", "shared").forEach { grouping ->
+                rootDir.resolve("features/$grouping").walkTopDown()
+                    .filter { dir -> dir.isDirectory && dir.resolve("build.gradle.kts").exists() }
+                    .filter { !it.relativeTo(rootDir).path.endsWith("/test") }
+                    .forEach { implementation(project(":" + it.relativeTo(rootDir).path.replace("/", ":"))) }
+            }
 
             // Core
             api(project(":core:circuit"))

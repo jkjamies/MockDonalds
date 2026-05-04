@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import com.mockdonalds.app.core.theme.LocalWindowSizeClass
 import com.mockdonalds.app.core.theme.MockDonaldsTheme
 import com.mockdonalds.app.core.circuit.TabScreen
-import com.mockdonalds.app.features.home.api.navigation.HomeScreen
-import com.mockdonalds.app.features.login.api.navigation.LoginScreen
+import com.mockdonalds.app.features.mobile.home.api.navigation.HomeScreen
+import com.mockdonalds.app.features.mobile.login.api.navigation.LoginScreen
 import com.mockdonalds.app.navigation.AnalyticsNavigationListener
 import com.mockdonalds.app.navigation.AuthInterceptor
 import com.mockdonalds.app.navigation.InterceptingNavigator

@@ -129,7 +129,7 @@ class TestBoundaryTest : BehaviorSpec({
 
             assert(violators.isEmpty()) {
                 val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
-                "Benchmark files in testing/benchmarks/ must end with Benchmark:\n$names"
+                "Benchmark files in testing/mobile/benchmarks/ must end with Benchmark:\n$names"
             }
         }
     }

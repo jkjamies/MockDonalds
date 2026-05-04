@@ -62,7 +62,7 @@ Runs the `UIComponentTests` test plan (`iosApp/iosAppTests/UIComponent/` — Vie
 
 ### 9. Android navint-tests (requires emulator)
 ```bash
-./gradlew :testing:navint-tests:connectedAndroidDeviceTest
+./gradlew :testing:mobile:navint-tests:connectedAndroidDeviceTest
 ```
 Navigation & integration tests using real Circuit presenters + fake data layer. Skip if no emulator is available.
 
@@ -74,7 +74,7 @@ Swift Testing navigation state transitions, tab switching, deep links, auth flow
 
 ### 11. Android e2e-tests (requires device/emulator)
 ```bash
-./gradlew :testing:e2e-tests:connectedAndroidTest
+./gradlew :testing:mobile:e2e-tests:connectedAndroidTest
 ```
 Full user journeys + startup benchmarks via UI Automator. Skip if no device/emulator is available.
 

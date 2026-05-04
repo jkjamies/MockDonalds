@@ -15,7 +15,7 @@ import io.kotest.core.spec.style.BehaviorSpec
  * - androidApp/...                          — Android consumer entry
  * - kioskComposeApp/...                     — KMP Compose entry (kiosk host)
  * - kioskApp/...                            — Android kiosk entry
- * - testing/navint-tests/...                — consumer navigation/integration tests host real Compose UI
+ * - testing/mobile/navint-tests/...                — consumer navigation/integration tests host real Compose UI
  * - testing/kiosk/navint-tests/...          — kiosk navigation/integration tests host real Compose UI
  *
  * Forbidden everywhere else: api/domain, api/navigation, impl/domain, impl/data, feature test/
@@ -38,7 +38,7 @@ class ComposeIsolationTest : BehaviorSpec({
         "/androidApp/" to null,
         "/kioskComposeApp/" to null,
         "/kioskApp/" to null,
-        "/testing/navint-tests/" to null,
+        "/testing/mobile/navint-tests/" to null,
         "/testing/kiosk/navint-tests/" to null,
     )
 

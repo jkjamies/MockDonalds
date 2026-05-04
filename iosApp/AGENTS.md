@@ -130,7 +130,7 @@ Tests are separately invokable via Xcode test plans:
 
 ## E2E Tests (XCUITest)
 
-Process-isolated end-to-end journey tests in `iosAppE2ETests/`. These launch the real app via XCUITest and interact through accessibility identifiers (shared TestTags from KMP). Target symmetry: Gradle `:testing:e2e-tests` ↔ Xcode `iosAppE2ETests`.
+Process-isolated end-to-end journey tests in `iosAppE2ETests/`. These launch the real app via XCUITest and interact through accessibility identifiers (shared TestTags from KMP). Target symmetry: Gradle `:testing:mobile:e2e-tests` ↔ Xcode `iosAppE2ETests`.
 
 | Directory | Tests |
 |-----------|-------|
@@ -149,7 +149,7 @@ Key conventions:
 
 ## Benchmarks (XCTApplicationLaunchMetric)
 
-Launch-time performance measurements in `iosAppBenchmarks/`. Separate target/test plan from journeys so performance runs stay isolated from functional correctness. Target symmetry: Gradle `:testing:benchmarks` ↔ Xcode `iosAppBenchmarks`.
+Launch-time performance measurements in `iosAppBenchmarks/`. Separate target/test plan from journeys so performance runs stay isolated from functional correctness. Target symmetry: Gradle `:testing:mobile:benchmarks` ↔ Xcode `iosAppBenchmarks`.
 
 | File | Measures |
 |------|----------|

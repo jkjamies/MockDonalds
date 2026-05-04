@@ -34,10 +34,10 @@ The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before produ
 
 ## Reference
 
-- Abstract: `features/order/api/domain/src/commonMain/.../GetOrderContent.kt`
-- Impl: `features/order/impl/domain/src/commonMain/.../GetOrderContentImpl.kt`
-- Fake: `features/order/test/src/commonMain/.../FakeGetOrderContent.kt`
-- Test: `features/order/impl/domain/src/commonTest/.../GetOrderContentImplTest.kt`
+- Abstract: `features/shared/menu/api/domain/.../GetOrderContent.kt`
+- Impl: `features/shared/menu/impl/domain/.../GetOrderContentImpl.kt`
+- Fake: `features/shared/menu/test/.../FakeGetOrderContent.kt`
+- Test: `features/shared/menu/impl/domain/.../GetOrderContentImplTest.kt`
 
 ## Files to Create
 

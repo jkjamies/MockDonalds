@@ -78,14 +78,14 @@ Applied transitively via `mockdonalds.kmp.library`. Configures:
 
 | Module Type | Plugin | Example Path |
 |-------------|--------|-------------|
-| api/domain | `mockdonalds.kmp.library` | features/home/api/domain |
-| api/navigation | `mockdonalds.kmp.library` | features/home/api/navigation |
-| impl/domain | `mockdonalds.kmp.domain` | features/home/impl/domain |
-| impl/data | `mockdonalds.kmp.data` | features/home/impl/data |
-| impl/presentation | `mockdonalds.kmp.presentation` | features/home/impl/presentation |
+| api/domain | `mockdonalds.kmp.library` | features/mobile/home/api/domain |
+| api/navigation | `mockdonalds.kmp.library` | features/mobile/home/api/navigation |
+| impl/domain | `mockdonalds.kmp.domain` | features/mobile/home/impl/domain |
+| impl/data | `mockdonalds.kmp.data` | features/mobile/home/impl/data |
+| impl/presentation | `mockdonalds.kmp.presentation` | features/mobile/home/impl/presentation |
 | core/* | `mockdonalds.kmp.library` | core/circuit, core/theme |
 | core/strings | `mockdonalds.kmp.library` + `mockdonalds.phrase` | core/strings |
-| test modules | `mockdonalds.kmp.domain` | features/home/test |
+| test modules | `mockdonalds.kmp.domain` | features/mobile/home/test |
 
 ## BuildVariantResolver
 

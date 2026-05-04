@@ -102,9 +102,9 @@ The Xcode project includes a "Compile Kotlin Framework" build phase that runs th
 | `xcodebuild test -scheme iOSApp -testPlan UnitTests -destination 'platform=iOS Simulator,name=iPhone 16'` | iOS pure-logic unit tests (Swift Testing, `iosAppTests/Unit/`) | Simulator required |
 | `./gradlew connectedAndroidDeviceTest` | Android UI component tests (Compose Robot pattern) | Emulator required |
 | `xcodebuild test -scheme iOSApp -testPlan UIComponentTests -destination 'platform=iOS Simulator,name=iPhone 16'` | iOS UI component tests (ViewInspector Robot, `iosAppTests/UIComponent/`) | Simulator required |
-| `./gradlew :testing:navint-tests:connectedAndroidDeviceTest` | Android navigation & integration tests | Emulator required |
+| `./gradlew :testing:mobile:navint-tests:connectedAndroidDeviceTest` | Android navigation & integration tests | Emulator required |
 | `xcodebuild test -scheme iOSApp -testPlan NavIntTests -destination 'platform=iOS Simulator,name=iPhone 16'` | iOS navigation & integration tests | Simulator required |
-| `./gradlew :testing:e2e-tests:connectedAndroidTest` | Android E2E journey + benchmark tests | Device/emulator required |
+| `./gradlew :testing:mobile:e2e-tests:connectedAndroidTest` | Android E2E journey + benchmark tests | Device/emulator required |
 | `xcodebuild test -scheme iOSApp -testPlan E2ETests -destination 'platform=iOS Simulator,name=iPhone 16'` | iOS E2E journey + benchmark tests | Simulator required |
 | `./gradlew :testing:architecture-check:test` | Kotlin architecture (Konsist) | Host, runs separately from unit tests |
 | `swift test --package-path iosApp/ArchitectureCheck` | iOS architecture (Harmonize) | Host, runs separately |

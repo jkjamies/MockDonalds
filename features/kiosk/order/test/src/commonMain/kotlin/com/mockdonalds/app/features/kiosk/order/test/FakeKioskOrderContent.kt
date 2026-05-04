@@ -1,15 +1,15 @@
 package com.mockdonalds.app.features.kiosk.order.test
 
-import com.mockdonalds.app.features.order.api.domain.CartSummary
-import com.mockdonalds.app.features.order.api.domain.MenuCategory
-import com.mockdonalds.app.features.order.api.domain.MenuItem
-import com.mockdonalds.app.features.order.api.domain.OrderContent
+import com.mockdonalds.app.features.shared.menu.api.domain.CartSummary
+import com.mockdonalds.app.features.shared.menu.api.domain.MenuCategory
+import com.mockdonalds.app.features.shared.menu.api.domain.MenuItem
+import com.mockdonalds.app.features.shared.menu.api.domain.OrderContent
 
 /**
  * Fixture builders for KioskOrderUiState and the underlying OrderContent.
  *
- * KioskOrderPresenter consumes `GetOrderContent` from `features/order/api/domain` —
- * fakes for that interactor live in `features/order/test/`. This file provides
+ * KioskOrderPresenter consumes `GetOrderContent` from `features/shared/menu/api/domain` —
+ * fakes for that interactor live in `features/shared/menu/test/`. This file provides
  * convenience defaults specifically for kiosk-order tests.
  */
 object FakeKioskOrderContent {

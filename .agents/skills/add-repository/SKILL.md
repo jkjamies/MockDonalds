@@ -33,9 +33,9 @@ The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before produ
 
 ## Reference
 
-- Interface: `features/order/impl/domain/src/commonMain/.../OrderRepository.kt`
-- Impl: `features/order/impl/data/src/commonMain/.../OrderRepositoryImpl.kt`
-- Test: `features/order/impl/data/src/commonTest/.../OrderRepositoryImplTest.kt`
+- Interface: `features/shared/menu/impl/domain/.../OrderRepository.kt`
+- Impl: `features/shared/menu/impl/data/.../OrderRepositoryImpl.kt`
+- Test: `features/shared/menu/impl/data/.../OrderRepositoryImplTest.kt`
 
 ## Files to Create
 

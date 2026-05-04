@@ -3,7 +3,7 @@ package com.mockdonalds.app.features.kiosk.order.presentation
 import com.mockdonalds.app.core.test.TestCenterPostDispatchers
 import com.mockdonalds.app.features.kiosk.attract.api.navigation.AttractScreen
 import com.mockdonalds.app.features.kiosk.order.api.navigation.KioskOrderScreen
-import com.mockdonalds.app.features.order.test.FakeGetOrderContent
+import com.mockdonalds.app.features.shared.menu.test.FakeGetOrderContent
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.presenterTestOf
 import io.kotest.core.spec.style.BehaviorSpec

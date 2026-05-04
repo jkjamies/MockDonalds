@@ -14,7 +14,7 @@ E2E tests validate full user journeys against the **real app** — real Metro DI
 
 ```bash
 # All Android e2e journey tests
-./gradlew :testing:e2e-tests:connectedAndroidTest
+./gradlew :testing:mobile:e2e-tests:connectedAndroidTest
 ```
 
 Requires a connected Android device or running emulator.
@@ -25,7 +25,7 @@ Requires a connected Android device or running emulator.
 - **Runner**: JUnit4 `@RunWith(AndroidJUnit4::class)` — instrumented tests
 - **Data layer**: Real (no fakes, no test doubles)
 - **Element access**: UI Automator (`By.desc(testTag)`) — cross-process element identification
-- **Location**: `testing/e2e-tests/src/main/kotlin/`
+- **Location**: `testing/mobile/e2e-tests/src/main/kotlin/`
 
 ## Test Organization
 
@@ -101,7 +101,7 @@ Add or update e2e-tests when:
 
 | | Unit Tests | UI Component Tests | navint-tests | e2e-tests |
 |---|---|---|---|---|
-| Location | `impl/*/commonTest/` | `impl/presentation/androidDeviceTest/` | `testing/navint-tests/` | `testing/e2e-tests/` |
+| Location | `impl/*/commonTest/` | `impl/presentation/androidDeviceTest/` | `testing/mobile/navint-tests/` | `testing/mobile/e2e-tests/` |
 | Scope | Single class | Single screen | Multi-screen flows | Full user journeys |
 | Data | Fakes | Static state | Fakes | Real |
 | Presenters | Isolated | Not involved | Real | Real |

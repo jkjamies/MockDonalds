@@ -6,7 +6,7 @@
 ## Boundary
 - Consumer host (`composeApp`) must NOT import any `features/kiosk/*` symbol — Konsist (`KioskBoundaryTest`) enforces.
 - Kiosk features must NOT import any consumer-only feature (home/more/rewards/profile/recents/scan/login/debug-menu/nutrition) — Konsist enforces.
-- Reuse from kiosk → consumer goes through `core/*` and `features/order/api/*` only (kiosk reuses the consumer menu domain layer).
+- Reuse from kiosk → consumer goes through `core/*` and `features/shared/menu/api/*` only (kiosk reuses the consumer menu domain layer).
 
 ## Children
 
@@ -14,7 +14,7 @@
 |---|---|---|
 | `features/kiosk/attract` | [AGENTS.md](attract/AGENTS.md) | Navigation root for the kiosk; rotating ad carousel + Touch-to-Order overlay. |
 | `features/kiosk/identify` | [AGENTS.md](identify/AGENTS.md) | Phone keypad + simulated QR scanner + skip CTA. Funnels through `core:auth.AuthManager`. |
-| `features/kiosk/order` | [AGENTS.md](order/AGENTS.md) | Vertical NavigationRail + 3-col item grid + cart bar. Reuses `features/order/api/domain.GetOrderContent`. |
+| `features/kiosk/order` | [AGENTS.md](order/AGENTS.md) | Vertical NavigationRail + 3-col item grid + cart bar. Reuses `features/shared/menu/api/domain.GetOrderContent`. |
 
 ## Hosting
 Hosted exclusively by `kioskComposeApp` (which is consumed by `kioskApp`). The peer host `composeApp` (consumed by `androidApp`) hosts the consumer features instead.

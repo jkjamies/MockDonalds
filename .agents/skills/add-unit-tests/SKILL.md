@@ -16,7 +16,7 @@ Identify changed/new production classes and create or update their unit tests.
 
 This skill covers Kotest `BehaviorSpec` unit tests in `commonTest/`. It does NOT cover:
 - Android UI tests (Robot pattern in `androidDeviceTest/` — use `add-ui-tests`)
-- Navigation and integration tests in `testing/navint-tests/` (JUnit4, require emulator — use `add-tests` which handles navint-tests awareness)
+- Navigation and integration tests in `testing/mobile/navint-tests/` (JUnit4, require emulator — use `add-tests` which handles navint-tests awareness)
 
 ## Steps
 
@@ -40,7 +40,7 @@ Check if the test file exists. If it exists, check if new code paths need additi
 
 #### Presenter Test Template
 
-Reference: `features/order/impl/presentation/src/commonTest/.../OrderPresenterTest.kt`
+Reference: `features/mobile/home/impl/presentation/src/commonTest/.../HomePresenterTest.kt`
 
 ```kotlin
 package com.mockdonalds.app.features.{name}.presentation
@@ -85,7 +85,7 @@ class {Feature}PresenterTest : BehaviorSpec({
 
 #### Use Case Impl Test Template
 
-Reference: `features/order/impl/domain/src/commonTest/.../GetOrderContentImplTest.kt`
+Reference: `features/shared/menu/impl/domain/.../GetOrderContentImplTest.kt`
 
 ```kotlin
 package com.mockdonalds.app.features.{name}.domain
@@ -113,7 +113,7 @@ class Get{Feature}ContentImplTest : BehaviorSpec({
 
 #### Repository Impl Test Template
 
-Reference: `features/order/impl/data/src/commonTest/.../OrderRepositoryImplTest.kt`
+Reference: `features/shared/menu/impl/data/.../OrderRepositoryImplTest.kt`
 
 ```kotlin
 package com.mockdonalds.app.features.{name}.data
@@ -141,7 +141,7 @@ class {Feature}RepositoryImplTest : BehaviorSpec({
 
 If the test requires a fake that doesn't exist yet, create it in `features/{name}/test/src/commonMain/`:
 
-Reference: `features/order/test/src/commonMain/.../FakeGetOrderContent.kt`
+Reference: `features/shared/menu/test/.../FakeGetOrderContent.kt`
 
 ```kotlin
 @ContributesBinding(AppScope::class)

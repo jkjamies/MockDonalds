@@ -55,50 +55,41 @@ include(":core:persistence:api")
 include(":core:persistence:impl")
 include(":core:persistence:test")
 
-// Feature modules — auto-discovered, architecture-enforced submodules.
-// Top-level features under `features/` are consumer-app features. Kiosk-only
-// features live nested under `features/kiosk/` and are walked separately below
-// (kept disjoint from the consumer host's auto-discovery in composeApp).
+// Feature modules — auto-discovered, architecture-enforced submodules grouped by app surface.
+//
+// `features/mobile/{name}/...`  — consumer mobile/iOS app features (10 features).
+// `features/kiosk/{name}/...`   — kiosk app features (3 features).
+// `features/shared/{name}/...`  — features whose screens/presenters are consumed by both apps
+//                                  (empty for now; populate when a feature's UI is genuinely multi-host).
+//
+// Konsist enforces the cross-app boundary at the UI-surface layer (api/navigation +
+// impl/presentation) rather than the feature directory level — kiosk can pull mobile/*'s
+// api/domain + impl/{data,domain} for domain reuse (e.g., the menu domain), it just
+// cannot import mobile/*/api/navigation Screens or mobile/*/impl/presentation. Symmetric
+// for the reverse direction. See KioskBoundaryTest in :testing:architecture-check.
+//
 // Debug-only features (e.g. `debug-menu`) are filtered at runtime via
 // `AppBuildConfig.buildType` rather than stripped from the module graph.
-rootDir.resolve("features").listFiles()
-    ?.filter { it.isDirectory && it.name != "kiosk" }
-    ?.map { it.name }
-    ?.sorted()
-    ?.forEach { feature ->
-        include(":features:$feature:api:domain")
-        include(":features:$feature:api:navigation")
-        include(":features:$feature:impl:data")
-        include(":features:$feature:impl:domain")
-        include(":features:$feature:impl:presentation")
-        include(":features:$feature:test")
-    }
+// Walk every feature group and include any directory that carries a build.gradle.kts.
+// A feature may carry any subset of the 6 submodules (`api/{domain,navigation}`,
+// `impl/{data,domain,presentation}`, `test`) — for example, `features/shared/menu/`
+// has only the data layer because its screen lives in the consuming app's feature.
+// No hardcoded submodule list — if a feature adds a new submodule, the walk picks it up.
+listOf("mobile", "kiosk", "shared").forEach { grouping ->
+    rootDir.resolve("features/$grouping").walkTopDown()
+        .filter { it.isDirectory && it.resolve("build.gradle.kts").exists() }
+        .forEach { include(":" + it.relativeTo(rootDir).path.replace("/", ":")) }
+}
 
-// Kiosk feature modules — auto-discovered under features/kiosk/{name}/...
-// Hosted exclusively by `kioskComposeApp`. Konsist enforces that consumer
-// composeApp cannot import these and vice-versa.
-rootDir.resolve("features/kiosk").listFiles()
-    ?.filter { it.isDirectory }
-    ?.map { it.name }
-    ?.sorted()
-    ?.forEach { feature ->
-        include(":features:kiosk:$feature:api:domain")
-        include(":features:kiosk:$feature:api:navigation")
-        include(":features:kiosk:$feature:impl:data")
-        include(":features:kiosk:$feature:impl:domain")
-        include(":features:kiosk:$feature:impl:presentation")
-        include(":features:kiosk:$feature:test")
-    }
-
-// Testing modules
+// Testing modules — `architecture-check` is project-wide (Konsist scans every
+// module). The per-app suites mirror the features/ grouping: `testing/mobile/*`
+// targets `:androidApp`, `testing/kiosk/*` targets `:kioskApp`. There is no
+// `testing/shared/*` yet; if shared features ever ship a screen+presenter that's
+// used by both apps, both `testing/mobile/*` and `testing/kiosk/*` cover them.
 include(":testing:architecture-check")
-include(":testing:navint-tests")
-include(":testing:e2e-tests")
-include(":testing:benchmarks")
-
-// Kiosk-specific testing modules — peer suites that depend on the kiosk feature
-// graph and instrument against `:kioskApp`. Konsist rules covering kiosk live in
-// `:testing:architecture-check`'s kiosk subpackage; no separate module needed.
+include(":testing:mobile:navint-tests")
+include(":testing:mobile:e2e-tests")
+include(":testing:mobile:benchmarks")
 include(":testing:kiosk:navint-tests")
 include(":testing:kiosk:e2e-tests")
 include(":testing:kiosk:benchmarks")

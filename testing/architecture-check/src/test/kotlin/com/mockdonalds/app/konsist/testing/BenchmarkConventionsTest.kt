@@ -4,7 +4,7 @@ import com.lemonappdev.konsist.api.Konsist
 import io.kotest.core.spec.style.BehaviorSpec
 
 /**
- * Enforces macrobenchmark conventions in testing/benchmarks/.
+ * Enforces macrobenchmark conventions in testing/mobile/benchmarks/.
  *
  * Benchmarks target the minified `benchmark` build type of :androidApp and run out-of-process
  * via self-instrumenting. They must not pull in Compose UI test deps (they crash the target on

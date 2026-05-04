@@ -109,28 +109,48 @@ class LayerDependencyTest : BehaviorSpec({
 
     Given("cross-feature isolation") {
         Then("feature modules should only import from other features via their api module") {
+            // Path/package layout after the 2-level grouping migration:
+            //   `features/{grouping}/{name}/{api|impl|test}/...` →
+            //   package `com.mockdonalds.app.features.{grouping}.{packageName}.{layer}.*`
+            // where grouping ∈ {mobile, kiosk, shared} and packageName has hyphens stripped.
+            val knownGroupings = setOf("mobile", "kiosk", "shared")
+
+            data class FeatureId(val grouping: String, val name: String)
+
+            fun featureIdFromPath(path: String): FeatureId? {
+                val after = path.substringAfter("features/", "")
+                if (after.isEmpty()) return null
+                val grouping = after.substringBefore("/")
+                if (grouping !in knownGroupings) return null
+                val name = after.substringAfter("/").substringBefore("/")
+                if (name.isEmpty()) return null
+                return FeatureId(grouping, name.replace("-", ""))
+            }
+
+            fun featureIdFromImport(name: String): FeatureId? {
+                val m = Regex("\\.features\\.(\\w+)\\.(\\w+)\\.").find(name) ?: return null
+                val grouping = m.groupValues[1]
+                if (grouping !in knownGroupings) return null
+                return FeatureId(grouping, m.groupValues[2])
+            }
+
             val featureFiles = Konsist.scopeFromProject()
                 .files
                 .filter { it.resideInPath("..features..") && it.resideInPath("..commonMain..") }
 
             val violators = featureFiles.flatMap { file ->
-                val featureName = file.path.substringAfter("features/").substringBefore("/")
+                val ownId = featureIdFromPath(file.path) ?: return@flatMap emptyList()
                 file.imports.filter { import ->
-                    val name = import.name
-                    // Check if importing from a different feature
-                    val otherFeatureMatch = Regex("\\.features\\.(\\w+)\\.").find(name)
-                    if (otherFeatureMatch != null) {
-                        val otherFeature = otherFeatureMatch.groupValues[1]
-                        // It's a cross-feature import — only allow .api. packages
-                        otherFeature != featureName && !name.contains(".features.$otherFeature.api.")
-                    } else {
-                        false
-                    }
+                    val otherId = featureIdFromImport(import.name) ?: return@filter false
+                    if (otherId == ownId) return@filter false
+                    // Cross-feature import — only `.features.{grouping}.{name}.api.` is allowed.
+                    !import.name.contains(".features.${otherId.grouping}.${otherId.name}.api.")
                 }.map { "  ${file.name}: ${it.name}" }
             }
 
             assert(violators.isEmpty()) {
-                "Cross-feature imports must only reference another feature's api module:\n${violators.joinToString("\n")}"
+                "Cross-feature imports must only reference another feature's api module:\n" +
+                    violators.joinToString("\n")
             }
         }
 

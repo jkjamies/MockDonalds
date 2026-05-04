@@ -42,7 +42,7 @@ The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before produ
 
 ## Reference Implementation
 
-Use `features/order/` as the reference for file patterns, naming, and structure.
+Use `features/mobile/home/` as the reference for file patterns, naming, and structure.
 
 ## Steps
 
@@ -288,7 +288,7 @@ fun {Feature}Dto.toContent(): {Feature}Content = {Feature}Content(
 )
 ```
 
-**impl/presentation/** — see reference files in `features/order/impl/presentation/`
+**impl/presentation/** — see reference files in `features/mobile/home/impl/presentation/`
 
 Create: `{Feature}Presenter.kt`, `{Feature}UiState.kt` (with sealed class `{Feature}Event`), `{Feature}Ui.kt` (in androidMain).
 

@@ -4,9 +4,8 @@
 KMP library hosting the kiosk Compose root, kiosk Metro graph, kiosk SQLDelight `AppDatabase`, and kiosk-specific shell concerns (idle timer). Consumed by `:kioskApp` (the AGP application) the way `:composeApp` is consumed by `:androidApp`. Android target only initially — adding iOS later is purely additive (declare iOS targets, add bridge files).
 
 ## Cross-app Boundary
-- Auto-discovers `features/kiosk/{name}/*` modules (mirroring `composeApp`'s feature walk, but scoped to `features/kiosk/`).
-- Reuses `features/order/{api/domain, api/navigation, impl/data, impl/domain}` for the menu domain. Does NOT depend on `features/order/impl/presentation`.
-- Forbidden: any `features/{home, more, rewards, profile, recents, scan, login, debug-menu, nutrition}` import — Konsist (`KioskBoundaryTest`) enforces.
+- Auto-discovers `features/kiosk/{name}/*` and `features/shared/{name}/*` modules. The `features/shared/` walk is shared with `composeApp` — anything genuinely multi-host lives there.
+- Forbidden: any `features/mobile/*` import — Konsist (`KioskBoundaryTest`) enforces. Cross-host reuse goes through `features/shared/*` only.
 
 ## Key Types
 

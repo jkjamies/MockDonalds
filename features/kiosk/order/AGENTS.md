@@ -1,7 +1,7 @@
 # Kiosk Order Feature
 
 ## Business Context
-The kiosk order screen is the post-identify menu surface — what guests see after a successful identify or skip. It mirrors the consumer order screen's domain layer (`features/order/api/domain.GetOrderContent`) but renders kiosk-tuned UI: vertical Material `NavigationRail` of categories on the left, 3-column item grid in the middle, and a cart bar with cart total / Cancel / Pay actions at the bottom. Matches Image 3 (Burgers grid + sidebar) and Image 4 (Around the World Menu + bottom strip).
+The kiosk order screen is the post-identify menu surface — what guests see after a successful identify or skip. It mirrors the consumer order screen's domain layer (`features/shared/menu/api/domain.GetOrderContent`) but renders kiosk-tuned UI: vertical Material `NavigationRail` of categories on the left, 3-column item grid in the middle, and a cart bar with cart total / Cancel / Pay actions at the bottom. Matches Image 3 (Burgers grid + sidebar) and Image 4 (Around the World Menu + bottom strip).
 
 ## Key Types
 
@@ -9,14 +9,14 @@ The kiosk order screen is the post-identify menu surface — what guests see aft
 |------|----------|-------|
 | KioskOrderScreen | api/navigation | `data object`, plain `Screen`. Reached via `IdentifyScreen(next = KioskOrderScreen)` after successful identify or skip. |
 | KioskOrderTestTags | api/navigation (`api/ui` subpackage) | Constants for nav rail, top bar pills, item grid, item cards, cart bar, cart total, Cancel/Pay buttons, Back/Scan-Offer buttons. |
-| KioskOrderPresenter | impl/presentation | `@CircuitInject(KioskOrderScreen)`. Reuses `GetOrderContent` from `features/order/api/domain`. Tracks `selectedCategoryId` locally; computes `itemsForSelectedCategory` from `OrderContent.itemsByCategory[selected]`. |
+| KioskOrderPresenter | impl/presentation | `@CircuitInject(KioskOrderScreen)`. Reuses `GetOrderContent` from `features/shared/menu/api/domain`. Tracks `selectedCategoryId` locally; computes `itemsForSelectedCategory` from `OrderContent.itemsByCategory[selected]`. |
 | KioskOrderUiState | impl/presentation | `data class(categories, selectedCategoryId, itemsForSelectedCategory, cartSummary, eventSink)` + computed `selectedCategoryName`. |
 | KioskOrderEvent | impl/presentation | sealed: `CategorySelected(id)`, `ItemTapped(id)`, `ScanOfferPressed`, `BackPressed`, `CartPressed`, `CancelOrderPressed`, `PayPressed`. |
 | KioskOrderUi | impl/presentation/androidMain | Row layout: `NavigationRail` (left, 200dp wide, HOME tile + per-category items) + Column (top bar + item grid + cart bar). Kiosk-scaled dimensions (item cards 360dp tall, cart bar 140dp, cart buttons 96dp tall). |
-| FakeKioskOrderContent | test | Object with `DEFAULT_CATEGORIES` / `DEFAULT_ITEMS` / `DEFAULT_CART` / `DEFAULT_CONTENT` builders. The actual `GetOrderContent` Fake lives in `features/order/test/` and is the binding both consumer and kiosk navint tests use. |
+| FakeKioskOrderContent | test | Object with `DEFAULT_CATEGORIES` / `DEFAULT_ITEMS` / `DEFAULT_CART` / `DEFAULT_CONTENT` builders. The actual `GetOrderContent` Fake lives in `features/shared/menu/test/` and is the binding both consumer and kiosk navint tests use. |
 
 ## Cross-Feature Dependencies
-- Imports from `features/order/api/domain` — `GetOrderContent`, `OrderContent`, `MenuCategory`, `MenuItem`, `CartSummary`.
+- Imports from `features/shared/menu/api/domain` — `GetOrderContent`, `OrderContent`, `MenuCategory`, `MenuItem`, `CartSummary`.
 - Imports from `features/kiosk/attract/api/navigation` — `AttractScreen` (BackPressed and CancelOrderPressed both `resetRoot(AttractScreen)`).
 - Imported by: `kioskComposeApp` (auto-discovered) and `features/kiosk/attract/impl/presentation` once Attract starts passing `IdentifyScreen(next = KioskOrderScreen)`.
 - Konsist enforces: must not import any consumer-only feature.
@@ -31,5 +31,5 @@ The kiosk order screen is the post-identify menu surface — what guests see aft
 
 ## Testing
 - Unit (presenter): `impl/presentation/src/commonTest/...` — verify state→UI plumbing, `CategorySelected` updates `selectedCategoryId`, `BackPressed`/`CancelOrderPressed` trigger `resetRoot(AttractScreen)`.
-- The `GetOrderContent` Fake from `features/order/test/` drives navint tests; kiosk-specific kiosk-order navint flow assertions live in `:testing:kiosk:navint-tests` (Phase: kiosk test infra).
+- The `GetOrderContent` Fake from `features/shared/menu/test/` drives navint tests; kiosk-specific kiosk-order navint flow assertions live in `:testing:kiosk:navint-tests` (Phase: kiosk test infra).
 - E2E journey: Attract → Identify (skip) → KioskOrder → Back → Attract — covered by `:testing:kiosk:e2e-tests`.

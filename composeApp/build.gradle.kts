@@ -48,19 +48,20 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
 
-            // Export feature modules for iOS consumption (auto-discovered).
-            // The `kiosk` subdirectory is excluded — kiosk features are hosted
-            // exclusively by `kioskComposeApp` and never ship in the consumer
-            // iOS framework.
-            rootDir.resolve("features").listFiles()
-                ?.filter { it.isDirectory && it.name != "kiosk" }
-                ?.map { it.name }
-                ?.sorted()
-                ?.forEach { feature ->
-                    export(project(":features:$feature:api:domain"))
-                    export(project(":features:$feature:api:navigation"))
-                    export(project(":features:$feature:impl:presentation"))
-                }
+            // Export consumer feature modules for iOS consumption — every public-facing
+            // submodule under `features/{mobile,shared}/`. Kiosk features under
+            // `features/kiosk/` are NOT exported (Konsist enforces the boundary).
+            listOf("mobile", "shared").forEach { grouping ->
+                rootDir.resolve("features/$grouping").walkTopDown()
+                    .filter { dir -> dir.isDirectory && dir.resolve("build.gradle.kts").exists() }
+                    .filter { dir ->
+                        val rel = dir.relativeTo(rootDir).path
+                        // Only export public-facing submodules (api/* and impl/presentation).
+                        // impl/data + impl/domain are wired internally; test/ never ships.
+                        rel.contains("/api/") || rel.endsWith("/impl/presentation")
+                    }
+                    .forEach { export(project(":" + it.relativeTo(rootDir).path.replace("/", ":"))) }
+            }
             export(project(":core:circuit"))
             export(project(":core:remote-config:impl"))
             export(project(":core:build-config:api"))
@@ -76,20 +77,18 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
 
-            // Feature modules (auto-discovered, architecture-enforced wiring).
-            // `kiosk` subdir is excluded — kiosk features are hosted by
-            // kioskComposeApp only.
-            rootDir.resolve("features").listFiles()
-                ?.filter { it.isDirectory && it.name != "kiosk" }
-                ?.map { it.name }
-                ?.sorted()
-                ?.forEach { feature ->
-                    api(project(":features:$feature:api:domain"))
-                    api(project(":features:$feature:api:navigation"))
-                    implementation(project(":features:$feature:impl:data"))
-                    implementation(project(":features:$feature:impl:domain"))
-                    api(project(":features:$feature:impl:presentation"))
-                }
+            // Consumer feature modules — pick up every Gradle submodule under
+            // `features/{mobile,shared}/`. The host is an app entry point with no
+            // transitive consumers, so `implementation` for all is fine — the
+            // api/implementation distinction would only matter for libraries that
+            // re-expose their deps. test/ is consumed by `:testing:mobile:navint-tests`,
+            // not the host. Kiosk features stay with `:kioskComposeApp`.
+            listOf("mobile", "shared").forEach { grouping ->
+                rootDir.resolve("features/$grouping").walkTopDown()
+                    .filter { dir -> dir.isDirectory && dir.resolve("build.gradle.kts").exists() }
+                    .filter { !it.relativeTo(rootDir).path.endsWith("/test") }
+                    .forEach { implementation(project(":" + it.relativeTo(rootDir).path.replace("/", ":"))) }
+            }
 
             // Core
             api(project(":core:circuit"))

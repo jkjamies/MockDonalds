@@ -103,7 +103,7 @@ GetNutritionContent
 ### Screen definition
 
 ```kotlin
-// features/nutrition/api/navigation/.../NutritionScreen.kt
+// features/mobile/nutrition/api/navigation/.../NutritionScreen.kt
 @Parcelize
 data object NutritionScreen : Screen
 ```
@@ -131,7 +131,7 @@ sealed class NutritionEvent : CircuitUiEvent {
 
 ### UI Description (Android — Compose)
 
-`NutritionUi.kt` lives in `features/nutrition/impl/presentation/src/androidMain/.../`:
+`NutritionUi.kt` lives in `features/mobile/nutrition/impl/presentation/src/androidMain/.../`:
 
 ```
 @CircuitInject(NutritionScreen::class, AppScope::class)
@@ -218,7 +218,7 @@ struct NutritionView: View {
 ### Test Tags
 
 ```kotlin
-// features/nutrition/api/navigation/.../ui/NutritionTestTags.kt
+// features/mobile/nutrition/api/navigation/.../ui/NutritionTestTags.kt
 object NutritionTestTags {
     const val SCREEN = "nutrition_screen"
     const val WEBVIEW = "nutrition_webview"
@@ -239,7 +239,7 @@ iOS bridge: `NutritionTestTags.shared` exposed via the standard KMP NSObject bri
 **MorePresenter wiring**:
 
 ```kotlin
-// features/more/impl/presentation/.../MorePresenter.kt — existing presenter, add nutrition branch
+// features/mobile/more/impl/presentation/.../MorePresenter.kt — existing presenter, add nutrition branch
 is MoreEvent.MenuItemClicked -> {
     val extension = extensionsById[event.id]
     if (extension != null) {
@@ -251,7 +251,7 @@ is MoreEvent.MenuItemClicked -> {
 }
 ```
 
-`features:more:impl:presentation/build.gradle.kts` gains an `implementation(project(":features:nutrition:api:navigation"))` dep so the import resolves.
+`:features:mobile:more:impl:presentation/build.gradle.kts` gains an `implementation(project(":features:mobile:nutrition:api:navigation"))` dep so the import resolves.
 
 This is **not** a `MoreTabExtension` contribution. The `MoreTabExtension` pattern is for features that want to inject themselves into the More menu without `MorePresenter` knowing about them (e.g., debug-menu, which is debug-only). Nutrition is a permanent core entry, so it lives in the hardcoded `MoreRepositoryImpl` menu list and `MorePresenter` routes its id directly — same as Recents.
 
@@ -322,7 +322,7 @@ Then manually edit the three CA `.properties` files to add the `/ca/en-ca/` over
 
 **Imported by**:
 - `composeApp` — graph wiring; the convention plugin auto-discovers via `settings.gradle.kts` glob
-- `features:more:impl:presentation` — imports `features:nutrition:api:navigation` to route `MenuItemClicked(id = "3")` → `goTo(NutritionScreen)`
+- `:features:mobile:more:impl:presentation` — imports `features:nutrition:api:navigation` to route `MenuItemClicked(id = "3")` → `goTo(NutritionScreen)`
 - The future `features/item-detail` would also import `features:nutrition:api:navigation`, but that's a downstream spec
 
 **Page-view tracking**: provided automatically by `composeApp/src/commonMain/.../navigation/AnalyticsNavigationListener.kt` — no per-feature wiring.
@@ -344,7 +344,7 @@ Then manually edit the three CA `.properties` files to add the `/ca/en-ca/` over
 ### Fake (test/ module)
 
 ```kotlin
-// features/nutrition/test/src/commonMain/.../FakeGetNutritionContent.kt
+// features/mobile/nutrition/test/src/commonMain/.../FakeGetNutritionContent.kt
 class FakeGetNutritionContent(
     initial: NutritionContent = DEFAULT,
 ) : GetNutritionContent, /* CenterPostSubjectInteractor base */ {
@@ -488,7 +488,7 @@ module" was clearly cleared in the prior discussion:
   "view full menu" CTA
 
 Scope (in scope):
-- New features/nutrition/ module set with the standard 6-submodule split
+- New features/mobile/nutrition/ module set with the standard 6-submodule split
 - NutritionScreen(itemId: String?) — Circuit Screen, data class
   [SUPERSEDED BY GRILL Q1 — collapsed to data object, no params]
 - NutritionPresenter resolves the URL via a NutritionRepository (which uses build-config

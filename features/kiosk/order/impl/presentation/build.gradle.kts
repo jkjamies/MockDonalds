@@ -10,7 +10,7 @@ kotlin {
             implementation(project(":features:kiosk:order:api:domain"))
             implementation(project(":features:kiosk:order:api:navigation"))
             implementation(project(":features:kiosk:attract:api:navigation"))
-            implementation(project(":features:order:api:domain"))
+            implementation(project(":features:shared:menu:api:domain"))
             implementation(project(":core:centerpost"))
             implementation(project(":core:theme"))
         }

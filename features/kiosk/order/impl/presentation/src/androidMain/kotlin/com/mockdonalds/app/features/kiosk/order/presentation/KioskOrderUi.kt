@@ -41,9 +41,9 @@ import coil3.compose.AsyncImage
 import com.mockdonalds.app.core.theme.MockDimens
 import com.mockdonalds.app.features.kiosk.order.api.navigation.KioskOrderScreen
 import com.mockdonalds.app.features.kiosk.order.api.ui.KioskOrderTestTags
-import com.mockdonalds.app.features.order.api.domain.CartSummary
-import com.mockdonalds.app.features.order.api.domain.MenuCategory
-import com.mockdonalds.app.features.order.api.domain.MenuItem
+import com.mockdonalds.app.features.shared.menu.api.domain.CartSummary
+import com.mockdonalds.app.features.shared.menu.api.domain.MenuCategory
+import com.mockdonalds.app.features.shared.menu.api.domain.MenuItem
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dev.zacsweers.metro.AppScope
 
