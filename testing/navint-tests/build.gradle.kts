@@ -42,9 +42,10 @@ kotlin {
             implementation(project(":core:test-fixtures"))
 
             // Feature modules — real presenters + UI, fake data layer
-            // Auto-discover all features, same as composeApp but with test/ instead of impl/domain + impl/data
+            // Auto-discover all features, same as composeApp but with test/ instead of impl/domain + impl/data.
+            // Kiosk subdir is excluded — kiosk navint coverage will live in its own suite alongside the kiosk host.
             rootDir.resolve("features").listFiles()
-                ?.filter { it.isDirectory }
+                ?.filter { it.isDirectory && it.name != "kiosk" }
                 ?.map { it.name }
                 ?.sorted()
                 ?.forEach { feature ->

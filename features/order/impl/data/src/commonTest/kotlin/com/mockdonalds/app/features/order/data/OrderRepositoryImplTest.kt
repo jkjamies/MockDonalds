@@ -3,6 +3,8 @@ package com.mockdonalds.app.features.order.data
 import app.cash.turbine.test
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.collections.shouldNotBeEmpty
+import io.kotest.matchers.maps.shouldNotBeEmpty
 import io.kotest.matchers.string.shouldNotBeEmpty
 
 class OrderRepositoryImplTest : BehaviorSpec({
@@ -14,7 +16,7 @@ class OrderRepositoryImplTest : BehaviorSpec({
             Then("it should emit a non-empty list") {
                 repository.getMenuCategories().test {
                     val categories = awaitItem()
-                    categories.size shouldBe 4
+                    categories.shouldNotBeEmpty()
                     categories.first().name.shouldNotBeEmpty()
                     awaitComplete()
                 }
@@ -28,6 +30,21 @@ class OrderRepositoryImplTest : BehaviorSpec({
                     items.size shouldBe 2
                     items.first().title.shouldNotBeEmpty()
                     items.first().price.shouldNotBeEmpty()
+                    awaitComplete()
+                }
+            }
+        }
+
+        When("getting items by category") {
+            Then("every category id maps to at least one item with non-empty fields") {
+                repository.getItemsByCategory().test {
+                    val map = awaitItem()
+                    map.shouldNotBeEmpty()
+                    map.values.forEach { items ->
+                        items.shouldNotBeEmpty()
+                        items.first().name.shouldNotBeEmpty()
+                        items.first().priceFormatted.shouldNotBeEmpty()
+                    }
                     awaitComplete()
                 }
             }

@@ -86,3 +86,15 @@ Applied transitively via `mockdonalds.kmp.library`. Configures:
 | core/* | `mockdonalds.kmp.library` | core/circuit, core/theme |
 | core/strings | `mockdonalds.kmp.library` + `mockdonalds.phrase` | core/strings |
 | test modules | `mockdonalds.kmp.domain` | features/home/test |
+
+## BuildVariantResolver
+
+`convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` is the single source of truth for resolving the `(market, env, buildType, appType)` tuple at Gradle configuration time. Resolution chain:
+
+1. Explicit `-Pmarket` / `-Penv` / `-PbuildType` / `-PappType` Gradle properties (used by iOS preBuildScript and CI overrides).
+2. AGP variant task-name parsing — task names like `assembleUsIntDebug` carry market/env/buildType. `appType` detects `:kioskApp:` or `:kioskComposeApp:` substrings to flip to `Kiosk` (otherwise `Consumer`).
+3. Defaults: `us` / `int` / `debug` / `Consumer`.
+
+`core:build-config:impl` and `core:remote-config:impl` both read through this object. When adding a new market or env, update the regex alternation in `BuildVariantResolver` — it is the only place that lives.
+
+> Kiosk integration: `appType(project)` returns `"Kiosk"` whenever `:kioskApp:` or `:kioskComposeApp:` is in the active task list, so `BuildKonfig.APP_TYPE` resolves correctly for kiosk builds. See [`../specs/kiosk-app.md`](../specs/kiosk-app.md).

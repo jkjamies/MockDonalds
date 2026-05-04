@@ -23,8 +23,9 @@ kotlin {
 val market: String = BuildVariantResolver.market(project)
 val env: String = BuildVariantResolver.env(project)
 val buildType: String = BuildVariantResolver.buildType(project)
+val appType: String = BuildVariantResolver.appType(project)
 
-logger.lifecycle("core:build-config:impl → market=$market env=$env buildType=$buildType")
+logger.lifecycle("core:build-config:impl → market=$market env=$env buildType=$buildType appType=$appType")
 
 fun loadProps(path: String): Map<String, String> {
     val f = file(path)
@@ -50,6 +51,7 @@ buildkonfig {
             buildConfigField(STRING, key, value)
         }
         buildConfigField(STRING, "BUILD_TYPE", buildType)
+        buildConfigField(STRING, "APP_TYPE", appType)
     }
 }
 

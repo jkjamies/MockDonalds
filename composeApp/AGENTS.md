@@ -46,7 +46,9 @@ The `build.gradle.kts` auto-discovers feature modules by scanning the `features/
 2. **iOS framework exports** -- Exports `api:domain`, `api:navigation`, and `impl:presentation` for each feature so Swift can access Screen objects, UiState types, and Event classes
 3. **Core exports** -- Exports `:core:circuit` for shared Circuit types (Screen, TabScreen, ProtectedScreen)
 
-Adding a new feature module to `features/` automatically wires it into the app -- no manual dependency edits needed.
+Adding a new consumer feature module to `features/` automatically wires it into the app — no manual dependency edits needed.
+
+> **Kiosk exclusion**: both walks filter out the `features/kiosk/` subdirectory (`it.name != "kiosk"`). Kiosk features live exclusively under `:kioskComposeApp` — see [`../kioskComposeApp/AGENTS.md`](../kioskComposeApp/AGENTS.md) and [`../specs/kiosk-app.md`](../specs/kiosk-app.md). Konsist (`KioskBoundaryTest`) enforces that this filter holds at the import level.
 
 ### iOS-side parallel: `@CircuitInject` auto-registration
 

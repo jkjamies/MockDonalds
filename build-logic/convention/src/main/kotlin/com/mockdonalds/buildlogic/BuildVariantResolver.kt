@@ -48,4 +48,25 @@ object BuildVariantResolver {
         }
         return resolved
     }
+
+    // Resolves which application module is driving the current Gradle invocation.
+    // Detection chain:
+    //   1. Explicit `-PappType=Consumer|Kiosk` — used by CI/CLI overrides.
+    //   2. Task-name inspection — `:kioskApp:` or `kioskApp:` prefix in any task name → Kiosk.
+    //   3. Default — Consumer.
+    fun appType(project: Project): String {
+        val explicit = project.providers.gradleProperty("appType").orNull
+        if (explicit != null) {
+            require(explicit == "Consumer" || explicit == "Kiosk") {
+                "Unknown appType: '$explicit' (expected 'Consumer' or 'Kiosk')"
+            }
+            return explicit
+        }
+        val taskNames = project.gradle.startParameter.taskNames
+        return if (taskNames.any { it.contains(":kioskApp:") || it.startsWith("kioskApp:") || it.contains(":kioskComposeApp:") || it.startsWith("kioskComposeApp:") }) {
+            "Kiosk"
+        } else {
+            "Consumer"
+        }
+    }
 }

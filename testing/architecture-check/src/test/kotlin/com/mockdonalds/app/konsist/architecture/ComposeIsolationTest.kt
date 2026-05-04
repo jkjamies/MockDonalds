@@ -11,9 +11,12 @@ import io.kotest.core.spec.style.BehaviorSpec
  * - core/presentation/...                   — cross-cutting Compose helpers (rememberFlag etc.)
  * - core/theme/...                          — Compose theme
  * - core/circuit/...                        — Compose-aware Circuit integration
- * - composeApp/...                          — KMP Compose entry
- * - androidApp/...                          — Android entry
- * - testing/navint-tests/...                — navigation/integration tests host real Compose UI
+ * - composeApp/...                          — KMP Compose entry (consumer host)
+ * - androidApp/...                          — Android consumer entry
+ * - kioskComposeApp/...                     — KMP Compose entry (kiosk host)
+ * - kioskApp/...                            — Android kiosk entry
+ * - testing/navint-tests/...                — consumer navigation/integration tests host real Compose UI
+ * - testing/kiosk/navint-tests/...          — kiosk navigation/integration tests host real Compose UI
  *
  * Forbidden everywhere else: api/domain, api/navigation, impl/domain, impl/data, feature test/
  * fakes, all non-presentation core modules, and the rest of testing/. Compose creeping into those
@@ -33,7 +36,10 @@ class ComposeIsolationTest : BehaviorSpec({
         "/core/circuit/" to null,
         "/composeApp/" to null,
         "/androidApp/" to null,
+        "/kioskComposeApp/" to null,
+        "/kioskApp/" to null,
         "/testing/navint-tests/" to null,
+        "/testing/kiosk/navint-tests/" to null,
     )
 
     Given("Compose imports across the project") {

@@ -31,9 +31,11 @@ dependencies {
     implementation(libs.androidx.test.runner)
     implementation(libs.androidx.uiautomator)
 
-    // TestTags from feature api/navigation modules (shared accessibility identifiers)
+    // TestTags from feature api/navigation modules (shared accessibility identifiers).
+    // Kiosk subdir is excluded — kiosk e2e is a separate suite living alongside its
+    // own host once kiosk features land.
     val features = rootDir.resolve("features").listFiles()
-        ?.filter { it.isDirectory }
+        ?.filter { it.isDirectory && it.name != "kiosk" }
         ?.map { it.name }
         ?: emptyList()
 

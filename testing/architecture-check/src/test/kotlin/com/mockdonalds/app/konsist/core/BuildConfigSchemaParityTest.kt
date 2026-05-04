@@ -58,7 +58,7 @@ class BuildConfigSchemaParityTest : BehaviorSpec({
         return props.stringPropertyNames()
     }
 
-    val runtimeOnlyKeys = setOf("BUILD_TYPE")
+    val runtimeOnlyKeys = setOf("BUILD_TYPE", "APP_TYPE")
 
     Given("Defaults.properties as the schema source of truth") {
         Then("Defaults.properties must exist") {

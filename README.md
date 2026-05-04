@@ -211,6 +211,28 @@ xcodebuild build -project iosApp/iosApp.xcodeproj -target iosApp \
 | **More** | Settings menu items, profile navigation |
 | **Login** | Email sign-in, social auth (Google, Apple), return-after-auth flow. Implements `FlowScreen` — presented as `.fullScreenCover` on iOS with inner NavigationStack for multi-step auth flows. |
 | **Profile** | User profile (auth-gated via ProtectedScreen) |
+| **Recents** | Recent activity / orders surface, reachable from More |
+| **Nutrition** | Embedded WebView pointing at the per-market McDonald's nutrition calculator |
+| **Debug Menu** | Engineer-facing build-config / feature-flag inspection (debug builds only) |
+
+## Kiosk App
+
+A second Android-only application target (`:kioskApp`) for in-restaurant self-order kiosks ships alongside the consumer app. It reuses the entire `core/*` stack and the menu domain layer of `features/order`, with its own host (`:kioskComposeApp`), DI graph (`ProdKioskAppGraph`), SQLDelight `AppDatabase`, and feature graph under `features/kiosk/{attract, identify, order}`. Konsist enforces compile-time separation between the consumer and kiosk surfaces.
+
+Kiosk-specific docs are kept separated from consumer docs:
+
+- [`specs/kiosk-app.md`](specs/kiosk-app.md) — full spec (architecture, decisions, screens, market matrix, idle reset, test infra).
+- [`features/kiosk/AGENTS.md`](features/kiosk/AGENTS.md) — kiosk feature group overview.
+- [`kioskApp/AGENTS.md`](kioskApp/AGENTS.md), [`kioskComposeApp/AGENTS.md`](kioskComposeApp/AGENTS.md) — host modules.
+- `testing/kiosk/{navint-tests,e2e-tests,benchmarks}/` — kiosk's peer test suites (mirroring the consumer `testing/*/` set).
+
+Kiosk uses the same 30-variant matrix (5 markets × 3 envs × debug/release) as the consumer app — `applicationId` base is `com.mockdonalds.kiosk` (sibling to `com.mockdonalds.app`).
+
+```bash
+./gradlew :kioskApp:assembleUsIntDebug                              # Default kiosk variant
+./gradlew :kioskApp:assembleDeIntDebug                              # Germany kiosk (BuildVariantResolver picks appType=Kiosk via task-name match)
+./gradlew :kioskApp:assemble -PappType=Kiosk -Pmarket=us -Penv=int  # Explicit -P form (CI / scripts)
+```
 
 ## Agentic Automation
 

@@ -49,8 +49,11 @@ kotlin {
             isStatic = true
 
             // Export feature modules for iOS consumption (auto-discovered).
+            // The `kiosk` subdirectory is excluded — kiosk features are hosted
+            // exclusively by `kioskComposeApp` and never ship in the consumer
+            // iOS framework.
             rootDir.resolve("features").listFiles()
-                ?.filter { it.isDirectory }
+                ?.filter { it.isDirectory && it.name != "kiosk" }
                 ?.map { it.name }
                 ?.sorted()
                 ?.forEach { feature ->
@@ -74,8 +77,10 @@ kotlin {
             implementation(compose.components.resources)
 
             // Feature modules (auto-discovered, architecture-enforced wiring).
+            // `kiosk` subdir is excluded — kiosk features are hosted by
+            // kioskComposeApp only.
             rootDir.resolve("features").listFiles()
-                ?.filter { it.isDirectory }
+                ?.filter { it.isDirectory && it.name != "kiosk" }
                 ?.map { it.name }
                 ?.sorted()
                 ?.forEach { feature ->

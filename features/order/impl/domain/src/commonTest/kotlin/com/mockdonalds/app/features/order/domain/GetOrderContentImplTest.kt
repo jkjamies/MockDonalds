@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import com.mockdonalds.app.features.order.api.domain.CartSummary
 import com.mockdonalds.app.features.order.api.domain.FeaturedItem
 import com.mockdonalds.app.features.order.api.domain.MenuCategory
+import com.mockdonalds.app.features.order.api.domain.MenuItem
 import com.mockdonalds.app.features.order.api.domain.OrderContent
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
@@ -32,10 +33,12 @@ class GetOrderContentImplTest : BehaviorSpec({
         val cartSummary = MutableStateFlow(
             CartSummary(itemCount = 1, total = "$10.00"),
         )
+        val itemsByCategory = MutableStateFlow<Map<String, List<MenuItem>>>(emptyMap())
 
         val repository = object : OrderRepository {
             override fun getMenuCategories(): Flow<List<MenuCategory>> = categories
             override fun getFeaturedItems(): Flow<List<FeaturedItem>> = featuredItems
+            override fun getItemsByCategory(): Flow<Map<String, List<MenuItem>>> = itemsByCategory
             override fun getCartSummary(): Flow<CartSummary> = cartSummary
         }
 

@@ -1,0 +1,95 @@
+plugins {
+    id("mockdonalds.kmp.library")
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.metro)
+}
+
+metro {
+    enableCircuitCodegen.set(true)
+}
+
+kotlin {
+    android {
+        namespace = "com.mockdonalds.kiosk.navint"
+
+        withDeviceTest {
+            instrumentationRunner = "com.mockdonalds.kiosk.navint.KioskTestRunner"
+            packaging {
+                resources.excludes.addAll(
+                    listOf(
+                        "META-INF/AL2.0",
+                        "META-INF/LGPL2.1",
+                        "META-INF/LICENSE.md",
+                        "META-INF/LICENSE-notice.md",
+                    )
+                )
+            }
+        }
+    }
+
+    sourceSets {
+        commonMain.dependencies {
+            // Core
+            api(project(":core:metro"))
+            api(project(":core:circuit"))
+            api(project(":core:analytics:test"))
+            api(project(":core:auth:api"))
+            api(project(":core:build-config:test"))
+            api(project(":core:logger:test"))
+            implementation(project(":core:centerpost"))
+            implementation(project(":core:theme"))
+            implementation(project(":core:test-fixtures"))
+
+            // Kiosk feature modules — real presenters + UI, fake data layer.
+            // Auto-discovered from features/kiosk/, mirrors composeApp's pattern
+            // but with test/ instead of impl/domain + impl/data.
+            rootDir.resolve("features/kiosk").listFiles()
+                ?.filter { it.isDirectory }
+                ?.map { it.name }
+                ?.sorted()
+                ?.forEach { feature ->
+                    api(project(":features:kiosk:$feature:api:domain"))
+                    api(project(":features:kiosk:$feature:api:navigation"))
+                    api(project(":features:kiosk:$feature:impl:presentation"))
+                    api(project(":features:kiosk:$feature:test"))
+                }
+
+            // Reused consumer menu domain — real presenters consume `GetOrderContent`,
+            // backed by features/order/test fakes (`FakeGetOrderContent`).
+            api(project(":features:order:api:domain"))
+            api(project(":features:order:api:navigation"))
+            api(project(":features:order:test"))
+
+            // Circuit
+            implementation(libs.circuit.foundation)
+            implementation(libs.circuit.runtime)
+            implementation(libs.circuit.runtime.presenter)
+            implementation(libs.circuit.runtime.ui)
+            implementation(libs.circuit.retained)
+            implementation(libs.circuitx.gesture.navigation)
+
+            // Metro DI
+            implementation(libs.metro.runtime)
+
+            // Compose
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.ui)
+        }
+    }
+}
+
+kotlin.sourceSets.getByName("androidDeviceTest") {
+    dependencies {
+        implementation(libs.compose.ui.test.junit4)
+        implementation(libs.androidx.test.runner)
+        implementation(libs.androidx.compose.material3.windowsizeclass)
+    }
+}
+
+// Compose Multiplatform 1.10.3 doesn't configure outputDirectory for androidDeviceTest resource copy task
+tasks.matching { it.name == "copyAndroidDeviceTestComposeResourcesToAndroidAssets" }.configureEach {
+    enabled = false
+}

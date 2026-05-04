@@ -34,6 +34,10 @@ class AppBuildConfigTest : BehaviorSpec({
                 listOf("debug", "release") shouldContain config.buildType
             }
 
+            Then("appType is one of Consumer or Kiosk") {
+                listOf("Consumer", "Kiosk") shouldContain config.appType
+            }
+
             Then("baseUrl is an https URL") {
                 config.baseUrl shouldNotBe ""
                 config.baseUrl shouldMatch Regex("^https://.+")
@@ -80,6 +84,10 @@ class AppBuildConfigTest : BehaviorSpec({
 
             Then("currency is an ISO-4217 code") {
                 config.currency shouldMatch Regex("^[A-Z]{3}$")
+            }
+
+            Then("phoneCountryDialCode is a + and 1-3 digits") {
+                config.phoneCountryDialCode shouldMatch Regex("^\\+\\d{1,3}$")
             }
         }
     }

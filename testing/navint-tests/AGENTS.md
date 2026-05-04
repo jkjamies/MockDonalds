@@ -1,8 +1,10 @@
-# Navigation + Integration Tests
+# Navigation + Integration Tests (consumer)
 
 ## Purpose
 
-Android instrumented test module that validates cross-feature navigation and state propagation with **real Circuit presenters and fake data layer**. This is the middle layer between unit tests (isolated, fast) and E2E tests (full real app).
+Android instrumented test module that validates cross-feature navigation and state propagation in the **consumer app** with **real Circuit presenters and fake data layer**. The middle layer between unit tests (isolated, fast) and E2E tests (full real app).
+
+> Kiosk has its own peer suite at `:testing:kiosk:navint-tests` — this module's `features/*` walk explicitly excludes the `kiosk` subdirectory. See [`../kiosk/navint-tests/AGENTS.md`](../kiosk/navint-tests/AGENTS.md) and [`../../specs/kiosk-app.md`](../../specs/kiosk-app.md).
 
 ## How It Works
 

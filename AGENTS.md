@@ -44,7 +44,9 @@ core/
 testing/navint-tests/         — Navigation + integration tests (real presenters, fake data, real Circuit)
 testing/e2e-tests/            — End-to-end journey tests + benchmarks (real everything, UI Automator)
 
-Features: home, login, more, order, profile, rewards, scan
+Features (consumer app): `debug-menu`, `home`, `login`, `more`, `nutrition`, `order`, `profile`, `recents`, `rewards`, `scan`
+
+Kiosk app (separate target — see [Kiosk App](#kiosk-app) below): `attract`, `identify`, `order` live under `features/kiosk/`.
 
 ## Architecture Rules
 
@@ -232,6 +234,21 @@ Detailed reference documents in `.agents/standards/`:
 | [feature-scaffolding.md](.agents/standards/feature-scaffolding.md) | Step-by-step guide to add a new feature, checklist |
 | [build-config.md](.agents/standards/build-config.md) | Compile-time market/env config (`core:build-config`): BuildKonfig schema, `AppBuildConfig` facade, Harness boundary, add-a-field workflow |
 | [markets.md](.agents/standards/markets.md) | Cross-cutting market concept: the 5 markets, how each surfaces across Android (applicationId), iOS (bundle ID, xcconfig), CI axis, future localization/analytics/store listings |
+
+## Kiosk App
+
+A second Android-only application target (`:kioskApp`) ships alongside the consumer app for in-restaurant self-order kiosks. It reuses the entire `core/*` stack and the menu domain layer of `features/order`, but lives behind its own host (`:kioskComposeApp`), its own DI graph (`ProdKioskAppGraph`), its own SQLDelight `AppDatabase`, and its own feature graph (`features/kiosk/{attract, identify, order}`). Konsist enforces compile-time separation: consumer host cannot import kiosk features, kiosk host cannot import consumer-only features.
+
+Kiosk-specific docs are kept separated from consumer-app docs:
+
+- [`specs/kiosk-app.md`](specs/kiosk-app.md) — full spec (architecture, decisions, screens, market matrix, idle reset, test infra).
+- [`kioskApp/AGENTS.md`](kioskApp/AGENTS.md) — Android shell module (Application, Activity, manifest).
+- [`kioskComposeApp/AGENTS.md`](kioskComposeApp/AGENTS.md) — KMP host (`MockDonaldsKioskApp` Compose root, `ProdKioskAppGraph`, `KioskIdleTimer`, SQLDelight aggregator).
+- [`features/kiosk/AGENTS.md`](features/kiosk/AGENTS.md) — feature group overview + per-feature children.
+- [`testing/kiosk/navint-tests/AGENTS.md`](testing/kiosk/navint-tests/AGENTS.md), [`testing/kiosk/e2e-tests/AGENTS.md`](testing/kiosk/e2e-tests/AGENTS.md), [`testing/kiosk/benchmarks/AGENTS.md`](testing/kiosk/benchmarks/AGENTS.md) — kiosk's peer test suites.
+- Konsist enforcement of the kiosk boundary: `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/kiosk/KioskBoundaryTest.kt`.
+
+Don't add kiosk feature names or kiosk-flavored variants to the consumer-feature lists in this file. The split is structural, not a naming convention — keep them separated.
 
 ## Self-Updating Documentation
 

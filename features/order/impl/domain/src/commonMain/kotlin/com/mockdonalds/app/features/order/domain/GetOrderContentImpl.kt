@@ -15,11 +15,13 @@ class GetOrderContentImpl(
         return combine(
             repository.getMenuCategories(),
             repository.getFeaturedItems(),
+            repository.getItemsByCategory(),
             repository.getCartSummary(),
-        ) { categories, items, cart ->
+        ) { categories, featured, byCategory, cart ->
             OrderContent(
                 categories = categories,
-                featuredItems = items,
+                featuredItems = featured,
+                itemsByCategory = byCategory,
                 cartSummary = cart,
             )
         }

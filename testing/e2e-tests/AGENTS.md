@@ -1,8 +1,10 @@
-# End-to-End Tests
+# End-to-End Tests (consumer)
 
 ## Purpose
 
-Android instrumented test module that validates full user journeys against the **real app** — real Metro DI graph, real Circuit presenters, real data layer, real network. This is the highest test level, verifying the complete app works as users experience it.
+Android instrumented test module that validates full user journeys against the **real consumer app** — real Metro DI graph, real Circuit presenters, real data layer, real network. The highest test level, verifying the complete app works as users experience it.
+
+> Kiosk has its own peer suite at `:testing:kiosk:e2e-tests` instrumenting against `:kioskApp`. This module's TestTags walk excludes the `features/kiosk/` subdirectory. See [`../kiosk/e2e-tests/AGENTS.md`](../kiosk/e2e-tests/AGENTS.md) and [`../../specs/kiosk-app.md`](../../specs/kiosk-app.md).
 
 ## How It Works
 

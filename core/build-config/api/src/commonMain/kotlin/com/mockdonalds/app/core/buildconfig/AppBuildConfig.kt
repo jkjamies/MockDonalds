@@ -18,6 +18,9 @@ interface AppBuildConfig {
     @DebugConfigField(Group.Identity)
     val buildType: String
 
+    @DebugConfigField(Group.Identity)
+    val appType: String
+
     @DebugConfigField(Group.Urls)
     val baseUrl: String
 
@@ -47,6 +50,10 @@ interface AppBuildConfig {
 
     @DebugConfigField(Group.Localization)
     val currency: String
+
+    @DebugConfigField(Group.Localization)
+    val phoneCountryDialCode: String
 }
 
 val AppBuildConfig.isDebug: Boolean get() = buildType == "debug"
+val AppBuildConfig.isKiosk: Boolean get() = appType == "Kiosk"

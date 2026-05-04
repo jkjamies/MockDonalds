@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+      Kiosk-specific theme. Like the consumer Theme.MockDonalds but with
+      transparent system bars (kiosk hides them entirely via the activity)
+      and the kiosk app name.
+    -->
+    <style name="Theme.MockDonalds.Kiosk" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <!--
+      Splash screen theme using the AndroidX SplashScreen compat library.
+      Same artwork and timing as the consumer app — animated M arches over
+      the deep-obsidian backdrop, then post-splash the activity swaps to
+      Theme.MockDonalds.Kiosk.
+
+      The kiosk hardware always boots straight into this app (single-task
+      lock-task in production), so the splash is the very first thing a
+      guest sees on a freshly-rebooted kiosk; matching the animated arches
+      is the brand cue we want regardless of form factor.
+    -->
+    <style name="Theme.MockDonalds.Kiosk.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/deep_obsidian</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_logo_animated</item>
+        <item name="windowSplashScreenAnimationDuration">1000</item>
+        <item name="postSplashScreenTheme">@style/Theme.MockDonalds.Kiosk</item>
+    </style>
+
+</resources>

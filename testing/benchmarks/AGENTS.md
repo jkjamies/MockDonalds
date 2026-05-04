@@ -1,8 +1,10 @@
-# Macrobenchmarks
+# Macrobenchmarks (consumer)
 
 ## Purpose
 
-Android instrumented macrobenchmark module that measures startup, frame timing, and other runtime performance against a **release-representative (R8-minified) target**. Produces Perfetto traces for regression detection.
+Android instrumented macrobenchmark module that measures startup, frame timing, and other runtime performance against the **consumer app's** release-representative (R8-minified) target. Produces Perfetto traces for regression detection.
+
+> Kiosk has its own peer suite at `:testing:kiosk:benchmarks` targeting `:kioskApp`. See [`../kiosk/benchmarks/AGENTS.md`](../kiosk/benchmarks/AGENTS.md) and [`../../specs/kiosk-app.md`](../../specs/kiosk-app.md).
 
 ## How It Works
 
