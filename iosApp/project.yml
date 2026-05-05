@@ -49,7 +49,6 @@ configs:
 
 fileGroups:
   - Configuration
-  - ../CLAUDE.md
 
 packages:
   KMP-NativeCoroutines:
@@ -59,7 +58,7 @@ packages:
     url: https://github.com/nalexn/ViewInspector.git
     majorVersion: 0.10.0
   RemoteConfigBridge:
-    path: ../core/remote-config/impl/swift
+    path: ../core/remote-config/impl/RemoteConfigBridge
   CircuitMacros:
     path: CircuitMacros
 

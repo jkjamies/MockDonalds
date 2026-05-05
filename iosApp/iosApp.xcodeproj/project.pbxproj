@@ -136,7 +136,6 @@
 		150CD59E086139540505DF6D /* CORE-Int-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "CORE-Int-Debug.xcconfig"; sourceTree = "<group>"; };
 		1AF3C5A20D1D8B5FFA6105E1 /* DebugMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugMenuView.swift; sourceTree = "<group>"; };
 		1DDCBBCAC60BD215B06058CA /* RewardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardsView.swift; sourceTree = "<group>"; };
-		1E02C7D2F4AB4196F0D8F99B /* swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = swift; path = "../core/remote-config/impl/swift"; sourceTree = SOURCE_ROOT; };
 		1EA11E4EC3D33B21EC239698 /* NutritionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionView.swift; sourceTree = "<group>"; };
 		20445B074FA2A57FD5799CA4 /* ProfileStateRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStateRobot.swift; sourceTree = "<group>"; };
 		236744B8615A52FCF06E62CE /* StartupPerformanceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupPerformanceTest.swift; sourceTree = "<group>"; };
@@ -173,6 +172,7 @@
 		5D24EB5EB6939979F9324842 /* NutritionStateRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionStateRobot.swift; sourceTree = "<group>"; };
 		5D64A50286110F80717DCEE7 /* AU-Int-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "AU-Int-Debug.xcconfig"; sourceTree = "<group>"; };
 		5E15AA486EA93D15102E8E45 /* DeepLinkJourneyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkJourneyTest.swift; sourceTree = "<group>"; };
+		61F00048F33C57BE025A9E71 /* RemoteConfigBridge */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RemoteConfigBridge; path = "../core/remote-config/impl/RemoteConfigBridge"; sourceTree = SOURCE_ROOT; };
 		62B7572E1FA45E1825C9080D /* CORE-Mte-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "CORE-Mte-Release.xcconfig"; sourceTree = "<group>"; };
 		649997444C003AB72D398725 /* WelcomeStateRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeStateRobot.swift; sourceTree = "<group>"; };
 		69CE32184CE840B5941B93A9 /* AU-Prod-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "AU-Prod-Release.xcconfig"; sourceTree = "<group>"; };
@@ -219,7 +219,6 @@
 		BD5E9E2442BA96EEA8DE5F89 /* CA-Prod-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "CA-Prod-Release.xcconfig"; sourceTree = "<group>"; };
 		BDBEC196B81E04EAFDBC231A /* ScanStateRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanStateRobot.swift; sourceTree = "<group>"; };
 		BE49D8AEC6C7E9A9CCA52F24 /* AU-Prod-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "AU-Prod-Debug.xcconfig"; sourceTree = "<group>"; };
-		BFA89950C9F2BC4E0F5B490C /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
 		C447A5D47485B5FCFB5B1B82 /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
 		C6036F756AFA6A60ADE3565D /* LoginStateRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginStateRobot.swift; sourceTree = "<group>"; };
 		C63F2828F0B2CAE8F9A01577 /* CA-Mte-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "CA-Mte-Debug.xcconfig"; sourceTree = "<group>"; };
@@ -349,15 +348,6 @@
 			path = iosApp;
 			sourceTree = "<group>";
 		};
-		1F89104FB695BB395DE5803D /* MockDonalds */ = {
-			isa = PBXGroup;
-			children = (
-				BFA89950C9F2BC4E0F5B490C /* CLAUDE.md */,
-			);
-			name = MockDonalds;
-			path = ..;
-			sourceTree = "<group>";
-		};
 		22775EAAC6CB5F60879E9FCE /* Scan */ = {
 			isa = PBXGroup;
 			children = (
@@ -398,7 +388,7 @@
 			isa = PBXGroup;
 			children = (
 				300ED7CB366873400F9C6BB3 /* CircuitMacros */,
-				1E02C7D2F4AB4196F0D8F99B /* swift */,
+				61F00048F33C57BE025A9E71 /* RemoteConfigBridge */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -449,7 +439,6 @@
 				3DD46C25E23D37E35EF5ADF2 /* iosAppBenchmarks */,
 				DDA6207795B385A3B1A9E59C /* iosAppE2ETests */,
 				407F741E7FEBA273A8579B0E /* iosAppTests */,
-				1F89104FB695BB395DE5803D /* MockDonalds */,
 				2BE9D1071031C3FC069C34FC /* Packages */,
 				B1720870E51445F47D3045A0 /* Assets.xcassets */,
 				3666012298E772D226418813 /* Frameworks */,
@@ -963,7 +952,7 @@
 				70ED8E483A5F2D6B21FC96CF /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
 				23783E62FBAF093ECF8DF72C /* XCRemoteSwiftPackageReference "ViewInspector" */,
 				1183E3A2087C19058A5BF3B4 /* XCLocalSwiftPackageReference "CircuitMacros" */,
-				F1E51B110A51F4D735083C29 /* XCLocalSwiftPackageReference "../core/remote-config/impl/swift" */,
+				699067D0A3BC91DCAA4D5577 /* XCLocalSwiftPackageReference "../core/remote-config/impl/RemoteConfigBridge" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 94C98B8B3A2BFC1966447269 /* Products */;
@@ -5932,9 +5921,9 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = CircuitMacros;
 		};
-		F1E51B110A51F4D735083C29 /* XCLocalSwiftPackageReference "../core/remote-config/impl/swift" */ = {
+		699067D0A3BC91DCAA4D5577 /* XCLocalSwiftPackageReference "../core/remote-config/impl/RemoteConfigBridge" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = "../core/remote-config/impl/swift";
+			relativePath = "../core/remote-config/impl/RemoteConfigBridge";
 		};
 /* End XCLocalSwiftPackageReference section */
 
