@@ -8,28 +8,34 @@ import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.slack.circuit.retained.LocalRetainedStateRegistry
-import com.slack.circuit.retained.rememberRetainedStateRegistry
+import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.StateFlow
 
 class CircuitPresenterKotlinBridge<UiState : CircuitUiState>(
     private val presenter: Presenter<UiState>,
-    scope: CoroutineScope = MainScope(),
+    private val scope: CoroutineScope = MainScope(),
 ) {
+    private val retainedStateRegistry = RetainedStateRegistry()
+
     @NativeCoroutinesState
     val state: StateFlow<UiState> = scope.launchMolecule(
         RecompositionMode.Immediate,
     ) {
-        val retainedStateRegistry = rememberRetainedStateRegistry()
-
         withCompositionLocalProvider(
             LocalRetainedStateRegistry provides retainedStateRegistry,
         ) {
             presenter.present()
         }
+    }
+
+    fun cancel() {
+        retainedStateRegistry.forgetUnclaimedValues()
+        scope.cancel()
     }
 }
 

@@ -2,17 +2,29 @@ import SwiftUI
 import ComposeApp
 import KMPNativeCoroutinesAsync
 
-struct CircuitView: View {
-    @State private var state: (any Circuit_runtimeCircuitUiState)?
+@MainActor
+final class CircuitPresenterHolder: ObservableObject {
+    let presenter: CircuitPresenterKotlinBridge<any Circuit_runtimeCircuitUiState>
 
-    private let presenter: CircuitPresenterKotlinBridge<any Circuit_runtimeCircuitUiState>
-    private var content: (any Circuit_runtimeCircuitUiState) -> AnyView
+    init(_ make: () -> CircuitPresenterKotlinBridge<any Circuit_runtimeCircuitUiState>) {
+        self.presenter = make()
+    }
+
+    deinit {
+        presenter.cancel()
+    }
+}
+
+struct CircuitView: View {
+    @StateObject private var holder: CircuitPresenterHolder
+    @State private var state: (any Circuit_runtimeCircuitUiState)?
+    private let content: (any Circuit_runtimeCircuitUiState) -> AnyView
 
     init(
         _ presenter: @autoclosure @escaping () -> CircuitPresenterKotlinBridge<any Circuit_runtimeCircuitUiState>,
         _ content: @escaping (any Circuit_runtimeCircuitUiState) -> AnyView
     ) {
-        self.presenter = presenter()
+        _holder = StateObject(wrappedValue: CircuitPresenterHolder(presenter))
         self.content = content
     }
 
@@ -27,7 +39,7 @@ struct CircuitView: View {
         }
         .task {
             do {
-                let sequence = asyncSequence(for: presenter.stateFlow)
+                let sequence = asyncSequence(for: holder.presenter.stateFlow)
                 for try await state in sequence {
                     self.state = state
                 }

@@ -185,6 +185,46 @@ On Android, `FlowScreen` has no special navigation behavior. The flow screen is 
 
 `ResetRoot`, `SwitchTab`, and `DeepLink` actions dismiss any active flow as a safety measure.
 
+## Bridge Lifecycle & Presenter Retention
+
+`CircuitPresenterKotlinBridge` exposes a `cancel()` that releases the molecule's coroutine scope and calls `RetainedStateRegistry.forgetUnclaimedValues()`. The default `MainScope()` never cancels itself — every bridge that's constructed without a paired `cancel()` leaks its molecule for the lifetime of the process.
+
+**Holder pattern (mandatory)**: every `CircuitPresenterKotlinBridge` construction site MUST be wrapped in a `@StateObject`-backed `CircuitPresenterHolder: ObservableObject` whose `deinit` calls `bridge.cancel()`. The canonical wrapper is `CircuitView` — feature views pass an autoclosure into `CircuitView` rather than constructing bridges directly. Bypassing this pattern leaks molecule coroutines and breaks `rememberRetained` parity with Android.
+
+```swift
+@MainActor
+final class CircuitPresenterHolder: ObservableObject {
+    let presenter: CircuitPresenterKotlinBridge<any Circuit_runtimeCircuitUiState>
+    init(_ make: () -> CircuitPresenterKotlinBridge<any Circuit_runtimeCircuitUiState>) {
+        self.presenter = make()
+    }
+    deinit { presenter.cancel() }
+}
+```
+
+`@StateObject` is initialized exactly once per view-instance lifetime and released when the view leaves the SwiftUI hierarchy. That gives the bridge the same lifetime as the view's residency in `NavigationStack`:
+
+| Event | Outcome |
+|---|---|
+| Push detail screen → list view stays in stack | List's holder/bridge preserved → `rememberRetained` survives |
+| Pop back to list | Same view instance → same bridge → presenter state intact |
+| Re-push the same list screen later | Fresh view instance → fresh bridge → fresh state (matches Android record-per-push semantics) |
+| View leaves the nav stack permanently | `@StateObject` release → holder `deinit` → `bridge.cancel()` → no leak |
+
+### `rememberRetained` vs `rememberSaveable` on iOS
+
+| Use case | iOS support |
+|---|---|
+| State across recomposition | `remember` — works (Compose runtime) |
+| State across navigation back-and-forth | `rememberRetained` — works (holder pattern above) |
+| State across process death (force-quit, OS reclaim, reboot) | NOT supported by design |
+
+There is no `rememberSaveable` parity layer on iOS. The three "process death" scenarios on iOS (OS-initiated background termination, user force-quit, device reboot) are all fresh-app-launch UX, and the state that matters across those — cart, auth, user prefs, market selection — already flows through `core:network` + `core:persistence` (SQLDelight). UI ephemera resetting on a fresh launch is the iOS-native expectation.
+
+If a specific feature later needs to retain UI ephemera across a fresh launch, the per-feature escape hatches are:
+- Persist via `core:persistence` (SQLDelight) — same path as cart/auth.
+- Use SwiftUI's native `@SceneStorage` directly in the affected view — no Kotlin-side serialization plumbing needed.
+
 ## @NativeCoroutinesState for StateFlow Bridging
 
 `CircuitPresenterKotlinBridge.state` is annotated with `@NativeCoroutinesState` (KMP-NativeCoroutines).
