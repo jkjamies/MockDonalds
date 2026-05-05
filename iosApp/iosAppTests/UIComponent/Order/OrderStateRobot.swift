@@ -5,8 +5,8 @@ final class OrderStateRobot: BaseStateRobot<OrderUiState, OrderEvent> {
     override func defaultState() -> OrderUiState {
         OrderUiState(
             categories: [
-                MenuCategory(id: "1", name: "Burgers"),
-                MenuCategory(id: "2", name: "Sides"),
+                MenuCategory(id: "1", name: "Burgers", iconUrl: nil),
+                MenuCategory(id: "2", name: "Sides", iconUrl: nil),
             ],
             selectedCategoryId: "1",
             featuredItems: [
@@ -31,7 +31,7 @@ final class OrderStateRobot: BaseStateRobot<OrderUiState, OrderEvent> {
     func stateWithNoCart() -> OrderUiState {
         OrderUiState(
             categories: [
-                MenuCategory(id: "1", name: "Burgers"),
+                MenuCategory(id: "1", name: "Burgers", iconUrl: nil),
             ],
             selectedCategoryId: "1",
             featuredItems: [

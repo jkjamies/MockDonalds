@@ -78,16 +78,24 @@ kotlin {
             implementation(compose.components.resources)
 
             // Consumer feature modules — pick up every Gradle submodule under
-            // `features/{mobile,shared}/`. The host is an app entry point with no
-            // transitive consumers, so `implementation` for all is fine — the
-            // api/implementation distinction would only matter for libraries that
-            // re-expose their deps. test/ is consumed by `:testing:mobile:navint-tests`,
+            // `features/{mobile,shared}/`. Modules that are also `export`-ed for the
+            // iOS framework MUST be declared as `api(...)` (Kotlin's binary-compat
+            // check fails the framework link otherwise). Everything else is
+            // `implementation(...)`. test/ is consumed by `:testing:mobile:navint-tests`,
             // not the host. Kiosk features stay with `:kioskComposeApp`.
             listOf("mobile", "shared").forEach { grouping ->
                 rootDir.resolve("features/$grouping").walkTopDown()
                     .filter { dir -> dir.isDirectory && dir.resolve("build.gradle.kts").exists() }
                     .filter { !it.relativeTo(rootDir).path.endsWith("/test") }
-                    .forEach { implementation(project(":" + it.relativeTo(rootDir).path.replace("/", ":"))) }
+                    .forEach { dir ->
+                        val rel = dir.relativeTo(rootDir).path
+                        val path = ":" + rel.replace("/", ":")
+                        if (rel.contains("/api/") || rel.endsWith("/impl/presentation")) {
+                            api(project(path))
+                        } else {
+                            implementation(project(path))
+                        }
+                    }
             }
 
             // Core

@@ -18,6 +18,9 @@ final class TestConventionsTest: XCTestCase {
 
     private lazy var testScope: HarmonizeScope = Harmonize.testCode()
 
+    private lazy var navIntScope: HarmonizeScope = Harmonize.testCode()
+        .on("iosApp/iosAppTests/NavInt")
+
     // MARK: - Coverage
 
     func testEveryViewHasAViewTest() {
@@ -541,8 +544,7 @@ final class TestConventionsTest: XCTestCase {
     // MARK: - NavInt Test Conventions
 
     func testNavIntTestsAreSuiteStructs() {
-        let navIntTests = testScope.structs()
-            .filter { $0.name.hasSuffix("NavigationTest") || $0.name == "NavigationStateManagerTest" || $0.name == "TabSwitchingTest" || $0.name == "DeepLinkNavigationTest" }
+        let navIntTests = navIntScope.structs()
 
         guard navIntTests.isNotEmpty else { return }
 
@@ -557,8 +559,7 @@ final class TestConventionsTest: XCTestCase {
     }
 
     func testNavIntTestsAreMainActor() {
-        let navIntTests = testScope.structs()
-            .filter { $0.name.hasSuffix("NavigationTest") || $0.name == "NavigationStateManagerTest" || $0.name == "TabSwitchingTest" || $0.name == "DeepLinkNavigationTest" }
+        let navIntTests = navIntScope.structs()
 
         guard navIntTests.isNotEmpty else { return }
 
@@ -573,15 +574,7 @@ final class TestConventionsTest: XCTestCase {
     }
 
     func testNavIntTestsDoNotImportViewInspector() {
-        let navIntSources = testScope.sources()
-            .filter { source in
-                source.structs().contains(where: {
-                    $0.name.hasSuffix("NavigationTest") ||
-                    $0.name == "NavigationStateManagerTest" ||
-                    $0.name == "TabSwitchingTest" ||
-                    $0.name == "DeepLinkNavigationTest"
-                })
-            }
+        let navIntSources = navIntScope.sources()
 
         let violators = navIntSources.filter { $0.source.contains("import ViewInspector") }
 
@@ -592,15 +585,7 @@ final class TestConventionsTest: XCTestCase {
     }
 
     func testNavIntTestsDoNotImportFeatureRobots() {
-        let navIntSources = testScope.sources()
-            .filter { source in
-                source.structs().contains(where: {
-                    $0.name.hasSuffix("NavigationTest") ||
-                    $0.name == "NavigationStateManagerTest" ||
-                    $0.name == "TabSwitchingTest" ||
-                    $0.name == "DeepLinkNavigationTest"
-                })
-            }
+        let navIntSources = navIntScope.sources()
 
         let featureRobotNames = ["HomeViewRobot", "LoginViewRobot", "OrderViewRobot",
                                  "RewardsViewRobot", "ScanViewRobot", "MoreViewRobot",

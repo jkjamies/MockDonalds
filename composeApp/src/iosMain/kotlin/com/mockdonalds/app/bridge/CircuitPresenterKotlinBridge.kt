@@ -15,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.isActive
 
 class CircuitPresenterKotlinBridge<UiState : CircuitUiState>(
     private val presenter: Presenter<UiState>,
@@ -32,6 +33,8 @@ class CircuitPresenterKotlinBridge<UiState : CircuitUiState>(
             presenter.present()
         }
     }
+
+    val isActive: Boolean get() = scope.isActive
 
     fun cancel() {
         retainedStateRegistry.forgetUnclaimedValues()

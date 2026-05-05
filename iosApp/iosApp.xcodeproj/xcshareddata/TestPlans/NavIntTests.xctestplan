@@ -21,7 +21,9 @@
         "NavigationStateManagerTest",
         "TabSwitchingTest",
         "DeepLinkNavigationTest",
-        "AuthFlowNavigationTest"
+        "AuthFlowNavigationTest",
+        "DebugMenuNavigationTest",
+        "PresenterRetentionTest"
       ],
       "target" : {
         "containerPath" : "container:iosApp.xcodeproj",

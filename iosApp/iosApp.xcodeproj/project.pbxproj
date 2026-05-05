@@ -36,6 +36,7 @@
 		5509B7258717ACDE60136567 /* AppIconForeground.png in Resources */ = {isa = PBXBuildFile; fileRef = A9F2DB67645546F2662250AF /* AppIconForeground.png */; };
 		570F45213EF71355FD402BEC /* WelcomeViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563C81E44CA5F0FBD4C102CE /* WelcomeViewTest.swift */; };
 		5D0C8999610310D3724CBD88 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9525FA09F3DF3E4B035DE2DD /* WebView.swift */; };
+		610E1B2165A1065854FDAC86 /* PresenterRetentionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F12FF39C738CEFCDCD5CCEFE /* PresenterRetentionTest.swift */; };
 		6135A6BF56DBB3F75E9B5BFB /* StateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFF33FB51AA42C12A5D12273 /* StateRobot.swift */; };
 		6394272874975638D8DAA026 /* NutritionViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = B16954652FF6564CF77F44FD /* NutritionViewRobot.swift */; };
 		6533BBB376DB768E004FDF71 /* OrderViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D13E1A5E73407A119485C5A4 /* OrderViewRobot.swift */; };
@@ -237,6 +238,7 @@
 		EDEAFBC0A9A7E027934A6EE7 /* MockDonaldsTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDonaldsTheme.swift; sourceTree = "<group>"; };
 		EE8A27DFA24EC01CCE58A089 /* AuthFlowNavigationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthFlowNavigationTest.swift; sourceTree = "<group>"; };
 		EF8230EA110BD42922302F20 /* CircuitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircuitView.swift; sourceTree = "<group>"; };
+		F12FF39C738CEFCDCD5CCEFE /* PresenterRetentionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresenterRetentionTest.swift; sourceTree = "<group>"; };
 		F25C263997D7E32D39F4A95D /* SwiftAkamaiSensorBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftAkamaiSensorBridge.swift; sourceTree = "<group>"; };
 		F752EA9AEDE7F166CD503D1D /* iosAppBenchmarks.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = iosAppBenchmarks.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA2126ADD2C87A8C074E8276 /* US-Int-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "US-Int-Release.xcconfig"; sourceTree = "<group>"; };
@@ -405,6 +407,7 @@
 			isa = PBXGroup;
 			children = (
 				EE8A27DFA24EC01CCE58A089 /* AuthFlowNavigationTest.swift */,
+				F12FF39C738CEFCDCD5CCEFE /* PresenterRetentionTest.swift */,
 			);
 			path = Integration;
 			sourceTree = "<group>";
@@ -1117,6 +1120,7 @@
 				6533BBB376DB768E004FDF71 /* OrderViewRobot.swift in Sources */,
 				A85AE0B79BC7BC4BBF179C00 /* OrderViewTest.swift in Sources */,
 				C08659A09878F2140B96A954 /* PlaceholderUnitTest.swift in Sources */,
+				610E1B2165A1065854FDAC86 /* PresenterRetentionTest.swift in Sources */,
 				75E8E8DDDD2B50B94CBF67AC /* ProfileStateRobot.swift in Sources */,
 				29358C24D75E87465DF77853 /* ProfileViewRobot.swift in Sources */,
 				93FA73BD49EABDD9CB20974D /* ProfileViewTest.swift in Sources */,

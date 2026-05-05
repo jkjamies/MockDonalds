@@ -202,6 +202,8 @@ final class CircuitPresenterHolder: ObservableObject {
 }
 ```
 
+The bridge exposes `val isActive: Boolean get() = scope.isActive` for diagnostic / test use — `false` after `cancel()` runs. The retention contract is exercised by `PresenterRetentionTest` in `iosApp/iosAppTests/NavInt/Integration/`.
+
 `@StateObject` is initialized exactly once per view-instance lifetime and released when the view leaves the SwiftUI hierarchy. That gives the bridge the same lifetime as the view's residency in `NavigationStack`:
 
 | Event | Outcome |
