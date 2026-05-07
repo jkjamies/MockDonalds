@@ -115,6 +115,12 @@ api ← impl/presentation
 - Presenter tests must test event handling, not just initial state
 - UI tests must verify interactions, not just rendering
 
+## Ways Of Working
+
+> Full details: [`.agents/standards/ways-of-working.md`](.agents/standards/ways-of-working.md)
+
+Use local `specs/` files for non-trivial agent work so requirements, progress, verification, and next steps survive handoff. These specs are local task memory and should not be committed by default; promote them to durable Confluence documentation only with explicit user confirmation.
+
 ## Verification — ALWAYS RUN AFTER CODE CHANGES
 
 > Full details: [`.agents/standards/verification.md`](.agents/standards/verification.md)
@@ -147,7 +153,7 @@ xcodebuild test -scheme iOSApp -testPlan E2ETests -destination '...'            
 
 ## Skills
 
-Available automation in `.agents/skills/` (30 skills total). All scaffolding and modification skills accept optional context via `@file` spec reference or inline description — see `.agents/templates/` for spec templates.
+Available automation lives in `.agents/skills/`. All scaffolding and modification skills accept optional context via `@file` spec reference or inline description — see `.agents/templates/` for spec templates.
 
 ### Verification & Quality
 
@@ -164,6 +170,12 @@ Available automation in `.agents/skills/` (30 skills total). All scaffolding and
 | `summarize` | Project/feature/module overview with android/ios platform scope |
 | `reverse-spec` | Reverse-engineer a spec from existing code — presumed AC, data flow, contracts |
 | `profile` | Perfetto/Macrobenchmark (Android) + Instruments (iOS) benchmarking and tracing |
+
+### Documentation
+
+| Skill | Description |
+|-------|-------------|
+| `create-confluence-documentation` | Promote a local `specs/` file into product or engineering Confluence docs after explicit confirmation |
 
 ### Test Generation
 

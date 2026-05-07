@@ -11,7 +11,11 @@ import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.presenterTestOf
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runCurrent
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class IdentifyPresenterTest : BehaviorSpec({
 
     Given("a kiosk identify presenter with default fakes") {
@@ -19,7 +23,8 @@ class IdentifyPresenterTest : BehaviorSpec({
         val byPhone = FakeIdentifyByPhoneNumber()
         val byQr = FakeIdentifyByQrCode()
         val asGuest = FakeContinueAsGuest()
-        val dispatchers = TestCenterPostDispatchers()
+        val testDispatcher = StandardTestDispatcher()
+        val dispatchers = TestCenterPostDispatchers(testDispatcher)
         val screen = IdentifyScreen(next = null)
         val navigator = FakeNavigator(screen)
 
@@ -97,9 +102,16 @@ class IdentifyPresenterTest : BehaviorSpec({
                 ) {
                     val initial = awaitItem()
                     initial.eventSink(IdentifyEvent.SkipPressed)
+                    // runCurrent (not advanceUntilIdle) drives ready tasks at the current
+                    // virtual time without advancing the clock. CenterPostInteractor.invoke
+                    // wraps doWork in withTimeout(5.minutes); advanceUntilIdle would jump
+                    // virtual time to the timeout mark and fire it before release() lands,
+                    // turning a Success path into a synthetic Failure.
+                    testDispatcher.scheduler.runCurrent()
                     var state = awaitItem()
                     while (!state.isSubmitting) state = awaitItem()
                     state.isSubmitting shouldBe true
+                    testDispatcher.scheduler.runCurrent()
                 }
             }
         }

@@ -41,6 +41,9 @@ CLAUDE.md
 .gemini/
 GEMINI.md
 
+# Agent task/spec memory
+specs/
+
 # OS
 .DS_Store
 Thumbs.db

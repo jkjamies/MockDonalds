@@ -28,6 +28,8 @@ The `templates/` directory contains spec templates that provide structured input
 
 When a spec is provided via `@file`, the skill extracts parameters (feature name, screen name, etc.) from the spec's Overview section — no need to pass them as arguments.
 
+For non-trivial agent work, maintain a local task spec under `specs/` before implementation. `specs/` is ignored by default and should not be committed unless the user explicitly asks to make a specific spec durable. See `standards/ways-of-working.md` for status values, handoff requirements, and Confluence promotion rules.
+
 ## Skills
 
 ### How Skills Work
@@ -57,6 +59,7 @@ Skills are invoked by name when an agent needs to perform a specific task. The `
 #### Spec Generation
 - `ac-to-spec` — convert acceptance criteria, Jira tickets, Gherkin, or PRDs into a structured spec template (writes spec file)
 - `reverse-spec` — reverse-engineer a spec from existing code (presumed AC, data flow, contracts) (read-only)
+- `create-confluence-documentation` — promote a local `specs/` file into product or engineering Confluence documentation after explicit confirmation
 
 #### Code Quality (read-only)
 - `code-review` — diff-based review against default branch

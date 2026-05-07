@@ -1,9 +1,91 @@
 # Ways of Working
 
+Agent work should leave the repo easier for the next agent and the next human to understand. Use local specs for non-trivial work, keep project guidance current, and promote only the documentation that the team explicitly wants to keep.
+
+## Local Task Specs
+
+For non-trivial agent work, create or update a local Markdown file under `specs/` before implementation. "Non-trivial" means the work touches multiple files or platforms, changes behavior, has unclear acceptance criteria, requires staged verification, or may need to be resumed later.
+
+`specs/` is local agent task/spec memory. It is ignored by default and should not be committed unless the user explicitly asks to make a specific spec durable. Existing tracked files under `specs/` are intentional documentation exceptions; do not add new tracked specs by accident.
+
+Use a local spec to capture:
+- user intent and acceptance criteria
+- affected KMP/CMP layers and platform surfaces
+- implementation status and next steps
+- verification commands, results, and gaps
+- decisions that should survive context compaction
+
+### Status Values
+
+Use one of these status values:
+
+| Status | Meaning |
+|--------|---------|
+| `draft` | Requirements are still being shaped. Do not implement from this without judgment. |
+| `ready` | Requirements are clear enough to implement. |
+| `in_progress` | Implementation or verification is actively underway. |
+| `partial` | Some work is complete, but known scope remains. |
+| `blocked` | Progress requires user input, credentials, device/simulator availability, or another dependency. |
+| `complete` | Implementation and required verification are done, or the user accepted the remaining gaps. |
+
+When useful, track implementation state and verification state separately. For example, a task can be `implementation: complete` while `verification: blocked` because an Android emulator or iOS simulator is unavailable.
+
+### Lightweight Spec Template
+
+```markdown
+# <!-- Short task name -->
+
+**Status**: draft
+**Implementation**: draft
+**Verification**: not_started
+**Last updated**: <!-- YYYY-MM-DD -->
+
+## Summary
+<!-- One paragraph describing the requested outcome and why it matters. -->
+
+## Scope
+<!-- List the features, core modules, app hosts, Android/iOS surfaces, and docs expected to change. -->
+
+## Requirements And Acceptance Criteria
+<!-- Prefer observable behavior. Include platform-specific expectations when Android, iOS, shared Kotlin, or Compose Multiplatform differ. -->
+
+- [ ] <!-- Acceptance criterion -->
+
+## Implementation Plan
+<!-- Keep this lightweight. Note layer order, key files, migration concerns, and any risky assumptions. -->
+
+## Decisions
+<!-- Record decisions that should survive context compaction or handoff. -->
+
+## Progress
+<!-- Update before stopping. Mention completed edits and remaining work. -->
+
+## Verification
+<!-- Commands run, results, failures, skipped checks, and why. -->
+
+## Next Step
+<!-- The single next action another agent or human should take. -->
+```
+
+Before stopping, update the local spec's status, progress, verification, and next step. Do this even when blocked so the next agent can resume without rediscovery.
+
+### Completion And Promotion
+
+When work completes and used a local `specs/` file, ask the user whether to promote it into durable team documentation. If the answer is yes, invoke `create-confluence-documentation` with the `specs/` file path.
+
+Do not publish to Confluence without explicit user confirmation of:
+- destination
+- title
+- audience
+- update mode, when an existing page may be touched
+- publish intent
+
+If confirmation or access is missing, draft cleaned Markdown for review instead of publishing.
+
 ## Contribution Workflow
 
 1. **Branch** from `main` with a descriptive name (e.g., `feature/rewards-history`, `fix/login-redirect`)
-2. **Spec** (optional) — convert PM requirements into a structured spec using `ac-to-spec`, then feed the spec to implementation skills
+2. **Spec** — create or update a local `specs/` file for non-trivial work; convert PM requirements using `ac-to-spec` when useful, then feed the spec to implementation skills
 3. **Scaffold** using skills if adding structural elements (add-feature, add-screen, add-use-case, add-repository)
 3. **Implement** business logic, UI, and tests following architecture rules in root AGENTS.md
 4. **Verify** using the `verify` skill — `diff` for iterative work, `full` before pushing, `all` before opening a PR
@@ -43,6 +125,7 @@ Skills live in `.agents/skills/` with a `SKILL.md` file each. Invoke by name.
 |-------|-------------|
 | `ac-to-spec` | Convert PM artifacts (Gherkin, Jira, PRD) into a structured spec file for implementation skills |
 | `reverse-spec` | Reverse-engineer a spec from existing code for documentation or pre-refactor baseline (read-only) |
+| `create-confluence-documentation` | Promote a local `specs/` file into product or engineering Confluence documentation after explicit confirmation |
 
 ### Code Quality (read-only)
 | Skill | When to Use |
