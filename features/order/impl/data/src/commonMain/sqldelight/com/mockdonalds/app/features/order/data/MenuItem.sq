@@ -1,0 +1,31 @@
+CREATE TABLE cachedMenuItem (
+    id TEXT NOT NULL,
+    categoryId TEXT NOT NULL,
+    title TEXT NOT NULL,
+    restaurantChain TEXT NOT NULL,
+    imageUrl TEXT NOT NULL,
+    servingSize TEXT,
+    cachedAt INTEGER NOT NULL,
+    PRIMARY KEY (id, categoryId)
+);
+
+CREATE INDEX cachedMenuItem_categoryId ON cachedMenuItem(categoryId);
+
+selectByCategory:
+SELECT * FROM cachedMenuItem WHERE categoryId = :categoryId ORDER BY rowid ASC;
+
+selectFirstByCategory:
+SELECT * FROM cachedMenuItem WHERE categoryId = :categoryId ORDER BY rowid ASC LIMIT 1;
+
+countByCategory:
+SELECT COUNT(*) FROM cachedMenuItem WHERE categoryId = :categoryId;
+
+oldestCachedAtByCategory:
+SELECT MIN(cachedAt) AS oldestCachedAt FROM cachedMenuItem WHERE categoryId = :categoryId;
+
+insertItem:
+INSERT OR REPLACE INTO cachedMenuItem(id, categoryId, title, restaurantChain, imageUrl, servingSize, cachedAt)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+deleteByCategory:
+DELETE FROM cachedMenuItem WHERE categoryId = :categoryId;

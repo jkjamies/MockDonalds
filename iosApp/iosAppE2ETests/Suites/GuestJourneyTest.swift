@@ -24,7 +24,7 @@ final class GuestJourneyTest: XCTestCase {
 
         // Order tab
         robot.tapTab("ORDER")
-        robot.assertElementDisplayed("OrderFeaturedItemsSection")
+        robot.assertElementDisplayed("OrderCategoryPreviewCard-burgers")
 
         // Rewards tab
         robot.tapTab("REWARDS")

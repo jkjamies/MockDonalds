@@ -22,7 +22,7 @@ class DeepLinkJourneyTest {
     @Test
     fun deepLinkToOrderScreen() {
         robot.launchWithDeepLink("mockdonalds://app/order")
-        robot.assertElementDisplayed(OrderTestTags.FEATURED_ITEMS_SECTION)
+        robot.assertElementDisplayed("${OrderTestTags.CATEGORY_PREVIEW_CARD}-burgers")
     }
 
     @Test

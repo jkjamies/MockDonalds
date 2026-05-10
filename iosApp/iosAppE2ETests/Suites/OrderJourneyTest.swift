@@ -1,7 +1,7 @@
 import XCTest
 
-/// Order journey — navigate to order, browse categories, and interact
-/// with featured items. Verifies the ordering flow renders correctly.
+/// Order journey — navigate to order, browse categories, and verify the
+/// vertical category-list layout renders correctly.
 final class OrderJourneyTest: XCTestCase {
 
     private let robot = AppRobot()
@@ -16,12 +16,12 @@ final class OrderJourneyTest: XCTestCase {
         robot.assertElementDisplayed("HomeUserName")
 
         robot.tapTab("ORDER")
-        robot.assertElementDisplayed("OrderFeaturedItemsSection")
+        robot.assertElementDisplayed("OrderCategoryPreviewCard-burgers")
     }
 
     func testReturnToHomeFromOrder() {
         robot.tapTab("ORDER")
-        robot.assertElementDisplayed("OrderFeaturedItemsSection")
+        robot.assertElementDisplayed("OrderCategoryPreviewCard-burgers")
 
         robot.tapTab("HOME")
         robot.assertElementDisplayed("HomeUserName")

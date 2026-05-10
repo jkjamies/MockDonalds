@@ -50,8 +50,8 @@ fun MorePresenter(
                         extension.onClick(navigator)
                     } else {
                         when (event.id) {
-                            "1" -> navigator.goTo(RecentsScreen)
-                            "3" -> navigator.goTo(NutritionScreen)
+                            "recents" -> navigator.goTo(RecentsScreen)
+                            "nutrition" -> navigator.goTo(NutritionScreen)
                         }
                     }
                 }

@@ -21,8 +21,8 @@ struct DebugMenuView: View {
                 }
             }
             .padding(MockDimens.spacingMd)
+            .accessibilityIdentifier(tags.ENTRY_LIST)
         }
-        .accessibilityIdentifier(tags.ENTRY_LIST)
         .background(colors.background)
         .accessibilityIdentifier(tags.ROOT)
         .navigationTitle("Debug Menu")

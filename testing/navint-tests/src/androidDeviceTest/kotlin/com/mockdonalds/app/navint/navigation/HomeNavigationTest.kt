@@ -49,7 +49,7 @@ class HomeNavigationTest {
             root = OrderScreen,
         )
 
-        rule.onNodeWithTag(OrderTestTags.FEATURED_ITEMS_SECTION).assertIsDisplayed()
+        rule.onNodeWithTag("${OrderTestTags.CATEGORY_PREVIEW_CARD}-burgers").assertIsDisplayed()
     }
 
     @Test
@@ -79,6 +79,6 @@ class HomeNavigationTest {
         }
 
         rule.waitForIdle()
-        rule.onNodeWithTag(OrderTestTags.FEATURED_ITEMS_SECTION).assertIsDisplayed()
+        rule.onNodeWithTag("${OrderTestTags.CATEGORY_PREVIEW_CARD}-burgers").assertIsDisplayed()
     }
 }

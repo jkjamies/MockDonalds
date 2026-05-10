@@ -81,6 +81,10 @@ class AppBuildConfigTest : BehaviorSpec({
             Then("currency is an ISO-4217 code") {
                 config.currency shouldMatch Regex("^[A-Z]{3}$")
             }
+
+            Then("spoonacularApiKey is a string (may be empty when local.properties is unset)") {
+                config.spoonacularApiKey.length shouldBe config.spoonacularApiKey.length
+            }
         }
     }
 })

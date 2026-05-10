@@ -1,18 +1,25 @@
 package com.mockdonalds.app.features.order.api.domain
 
-data class MenuCategory(
-    val id: String,
-    val name: String,
-)
-
-data class FeaturedItem(
+data class MenuItem(
     val id: String,
     val title: String,
-    val price: String,
-    val description: String,
+    val restaurantChain: String,
     val imageUrl: String,
-    val tag: String,
-    val isPrimary: Boolean,
+    val servingSize: String?,
+    val categoryId: String,
+)
+
+data class CategoryPreview(
+    val id: String,
+    val name: String,
+    val firstItemImageUrl: String?,
+    val itemCount: Int,
+)
+
+data class CategoryDetailContent(
+    val categoryId: String,
+    val categoryName: String,
+    val items: List<MenuItem>,
 )
 
 data class CartSummary(
@@ -21,7 +28,6 @@ data class CartSummary(
 )
 
 data class OrderContent(
-    val categories: List<MenuCategory>,
-    val featuredItems: List<FeaturedItem>,
+    val categoryPreviews: List<CategoryPreview>,
     val cartSummary: CartSummary,
 )

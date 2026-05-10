@@ -24,11 +24,11 @@ class MoreRepositoryImpl : MoreRepository {
 
     override fun getMenuItems(): Flow<List<MoreMenuItem>> = flowOf(
         listOf(
-            MoreMenuItem(id = "1", icon = "🕒", title = "Recents"),
-            MoreMenuItem(id = "2", icon = "📍", title = "Locations"),
-            MoreMenuItem(id = "3", icon = "🥗", title = "Nutrition"),
-            MoreMenuItem(id = "4", icon = "❓", title = "Help"),
-            MoreMenuItem(id = "5", icon = "💼", title = "Careers"),
+            MoreMenuItem(id = "recents", icon = "🕒", title = "Recents"),
+            MoreMenuItem(id = "locations", icon = "📍", title = "Locations"),
+            MoreMenuItem(id = "nutrition", icon = "🥗", title = "Nutrition"),
+            MoreMenuItem(id = "help", icon = "❓", title = "Help"),
+            MoreMenuItem(id = "careers", icon = "💼", title = "Careers"),
         ),
     )
 }

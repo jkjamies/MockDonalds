@@ -18,29 +18,16 @@ class OrderUiTest {
     }
 
     @Test
-    fun rendersLandscapeLayout() {
-        robot.setLandscapeContent()
-        robot.assertLandscapeScreen()
-    }
-
-    @Test
     fun rendersWithNoCart() {
         robot.setContentWithNoCart()
         robot.assertScreenWithNoCart()
     }
 
     @Test
-    fun categoryChipEmitsEvent() {
+    fun categoryPreviewEmitsEvent() {
         robot.setDefaultContent()
-        robot.tapCategoryChip("2")
-        robot.assertLastEvent(OrderEvent.CategorySelected("2"))
-    }
-
-    @Test
-    fun addToOrderEmitsEvent() {
-        robot.setDefaultContent()
-        robot.tapAddToOrder("1")
-        robot.assertLastEvent(OrderEvent.AddToOrder("1"))
+        robot.tapCategoryPreview("drinks")
+        robot.assertLastEvent(OrderEvent.CategoryTapped("drinks"))
     }
 
     @Test

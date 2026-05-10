@@ -13,13 +13,11 @@ class GetOrderContentImpl(
 ) : GetOrderContent() {
     override fun createObservable(params: Unit): Flow<OrderContent> {
         return combine(
-            repository.getMenuCategories(),
-            repository.getFeaturedItems(),
+            repository.getCategoryPreviews(),
             repository.getCartSummary(),
-        ) { categories, items, cart ->
+        ) { previews, cart ->
             OrderContent(
-                categories = categories,
-                featuredItems = items,
+                categoryPreviews = previews,
                 cartSummary = cart,
             )
         }

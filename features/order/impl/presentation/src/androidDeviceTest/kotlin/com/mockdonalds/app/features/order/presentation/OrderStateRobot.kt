@@ -2,29 +2,16 @@ package com.mockdonalds.app.features.order.presentation
 
 import com.mockdonalds.app.core.test.StateRobot
 import com.mockdonalds.app.features.order.api.domain.CartSummary
-import com.mockdonalds.app.features.order.api.domain.FeaturedItem
-import com.mockdonalds.app.features.order.api.domain.MenuCategory
+import com.mockdonalds.app.features.order.api.domain.CategoryPreview
 
 class OrderStateRobot : StateRobot<OrderUiState, OrderEvent>() {
 
     override fun defaultState() = OrderUiState(
-        categories = listOf(
-            MenuCategory(id = "1", name = "Burgers"),
-            MenuCategory(id = "2", name = "Sides"),
+        categoryPreviews = listOf(
+            CategoryPreview(id = "burgers", name = "Burgers", firstItemImageUrl = null, itemCount = 2),
+            CategoryPreview(id = "drinks", name = "Drinks", firstItemImageUrl = null, itemCount = 0),
         ),
-        selectedCategoryId = "1",
-        featuredItems = listOf(
-            FeaturedItem(
-                id = "1",
-                title = "Big Mac",
-                price = "$5.99",
-                description = "Two patties, special sauce",
-                imageUrl = "",
-                tag = "POPULAR",
-                isPrimary = true,
-            ),
-        ),
-        cartSummary = CartSummary(itemCount = 2, total = "$12.99"),
+        cartSummary = CartSummary(itemCount = 2, total = "\$12.99"),
         eventSink = createEventSink(),
     )
 
@@ -33,8 +20,8 @@ class OrderStateRobot : StateRobot<OrderUiState, OrderEvent>() {
         eventSink = createEventSink(),
     )
 
-    fun stateWithEmptyMenu() = defaultState().copy(
-        featuredItems = emptyList(),
+    fun stateWithEmptyPreviews() = defaultState().copy(
+        categoryPreviews = emptyList(),
         eventSink = createEventSink(),
     )
 }
