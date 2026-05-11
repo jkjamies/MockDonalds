@@ -27,6 +27,27 @@ When the user provides a spec via `@file`, scan it for unresolved markers before
 
 The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before producing output, so a marker-laden spec usually means the spec was hand-authored from a template or has gone stale. Skip the pre-flight only if the user explicitly says "skip the grill" — in that case, surface unresolved markers as `// TODO` comments in the generated code and call them out in the final summary.
 
+## Pre-flight: Subagent dispatch (greenfield convention survey)
+
+Even for new features, dispatch one `Explore` agent BEFORE step 1 below to map the existing patterns the new feature must match. This catches drift between the scaffold and current conventions (recent test-tag formats, new `core:` modules, updated convention plugins, the most-recently-added feature's AGENTS.md shape). New features land 6+ modules and 9+ files — exactly the surface where pre-flight pays off.
+
+**Recommended prompt template:**
+
+```
+Survey existing features as the canonical reference for scaffolding a new
+feature `{name}` with primary screen `{Screen}`. Report:
+- Full file structure of `features/order/` (use as the canonical reference) —
+  every file and a 1-line purpose.
+- Convention plugin assignments — which plugin each impl/* module declares.
+- The most-recently-added feature's AGENTS.md shape — sections in order.
+- Any `.agents/standards/*.md` files updated in the last 30 days that affect
+  feature scaffolding (specifically: feature-scaffolding.md,
+  naming-conventions.md, dependency-injection.md).
+Report findings as a checklist of what the new feature must match.
+```
+
+See `.agents/standards/ways-of-working.md` → "When to Spawn Subagents". Skip only if the feature is an intentional one-file proof-of-concept.
+
 ## Reference Standards
 
 - Architecture & module structure: `.agents/standards/architecture.md`

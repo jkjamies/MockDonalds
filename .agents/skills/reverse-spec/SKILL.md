@@ -26,6 +26,25 @@ Read existing code and produce a filled-in spec as if the feature was being desi
 - **Validating AGENTS.md** — compare the reverse-spec against existing documentation to find drift
 - **Pre-migration baseline** — capture the current behavior before a `/migrate` so you can verify equivalence after
 
+## Pre-flight: Subagent dispatch (multi-feature reverse-engineering)
+
+When reverse-engineering a spec from **more than 3 features** or across multiple core modules, dispatch one `Explore` agent BEFORE step 1 to map the surface in parallel. This is the canonical "open-ended exploration" case the `Explore` agent was designed for — sequential reads of 20+ files compound otherwise.
+
+**Recommended prompt template:**
+
+```
+Map the implementation of `{feature/module}` to seed a reverse-spec. Report:
+- Every file path and 1-line purpose.
+- Data model (models, DTOs, mapper functions).
+- Use case shapes (abstract class signature + impl method signatures).
+- Presenter/UiState/Event shapes.
+- Test coverage breakdown (unit / ui-component / navint / e2e).
+- AGENTS.md sections and what they document.
+Output a structured summary, NOT raw code dumps.
+```
+
+See `.agents/standards/ways-of-working.md` → "When to Spawn Subagents". For single-feature reverse-specs (~10 files), direct reads are usually faster than briefing a subagent.
+
 ## Information Sources
 
 Read these in order — each layer adds context the previous one can't provide:

@@ -40,6 +40,24 @@ The skill accepts any of these — no preprocessing required:
 
 The skill extracts structure from whatever is provided.
 
+## Subagent dispatch (multi-feature grilling)
+
+The grill step (step 7) runs inline. For specs that span **more than 3 features** (rare but real — cross-cutting changes like analytics overhauls, design-system migrations, or auth-flow rewrites), dispatch one `Explore` agent (or equivalent) IN PARALLEL with the grill so the user-facing dialog isn't blocked on serial codebase reads.
+
+**Recommended prompt template:**
+
+```
+For a spec covering changes across {list of features}, report per feature:
+- Current Key Types from `features/{feature}/AGENTS.md`.
+- Recent changes that affect the spec's domain (last 5 commits to that
+  feature directory).
+- Cross-feature dependencies (incoming + outgoing) per its AGENTS.md.
+Use the report to seed grill questions in step 7 — DO NOT modify the spec
+yourself, return findings only.
+```
+
+See `.agents/standards/ways-of-working.md` → "When to Spawn Subagents". For single-feature or single-domain specs, the inline grill alone is enough — direct reads are faster than briefing a subagent.
+
 ## Steps
 
 ### 1. Accept Input

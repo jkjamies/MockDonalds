@@ -143,6 +143,21 @@ xcodebuild test -scheme iOSApp -testPlan E2ETests -destination '...'            
 | `mockdonalds.kmp.presentation` | impl/presentation modules | Compose Multiplatform + Circuit codegen + auto-adds `core:strings` to `androidMain` and `core:logger:api` to `commonMain` |
 | `mockdonalds.phrase` | `core:strings` | Registers `pullTranslations` Gradle task pulling Phrase translations into Android XML + iOS `.lproj` files |
 
+## Subagent Dispatch (use them)
+
+This repo assumes any AI tool with a subagent/spawning capability (Claude Code `Agent`, Codex sub-tasks, Aider `architect`, Copilot agent task-forks, etc.). Use it — sequential `Read` + `grep` chains for broad surface mapping are the most common context drain.
+
+**Dispatch when one of these fires:**
+
+- **>3 modules touched** in a cross-layer change → one `Explore`-style agent for pre-flight surface mapping.
+- **`verify diff` failures in ≥3 modules** → one `general-purpose` agent per affected module, in parallel.
+- **Repository-wide reference hunt** (≥3 sequential greps for the same symbol) → one `general-purpose` agent.
+- **Cross-tool infra investigation** (Xcode/Gradle/test plan/build config) → one `general-purpose` agent.
+
+**Don't dispatch for:** trivial single-file work, or for any step in the file-edit-verify-iterate loop itself — that loop stays on the main agent.
+
+Full trigger table, anti-patterns, and per-skill prompt templates: [`.agents/standards/ways-of-working.md`](.agents/standards/ways-of-working.md#when-to-spawn-subagents) and each affected skill's `SKILL.md` ("Pre-flight: Subagent dispatch" section).
+
 ## Skills
 
 Available automation in `.agents/skills/` (30 skills total). All scaffolding and modification skills accept optional context via `@file` spec reference or inline description — see `.agents/templates/` for spec templates.

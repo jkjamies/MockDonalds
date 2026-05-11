@@ -23,6 +23,25 @@ When the user provides a spec via `@file`, scan it for unresolved markers before
 
 The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before producing output, so a marker-laden spec usually means the spec was hand-authored from a template or has gone stale. Skip the pre-flight only if the user explicitly says "skip the grill" — in that case, surface unresolved markers as `// TODO` comments in the generated code and call them out in the final summary.
 
+## Pre-flight: Subagent dispatch (cross-layer changes)
+
+If the requested change touches **more than 3 modules** (e.g., `api/domain` + `impl/data` + `impl/presentation` + iOS, or multiple features), dispatch one `Explore` agent (or equivalent in your tool) BEFORE step 1 below. Sequential `Read` + `grep` calls to map the same surface are this skill's most common context drain — one round-trip replaces ~10 reads.
+
+**Recommended prompt template:**
+
+```
+Map the affected surface for an update to feature `{feature}`. Specifically:
+- Read `features/{feature}/AGENTS.md` and report the current Key Types table.
+- Find every consumer of the types/methods being changed: {list types here}.
+  Search .kt, .swift, .gradle.kts, and AGENTS.md files.
+- Identify every test fake or test fixture referencing the affected types.
+- Note any iOS-side files in `iosApp/iosApp/Features/{Name}/` that import
+  the affected Kotlin types.
+Report a punch list of files with the type of touch each needs.
+```
+
+See `.agents/standards/ways-of-working.md` → "When to Spawn Subagents" for the canonical trigger table and anti-patterns. **Skip the dispatch** for single-layer or ≤3-module changes — direct `Read` / `Edit` is faster there.
+
 ## Reference Standards
 
 - Architecture & module structure: `.agents/standards/architecture.md`

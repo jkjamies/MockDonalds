@@ -23,6 +23,26 @@ When the user provides a spec via `@file`, scan it for unresolved markers before
 
 The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before producing output, so a marker-laden spec usually means the spec was hand-authored from a template or has gone stale. Skip the pre-flight only if the user explicitly says "skip the grill" — in that case, surface unresolved markers as `// TODO` comments in the generated code and call them out in the final summary.
 
+## Pre-flight: Subagent dispatch (callsite inventory)
+
+Migrations are the canonical "find every caller of X and decide what to do with each" task. **Always** dispatch one `Explore` agent BEFORE step 1 to inventory every callsite — including indirect ones (test fakes, fixtures, DI bindings, AGENTS.md references). Even tightly scoped migrations benefit from the upfront survey; serial grep cycles compound across 7 migration phases.
+
+**Recommended prompt template:**
+
+```
+Inventory every callsite of `{old API / type / library}` in the codebase. Search:
+- All `.kt` files (commonMain, androidMain, iosMain, commonTest, androidDeviceTest)
+- All `.swift` files in `iosApp/`
+- `build.gradle.kts` dependency declarations
+- `gradle/libs.versions.toml`
+- Per-module `AGENTS.md` files
+Report a punch list: `file:line — context (one line)`. Group by migration
+phase order: (1) core modules, (2) impl/data, (3) impl/domain,
+(4) impl/presentation, (5) test/, (6) iOS, (7) test suites.
+```
+
+See `.agents/standards/ways-of-working.md` → "When to Spawn Subagents". The only case to skip is a single-file rename where direct grep is trivially complete.
+
 ## Reference Standards
 
 - Architecture & module structure: `.agents/standards/architecture.md`

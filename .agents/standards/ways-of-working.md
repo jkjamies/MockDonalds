@@ -49,6 +49,30 @@ Skills live in `.agents/skills/` with a `SKILL.md` file each. Invoke by name.
 |-------|-------------|
 | `code-review` | Before opening a PR — diff-based review against default branch |
 
+## When to Spawn Subagents
+
+This codebase's agentic infrastructure assumes any AI tool with a subagent/spawning capability (Claude Code's `Agent` tool, Codex sub-tasks, Aider's `architect` mode, Copilot agent's task forks, etc.). Subagents protect the main agent's context and parallelize work that otherwise serializes through many `Read` + `grep` calls. They have overhead — briefing them takes tokens, and they return summaries (not raw content) — so use them when the round-trip pays off.
+
+**Dispatch when one of these triggers fires:**
+
+| Trigger | What to spawn | Why |
+|---------|---------------|-----|
+| **Cross-layer change touching >3 modules** (`update`, `add-feature`, `migrate`) | One `Explore` (or equivalent) agent — pre-flight surface mapping: affected files, conventions in similar features, every consumer of removed/changed types | One round-trip beats ~10 sequential reads; preserves main context for the edit-verify loop |
+| **`verify diff` failures across ≥3 modules** | One `general-purpose` agent per affected module (parallel) | Failures across modules often share one root cause that's only visible when seen together; parallel investigation cuts wall time |
+| **Repository-wide reference hunt** (≥3 sequential greps for the same symbol/API/test tag, typically after a rename or removal) | One `general-purpose` agent — "find every reference to {X} across .kt, .swift, .gradle.kts, .md" | One comprehensive sweep replaces 3+ grep-then-decide cycles |
+| **Cross-tool infrastructure investigation** (Xcode/Gradle/test plan/build config diagnosis) | One `general-purpose` agent — open-ended question with reproduction context | Multi-tool diagnosis benefits from focused depth while the main agent keeps moving on the primary task |
+
+**Anti-patterns — do NOT dispatch for:**
+
+- **Trivial single-file work.** `Read` + `Edit` of one known file is faster direct than briefing a subagent.
+- **The file-edit-verify-iterate loop itself.** Main-thread continuity matters there — the subagent loses test output context between iterations.
+- **Anything where you'd just re-grep the subagent's answer.** If you need raw content (not a summary), use `Read` / `Bash grep` directly.
+- **Cosmetic or single-call confirmation reads.** If 1–2 targeted reads will do, skip the subagent overhead.
+
+**The general principle:** subagents own *pre-flight context gathering* and *parallel investigations*. The main agent owns the *edit-verify-iterate loop*. When uncertain, ask: "Would a single round-trip with one subagent replace ≥3 sequential reads or greps I'm about to do?" If yes, dispatch.
+
+Per-skill prescriptions live in each skill's `SKILL.md` — search for "Pre-flight: Subagent dispatch" or "Subagent dispatch" sections.
+
 ## Code Review Process
 
 1. Run the `code-review` skill before requesting human review

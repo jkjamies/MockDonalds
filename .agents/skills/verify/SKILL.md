@@ -131,3 +131,22 @@ diff → full → all
 ```
 
 Start with `diff`. If it passes but you're unsure, escalate to `full`. Escalate to `all` only when the change warrants it or before opening a PR. Don't pay for `all` on every save.
+
+## Subagent dispatch (parallel failure investigation)
+
+When `verify diff` or `verify full` surfaces failures across **3 or more modules**, do not investigate them serially. Dispatch one `general-purpose` agent (or equivalent) per affected module to find root causes in parallel — failures across modules often share one root cause (a renamed API, a missing migration, a config-schema drift) that's only visible when seen side-by-side.
+
+**Recommended prompt template (one per failing module):**
+
+```
+Investigate the verify failure in module `{module}`. The failing command is
+`{exact gradle/xcodebuild command}`. Recent branch changes:
+  {output of `git diff --stat origin/main...HEAD`}
+Find the root cause and the minimal fix. Report:
+- Which rule/test/lint failed and why.
+- Which file(s) need editing (file:line).
+- The exact change to make (one short paragraph, NO code).
+Do NOT edit anything — the main agent owns the edit-verify loop.
+```
+
+See `.agents/standards/ways-of-working.md` → "When to Spawn Subagents". For 1–2 failing modules, direct `Read` + targeted investigation is usually faster than briefing subagents.
