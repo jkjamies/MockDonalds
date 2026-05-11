@@ -14,10 +14,7 @@ struct OrderView: View {
         ZStack(alignment: .bottom) {
             ScrollView {
                 VStack(spacing: MockDimens.spacingLg) {
-                    ForEach(
-                        Array(state.categoryPreviews.enumerated()),
-                        id: \.offset
-                    ) { _, preview in
+                    ForEach(state.categoryPreviews, id: \.id) { preview in
                         CategoryPreviewCardView(
                             name: preview.name,
                             firstItemImageUrl: preview.firstItemImageUrl,

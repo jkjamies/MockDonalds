@@ -18,10 +18,17 @@ interface SpoonacularHttpClientProvider {
     fun provideSpoonacularHttpClient(
         factory: HttpClientFactory,
         buildConfig: AppBuildConfig,
-    ): HttpClient = factory.create {
-        baseUrl = SPOONACULAR_BASE_URL
-        authMode = AuthMode.NONE
-        header(HEADER_X_API_KEY, buildConfig.spoonacularApiKey)
+    ): HttpClient {
+        require(buildConfig.spoonacularApiKey.isNotBlank()) {
+            "spoonacularApiKey must be set in local.properties for the order feature to function. " +
+                "Sign up at https://spoonacular.com/food-api (free tier) and add " +
+                "`spoonacularApiKey=YOUR_KEY` to local.properties at the repo root."
+        }
+        return factory.create {
+            baseUrl = SPOONACULAR_BASE_URL
+            authMode = AuthMode.NONE
+            header(HEADER_X_API_KEY, buildConfig.spoonacularApiKey)
+        }
     }
 
     private companion object {

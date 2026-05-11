@@ -1,5 +1,6 @@
 package com.mockdonalds.app.features.order.data
 
+import com.mockdonalds.app.core.centerpost.CenterPostDispatchers
 import com.mockdonalds.app.core.logger.featureLogger
 import com.mockdonalds.app.features.order.api.domain.CartSummary
 import com.mockdonalds.app.features.order.api.domain.CategoryPreview
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.withContext
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 
@@ -23,6 +25,7 @@ import kotlin.time.Duration.Companion.hours
 class OrderRepositoryImpl(
     private val remote: MenuRemoteDataSource,
     private val local: MenuItemLocalDataSource,
+    private val dispatchers: CenterPostDispatchers,
 ) : OrderRepository {
 
     private val logger = featureLogger("OrderRepository")
@@ -69,7 +72,10 @@ class OrderRepositoryImpl(
     )
 
     private suspend fun refreshIfStale(category: Category) {
-        val oldest = local.oldestCachedAtByCategory(category.id)
+        // Reads + writes against the SqlDelight Queries are synchronous (blocking) — the
+        // Flow collector's dispatcher could be Main (Compose's collectAsState default), so
+        // bracket the blocking calls with dispatchers.io to keep the UI thread responsive.
+        val oldest = withContext(dispatchers.io) { local.oldestCachedAtByCategory(category.id) }
         val now = Clock.System.now().toEpochMilliseconds()
         val isStale = oldest == null || (now - oldest) > TTL_MILLIS
         if (!isStale) return
@@ -78,7 +84,7 @@ class OrderRepositoryImpl(
         runCatching { remote.searchMenuItems(category.query) }
             .onSuccess { dtos ->
                 val items = dtos.map { it.toMenuItem(category.id) }
-                local.replaceCategory(category.id, items, now)
+                withContext(dispatchers.io) { local.replaceCategory(category.id, items, now) }
                 logger.i {
                     "Spoonacular fetch OK categoryId=${category.id} fetched=${dtos.size} cached=${items.size}"
                 }

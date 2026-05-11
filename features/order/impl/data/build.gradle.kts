@@ -24,10 +24,15 @@ kotlin {
     }
 }
 
-// Feature-owned schema slot for the application-wide AppDatabase.
-// composeApp is the aggregator: it pulls this module via `dependency(...)` inside its
-// `create("AppDatabase")` block and exposes the merged AppDatabase + per-feature Queries
-// classes through Metro DI. Mirrors the Slack / Cash App pattern.
+// Feature-owned AppDatabase declaration. This module currently OWNS the AppDatabase
+// (it declares `create("AppDatabase")` below, generates the schema + Queries here, and
+// `composeApp` consumes the resulting class via its existing project dependency on us).
+// When a second feature contributes tables, switch to the SQLDelight cross-module
+// aggregation pattern: have composeApp re-declare `create("AppDatabase")` with a
+// `dependency(project(":features:<name>:impl:data"))` per contributor, and add
+// `evaluationDependsOnChildren()` in settings.gradle.kts so contributor plugins are
+// applied before composeApp's `dependency(...)` resolves. Mirrors the Slack/Cash App
+// pattern at that point.
 sqldelight {
     databases {
         create("AppDatabase") {

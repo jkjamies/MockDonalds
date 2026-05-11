@@ -17,8 +17,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.core.theme.MockDimens
 import com.mockdonalds.app.core.theme.MockDonaldsTheme
@@ -59,16 +61,11 @@ fun CategoryDetailUi(state: CategoryDetailUiState, modifier: Modifier = Modifier
 
             LazyColumn(
                 contentPadding = PaddingValues(
-                    horizontal = MockDimens.SpacingXl,
-                    vertical = MockDimens.SpacingLg,
-                ).run {
-                    PaddingValues(
-                        start = MockDimens.SpacingXl,
-                        end = MockDimens.SpacingXl,
-                        top = MockDimens.SpacingLg,
-                        bottom = adaptiveBottomBarPadding() + 96.dp,
-                    )
-                },
+                    start = MockDimens.SpacingXl,
+                    end = MockDimens.SpacingXl,
+                    top = MockDimens.SpacingLg,
+                    bottom = adaptiveBottomBarPadding() + MockDimens.CartBarOffset,
+                ),
                 verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXxl),
             ) {
                 items(state.items, key = { it.id }) { item ->
@@ -114,10 +111,10 @@ private fun CategoryDetailTopBar(
                 .testTag(CategoryDetailTestTags.BACK_BUTTON),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = "<",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onSurface,
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = MaterialTheme.colorScheme.onSurface,
             )
         }
         Text(

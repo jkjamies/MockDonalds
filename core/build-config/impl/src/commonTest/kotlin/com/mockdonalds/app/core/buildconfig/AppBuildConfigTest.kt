@@ -82,8 +82,11 @@ class AppBuildConfigTest : BehaviorSpec({
                 config.currency shouldMatch Regex("^[A-Z]{3}$")
             }
 
-            Then("spoonacularApiKey is a string (may be empty when local.properties is unset)") {
-                config.spoonacularApiKey.length shouldBe config.spoonacularApiKey.length
+            Then("spoonacularApiKey is wired from BuildConfig.SPOONACULAR_API_KEY (empty allowed for local dev)") {
+                // Validates AppBuildConfigImpl delegates to BuildKonfig-generated BuildConfig rather
+                // than hardcoding a value. Empty is permitted when local.properties has no entry —
+                // the integration is gated at SpoonacularHttpClientProvider via a require() guard.
+                config.spoonacularApiKey shouldBe BuildConfig.SPOONACULAR_API_KEY
             }
         }
     }

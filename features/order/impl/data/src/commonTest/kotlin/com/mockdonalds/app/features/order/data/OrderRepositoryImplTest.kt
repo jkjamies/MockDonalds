@@ -1,6 +1,7 @@
 package com.mockdonalds.app.features.order.data
 
 import app.cash.turbine.test
+import com.mockdonalds.app.core.test.TestCenterPostDispatchers
 import com.mockdonalds.app.features.order.api.domain.MenuItem
 import com.mockdonalds.app.features.order.data.local.MenuItemLocalDataSource
 import com.mockdonalds.app.features.order.data.remote.MenuRemoteDataSource
@@ -49,7 +50,11 @@ private class RepositoryHarness {
         }
     }
 
-    val repository: OrderRepositoryImpl = OrderRepositoryImpl(remote = remote, local = local)
+    val repository: OrderRepositoryImpl = OrderRepositoryImpl(
+        remote = remote,
+        local = local,
+        dispatchers = TestCenterPostDispatchers(),
+    )
 
     fun seedCache(categoryId: String, items: List<MenuItem>, cachedAt: Long) {
         entryFor(categoryId).value = items to cachedAt
@@ -189,6 +194,21 @@ class OrderRepositoryImplTest : BehaviorSpec({
                     featured.firstItemImageUrl shouldBe null
                     cancel()
                 }
+            }
+
+            Then("the merged refresh side-effect fires remote.searchMenuItems for stale categories") {
+                // burgers is fresh (seeded with cachedAt = now) so refreshIfStale early-returns;
+                // the other 5 categories have empty caches → stale → trigger a remote call each.
+                fixture.repository.getCategoryPreviews().test {
+                    awaitItem()
+                    cancel()
+                }
+                fixture.callsByQuery shouldContain "popular"      // featured
+                fixture.callsByQuery shouldContain "chicken sandwich"
+                fixture.callsByQuery shouldContain "fries"
+                fixture.callsByQuery shouldContain "soda"
+                fixture.callsByQuery shouldContain "ice cream"
+                (fixture.callsByQuery.contains("burger")) shouldBe false
             }
         }
     }

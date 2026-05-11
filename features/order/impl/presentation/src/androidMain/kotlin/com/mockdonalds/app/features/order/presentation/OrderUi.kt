@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -13,10 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +30,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.mockdonalds.app.core.theme.MockDimens
@@ -47,16 +48,19 @@ import dev.zacsweers.metro.Inject
 @Composable
 fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(bottom = adaptiveBottomBarPadding())
-                .statusBarsPadding()
-                .padding(horizontal = MockDimens.SpacingXl, vertical = MockDimens.SpacingXl),
+                .statusBarsPadding(),
+            contentPadding = PaddingValues(
+                start = MockDimens.SpacingXl,
+                end = MockDimens.SpacingXl,
+                top = MockDimens.SpacingXl,
+                bottom = adaptiveBottomBarPadding() + MockDimens.CartBarOffset,
+            ),
             verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
         ) {
-            state.categoryPreviews.forEach { preview ->
+            items(state.categoryPreviews, key = { it.id }) { preview ->
                 CategoryPreviewCard(
                     preview = preview,
                     onTap = { state.eventSink(OrderEvent.CategoryTapped(preview.id)) },
@@ -133,7 +137,7 @@ internal fun OrderCartBar(
     Box(
         modifier = modifier
             .padding(MockDimens.SpacingXl)
-            .padding(bottom = 64.dp)
+            .padding(bottom = MockDimens.CartBarOffset)
             .fillMaxWidth()
             .clip(RoundedCornerShape(MockDimens.RadiusMd))
             .background(MaterialTheme.colorScheme.primary)
@@ -180,10 +184,10 @@ internal fun OrderCartBar(
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Black),
                     color = MockDonaldsTheme.extendedColors.onPrimaryButton,
                 )
-                Text(
-                    text = "->",
-                    color = MockDonaldsTheme.extendedColors.onPrimaryButton,
-                    fontWeight = FontWeight.Bold,
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = null,
+                    tint = MockDonaldsTheme.extendedColors.onPrimaryButton,
                 )
             }
         }

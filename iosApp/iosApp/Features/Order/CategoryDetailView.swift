@@ -4,6 +4,11 @@ import ComposeApp
 
 private let tags = CategoryDetailTestTags.shared
 
+/// Vertical offset reserved for the floating cart bar so the LazyVStack content
+/// doesn't disappear beneath it. Mirrors `MockDimens.CartBarOffset` on Android
+/// (64.dp); iOS uses 96 because the cart bar component is taller in SwiftUI.
+private let cartBarOffset: CGFloat = 96
+
 @CircuitInject(CategoryDetailScreen.self, CategoryDetailUiState.self)
 struct CategoryDetailView: View {
     @Environment(\.mockDonaldsColors) private var colors
@@ -32,7 +37,7 @@ struct CategoryDetailView: View {
                     }
                     .padding(.horizontal, MockDimens.spacingXl)
                     .padding(.top, MockDimens.spacingLg)
-                    .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: false) + 96)
+                    .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: false) + cartBarOffset)
                 }
             }
 
