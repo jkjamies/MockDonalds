@@ -40,8 +40,10 @@ class HttpClientFactoryImplTest : BehaviorSpec({
         override val accountBaseUrl = "https://$env-account-api.mockdonalds.com"
         override val rewardsBaseUrl = "https://$env-rewards-api.mockdonalds.com"
         override val storeBaseUrl = "https://$env-stores-api.mockdonalds.com"
+        override val nutritionUrl = "https://$env-nutrition.mockdonalds.com"
         override val locale = "en-US"
         override val currency = "USD"
+        override val spoonacularApiKey = ""
     }
 
     val json = kotlinx.serialization.json.Json {

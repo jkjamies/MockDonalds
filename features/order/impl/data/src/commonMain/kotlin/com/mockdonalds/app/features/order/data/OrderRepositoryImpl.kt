@@ -74,14 +74,18 @@ class OrderRepositoryImpl(
         val isStale = oldest == null || (now - oldest) > TTL_MILLIS
         if (!isStale) return
 
+        logger.i { "Spoonacular fetch START categoryId=${category.id} query=${category.query}" }
         runCatching { remote.searchMenuItems(category.query) }
             .onSuccess { dtos ->
                 val items = dtos.map { it.toMenuItem(category.id) }
                 local.replaceCategory(category.id, items, now)
+                logger.i {
+                    "Spoonacular fetch OK categoryId=${category.id} fetched=${dtos.size} cached=${items.size}"
+                }
             }
             .onFailure { error ->
                 logger.e(error) {
-                    "Spoonacular fetch failed for categoryId=${category.id} query=${category.query}"
+                    "Spoonacular fetch FAILED categoryId=${category.id} query=${category.query}"
                 }
             }
     }

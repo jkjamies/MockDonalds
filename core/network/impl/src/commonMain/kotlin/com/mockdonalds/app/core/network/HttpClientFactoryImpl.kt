@@ -3,6 +3,7 @@ package com.mockdonalds.app.core.network
 import com.mockdonalds.app.core.auth.AuthManager
 import com.mockdonalds.app.core.auth.AuthTokens
 import com.mockdonalds.app.core.buildconfig.AppBuildConfig
+import com.mockdonalds.app.core.logger.featureLogger
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.SingleIn
@@ -25,6 +26,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.Url
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import io.ktor.client.plugins.logging.Logger as KtorLogger
 
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
@@ -41,6 +43,16 @@ class HttpClientFactoryImpl(
             "(${appBuildConfig.buildType})"
 
     private val isProd: Boolean get() = appBuildConfig.env == "prod"
+
+    // Ktor's default Logger uses SLF4J, which has no provider configured on Android — so HTTP-level
+    // logs vanish into "NOP" silently. Route through Kermit (already wired in core:logger:api) so
+    // the request/response lines actually land in logcat / Xcode console.
+    private val httpLogger = featureLogger("HttpClient")
+    private val ktorLogger: KtorLogger = object : KtorLogger {
+        override fun log(message: String) {
+            httpLogger.i { message }
+        }
+    }
 
     override fun create(block: ClientConfig.() -> Unit): HttpClient {
         val config = ClientConfig().apply(block)
@@ -64,7 +76,8 @@ class HttpClientFactoryImpl(
             }
 
             install(Logging) {
-                level = if (isProd) LogLevel.NONE else LogLevel.HEADERS
+                logger = ktorLogger
+                level = if (isProd) LogLevel.NONE else LogLevel.INFO
             }
 
             install(UserAgent) { agent = userAgent }

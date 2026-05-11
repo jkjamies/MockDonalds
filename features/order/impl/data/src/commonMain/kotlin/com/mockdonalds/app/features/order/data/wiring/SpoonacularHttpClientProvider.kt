@@ -26,7 +26,12 @@ interface SpoonacularHttpClientProvider {
 
     private companion object {
         // Third-party reference API; does not route through Akamai. See features/order/impl/data/AGENTS.md.
-        const val SPOONACULAR_BASE_URL = "https://api.spoonacular.com/food"
+        // Trailing `/` is required — Ktor's URL resolution (RFC 3986) strips the last segment
+        // when appending a relative path against a base URL without trailing slash, so
+        // "https://api.spoonacular.com/food" + "menuItems/search" would resolve to
+        // "https://api.spoonacular.com/menuItems/search" (404). With the trailing slash,
+        // resolution preserves the /food prefix correctly.
+        const val SPOONACULAR_BASE_URL = "https://api.spoonacular.com/food/"
         const val HEADER_X_API_KEY = "x-api-key"
     }
 }
