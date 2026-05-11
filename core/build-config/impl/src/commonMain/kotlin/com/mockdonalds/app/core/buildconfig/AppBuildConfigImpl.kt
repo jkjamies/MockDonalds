@@ -22,4 +22,5 @@ class AppBuildConfigImpl : AppBuildConfig {
     override val nutritionUrl: String = BuildConfig.NUTRITION_URL
     override val locale: String = BuildConfig.LOCALE
     override val currency: String = BuildConfig.CURRENCY
+    override val spoonacularApiKey: String = BuildConfig.SPOONACULAR_API_KEY
 }

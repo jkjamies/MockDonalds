@@ -12,10 +12,6 @@ import ComposeApp
         try robot.assertDefaultScreen()
     }
 
-    @Test func rendersLandscapeLayout() throws {
-        try robot.assertLandscapeScreen()
-    }
-
     @Test func rendersWithNoCart() throws {
         try robot.assertScreenWithNoCart()
     }
@@ -23,13 +19,8 @@ import ComposeApp
     // MARK: - Events
 
     @Test func categoryTapEmitsEvent() {
-        robot.simulateCategoryTap(id: "1")
-        robot.assertLastEvent(OrderEvent.CategorySelected(id: "1"))
-    }
-
-    @Test func addToOrderEmitsEvent() {
-        robot.simulateAddToOrder(itemId: "1")
-        robot.assertLastEvent(OrderEvent.AddToOrder(itemId: "1"))
+        robot.simulateCategoryTap(id: "burgers")
+        robot.assertLastEvent(OrderEvent.CategoryTapped(id: "burgers"))
     }
 
     @Test func cartTapEmitsEvent() {

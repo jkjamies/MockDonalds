@@ -81,6 +81,13 @@ class AppBuildConfigTest : BehaviorSpec({
             Then("currency is an ISO-4217 code") {
                 config.currency shouldMatch Regex("^[A-Z]{3}$")
             }
+
+            Then("spoonacularApiKey is wired from BuildConfig.SPOONACULAR_API_KEY (empty allowed for local dev)") {
+                // Validates AppBuildConfigImpl delegates to BuildKonfig-generated BuildConfig rather
+                // than hardcoding a value. Empty is permitted when local.properties has no entry —
+                // the integration is gated at SpoonacularHttpClientProvider via a require() guard.
+                config.spoonacularApiKey shouldBe BuildConfig.SPOONACULAR_API_KEY
+            }
         }
     }
 })

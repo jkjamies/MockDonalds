@@ -42,7 +42,7 @@ class GuestJourneyTest {
 
         // Order tab
         robot.tapTab("Order")
-        robot.assertElementDisplayed(OrderTestTags.FEATURED_ITEMS_SECTION)
+        robot.assertElementDisplayed("${OrderTestTags.CATEGORY_PREVIEW_CARD}-burgers")
 
         // Rewards tab
         robot.tapTab("Rewards")

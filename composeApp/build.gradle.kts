@@ -13,20 +13,17 @@ metro {
     enableCircuitCodegen.set(true)
 }
 
-// SQLDelight aggregator — composeApp owns the single application-wide `AppDatabase`.
-// Features contribute their own `.sq` schemas inside `features/{name}/impl/data/`
-// (each applying the SQLDelight plugin and declaring the same `AppDatabase` name).
-// Add `dependency(project(":features:<name>:impl:data"))` here when a feature
-// starts contributing tables. Mirrors Slack/Cash App's single-DB-with-feature-owned-
-// schemas pattern: composeApp is the leaf consumer that already imports every feature,
-// so this preserves the "core never imports features" Konsist boundary.
-sqldelight {
-    databases {
-        create("AppDatabase") {
-            packageName.set("com.mockdonalds.app.persistence")
-        }
-    }
-}
+// SQLDelight schema declaration is owned by the contributing feature module —
+// `features/order/impl/data` applies the `app.cash.sqldelight` plugin and declares
+// the application-wide `AppDatabase` (packageName = "com.mockdonalds.app.persistence").
+// composeApp imports the generated class via its existing `implementation(project(...))`
+// dependency on the feature and instantiates `AppDatabase(driver)` in `DatabaseProviders`.
+//
+// When a SECOND feature starts contributing tables, switch to the SQLDelight cross-module
+// aggregation pattern: have composeApp re-declare `databases { create("AppDatabase") }`
+// with `dependency(project(...))` for each contributing feature, and add
+// `evaluationDependsOnChildren()` in settings.gradle.kts so contributor SQLDelight
+// plugins are applied before composeApp's `dependency()` call resolves.
 
 kotlin {
     android {

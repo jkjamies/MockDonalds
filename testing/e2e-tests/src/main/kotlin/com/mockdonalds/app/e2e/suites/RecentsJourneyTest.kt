@@ -27,7 +27,7 @@ class RecentsJourneyTest {
         robot.tapTab("More")
         robot.assertElementDisplayed(MoreTestTags.MENU_LIST)
 
-        robot.tapElement("${MoreTestTags.MENU_ITEM}-1")
+        robot.tapElement("${MoreTestTags.MENU_ITEM}-recents")
         robot.assertElementDisplayed(RecentsTestTags.SCREEN)
         robot.assertElementDisplayed(RecentsTestTags.LIST)
     }
@@ -35,7 +35,7 @@ class RecentsJourneyTest {
     @Test
     fun navigateBackFromRecentsToMore() {
         robot.tapTab("More")
-        robot.tapElement("${MoreTestTags.MENU_ITEM}-1")
+        robot.tapElement("${MoreTestTags.MENU_ITEM}-recents")
         robot.assertElementDisplayed(RecentsTestTags.SCREEN)
 
         robot.tapElement(RecentsTestTags.BACK_BUTTON)

@@ -77,7 +77,7 @@ class MorePresenterTest : BehaviorSpec({
                     },
                 ) {
                     val state = awaitItem()
-                    state.eventSink(MoreEvent.MenuItemClicked("1"))
+                    state.eventSink(MoreEvent.MenuItemClicked("recents"))
                     navigator.awaitNextScreen() shouldBe RecentsScreen
                     cancelAndIgnoreRemainingEvents()
                 }

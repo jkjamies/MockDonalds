@@ -28,8 +28,8 @@ struct BuildConfigDebugView: View {
                 }
             }
             .padding(MockDimens.spacingMd)
+            .accessibilityIdentifier(tags.FIELD_LIST)
         }
-        .accessibilityIdentifier(tags.FIELD_LIST)
         .background(colors.background)
         .accessibilityIdentifier(tags.ROOT)
         .navigationTitle("Build Config")

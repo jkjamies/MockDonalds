@@ -1,9 +1,8 @@
 package com.mockdonalds.app.features.order.test
 
 import com.mockdonalds.app.features.order.api.domain.CartSummary
-import com.mockdonalds.app.features.order.api.domain.FeaturedItem
+import com.mockdonalds.app.features.order.api.domain.CategoryPreview
 import com.mockdonalds.app.features.order.api.domain.GetOrderContent
-import com.mockdonalds.app.features.order.api.domain.MenuCategory
 import com.mockdonalds.app.features.order.api.domain.OrderContent
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -25,22 +24,15 @@ class FakeGetOrderContent(
 
     companion object {
         val DEFAULT = OrderContent(
-            categories = listOf(
-                MenuCategory(id = "1", name = "Burgers"),
-                MenuCategory(id = "2", name = "Fries"),
+            categoryPreviews = listOf(
+                CategoryPreview(id = "featured", name = "Featured", firstItemImageUrl = null, itemCount = 0),
+                CategoryPreview(id = "burgers", name = "Burgers", firstItemImageUrl = null, itemCount = 0),
+                CategoryPreview(id = "chicken", name = "Chicken", firstItemImageUrl = null, itemCount = 0),
+                CategoryPreview(id = "sides", name = "Sides", firstItemImageUrl = null, itemCount = 0),
+                CategoryPreview(id = "drinks", name = "Drinks", firstItemImageUrl = null, itemCount = 0),
+                CategoryPreview(id = "desserts", name = "Desserts", firstItemImageUrl = null, itemCount = 0),
             ),
-            featuredItems = listOf(
-                FeaturedItem(
-                    id = "1",
-                    title = "Test Burger",
-                    price = "$10",
-                    description = "A test burger",
-                    imageUrl = "",
-                    tag = "NEW",
-                    isPrimary = true,
-                ),
-            ),
-            cartSummary = CartSummary(itemCount = 1, total = "$10.00"),
+            cartSummary = CartSummary(itemCount = 2, total = "\$36.00"),
         )
     }
 }

@@ -26,4 +26,9 @@ object MockDimens {
     val IconMd = 40.dp
     val BottomNavHeight = 80.dp
     val BottomBarPadding = 128.dp
+
+    // Vertical offset reserved for the floating order/cart bar so scrollable content
+    // doesn't disappear behind it. Used by both OrderUi (cart-bar bottom padding) and
+    // CategoryDetailUi (LazyColumn contentPadding bottom).
+    val CartBarOffset = 64.dp
 }

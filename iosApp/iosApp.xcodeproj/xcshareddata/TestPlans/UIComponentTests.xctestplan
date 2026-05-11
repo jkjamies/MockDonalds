@@ -18,13 +18,20 @@
   "testTargets" : [
     {
       "selectedTests" : [
+        "BuildConfigDebugViewTest",
+        "CategoryDetailViewTest",
+        "DebugMenuViewTest",
+        "FeatureFlagsDebugViewTest",
         "HomeViewTest",
         "LoginViewTest",
+        "MoreViewTest",
+        "NutritionViewTest",
         "OrderViewTest",
+        "ProfileViewTest",
+        "RecentsViewTest",
         "RewardsViewTest",
         "ScanViewTest",
-        "MoreViewTest",
-        "ProfileViewTest"
+        "WelcomeViewTest"
       ],
       "target" : {
         "containerPath" : "container:iosApp.xcodeproj",

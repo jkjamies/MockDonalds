@@ -13,7 +13,7 @@ final class DeepLinkJourneyTest: XCTestCase {
 
     func testDeepLinkToOrderScreen() {
         robot.launchWithDeepLink("mockdonalds://app/order")
-        robot.assertElementDisplayed("OrderFeaturedItemsSection")
+        robot.assertElementDisplayed("OrderCategoryPreviewCard-burgers")
     }
 
     func testDeepLinkToMoreScreen() {

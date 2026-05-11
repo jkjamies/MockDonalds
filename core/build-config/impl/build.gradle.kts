@@ -42,6 +42,18 @@ val combo = loadProps(comboPath)
 
 val merged: Map<String, String> = defaults + combo
 
+// Read SPOONACULAR_API_KEY from local.properties (gitignored). Empty default keeps the
+// public reference repo building without a key. Bypasses the markets/*.properties schema
+// validation so we don't have to commit per-env values for a single shared third-party key.
+// Migration path for enterprise: add SPOONACULAR_API_KEY to Defaults.properties + each
+// markets/{market}/{env}.properties with the env-specific value, and replace this block with
+// `merged["SPOONACULAR_API_KEY"]`.
+val localProperties: Properties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+val spoonacularApiKey: String = localProperties.getProperty("spoonacularApiKey", "")
+
 buildkonfig {
     packageName = "com.mockdonalds.app.core.buildconfig"
     objectName = "BuildConfig"
@@ -50,6 +62,7 @@ buildkonfig {
             buildConfigField(STRING, key, value)
         }
         buildConfigField(STRING, "BUILD_TYPE", buildType)
+        buildConfigField(STRING, "SPOONACULAR_API_KEY", spoonacularApiKey)
     }
 }
 
