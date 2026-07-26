@@ -1,0 +1,62 @@
+name: Smoke
+
+# Deliberately high-level and generic. This is NOT the verification pipeline —
+# that lives in `.agents/standards/verification.md` and is driven by the `verify`
+# skill (scopes: diff / full / all) on a developer machine with a simulator and
+# an emulator available.
+#
+# What this gate exists to catch is the class of failure that makes the repo
+# unusable for anyone who is not the author: a build that only configures on one
+# machine, a module that never got wired into settings.gradle.kts, or an
+# architecture rule that has started failing and nobody noticed. Everything
+# device-bound, iOS-bound, or matrix-bound is out of scope here on purpose.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: Configuration + architecture
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # JDK 21 matches the `jvmToolchain(21)` declared by build-tooling and
+      # testing/architecture-check. Everything else targets JVM 17 bytecode,
+      # which compiles fine on a 21 daemon.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          validate-wrappers: true
+
+      # Configuration smoke: every module in the graph — including the features
+      # auto-discovered by settings.gradle.kts — resolves and configures.
+      # This is the step that would have caught the machine-pinned JDK path.
+      - name: Configure module graph
+        run: ./gradlew projects
+
+      # The repo's own architecture backbone. `verify diff` runs this
+      # unconditionally regardless of what changed, so CI does the same.
+      - name: Architecture (Konsist)
+        run: ./gradlew :testing:architecture-check:test
+
+      - name: Upload test report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: architecture-check-report
+          path: testing/architecture-check/build/reports/tests/test/
+          if-no-files-found: ignore

@@ -72,6 +72,7 @@ class AgentDocumentationTest : BehaviorSpec({
                 "testing-navint.md",
                 "testing-e2e.md",
                 "testing-architecture.md",
+                "testing-benchmarks.md",
                 "centerpost.md",
                 "forbidden-patterns.md",
                 "verification.md",
@@ -82,6 +83,7 @@ class AgentDocumentationTest : BehaviorSpec({
                 "convention-plugins.md",
                 "feature-scaffolding.md",
                 "build-config.md",
+                "markets.md",
             )
             val missing = expectedFiles.filter { !standardsDir.resolve(it).exists() }
             assert(missing.isEmpty()) {

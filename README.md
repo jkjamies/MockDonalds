@@ -56,11 +56,11 @@ features/{name}/
   test/                — Fakes for testing
 ```
 
-Core modules: `auth`, `build-config`, `centerpost`, `circuit`, `logger`, `metro`, `network`, `strings`, `theme`, `test-fixtures`
+Core modules: `analytics`, `auth`, `build-config`, `centerpost`, `circuit`, `logger`, `metro`, `network`, `persistence`, `presentation`, `remote-config`, `strings`, `test-fixtures`, `theme`
 
 ### Compile-Time Market & Environment Variants
 
-`core:build-config` is split into three modules: `api/` exposes a typed `AppBuildConfig` facade interface; `impl/` applies [BuildKonfig](https://github.com/yshrsmz/BuildKonfig), merges `impl/Defaults.properties` with `impl/markets/{market}/{market}-{env}.properties`, and contributes `AppBuildConfigImpl`; `test/` contributes a `FakeAppBuildConfig` for test modules. Features depend on `:api` only — the generated `BuildConfig` object and BuildKonfig plugin stay out of their classpath. Market/env/buildType are resolved by the shared `BuildVariantResolver` in `build-logic/` via three signals — explicit `-Pmarket`/`-Penv`/`-PbuildType`, AGP variant task names (`assembleUsIntDebug`, `assembleDeProdRelease`, …) from Android Studio's Build Variants window, or defaults (`us`/`int`/`debug`). Android declares 30 native variants from `flavorDimensions = ["market", "env"]` × debug/release; iOS uses per-combo xcconfigs (`US-Int-Debug`, `US-Prod-Release`, `DE-Int-Debug`, `DE-Prod-Release`, …) driving `PRODUCT_BUNDLE_IDENTIFIER` from the `MARKET` variable.
+`core:build-config` is split into three modules: `api/` exposes a typed `AppBuildConfig` facade interface; `impl/` applies [BuildKonfig](https://github.com/yshrsmz/BuildKonfig), merges `impl/Defaults.properties` with `impl/markets/{market}/{market}-{env}.properties`, and contributes `AppBuildConfigImpl`; `test/` contributes a `FakeAppBuildConfig` for test modules. Features depend on `:api` only — the generated `BuildConfig` object and BuildKonfig plugin stay out of their classpath. Market/env/buildType are resolved by the shared `BuildVariantResolver` in `build-logic/` via three signals — explicit `-Pmarket`/`-Penv`/`-PbuildType`, AGP variant task names (`assembleUsIntDebug`, `assembleDeProdRelease`, …) from Android Studio's Build Variants window, or defaults (`us`/`int`/`debug`). Android declares 30 shippable native variants from `flavorDimensions = ["market", "env"]` × debug/release (plus 15 more from the benchmark-only third build type, which never ships); iOS uses per-combo xcconfigs (`US-Int-Debug`, `US-Prod-Release`, `DE-Int-Debug`, `DE-Prod-Release`, …) driving `PRODUCT_BUNDLE_IDENTIFIER` from the `MARKET` variable.
 
 ```bash
 ./gradlew :androidApp:assembleDebug                                 # Default us/int/debug
@@ -70,7 +70,7 @@ Core modules: `auth`, `build-config`, `centerpost`, `circuit`, `logger`, `metro`
 
 See [`.agents/standards/build-config.md`](.agents/standards/build-config.md) for the full schema, Harness boundary, and "adding a field" workflow. Runtime feature flags / kill switches / experiments belong in Harness, **not** here.
 
-Features: `home`, `login`, `more`, `order`, `profile`, `rewards`, `scan`
+Features: `debug-menu`, `home`, `login`, `more`, `nutrition`, `order`, `profile`, `recents`, `rewards`, `scan`
 
 For detailed architecture rules, naming conventions, DI rules, forbidden patterns, and test conventions, see [`AGENTS.md`](AGENTS.md). Per-module context is in each module's `AGENTS.md` file.
 
@@ -129,7 +129,7 @@ swift test --package-path iosApp/ArchitectureCheck                              
 xcodebuild build -scheme iOSApp -configuration US-Int-Debug -destination 'platform=iOS Simulator,name=iPhone 16'    # 8. iOS debug build
 ```
 
-**Pre-merge (thorough, ~5+ min)** — adds UI component, navint, and e2e test levels on both platforms plus a full `./gradlew assemble` across every market × env. See [`verification.md`](.agents/standards/verification.md) → "Full Pipeline (CI)" for the 13-step list. Use `verify all` to run it locally.
+**Pre-merge (thorough, ~5+ min)** — adds UI component, navint, and e2e test levels on both platforms plus a full `./gradlew assemble` across every market × env. See [`verification.md`](.agents/standards/verification.md) → "All Scope (the `verify all` pipeline)" for the 13-step list. Use `verify all` to run it locally.
 
 ### Test Framework
 
@@ -216,9 +216,18 @@ xcodebuild build -project iosApp/iosApp.xcodeproj -target iosApp \
 
 This codebase is fully agentic — AI agents discover conventions, scaffold features, review code, and fill test gaps via standardized files:
 
-- **`AGENTS.md`** files in every module provide JIT context (architecture rules, naming, DI, testing standards)
-- **`.agents/skills/`** directory contains 29 automation skills (verify, test, scaffold, review, config, spec conversion)
-- **`.gemini/settings.json`** configures Gemini CLI to discover `AGENTS.md` files automatically
+- **`AGENTS.md`** files in every module provide JIT context (architecture rules, naming, DI, testing standards), following the vendor-neutral [AGENTS.md](https://agents.md) standard
+- **`.agents/skills/`** directory contains 32 automation skills (verify, test, scaffold, review, config, spec conversion)
+- **`.agents/standards/`** holds the 21 reference documents skills and AGENTS.md files link to for rationale
 - **Konsist enforces** that all features, core modules, and skills have their agentic files
+
+### Per-developer setup (Claude Code)
+
+Vendor-specific entry points are gitignored on purpose so the repo stays tool-agnostic. Claude Code only discovers skills under `.claude/skills/`, so link them once after cloning — otherwise the skills are invisible to it:
+
+```bash
+ln -s AGENTS.md CLAUDE.md
+mkdir -p .claude && ln -s ../.agents/skills .claude/skills
+```
 
 See [`AGENTS.md`](AGENTS.md) for the full rule set and [`.agents/AGENTS.md`](.agents/AGENTS.md) for the skill system.

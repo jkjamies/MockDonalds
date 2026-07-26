@@ -48,15 +48,17 @@ Skills are invoked by name when an agent needs to perform a specific task. The `
 ### Skill Categories
 
 #### Verification (read-only)
-- `verify` — unified verification pipeline with three scopes: `diff` (default, changed modules), `local` (full lint + unit + arch + build), `ci` (all test levels + all variants)
+- `verify` — unified verification pipeline with three scopes: `diff` (default, changed modules), `full` (whole-project lint + unit + arch + one debug build per platform), `all` (all test levels + all variants + full assemble)
 - `run-unit-tests` — Kotest unit tests + iOS Swift Testing
 - `run-ui-tests` — Android + iOS UI tests (requires device/simulator)
 - `run-arch-tests` — Konsist + Harmonize architecture tests
+- `run-e2e-tests` — end-to-end journey tests (Android UI Automator + iOS XCUITest)
 - `run-all-tests` — full test pipeline (lint + all 5 test levels on both platforms)
 
 #### Spec Generation
 - `ac-to-spec` — convert acceptance criteria, Jira tickets, Gherkin, or PRDs into a structured spec template (writes spec file)
 - `reverse-spec` — reverse-engineer a spec from existing code (presumed AC, data flow, contracts) (read-only)
+- `grill-me` — interrogate a spec for unresolved markers, gaps, and unconfirmed presumptions before scaffolding
 
 #### Code Quality (read-only)
 - `code-review` — diff-based review against default branch
@@ -65,7 +67,7 @@ Skills are invoked by name when an agent needs to perform a specific task. The `
 - `summarize` — project/feature/module overview with android/ios platform scope
 
 #### Profiling (read-only)
-- `profile` — Perfetto/Macrobenchmark (Android) + Instruments (iOS) benchmarking and tracing
+- `benchmark` — Perfetto/Macrobenchmark (Android) + Instruments (iOS) benchmarking and tracing
 
 #### Test Generation (modifies code)
 - `add-unit-tests` — fill unit test gaps from branch diff
@@ -83,6 +85,7 @@ Skills are invoked by name when an agent needs to perform a specific task. The `
 - `add-feature-flag` — add feature flag definition + observation + gating
 - `add-monitoring` — add observability instrumentation (shell — core:monitoring not yet implemented)
 - `add-config-field` — add compile-time field to `core:build-config`
+- `add-market` — add a new market (build-config combo files, AGP flavor, iOS xcconfigs, store identity)
 - `validate-all-markets` — enforce build-config schema/format rules across all market properties
 
 #### Modification (modifies code)
