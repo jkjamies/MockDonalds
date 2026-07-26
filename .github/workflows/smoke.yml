@@ -7,9 +7,16 @@ name: Smoke
 #
 # What this gate exists to catch is the class of failure that makes the repo
 # unusable for anyone who is not the author: a build that only configures on one
-# machine, a module that never got wired into settings.gradle.kts, or an
-# architecture rule that has started failing and nobody noticed. Everything
-# device-bound, iOS-bound, or matrix-bound is out of scope here on purpose.
+# machine, a module that never got wired into settings.gradle.kts, an
+# architecture rule that has started failing, or a Kotlin/Native change that only
+# breaks once Xcode links the framework. Device-bound and matrix-bound test
+# levels stay out of scope on purpose.
+#
+# Two jobs, because the platforms fail differently: `smoke` compiles the shared +
+# Android side on Linux, and `ios` links the actual framework on macOS. A
+# source-set or `export()` mistake is invisible to the Linux job — Apple targets
+# cannot be compiled off macOS at all — so the iOS job is the only thing that
+# proves the framework still builds.
 
 on:
   push:
@@ -69,3 +76,74 @@ jobs:
           name: architecture-check-report
           path: testing/architecture-check/build/reports/tests/test/
           if-no-files-found: ignore
+
+  ios:
+    name: iOS framework + app (US-Int-Debug)
+    runs-on: macos-15
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # The Xcode build drives Gradle itself: the "Build Kotlin framework via Gradle"
+      # preBuildScript runs `:composeApp:embedAndSignAppleFrameworkForXcode` with
+      # -Pmarket/-Penv/-PbuildType forwarded from the active xcconfig. gradlew resolves
+      # its JDK from JAVA_HOME, which setup-java exports for the whole job — including
+      # Xcode's script phases.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # swift-syntax backs both CircuitMacros (SPM dependency of the app target) and
+      # CircuitFactoryRegistry (built by the codegen Run Script Phase). Cold, that is
+      # the single most expensive thing in this job; cached, it is close to free.
+      # CircuitFactoryRegistry's .build is cached separately because the Run Script
+      # Phase reuses the compiled executable across builds by design.
+      - name: Cache SwiftPM
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm
+            ~/.swiftpm
+            build-tooling/CircuitFactoryRegistry/.build
+            iosApp/ArchitectureCheck/.build
+          key: swiftpm-${{ runner.os }}-${{ hashFiles('iosApp/iosApp.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved', '**/Package.swift') }}
+          restore-keys: swiftpm-${{ runner.os }}-
+
+      # Deliberately builds the COMMITTED project rather than running `xcodegen generate`
+      # first. `iosApp/AGENTS.md` requires project.yml and project.pbxproj to be committed
+      # together precisely so "CI and team members who don't run xcodegen locally" can
+      # build, and xcodegen owns only the pbxproj — regenerating risks disturbing the
+      # committed `xcshareddata` it does not manage (the six test plans, the pinned SPM
+      # `Package.resolved`), which would fail the build for reasons unrelated to the change
+      # under test. A pbxproj-vs-project.yml drift check belongs in its own job.
+
+      # A generic simulator destination builds without booting a device, so this does
+      # not depend on which simulator runtimes the image happens to ship.
+      # -skipMacroValidation is required: CircuitMacros is a Swift macro package and
+      # xcodebuild otherwise blocks on the non-interactive macro trust prompt.
+      - name: Build iOS app
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme iOSApp \
+            -configuration US-Int-Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            -skipMacroValidation \
+            CODE_SIGNING_ALLOWED=NO
+
+      # Harmonize — the iOS half of the architecture suite. Host-only, no simulator,
+      # and the counterpart to the Konsist run in the `smoke` job.
+      - name: Architecture (Harmonize)
+        run: swift test --package-path iosApp/ArchitectureCheck
+
+      # NOTE: SwiftLint (`swiftlint --config .swiftlint.yml`, pipeline step 2) is not wired
+      # in here yet. It has never run in CI, so its current pass/fail state is unknown —
+      # `force_cast` and `force_try` are opt-in at *error* severity and there are 41 lines
+      # over the 120-char warning threshold. Add the step once it has been run locally
+      # once and any surviving violations are fixed; adding it blind would just paint CI
+      # red on pre-existing code.
