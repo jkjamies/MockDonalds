@@ -159,10 +159,11 @@ class ForbiddenPatternsTest : BehaviorSpec({
 
     Given("no Android platform framework in shared code") {
         Then("commonMain source sets should not import android platform packages") {
-            // Allow Compose Multiplatform (androidx.compose.*) — these are KMP, not Android-only.
-            // Block actual Android platform imports (android.*, androidx.lifecycle.*, etc.)
+            // Allow the Compose *runtime* (KMP, used by Molecule on iOS) but not Compose UI —
+            // see the dedicated rule below for why. Block actual Android platform imports
+            // (android.*, androidx.lifecycle.*, etc.)
             val allowedAndroidxPrefixes = listOf(
-                "androidx.compose.",
+                "androidx.compose.runtime.",
                 "androidx.annotation.",
                 "androidx.collection.",
             )
@@ -182,7 +183,64 @@ class ForbiddenPatternsTest : BehaviorSpec({
                 }
 
             assert(violators.isEmpty()) {
-                "Android platform imports are not allowed in commonMain (Compose Multiplatform is fine):\n${violators.joinToString("\n")}"
+                "Android platform imports are not allowed in commonMain " +
+                    "(the Compose runtime is fine — Compose UI is not):\n${violators.joinToString("\n")}"
+            }
+        }
+    }
+
+    Given("Compose runtime, not Compose UI, in shared code") {
+        // The project's central architectural claim is that iOS uses the Compose *runtime*
+        // only — Molecule runs presenter composables to produce state, and SwiftUI renders.
+        // Nothing enforced it. Anything in commonMain is compiled for iosX64, iosArm64 and
+        // iosSimulatorArm64 on every build, so a single Compose UI import in commonMain drags
+        // the material3/foundation/ui stack into the iOS framework for code iOS can never
+        // reach. That is exactly how `composeApp` came to declare compose.foundation,
+        // compose.material3, compose.ui and compose.components.resources in commonMain while
+        // having zero `androidx.compose` imports there, and how the whole Kotlin design system
+        // ended up in `core:theme/commonMain` with every consumer in androidMain.
+        //
+        // Compose UI belongs in androidMain. The `mockdonalds.kmp.presentation` convention
+        // plugin already wires it that way; this rule stops modules drifting off it.
+        val composeUiPrefixes = listOf(
+            "androidx.compose.ui.",
+            "androidx.compose.foundation.",
+            "androidx.compose.material",
+            "androidx.compose.animation.",
+        )
+
+        Then("commonMain should not import Compose UI") {
+            val violators = Konsist.scopeFromProject()
+                .files
+                .filter { it.resideInPath("..commonMain..") }
+                .flatMap { file ->
+                    file.imports
+                        .filter { import -> composeUiPrefixes.any { import.name.startsWith(it) } }
+                        .map { "  ${file.name}: ${it.name} (${file.path})" }
+                }
+
+            assert(violators.isEmpty()) {
+                "Compose UI is not allowed in commonMain — move the file (and the dependency) " +
+                    "to androidMain. iOS renders with SwiftUI and uses the Compose runtime only, " +
+                    "so Compose UI in commonMain is compiled into the iOS framework for nothing:\n" +
+                    violators.joinToString("\n")
+            }
+        }
+
+        Then("iosMain should not import Compose UI") {
+            val violators = Konsist.scopeFromProject()
+                .files
+                .filter { it.resideInPath("..iosMain..") }
+                .flatMap { file ->
+                    file.imports
+                        .filter { import -> composeUiPrefixes.any { import.name.startsWith(it) } }
+                        .map { "  ${file.name}: ${it.name} (${file.path})" }
+                }
+
+            assert(violators.isEmpty()) {
+                "Compose UI is not allowed in iosMain — every iOS view is SwiftUI. " +
+                    "The Compose runtime (androidx.compose.runtime.*) is the only permitted " +
+                    "Compose dependency on iOS:\n${violators.joinToString("\n")}"
             }
         }
     }

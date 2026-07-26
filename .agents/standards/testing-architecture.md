@@ -51,7 +51,7 @@ Third trap: **do not identify core impl types by an `.impl.` substring in the im
 |----------|-------|-------------------|
 | architecture/ | `LayerDependencyTest` | Unidirectional dependency flow: api <- domain <- data, api <- presentation. Cross-feature imports only via api. Core never imports features. Network module (`core.network`) imports restricted to `impl/data` modules only. |
 | architecture/ | `CircularDependencyTest` | No circular api imports between feature modules. |
-| architecture/ | `ForbiddenPatternsTest` | No ViewModels, no raw CoroutineScope/launch/async/Dispatchers, no Android platform imports in commonMain. |
+| architecture/ | `ForbiddenPatternsTest` | No ViewModels, no raw CoroutineScope/launch/async/Dispatchers, no Android platform imports in commonMain. **Compose runtime but not Compose UI in commonMain/iosMain** — anything in commonMain compiles for all three iOS targets, so a Compose UI import there drags the material3/foundation/ui stack into the iOS framework for code SwiftUI never reaches. |
 | circuit/ | `CircuitConventionsTest` | Events are sealed class (not interface). Screens in api with @Parcelize. TabScreens have tag. ProtectedScreens in api/navigation. |
 | circuit/ | `NamingConventionsTest` | Screens end with Screen, events with Event, presenters with Presenter, UiState with UiState, repositories with Repository/RepositoryImpl. |
 | core/ | `CodeHygieneTest` | No wildcard imports, no println/System.out, no Thread.sleep/runBlocking, no !!, no lateinit var in shared code. |

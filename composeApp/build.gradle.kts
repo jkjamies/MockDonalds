@@ -75,12 +75,15 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            // Compose
+            // Compose RUNTIME only — see androidMain below for Compose UI.
+            //
+            // iOS runs presenters through the Compose runtime via Molecule and renders with
+            // SwiftUI; it never touches Compose UI. Anything declared here is compiled for
+            // iosX64/iosArm64/iosSimulatorArm64 on every build, so Compose UI in commonMain
+            // is pure cost for the iOS framework. commonMain in this module has zero
+            // `androidx.compose` imports of any kind; only iosMain needs the runtime
+            // (CircuitPresenterKotlinBridge uses Composable/currentComposer).
             implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
 
             // Feature modules (auto-discovered, architecture-enforced wiring).
             rootDir.resolve("features").listFiles()
@@ -143,6 +146,12 @@ kotlin {
         }
 
         androidMain.dependencies {
+            // Compose UI is Android-only by design — App.kt, MockDonaldsBottomNavigation.kt
+            // and MockDonaldsIcons.kt are the only Compose UI consumers in this module.
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.ui)
+            implementation(compose.components.resources)
             implementation(libs.androidx.compose.material3.windowsizeclass)
         }
 
