@@ -1,6 +1,7 @@
 package com.mockdonalds.app.konsist.core
 
 import com.lemonappdev.konsist.api.Konsist
+import com.mockdonalds.app.konsist.isProductionSourcePath
 import io.kotest.core.spec.style.BehaviorSpec
 
 /**
@@ -9,11 +10,12 @@ import io.kotest.core.spec.style.BehaviorSpec
  */
 class CodeHygieneTest : BehaviorSpec({
 
+    // All three production source sets. `iosMain` used to be excluded, which left the
+    // Molecule/Circuit bridge — the most interop-heavy code in the repo, and the most
+    // likely place for a `!!` or a stray `println` — entirely unchecked.
     val productionFiles = Konsist.scopeFromProject()
         .files
-        .filter {
-            it.resideInPath("..commonMain..") || it.resideInPath("..androidMain..")
-        }
+        .filter { isProductionSourcePath(it.path) }
 
     Given("no wildcard imports") {
         Then("production code should not use wildcard imports") {
@@ -130,7 +132,7 @@ class CodeHygieneTest : BehaviorSpec({
                 .properties()
                 .filter {
                     it.hasLateinitModifier &&
-                        (it.resideInPath("..commonMain..") || it.resideInPath("..androidMain..")) &&
+                        isProductionSourcePath(it.path) &&
                         !it.resideInPath("..androidApp..") &&
                         !it.resideInPath("..composeApp..")
                 }

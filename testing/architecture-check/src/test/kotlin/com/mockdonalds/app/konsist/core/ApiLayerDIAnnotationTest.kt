@@ -1,6 +1,7 @@
 package com.mockdonalds.app.konsist.core
 
 import com.lemonappdev.konsist.api.Konsist
+import com.mockdonalds.app.konsist.isProductionSourcePath
 import io.kotest.core.spec.style.BehaviorSpec
 
 /**
@@ -30,7 +31,7 @@ class ApiLayerDIAnnotationTest : BehaviorSpec({
         Then("classes in api modules should not carry Metro DI annotations") {
             val violators = Konsist.scopeFromProject()
                 .classes()
-                .filter { it.resideInPath("..api..") && it.resideInPath("..commonMain..") }
+                .filter { it.resideInPath("..api..") && isProductionSourcePath(it.path) }
                 .flatMap { klass ->
                     klass.annotations
                         .filter { it.name in forbiddenAnnotations }
@@ -46,7 +47,7 @@ class ApiLayerDIAnnotationTest : BehaviorSpec({
         Then("interfaces in api modules should not carry Metro DI annotations") {
             val violators = Konsist.scopeFromProject()
                 .interfaces()
-                .filter { it.resideInPath("..api..") && it.resideInPath("..commonMain..") }
+                .filter { it.resideInPath("..api..") && isProductionSourcePath(it.path) }
                 .flatMap { iface ->
                     iface.annotations
                         .filter { it.name in forbiddenAnnotations }
@@ -62,7 +63,7 @@ class ApiLayerDIAnnotationTest : BehaviorSpec({
         Then("functions in api modules should not carry Metro DI annotations") {
             val violators = Konsist.scopeFromProject()
                 .functions()
-                .filter { it.resideInPath("..api..") && it.resideInPath("..commonMain..") }
+                .filter { it.resideInPath("..api..") && isProductionSourcePath(it.path) }
                 .flatMap { fn ->
                     fn.annotations
                         .filter { it.name in forbiddenAnnotations }
@@ -78,7 +79,7 @@ class ApiLayerDIAnnotationTest : BehaviorSpec({
         Then("files in api modules should not import from dev.zacsweers.metro") {
             val violators = Konsist.scopeFromProject()
                 .files
-                .filter { it.resideInPath("..api..") && it.resideInPath("..commonMain..") }
+                .filter { it.resideInPath("..api..") && isProductionSourcePath(it.path) }
                 .flatMap { file ->
                     file.imports
                         .filter { it.name.startsWith("dev.zacsweers.metro") }

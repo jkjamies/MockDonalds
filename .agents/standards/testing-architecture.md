@@ -24,7 +24,26 @@ No emulator or simulator required. These are fast (~10s each) and should always 
 
 ## Konsist (Kotlin)
 
-34 architecture test classes in `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/`. All use Kotest BehaviorSpec and scan the project with `Konsist.scopeFromProject()`.
+38 architecture test classes in `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/`. All use Kotest BehaviorSpec and scan the project with `Konsist.scopeFromProject()`.
+
+### Source-set scoping — read this before writing a rule
+
+**A rule scoped to `commonMain` alone checks almost nothing.** Every `*Ui.kt` in this project lives in `androidMain`, and the Molecule/Circuit bridge lives in `iosMain`. A `commonMain`-only filter silently exempts the single largest body of code in the repo — a UI file could use `GlobalScope`, hardcode `Dispatchers.IO`, or import from `impl/data`, and the rule would pass.
+
+Use the shared predicate from `konsist/ScopePredicates.kt`:
+
+```kotlin
+.filter { isProductionSourcePath(it.path) }   // commonMain + androidMain + iosMain
+```
+
+Two rules legitimately stay `commonMain`-only, and both say so at the call site:
+
+- `ForbiddenPatternsTest` → "no Android platform imports in commonMain" — the rule *is* about that source set.
+- Rules governing module types that are `commonMain`-only by construction (`impl/domain`, `impl/data`, feature `api/`). Widening them is harmless but adds no coverage.
+
+Related trap: **never compare a feature directory name against a package segment directly.** Directory names may be hyphenated (`debug-menu`); package segments cannot (`debugmenu`). A raw comparison silently disables the rule for every hyphenated feature. Use `featurePackageSegment(path)`.
+
+Third trap: **do not identify core impl types by an `.impl.` substring in the import.** Only `analytics`, `logger`, and `remote-config` namespace impl under `.impl`; `auth`, `build-config`, `network`, and `persistence` share their api module's package. Derive the impl surface from the module path instead — see `isCoreImplPath`.
 
 ### Test Categories
 
@@ -44,7 +63,10 @@ No emulator or simulator required. These are fast (~10s each) and should always 
 | core/ | `CoreStringsConventionsTest` | core:strings is resources-only (no Kotlin source, androidMain only). No feature `build.gradle.kts` declares `:core:strings` — the presentation plugin auto-wires it on `androidMain`. |
 | core/ | `BuildConfigSchemaParityTest` | `AppBuildConfig` ↔ `Defaults.properties` key parity (camelCase ↔ SCREAMING_SNAKE_CASE). Every market directory covers the same set of envs. Catches schema drift in PRs without invoking the full `validateAllMarkets` Gradle task. |
 | core/ | `PersistenceConventionsTest` | `app.cash.sqldelight.*` imports restricted to `core:persistence` (api/impl/test), the `composeApp` aggregator, and feature `impl/data/`. Keeps SQLDelight runtime out of presentation/domain and prevents non-data modules from reaching past repositories into raw queries. |
-| core/ | `AgentDocumentationTest` | Every feature/core module has AGENTS.md. Skills have SKILL.md. |
+| core/ | `AgentDocumentationTest` | Every feature/core module has AGENTS.md. Skills have SKILL.md. Every standards file exists. |
+| core/ | `AgentDocumentationDriftTest` | Every feature, core module, skill, and standard on disk is named in `AGENTS.md` / `.agents/AGENTS.md` / `README.md`. No skill named in the docs is missing from disk. The Konsist class count quoted in AGENTS.md matches the suite. Agents route off these files — an unlisted skill is an uninvokable one. |
+| circuit/ | `UiCompositionConventionsTest` | Every `*Ui.kt` exposes a composable named after the file carrying `@CircuitInject` (absence must fail, not narrow `UiTestConventionsTest`'s filter). Helper composables are private/internal — `composeApp` consumes presentation via `api(project(...))`, so public helpers leak into app-wide API surface. |
+| circuit/ | `PlatformParityTest` | Every Kotlin `@CircuitInject({Screen}::class)` has a matching Swift `@CircuitInject({Screen}.self)` view, and vice versa. Without it a feature can pass the whole suite on both platforms and still render `Text("No UI for screen: …")` on iOS. |
 | layers/ | `ApiLayerTest` | Api data classes are immutable. @Serializable only in api/data/network. No MutableStateFlow in public APIs. |
 | layers/ | `DataLayerTest` | Repository interfaces in domain. RepositoryImpl in data with @ContributesBinding. Repository functions return Flow. DataSource classes in correct directories (remote/ or local/). DTOs must be @Serializable data classes in remote/ package. |
 | layers/ | `DomainLayerTest` | Abstract use cases in api. Impl classes in domain with @ContributesBinding. |
@@ -62,7 +84,8 @@ No emulator or simulator required. These are fast (~10s each) and should always 
 2. Use `Konsist.scopeFromProject()` for project-wide checks
 3. Use `resideInPath("..impl/domain..")` for module-scoped checks
 4. Use `Konsist.scopeFromSourceSet("commonMain", "features..", "domain")` for source-set-scoped checks
-5. Filter with `resideInPath("..commonMain..")` to exclude test code from production rules
+5. Filter with `isProductionSourcePath(it.path)` to exclude test code from production rules — **not** `resideInPath("..commonMain..")`, which also excludes `androidMain` and `iosMain`. See "Source-set scoping" above.
+6. If the rule compares a collected set against another (parity, coverage, inventory), assert both sides are non-empty first. An empty-vs-empty comparison passes vacuously and hides every real violation — that is how `LocalizationConventionsTest` came to pass against a `Resources/` directory that does not exist.
 
 ## Harmonize (iOS/Swift)
 

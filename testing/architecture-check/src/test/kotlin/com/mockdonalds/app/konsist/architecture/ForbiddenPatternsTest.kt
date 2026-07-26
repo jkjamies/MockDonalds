@@ -1,11 +1,17 @@
 package com.mockdonalds.app.konsist.architecture
 
 import com.lemonappdev.konsist.api.Konsist
+import com.mockdonalds.app.konsist.isProductionSourcePath
 import io.kotest.core.spec.style.BehaviorSpec
 
 /**
  * Enforces forbidden patterns that are architectural violations in this project.
  * No ViewModels, no raw CoroutineScope/Dispatchers, no app module imports from library modules.
+ *
+ * Scope: all production source sets (`commonMain`, `androidMain`, `iosMain`). The coroutine
+ * rules in particular are worthless when scoped to `commonMain` only — every Compose UI file
+ * in the project lives in `androidMain`, so that is precisely where a stray `GlobalScope` or
+ * hardcoded `Dispatchers.IO` would appear.
  */
 class ForbiddenPatternsTest : BehaviorSpec({
 
@@ -46,10 +52,15 @@ class ForbiddenPatternsTest : BehaviorSpec({
         val featureAndPresenterFiles = Konsist.scopeFromProject()
             .files
             .filter {
-                it.resideInPath("..commonMain..") &&
+                isProductionSourcePath(it.path) &&
                     (it.resideInPath("..features..") || it.resideInPath("..composeApp..")) &&
-                    // Exclude CenterPost itself — it's the one place allowed to use CoroutineScope
-                    !it.resideInPath("..centerpost..")
+                    // CenterPost is the one place allowed to own a CoroutineScope on Android.
+                    !it.resideInPath("..centerpost..") &&
+                    // CircuitPresenterKotlinBridge is its iOS counterpart: Molecule's
+                    // `launchMolecule` requires a CoroutineScope to host the presenter
+                    // composition, exactly as Compose's recomposer does on Android. Nothing
+                    // else under composeApp/iosMain gets this exemption.
+                    !it.name.startsWith("CircuitPresenterKotlinBridge")
             }
 
         Then("feature modules should not directly use CoroutineScope") {
@@ -70,6 +81,10 @@ class ForbiddenPatternsTest : BehaviorSpec({
         }
 
         Then("feature modules should not directly use launch or async") {
+            // `*Ui.kt` is exempt: UI-local coroutines (scroll animation, snackbar dismissal)
+            // are driven by Compose's own `rememberCoroutineScope()` and are not business
+            // logic, so routing them through CenterPost would be wrong. The exemption is
+            // narrow — the CoroutineScope and Dispatchers rules above still apply to UI files.
             val violators = featureAndPresenterFiles
                 .filter { !it.name.endsWith("Ui.kt") }
                 .flatMap { file ->

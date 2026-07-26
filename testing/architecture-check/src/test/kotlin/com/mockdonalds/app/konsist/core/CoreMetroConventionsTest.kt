@@ -1,6 +1,7 @@
 package com.mockdonalds.app.konsist.core
 
 import com.lemonappdev.konsist.api.Konsist
+import com.mockdonalds.app.konsist.isProductionSourcePath
 import io.kotest.core.spec.style.BehaviorSpec
 
 /**
@@ -14,7 +15,9 @@ class CoreMetroConventionsTest : BehaviorSpec({
         Then("core:metro should not import from any feature module") {
             val metroFiles = Konsist.scopeFromProject()
                 .files
-                .filter { it.resideInPath("..core/metro..") && it.resideInPath("..commonMain..") }
+                .filter {
+                    it.resideInPath("..core/metro..") && isProductionSourcePath(it.path)
+                }
 
             val violators = metroFiles.filter { file ->
                 file.imports.any { it.name.contains(".features.") }
@@ -32,7 +35,9 @@ class CoreMetroConventionsTest : BehaviorSpec({
         Then("core:metro should not import from impl modules") {
             val metroFiles = Konsist.scopeFromProject()
                 .files
-                .filter { it.resideInPath("..core/metro..") && it.resideInPath("..commonMain..") }
+                .filter {
+                    it.resideInPath("..core/metro..") && isProductionSourcePath(it.path)
+                }
 
             val violators = metroFiles.filter { file ->
                 file.imports.any { imp ->

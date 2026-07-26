@@ -1,6 +1,7 @@
 package com.mockdonalds.app.konsist.core
 
 import com.lemonappdev.konsist.api.Konsist
+import com.mockdonalds.app.konsist.isProductionSourcePath
 import io.kotest.core.spec.style.BehaviorSpec
 
 /**
@@ -16,7 +17,7 @@ class DependencyGraphScopeTest : BehaviorSpec({
             val violators = Konsist.scopeFromProject()
                 .classes()
                 .filter { it.hasAnnotation { a -> a.name == "DependencyGraph" } }
-                .filter { it.resideInPath("..commonMain..") }
+                .filter { isProductionSourcePath(it.path) }
                 .filter {
                     !it.resideInPath("..composeApp..") &&
                         !it.resideInPath("..navint-tests..") &&
