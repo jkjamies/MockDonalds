@@ -1,6 +1,7 @@
 package com.mockdonalds.app.core.remoteconfig.impl
 
 import com.mockdonalds.app.core.remoteconfig.FeatureFlag
+import com.mockdonalds.app.core.remoteconfig.HarnessIosBridge
 import com.mockdonalds.app.core.remoteconfig.RemoteConfig
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding

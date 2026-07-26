@@ -59,7 +59,7 @@ flowchart TD
     Q2 -->|"Yes"| WithResult["centerPost.withResult { ... }"]
 
     Interactor --> Invoke["val result = interactor(params)<br/>Returns CenterPostResult&lt;R&gt;"]
-    Subject --> Collect["val content by interactor.collectAsState()<br/>Auto-invokes + collects flow"]
+    Subject --> Collect["val content by interactor.collectContentAsState()<br/>Auto-invokes + collects contentState (Loading/Content/Error)"]
     Launcher --> Job["Returns Job"]
     WithResult --> Deferred["Returns Deferred&lt;CenterPostResult&lt;T&gt;&gt;"]
 ```
@@ -117,6 +117,51 @@ class GetHomeContentImpl(
 ```
 
 Internal behavior: params go through `distinctUntilChanged()` then `flatMapLatest { createObservable(it) }` then another `distinctUntilChanged()`. This means new params cancel the previous observable, and duplicate emissions are suppressed.
+
+### Two collection surfaces: `flow` vs `contentState`
+
+| Property | Type | Loading | Failure |
+|---|---|---|---|
+| `flow` | `Flow<T>` | none — no signal before the first value | **propagates to the collector** |
+| `contentState` | `Flow<CenterPostContentState<T>>` | `Loading` before the first value | `Error(CenterPostException)` |
+
+**Presenters should use `contentState`** (via `collectContentAsState()`). `flow` collapses "loading", "genuinely empty", and "failed" into a single `null` at the presenter — which is why an un-migrated screen renders a permanently blank list when its backend is down — and an exception thrown by `createObservable` reaches composition.
+
+`flow` remains for callers that compose it with other flows and handle failure themselves.
+
+```kotlin
+@CircuitInject(OrderScreen::class, AppScope::class)
+@Inject
+@Composable
+fun OrderPresenter(navigator: Navigator, getOrderContent: GetOrderContent): OrderUiState {
+    val content by getOrderContent.collectContentAsState()
+
+    return OrderUiState(
+        categoryPreviews = content.dataOrNull?.categoryPreviews.orEmpty(),
+        isLoading = content.isLoading,
+        errorMessage = content.errorOrNull?.message,
+        eventSink = { /* ... */ },
+    )
+}
+```
+
+**Flatten it — never put `CenterPostContentState` on a `UiState`.** It is a sealed *interface*, and sealed interfaces do not bridge cleanly to Swift (see [ios-interop.md](ios-interop.md)). `UiState` carries primitives: `isLoading: Boolean`, `errorMessage: String?`.
+
+`Error` is terminal for the current params — `distinctUntilChanged()` on params means re-invoking with the same value will not restart a failed stream. Expose retry as an explicit event that re-invokes the interactor.
+
+### Migrating an existing screen to `contentState`
+
+Screens still on `collectAsState()` show neither spinners nor errors. Migration is mechanical but crosses both platforms — a `UiState` field addition breaks every Swift `StateRobot`, because Kotlin default arguments do **not** cross the Obj-C bridge and Swift constructs `UiState` with all parameters explicitly. Per screen:
+
+1. `{Feature}Presenter.kt` — `collectAsState()` → `collectContentAsState()`, map through `dataOrNull` / `isLoading` / `errorOrNull`.
+2. `{Feature}UiState.kt` — add `isLoading: Boolean = false`, `errorMessage: String? = null`.
+3. `{Feature}Ui.kt` — render the spinner and error states.
+4. `{Feature}StateRobot.kt` (androidDeviceTest) — pass the new fields.
+5. `{Feature}PresenterTest.kt` — assert loading and error transitions, not just content.
+6. `{Feature}View.swift` — render the new states.
+7. `{Feature}StateRobot.swift` — **required**, pass the new fields or the iOS build breaks.
+
+Also stop the repository from swallowing the failure it is meant to report: `OrderRepositoryImpl.refreshIfStale` currently does `runCatching { … }.onFailure { logger.e(…) }`, so a Spoonacular outage never reaches `contentState` at all. The error path has to be un-swallowed for the state to be reachable.
 
 ## When to Use Which
 
@@ -272,6 +317,8 @@ fun HomePresenter(
     dispatchers: CenterPostDispatchers,
 ): HomeUiState {
     val centerPost = rememberCenterPost(dispatchers)
+    // `collectAsState()` — legacy shape, shown here because most screens still use it.
+    // New screens use `collectContentAsState()`; see "Two collection surfaces" above.
     val content by getHomeContent.collectAsState()  // auto-invokes with Unit, collects flow
 
     return HomeUiState(

@@ -46,6 +46,15 @@ kotlin {
             isStatic = true
 
             // Export feature modules for iOS consumption (auto-discovered).
+            //
+            // Everything exported becomes a public Obj-C symbol AND a dead-code-elimination
+            // root, so the export list is the primary lever on framework size. Only export
+            // what SwiftUI genuinely names:
+            //   api:domain        — models read off UiState (CategoryPreview, RecentItem, …)
+            //   api:navigation    — Screen objects and TestTags for @CircuitInject / robots
+            //   impl:presentation — {Feature}UiState and {Feature}Event
+            // Everything else reaches Swift by reachability from `IosApp`'s public API and
+            // does not need exporting — see `core:network:api`/`AkamaiSensorBridge`.
             rootDir.resolve("features").listFiles()
                 ?.filter { it.isDirectory }
                 ?.map { it.name }
@@ -56,7 +65,10 @@ kotlin {
                     export(project(":features:$feature:impl:presentation"))
                 }
             export(project(":core:circuit"))
-            export(project(":core:remote-config:impl"))
+            // `:api`, not `:impl`. Swift only implements the HarnessIosBridge contract; it has
+            // no business seeing RemoteConfigProviderImpl, RemoteConfigSource, or the multibind
+            // aggregator interfaces, and exporting them pins them as DCE roots.
+            export(project(":core:remote-config:api"))
             export(project(":core:build-config:api"))
         }
     }
@@ -84,13 +96,25 @@ kotlin {
                 }
 
             // Core
+            // `api` here is not a style choice: Kotlin/Native requires every `export`ed
+            // project to also be an api-dependency of the source set. Anything NOT exported
+            // stays `implementation` so it does not leak onto consumers' compile classpath.
             api(project(":core:circuit"))
-            api(project(":core:metro"))
+            api(project(":core:remote-config:api"))
+            // Exported, so it must be declared api() directly. It previously reached the api
+            // configuration only transitively through `implementation(:core:build-config:impl)`,
+            // which is not what Kotlin/Native's exported-dependency check reads.
+            api(project(":core:build-config:api"))
+            // `implementation`, not `api`: core:metro is internal DI wiring (the AppGraph
+            // contract) and is not exported. As `api` it pushed core:metro plus its five
+            // transitive api deps onto androidApp's compile classpath for no reason.
+            implementation(project(":core:metro"))
             implementation(project(":core:analytics:impl"))
             implementation(project(":core:auth:impl"))
-            api(project(":core:remote-config:impl"))
+            // impl is needed at runtime for its @ContributesBinding wiring, but is neither
+            // exported nor part of composeApp's own API surface.
+            implementation(project(":core:remote-config:impl"))
             implementation(project(":core:centerpost"))
-            implementation(project(":core:circuit"))
             implementation(project(":core:theme"))
             implementation(project(":core:network:impl"))
             implementation(project(":core:build-config:impl"))

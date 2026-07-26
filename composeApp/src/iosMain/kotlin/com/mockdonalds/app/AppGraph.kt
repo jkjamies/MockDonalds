@@ -1,6 +1,6 @@
 package com.mockdonalds.app
 
-import com.mockdonalds.app.core.remoteconfig.impl.HarnessIosBridge
+import com.mockdonalds.app.core.remoteconfig.HarnessIosBridge
 import com.mockdonalds.app.core.metro.AppGraph
 import com.mockdonalds.app.core.network.AkamaiSensorBridge
 import dev.zacsweers.metro.AppScope

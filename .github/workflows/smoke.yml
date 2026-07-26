@@ -53,6 +53,15 @@ jobs:
       - name: Architecture (Konsist)
         run: ./gradlew :testing:architecture-check:test
 
+      # One variant, not the matrix. Configuration alone does not compile anything, so
+      # without this a Kotlin error or a broken DI graph reaches main unnoticed. `us`/`int`
+      # is the documented default combo.
+      - name: Compile (Android, us-int-debug)
+        run: ./gradlew :androidApp:assembleUsIntDebug
+
+      - name: Unit tests (Kotlin, host)
+        run: ./gradlew testAndroidHostTest
+
       - name: Upload test report on failure
         if: failure()
         uses: actions/upload-artifact@v4
