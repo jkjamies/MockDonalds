@@ -19,10 +19,11 @@ class OrderUiRobot(private val rule: ComposeContentTestRule) {
     private val stateRobot = OrderStateRobot()
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-    private fun setContentWith(state: OrderUiState) {
+    private fun setContentWith(state: OrderUiState, landscape: Boolean = false) {
+        val size = if (landscape) DpSize(800.dp, 400.dp) else DpSize(400.dp, 800.dp)
         rule.setContent {
             CompositionLocalProvider(
-                LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(DpSize(400.dp, 800.dp)),
+                LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(size),
             ) {
                 MockDonaldsTheme { OrderUi(state = state) }
             }
@@ -37,11 +38,21 @@ class OrderUiRobot(private val rule: ComposeContentTestRule) {
         setContentWith(stateRobot.stateWithNoCart())
     }
 
+    fun setLandscapeContent() {
+        setContentWith(stateRobot.defaultState(), landscape = true)
+    }
+
     fun assertDefaultScreen() {
         assertCategoryPreviewDisplayed("burgers")
         assertCategoryPreviewDisplayed("drinks")
         assertCartBarDisplayed()
         assertCartItemCount(2)
+    }
+
+    fun assertLandscapeScreen() {
+        assertCategoryPreviewDisplayed("burgers")
+        assertCategoryPreviewDisplayed("drinks")
+        assertCartBarDisplayed()
     }
 
     fun assertScreenWithNoCart() {

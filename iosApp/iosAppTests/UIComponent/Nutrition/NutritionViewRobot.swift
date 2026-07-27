@@ -20,10 +20,22 @@ final class NutritionViewRobot {
         NutritionView(state: stateRobot.loadingState())
     }
 
+    func createLandscapeView() -> some View {
+        createDefaultView()
+            .environment(\.verticalSizeClass, .compact)
+    }
+
     // MARK: - Screen Assertions
 
     func assertDefaultScreen() throws {
         let view = createDefaultView()
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.SCREEN)
+        try body.find(viewWithAccessibilityIdentifier: tags.WEBVIEW)
+    }
+
+    func assertLandscapeScreen() throws {
+        let view = createLandscapeView()
         let body = try view.inspect()
         try body.find(viewWithAccessibilityIdentifier: tags.SCREEN)
         try body.find(viewWithAccessibilityIdentifier: tags.WEBVIEW)

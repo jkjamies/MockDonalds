@@ -18,8 +18,22 @@ final class CategoryDetailViewRobot {
         CategoryDetailView(state: stateRobot.stateWithNoItems())
     }
 
+    func createLandscapeView() -> some View {
+        createDefaultView()
+            .environment(\.verticalSizeClass, .compact)
+    }
+
     func assertDefaultScreen() throws {
         let view = createDefaultView()
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.TOP_BAR)
+        try body.find(viewWithAccessibilityIdentifier: tags.BACK_BUTTON)
+        try body.find(viewWithAccessibilityIdentifier: "\(tags.MENU_ITEM_CARD)-1")
+        try body.find(viewWithAccessibilityIdentifier: tags.CART_BAR)
+    }
+
+    func assertLandscapeScreen() throws {
+        let view = createLandscapeView()
         let body = try view.inspect()
         try body.find(viewWithAccessibilityIdentifier: tags.TOP_BAR)
         try body.find(viewWithAccessibilityIdentifier: tags.BACK_BUTTON)

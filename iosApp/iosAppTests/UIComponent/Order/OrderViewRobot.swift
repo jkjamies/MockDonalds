@@ -20,10 +20,23 @@ final class OrderViewRobot {
         OrderView(state: stateRobot.stateWithNoCart())
     }
 
+    func createLandscapeView() -> some View {
+        createDefaultView()
+            .environment(\.verticalSizeClass, .compact)
+    }
+
     // MARK: - Screen Assertions
 
     func assertDefaultScreen() throws {
         let view = createDefaultView()
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: "\(tags.CATEGORY_PREVIEW_CARD)-burgers")
+        try body.find(viewWithAccessibilityIdentifier: "\(tags.CATEGORY_PREVIEW_CARD)-drinks")
+        try body.find(viewWithAccessibilityIdentifier: tags.CART_BAR)
+    }
+
+    func assertLandscapeScreen() throws {
+        let view = createLandscapeView()
         let body = try view.inspect()
         try body.find(viewWithAccessibilityIdentifier: "\(tags.CATEGORY_PREVIEW_CARD)-burgers")
         try body.find(viewWithAccessibilityIdentifier: "\(tags.CATEGORY_PREVIEW_CARD)-drinks")

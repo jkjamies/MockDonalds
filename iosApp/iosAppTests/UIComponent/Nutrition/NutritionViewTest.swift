@@ -16,6 +16,10 @@ import ComposeApp
         try robot.assertLoadingScreen()
     }
 
+    @Test func rendersLandscapeLayout() throws {
+        try robot.assertLandscapeScreen()
+    }
+
     // MARK: - Events
 
     @Test func backTapEmitsEvent() {

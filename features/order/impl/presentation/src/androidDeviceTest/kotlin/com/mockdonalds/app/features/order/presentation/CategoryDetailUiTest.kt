@@ -30,6 +30,12 @@ class CategoryDetailUiTest {
     }
 
     @Test
+    fun rendersLandscapeLayout() {
+        robot.setLandscapeContent()
+        robot.assertLandscapeScreen()
+    }
+
+    @Test
     fun backButtonEmitsEvent() {
         robot.setDefaultContent()
         robot.tapBack()
