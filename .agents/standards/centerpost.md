@@ -308,7 +308,7 @@ interface CenterPostDispatchers {
 ```
 
 - Production: `DefaultCenterPostDispatchers` (bound via `@ContributesBinding`) uses real `Dispatchers.*`
-- Tests: `TestCenterPostDispatchers()` routes all three to a single `StandardTestDispatcher` for deterministic execution
+- Tests: `TestCenterPostDispatchers()` routes all three to `Dispatchers.Unconfined`, so dispatched work runs eagerly on the calling thread — deterministic and single-threaded
 
 Presenters inject `CenterPostDispatchers` (the interface), making them testable.
 

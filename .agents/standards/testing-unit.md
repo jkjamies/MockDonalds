@@ -43,7 +43,9 @@ Every `UseCaseImpl`, every `RepositoryImpl`, and every `Presenter` must have a c
 
 ## TestCenterPostDispatchers
 
-Always use `TestCenterPostDispatchers()` (which wraps `StandardTestDispatcher`). It routes `default`, `io`, and `main` to a single test dispatcher for deterministic execution. Never use `DefaultCenterPostDispatchers` in tests.
+Always use `TestCenterPostDispatchers()`. It routes `default`, `io`, and `main` to `Dispatchers.Unconfined`, so work dispatched by the code under test runs eagerly on the calling thread — deterministic and single-threaded. Never use `DefaultCenterPostDispatchers` in tests.
+
+It deliberately does **not** use `StandardTestDispatcher`. That dispatcher owns a `TestCoroutineScheduler` which only runs queued work when something advances it, and `runTest` — the usual thing that advances it — is banned here. Code under test doing `withContext(dispatchers.io) { … }` would therefore suspend forever, and the hang is not rescuable by a timeout: cancelling the stuck coroutine needs the same dead scheduler to resume its continuation. See the KDoc on `TestCenterPostDispatchers` for the full account.
 
 ## Presenter Test Pattern
 

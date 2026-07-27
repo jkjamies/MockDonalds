@@ -66,7 +66,7 @@ Every banned pattern in the MockDonalds codebase with rationale, alternative, an
 
 - **Banned:** `Dispatchers.Default`, `Dispatchers.IO`, `Dispatchers.Main` imports in feature modules
 - **Why:** Hardcoded dispatchers are untestable. Tests cannot control thread scheduling.
-- **Instead:** Inject `CenterPostDispatchers` interface. In tests, use `TestCenterPostDispatchers()` which routes all dispatchers to `StandardTestDispatcher`.
+- **Instead:** Inject `CenterPostDispatchers` interface. In tests, use `TestCenterPostDispatchers()`, which routes all three dispatchers to `Dispatchers.Unconfined`.
 - **Enforced by:** `ForbiddenPatternsTest` -- "feature modules should not hardcode Dispatchers"
 
 ### Android Platform Imports in commonMain
@@ -96,7 +96,8 @@ Every banned pattern in the MockDonalds codebase with rationale, alternative, an
 
 - **Banned:** `kotlinx.coroutines.test.UnconfinedTestDispatcher` in test code
 - **Why:** Not safe under concurrent spec execution (`SpecExecutionMode.LimitedConcurrency`). Unconfined dispatching causes non-deterministic test behavior when specs run in parallel.
-- **Instead:** Use `StandardTestDispatcher` via `TestCenterPostDispatchers()`.
+- **Instead:** Use `TestCenterPostDispatchers()`.
+- **Not the same as `Dispatchers.Unconfined`**, which `TestCenterPostDispatchers` uses and which stays allowed. The hazard here is the `TestCoroutineScheduler` that `UnconfinedTestDispatcher` is bound to — shared virtual-time state across concurrently executing specs. `Dispatchers.Unconfined` has no scheduler and no shared state; it just runs the continuation on the calling thread.
 - **Enforced by:** `TestFileNamingTest` -- "no UnconfinedTestDispatcher in tests"
 
 ## iOS Interop
