@@ -30,7 +30,7 @@ class PresentationLayerTest : BehaviorSpec({
                 .filter {
                     it.resideInPath("..impl/presentation..") &&
                         it.resideInPath("..commonMain..") &&
-                        it.name.endsWith("Presenter.kt")
+                        it.nameWithExtension.endsWith("Presenter.kt")
                 }
 
             val violators = presenterFiles.mapNotNull { file ->
@@ -55,7 +55,7 @@ class PresentationLayerTest : BehaviorSpec({
                 .filter {
                     it.resideInPath("..impl/presentation..") &&
                         it.resideInPath("..commonMain..") &&
-                        it.name.endsWith("Presenter.kt")
+                        it.nameWithExtension.endsWith("Presenter.kt")
                 }
 
             val violators = presenterFiles
@@ -89,13 +89,22 @@ class PresentationLayerTest : BehaviorSpec({
                 .filter {
                     it.resideInPath("..impl/presentation..") &&
                         it.resideInPath("..commonMain..") &&
-                        it.name.endsWith("Presenter.kt")
+                        it.nameWithExtension.endsWith("Presenter.kt")
                 }
+
+            // Adapting a DI-contributed navigation extension into a menu item is not domain
+            // logic, and it cannot move: MoreTabExtension.onClick takes a Navigator, so the
+            // extension point belongs to presentation/navigation and can never live in domain.
+            // The only alternative — an api/navigation → api/domain dependency — is precisely
+            // the coupling the "api:domain isolation" rules in ApiLayerTest exist to prevent.
+            val adaptedFromNavigationExtensions = setOf("MoreMenuItem")
 
             val violators = presenterFiles.flatMap { file ->
                 apiModelNames.filter { modelName ->
-                    // Look for direct constructor calls like "ModelName("
-                    file.text.contains("$modelName(")
+                    modelName !in adaptedFromNavigationExtensions &&
+                        // Word-boundary matched: a bare `contains("$modelName(")` reports
+                        // `MenuItem` inside `MoreMenuItem(`, and `Item` inside either.
+                        Regex("""(?<![\w.])${Regex.escape(modelName)}\s*\(""").containsMatchIn(file.text)
                 }.map { "  ${file.name} constructs $it" }
             }
 

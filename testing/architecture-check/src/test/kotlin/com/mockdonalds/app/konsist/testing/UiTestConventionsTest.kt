@@ -25,7 +25,7 @@ class UiTestConventionsTest : BehaviorSpec({
                         it.hasAnnotation { a -> a.name == "Composable" } &&
                         it.resideInPath("..androidMain..")
                 }
-                .filter { it.name.endsWith("Ui") }
+                .filter { it.nameWithExtension.endsWith("Ui") }
                 .map { it.name }
                 .toSet()
 
@@ -93,7 +93,7 @@ class UiTestConventionsTest : BehaviorSpec({
             val stateRobotFiles = Konsist.scopeFromProject()
                 .files
                 .filter { it.resideInPath("..androidDeviceTest..") }
-                .filter { it.name.endsWith("StateRobot.kt") }
+                .filter { it.nameWithExtension.endsWith("StateRobot.kt") }
 
             val violators = stateRobotFiles.filter { file ->
                 !file.imports.any { it.name == "com.mockdonalds.app.core.test.StateRobot" }
@@ -111,7 +111,7 @@ class UiTestConventionsTest : BehaviorSpec({
             val uiTestFiles = Konsist.scopeFromProject()
                 .files
                 .filter { it.resideInPath("..androidDeviceTest..") }
-                .filter { it.name.endsWith("UiTest.kt") }
+                .filter { it.nameWithExtension.endsWith("UiTest.kt") }
 
             val violators = uiTestFiles.filter { file ->
                 file.text.contains("StateRobot")
@@ -133,14 +133,14 @@ class UiTestConventionsTest : BehaviorSpec({
                         it.hasAnnotation { a -> a.name == "Composable" } &&
                         it.resideInPath("..androidMain..")
                 }
-                .filter { it.name.endsWith("Ui") }
+                .filter { it.nameWithExtension.endsWith("Ui") }
                 .map { it.name.removeSuffix("Ui") }
                 .toSet()
 
             val testTagObjects = Konsist.scopeFromProject()
                 .objects()
                 .filter { it.resideInPath("..api..") }
-                .filter { it.name.endsWith("TestTags") }
+                .filter { it.nameWithExtension.endsWith("TestTags") }
                 .map { it.name.removeSuffix("TestTags") }
                 .toSet()
 
@@ -154,7 +154,7 @@ class UiTestConventionsTest : BehaviorSpec({
         Then("TestTags objects should reside in the api.ui package") {
             val testTagObjects = Konsist.scopeFromProject()
                 .objects()
-                .filter { it.name.endsWith("TestTags") }
+                .filter { it.nameWithExtension.endsWith("TestTags") }
 
             val violators = testTagObjects.filter { obj ->
                 !obj.resideInPath("..api..")
@@ -172,7 +172,7 @@ class UiTestConventionsTest : BehaviorSpec({
             val uiRobotFiles = Konsist.scopeFromProject()
                 .files
                 .filter { it.resideInPath("..androidDeviceTest..") }
-                .filter { it.name.endsWith("UiRobot.kt") }
+                .filter { it.nameWithExtension.endsWith("UiRobot.kt") }
 
             val violators = uiRobotFiles.filter { file ->
                 val text = file.text
@@ -191,7 +191,7 @@ class UiTestConventionsTest : BehaviorSpec({
             val uiRobotFiles = Konsist.scopeFromProject()
                 .files
                 .filter { it.resideInPath("..androidDeviceTest..") }
-                .filter { it.name.endsWith("UiRobot.kt") }
+                .filter { it.nameWithExtension.endsWith("UiRobot.kt") }
 
             val violators = uiRobotFiles.filter { file ->
                 !file.text.contains("setLandscapeContent")
@@ -207,7 +207,7 @@ class UiTestConventionsTest : BehaviorSpec({
             val uiRobotFiles = Konsist.scopeFromProject()
                 .files
                 .filter { it.resideInPath("..androidDeviceTest..") }
-                .filter { it.name.endsWith("UiRobot.kt") }
+                .filter { it.nameWithExtension.endsWith("UiRobot.kt") }
 
             val violators = uiRobotFiles.filter { file ->
                 !file.text.contains("assertLandscapeScreen")
@@ -223,7 +223,7 @@ class UiTestConventionsTest : BehaviorSpec({
             val uiTestFiles = Konsist.scopeFromProject()
                 .files
                 .filter { it.resideInPath("..androidDeviceTest..") }
-                .filter { it.name.endsWith("UiTest.kt") }
+                .filter { it.nameWithExtension.endsWith("UiTest.kt") }
 
             val violators = uiTestFiles.filter { file ->
                 !file.text.contains("rendersLandscapeLayout")
@@ -241,7 +241,7 @@ class UiTestConventionsTest : BehaviorSpec({
             val uiRobotFiles = Konsist.scopeFromProject()
                 .files
                 .filter { it.resideInPath("..androidDeviceTest..") }
-                .filter { it.name.endsWith("UiRobot.kt") }
+                .filter { it.nameWithExtension.endsWith("UiRobot.kt") }
 
             val violators = uiRobotFiles.filter { file ->
                 !file.text.contains("LocalWindowSizeClass")

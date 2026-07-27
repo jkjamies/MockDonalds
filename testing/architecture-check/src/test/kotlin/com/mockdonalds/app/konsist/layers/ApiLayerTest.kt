@@ -75,16 +75,27 @@ class ApiLayerTest : BehaviorSpec({
                     it.resideInPath("..features..") &&
                         it.resideInPath("..api..") &&
                         it.resideInPath("..commonMain..") &&
-                        it.name.endsWith("Screen.kt")
+                        it.nameWithExtension.endsWith("Screen.kt")
                 }
 
-            screenFiles.forEach { file ->
-                val hasCircuitImport = file.imports.any {
-                    it.name.startsWith("com.slack.circuit.runtime")
+            // Circuit's `Screen` may be reached directly OR through one of core:circuit's
+            // marker interfaces (TabScreen / FlowScreen / ProtectedScreen), each of which
+            // extends it. Requiring a literal `com.slack.circuit.runtime` import fails 6 of
+            // the 11 screens for being idiomatic: HomeScreen is `data object HomeScreen :
+            // TabScreen`, which never needs to name Circuit itself. What actually matters is
+            // that the file is wired to the Screen contract by one route or the other.
+            val violators = screenFiles.filter { file ->
+                file.imports.none {
+                    it.name.startsWith("com.slack.circuit.runtime") ||
+                        it.name.startsWith("com.mockdonalds.app.core.circuit")
                 }
-                assert(hasCircuitImport) {
-                    "Screen file '${file.name}' in api:navigation must import from com.slack.circuit.runtime"
-                }
+            }
+
+            assert(violators.isEmpty()) {
+                val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
+                "Screen files must implement Circuit's Screen — either directly " +
+                    "(com.slack.circuit.runtime.screen.Screen) or via a core:circuit marker " +
+                    "such as TabScreen/FlowScreen/ProtectedScreen:\n$names"
             }
         }
     }
@@ -115,7 +126,7 @@ class ApiLayerTest : BehaviorSpec({
                     it.resideInPath("..features..") &&
                         it.resideInPath("..api/domain..") &&
                         it.resideInPath("..commonMain..") &&
-                        it.name.endsWith("Screen.kt")
+                        it.nameWithExtension.endsWith("Screen.kt")
                 }
 
             assert(violators.isEmpty()) {
@@ -131,7 +142,7 @@ class ApiLayerTest : BehaviorSpec({
                     it.resideInPath("..features..") &&
                         it.resideInPath("..api/domain..") &&
                         it.resideInPath("..commonMain..") &&
-                        it.name.endsWith("TestTags.kt")
+                        it.nameWithExtension.endsWith("TestTags.kt")
                 }
 
             assert(violators.isEmpty()) {

@@ -46,7 +46,7 @@ class CodeHygieneTest : BehaviorSpec({
             val textViolators = productionFiles
                 .filter { file ->
                     file.text.contains("println(") &&
-                        !file.name.endsWith("Test.kt") &&
+                        !file.nameWithExtension.endsWith("Test.kt") &&
                         !file.resideInPath("..core/analytics/impl..")
                 }
 
@@ -140,6 +140,34 @@ class CodeHygieneTest : BehaviorSpec({
             assert(violators.isEmpty()) {
                 val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
                 "lateinit var is not allowed in shared production code — use constructor injection or lazy:\n$names"
+            }
+        }
+    }
+
+    Given("the architecture rules match filenames correctly") {
+        Then("rule files should not match a Konsist file `name` against a .kt suffix") {
+            // Konsist's KoFileDeclaration.name has NO extension — `nameWithExtension` is the
+            // one that does. So testing a file's `name` for a dotted-suffix literal silently
+            // matches nothing, and the rule built on it evaluates an empty set and passes,
+            // looking enforced while checking nothing. This bit twelve filters at once,
+            // including the landscape-coverage rules, which reported PASSED for their whole
+            // existence without ever inspecting a robot. A rule that cannot fail is worse than
+            // no rule, because it is credited as coverage.
+            val ruleFiles = Konsist.scopeFromProject()
+                .files
+                .filter { it.resideInPath("..testing/architecture-check..") }
+                // java.io.File.name DOES include the extension, so the same text is correct
+                // there. Files touching both APIs cannot be told apart by a text scan.
+                .filter { file -> file.imports.none { it.name == "java.io.File" } }
+
+            val pattern = Regex("""\.name\.endsWith\("[^"]*\.kt"\)""")
+            val violators = ruleFiles.filter { pattern.containsMatchIn(it.text) }
+
+            assert(violators.isEmpty()) {
+                val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
+                "Use `nameWithExtension` to match a filename — Konsist's `name` drops the " +
+                    "extension, so matching it against \"*.kt\" selects nothing and the rule " +
+                    "passes vacuously:\n$names"
             }
         }
     }

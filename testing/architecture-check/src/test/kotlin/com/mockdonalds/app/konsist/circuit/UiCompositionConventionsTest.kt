@@ -26,7 +26,7 @@ class UiCompositionConventionsTest : BehaviorSpec({
         .filter {
             it.resideInPath("..features..") &&
                 it.resideInPath("..impl/presentation..") &&
-                it.name.endsWith("Ui.kt")
+                it.nameWithExtension.endsWith("Ui.kt")
         }
 
     Given("screen entry points") {

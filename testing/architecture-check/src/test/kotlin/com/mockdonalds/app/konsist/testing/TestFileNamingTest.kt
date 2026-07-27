@@ -107,10 +107,10 @@ class TestFileNamingTest : BehaviorSpec({
             // Going through TestCenterPostDispatchers keeps the scheduler reachable via
             // `advanceUntilIdle()`.
             val violators = testFiles
-                // Matched on `path`, not `name`: Konsist's file `name` has no extension, so
+                // `nameWithExtension`, not `name`: Konsist's file `name` has no extension, so
                 // comparing it against "TestCenterPostDispatchers.kt" never matched and the
                 // fixture reported itself.
-                .filter { !it.path.endsWith("/TestCenterPostDispatchers.kt") }
+                .filter { it.nameWithExtension != "TestCenterPostDispatchers.kt" }
                 .filter { file ->
                     file.imports.any { it.name == "kotlinx.coroutines.test.StandardTestDispatcher" }
                 }
