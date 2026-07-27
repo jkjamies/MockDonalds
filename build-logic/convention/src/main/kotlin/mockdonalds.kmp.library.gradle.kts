@@ -105,6 +105,11 @@ kotlin.sourceSets.getByName("androidHostTest") {
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+    // A deadlocked test otherwise hangs until the CI job's own timeout kills it — one stuck
+    // repository test burned 78 minutes and took the whole Android job down with it, reporting
+    // nothing useful. Kotest's project config sets no timeout, so enforce one here: the whole
+    // host-test suite is seconds per module, so ten minutes only ever fires on a genuine hang.
+    timeout.set(java.time.Duration.ofMinutes(10))
     systemProperty("kotest.framework.config.fqn", "io.kotest.provided.ProjectConfig")
     testLogging {
         events("passed", "skipped", "failed")

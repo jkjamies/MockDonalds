@@ -53,7 +53,11 @@ private class RepositoryHarness {
     val repository: OrderRepositoryImpl = OrderRepositoryImpl(
         remote = remote,
         local = local,
-        dispatchers = TestCenterPostDispatchers(),
+        // `background()`, not the default: `refreshIfStale` calls `withContext(dispatchers.io)`,
+        // and the default StandardTestDispatcher never runs that work because nothing in this
+        // project can advance its scheduler (`runTest` and `UnconfinedTestDispatcher` are both
+        // banned). Every test in this spec deadlocked as a result.
+        dispatchers = TestCenterPostDispatchers.background(),
     )
 
     fun seedCache(categoryId: String, items: List<MenuItem>, cachedAt: Long) {
