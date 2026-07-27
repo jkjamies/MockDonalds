@@ -66,6 +66,14 @@ public abstract class CenterPostSubjectInteractor<P : Any, T> {
                 .catch { throwable ->
                     // Cancellation is control flow, not failure — never swallow it, or a
                     // cancelled collector would be reported to the UI as an error state.
+                    //
+                    // This rethrow IS the "never catch CancellationException" rule, not a
+                    // breach of it. `Flow.catch` hands us every upstream throwable including
+                    // cancellation, so propagating it explicitly is the only way to keep
+                    // structured concurrency intact — the same thing `centerPostRunCatching`
+                    // does at CenterPostRunCatching.kt:8. That helper wraps a suspending
+                    // *block* and cannot be applied to a `catch` handler, which receives an
+                    // already-thrown Throwable.
                     if (throwable is CancellationException) throw throwable
                     emit(CenterPostContentState.Error(throwable.asCenterPostException()))
                 }

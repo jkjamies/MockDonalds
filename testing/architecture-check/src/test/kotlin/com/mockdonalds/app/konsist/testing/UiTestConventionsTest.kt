@@ -25,7 +25,7 @@ class UiTestConventionsTest : BehaviorSpec({
                         it.hasAnnotation { a -> a.name == "Composable" } &&
                         it.resideInPath("..androidMain..")
                 }
-                .filter { it.nameWithExtension.endsWith("Ui") }
+                .filter { it.name.endsWith("Ui") }
                 .map { it.name }
                 .toSet()
 
@@ -133,14 +133,14 @@ class UiTestConventionsTest : BehaviorSpec({
                         it.hasAnnotation { a -> a.name == "Composable" } &&
                         it.resideInPath("..androidMain..")
                 }
-                .filter { it.nameWithExtension.endsWith("Ui") }
+                .filter { it.name.endsWith("Ui") }
                 .map { it.name.removeSuffix("Ui") }
                 .toSet()
 
             val testTagObjects = Konsist.scopeFromProject()
                 .objects()
                 .filter { it.resideInPath("..api..") }
-                .filter { it.nameWithExtension.endsWith("TestTags") }
+                .filter { it.name.endsWith("TestTags") }
                 .map { it.name.removeSuffix("TestTags") }
                 .toSet()
 
@@ -154,7 +154,7 @@ class UiTestConventionsTest : BehaviorSpec({
         Then("TestTags objects should reside in the api.ui package") {
             val testTagObjects = Konsist.scopeFromProject()
                 .objects()
-                .filter { it.nameWithExtension.endsWith("TestTags") }
+                .filter { it.name.endsWith("TestTags") }
 
             val violators = testTagObjects.filter { obj ->
                 !obj.resideInPath("..api..")

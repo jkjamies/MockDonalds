@@ -109,8 +109,14 @@ class TestFileNamingTest : BehaviorSpec({
             val violators = testFiles
                 // `nameWithExtension`, not `name`: Konsist's file `name` has no extension, so
                 // comparing it against "TestCenterPostDispatchers.kt" never matched and the
-                // fixture reported itself.
-                .filter { it.nameWithExtension != "TestCenterPostDispatchers.kt" }
+                // fixture reported itself. Pinned to the canonical path as well, so a module
+                // cannot opt out of this rule by naming a local file the same thing.
+                .filter {
+                    !(
+                        it.nameWithExtension == "TestCenterPostDispatchers.kt" &&
+                            it.resideInPath("..core/test-fixtures..")
+                        )
+                }
                 .filter { file ->
                     file.imports.any { it.name == "kotlinx.coroutines.test.StandardTestDispatcher" }
                 }

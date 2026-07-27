@@ -97,14 +97,19 @@ class PresentationLayerTest : BehaviorSpec({
             // extension point belongs to presentation/navigation and can never live in domain.
             // The only alternative — an api/navigation → api/domain dependency — is precisely
             // the coupling the "api:domain isolation" rules in ApiLayerTest exist to prevent.
-            val adaptedFromNavigationExtensions = setOf("MoreMenuItem")
+            // Keyed by file, not model name: a bare model-name allowlist would switch the rule
+            // off for every presenter in the project, so MoreMenuItem could then be fabricated
+            // anywhere unnoticed.
+            val adaptedFromNavigationExtensions = mapOf("MorePresenter" to setOf("MoreMenuItem"))
 
             val violators = presenterFiles.flatMap { file ->
+                val exempt = adaptedFromNavigationExtensions[file.name].orEmpty()
                 apiModelNames.filter { modelName ->
-                    modelName !in adaptedFromNavigationExtensions &&
-                        // Word-boundary matched: a bare `contains("$modelName(")` reports
-                        // `MenuItem` inside `MoreMenuItem(`, and `Item` inside either.
-                        Regex("""(?<![\w.])${Regex.escape(modelName)}\s*\(""").containsMatchIn(file.text)
+                    modelName !in exempt &&
+                        // The lookbehind excludes a preceding identifier character only, so
+                        // `MenuItem` no longer matches inside `MoreMenuItem(` while a qualified
+                        // `some.pkg.MenuItem(` is still caught.
+                        Regex("""(?<!\w)${Regex.escape(modelName)}\s*\(""").containsMatchIn(file.text)
                 }.map { "  ${file.name} constructs $it" }
             }
 

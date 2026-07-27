@@ -84,11 +84,18 @@ class ApiLayerTest : BehaviorSpec({
             // the 11 screens for being idiomatic: HomeScreen is `data object HomeScreen :
             // TabScreen`, which never needs to name Circuit itself. What actually matters is
             // that the file is wired to the Screen contract by one route or the other.
+            val screenContracts = setOf(
+                "com.slack.circuit.runtime.screen.Screen",
+                "com.mockdonalds.app.core.circuit.TabScreen",
+                "com.mockdonalds.app.core.circuit.FlowScreen",
+                "com.mockdonalds.app.core.circuit.ProtectedScreen",
+            )
+
+            // Named exactly, not by prefix: `com.mockdonalds.app.core.circuit.*` also holds
+            // Parcelize and CircuitProviders, so a prefix match would pass a file that imports
+            // `Parcelize` alone and implements no screen contract at all.
             val violators = screenFiles.filter { file ->
-                file.imports.none {
-                    it.name.startsWith("com.slack.circuit.runtime") ||
-                        it.name.startsWith("com.mockdonalds.app.core.circuit")
-                }
+                file.imports.none { it.name in screenContracts }
             }
 
             assert(violators.isEmpty()) {
