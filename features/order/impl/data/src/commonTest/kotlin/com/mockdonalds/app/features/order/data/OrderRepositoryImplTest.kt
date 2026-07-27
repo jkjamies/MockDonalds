@@ -213,8 +213,12 @@ class OrderRepositoryImplTest : BehaviorSpec({
                     val featured = previews.first { it.id == "featured" }
                     featured.itemCount shouldBe 0
                     featured.firstItemImageUrl shouldBe null
+                    // Draining the scheduler runs the refresh, which repopulates five of the six
+                    // categories and emits a fresh preview list. This test is about the state
+                    // *before* that, so discard the rest — plain `cancel()` would leave those
+                    // events unconsumed and Turbine fails the block on exit.
                     fixture.advanceUntilIdle()
-                    cancel()
+                    cancelAndIgnoreRemainingEvents()
                 }
             }
 
@@ -225,8 +229,9 @@ class OrderRepositoryImplTest : BehaviorSpec({
                     awaitItem()
                     // The whole refresh loop is queued on the test scheduler — without this the
                     // side effect never runs and every assertion below would see zero calls.
+                    // The refresh then re-emits previews nobody consumes, so ignore the rest.
                     fixture.advanceUntilIdle()
-                    cancel()
+                    cancelAndIgnoreRemainingEvents()
                 }
                 fixture.callsByQuery shouldContain "popular"      // featured
                 fixture.callsByQuery shouldContain "chicken sandwich"
