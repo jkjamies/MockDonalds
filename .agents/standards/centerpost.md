@@ -308,7 +308,7 @@ interface CenterPostDispatchers {
 ```
 
 - Production: `DefaultCenterPostDispatchers` (bound via `@ContributesBinding`) uses real `Dispatchers.*`
-- Tests: `TestCenterPostDispatchers()` routes all three to `Dispatchers.Unconfined`, so dispatched work runs eagerly on the calling thread — deterministic and single-threaded
+- Tests: `TestCenterPostDispatchers()` routes all three to a single `StandardTestDispatcher` for deterministic execution. If the code under test dispatches (e.g. `withContext(dispatchers.io)`), the test must call `advanceUntilIdle()` — queued work does not run on its own, and anything left parked also blocks cancellation
 
 Presenters inject `CenterPostDispatchers` (the interface), making them testable.
 

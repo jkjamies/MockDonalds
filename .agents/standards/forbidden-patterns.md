@@ -66,7 +66,7 @@ Every banned pattern in the MockDonalds codebase with rationale, alternative, an
 
 - **Banned:** `Dispatchers.Default`, `Dispatchers.IO`, `Dispatchers.Main` imports in feature modules
 - **Why:** Hardcoded dispatchers are untestable. Tests cannot control thread scheduling.
-- **Instead:** Inject `CenterPostDispatchers` interface. In tests, use `TestCenterPostDispatchers()`, which routes all three dispatchers to `Dispatchers.Unconfined`.
+- **Instead:** Inject `CenterPostDispatchers` interface. In tests, use `TestCenterPostDispatchers()`, which routes all dispatchers to a `StandardTestDispatcher` and exposes `advanceUntilIdle()` for draining it.
 - **Enforced by:** `ForbiddenPatternsTest` -- "feature modules should not hardcode Dispatchers"
 
 ### Android Platform Imports in commonMain
@@ -96,9 +96,15 @@ Every banned pattern in the MockDonalds codebase with rationale, alternative, an
 
 - **Banned:** `kotlinx.coroutines.test.UnconfinedTestDispatcher` in test code
 - **Why:** Not safe under concurrent spec execution (`SpecExecutionMode.LimitedConcurrency`). Unconfined dispatching causes non-deterministic test behavior when specs run in parallel.
-- **Instead:** Use `TestCenterPostDispatchers()`.
-- **Not the same as `Dispatchers.Unconfined`**, which `TestCenterPostDispatchers` uses and which stays allowed. The hazard here is the `TestCoroutineScheduler` that `UnconfinedTestDispatcher` is bound to — shared virtual-time state across concurrently executing specs. `Dispatchers.Unconfined` has no scheduler and no shared state; it just runs the continuation on the calling thread.
+- **Instead:** Use `StandardTestDispatcher` via `TestCenterPostDispatchers()`, calling `advanceUntilIdle()` where the code under test dispatches.
 - **Enforced by:** `TestFileNamingTest` -- "no UnconfinedTestDispatcher in tests"
+
+### Hand-rolled StandardTestDispatcher
+
+- **Banned:** constructing `kotlinx.coroutines.test.StandardTestDispatcher` directly in test code
+- **Why:** its `TestCoroutineScheduler` only drains when advanced, and `runTest` — the usual thing that advances it — is banned above. A hand-rolled dispatcher hides that scheduler, so there is no way to advance it. Code under test doing `withContext(dispatchers.io) { … }` then suspends forever, and the hang cannot be timed out: cancelling the stuck coroutine needs the same unadvanced scheduler to resume its continuation, so neither `withTimeout` nor Turbine's `awaitItem` timeout fires. The Gradle test task hangs until something kills it externally.
+- **Instead:** `TestCenterPostDispatchers()`, which owns the scheduler and exposes `advanceUntilIdle()`.
+- **Enforced by:** `TestFileNamingTest` -- "no raw StandardTestDispatcher outside TestCenterPostDispatchers"
 
 ## iOS Interop
 

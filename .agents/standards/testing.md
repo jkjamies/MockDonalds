@@ -32,7 +32,7 @@ Comprehensive testing conventions for the MockDonalds KMP project. Testing is or
 | Kotest assertions | `shouldBe`, `shouldHaveSize`, `shouldBeNull`, etc. | Unit tests |
 | Turbine | Flow testing (`test { awaitItem() }`) | Presenter tests, interactor tests |
 | Circuit Test | `presenterTestOf()`, `FakeNavigator` | Presenter tests |
-| kotlinx-coroutines-test | `TestCenterPostDispatchers` (`Dispatchers.Unconfined`) | All coroutine tests |
+| kotlinx-coroutines-test | `StandardTestDispatcher` (via `TestCenterPostDispatchers`) | All coroutine tests |
 | Compose UI Test | `createComposeRule()`, `onNodeWithTag()`, `performClick()` | UI component tests, navint-tests |
 | UI Automator | `By.desc(testTag)`, cross-process element access | e2e-tests |
 | Macrobenchmark | `MacrobenchmarkRule`, `StartupTimingMetric` | e2e benchmarks |

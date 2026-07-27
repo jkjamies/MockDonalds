@@ -43,9 +43,24 @@ Every `UseCaseImpl`, every `RepositoryImpl`, and every `Presenter` must have a c
 
 ## TestCenterPostDispatchers
 
-Always use `TestCenterPostDispatchers()`. It routes `default`, `io`, and `main` to `Dispatchers.Unconfined`, so work dispatched by the code under test runs eagerly on the calling thread — deterministic and single-threaded. Never use `DefaultCenterPostDispatchers` in tests.
+Always use `TestCenterPostDispatchers()` (which wraps `StandardTestDispatcher`). It routes `default`, `io`, and `main` to a single test dispatcher for deterministic execution. Never use `DefaultCenterPostDispatchers` in tests, and never construct a `StandardTestDispatcher` by hand — going through the fixture is what keeps its scheduler reachable.
 
-It deliberately does **not** use `StandardTestDispatcher`. That dispatcher owns a `TestCoroutineScheduler` which only runs queued work when something advances it, and `runTest` — the usual thing that advances it — is banned here. Code under test doing `withContext(dispatchers.io) { … }` would therefore suspend forever, and the hang is not rescuable by a timeout: cancelling the stuck coroutine needs the same dead scheduler to resume its continuation. See the KDoc on `TestCenterPostDispatchers` for the full account.
+### Advance the scheduler when the subject dispatches
+
+A `StandardTestDispatcher` queues onto a `TestCoroutineScheduler` that only drains when advanced. `runTest` normally does that and is banned here — Kotest supplies the coroutine context instead — so the test advances it:
+
+```kotlin
+repository.getMenuItemsByCategory("burgers").test {
+    fixture.advanceUntilIdle()          // let the queued refresh run
+    awaitItem() shouldContain cachedItem
+    fixture.advanceUntilIdle()          // leave nothing parked
+    cancel()
+}
+```
+
+Advance before awaiting anything the dispatched work produces, and again before cancelling. Skipping the second one is not merely untidy: cancelling a coroutine parked on an unadvanced scheduler can never complete, because the cancellation itself has to be delivered through that scheduler. The failure mode is an unkillable hang — `withTimeout` does not fire, Turbine's `awaitItem` timeout does not fire, and the Gradle test task runs until something kills it from outside.
+
+Most suites never need this; they only pass the fixture to a subject that stores it. It matters wherever production code actually schedules on the injected dispatchers, such as `withContext(dispatchers.io)`.
 
 ## Presenter Test Pattern
 

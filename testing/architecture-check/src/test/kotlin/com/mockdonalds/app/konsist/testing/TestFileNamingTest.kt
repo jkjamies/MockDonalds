@@ -10,6 +10,7 @@ import io.kotest.core.spec.style.BehaviorSpec
  * - All specs use BehaviorSpec (consistent style)
  * - No runBlocking or runTest (Kotest handles coroutines)
  * - No UnconfinedTestDispatcher (unsafe with concurrent specs)
+ * - No hand-rolled StandardTestDispatcher (hides the scheduler, so it can never be advanced)
  */
 class TestFileNamingTest : BehaviorSpec({
 
@@ -93,25 +94,29 @@ class TestFileNamingTest : BehaviorSpec({
             }
         }
 
-        Then("no StandardTestDispatcher in tests") {
-            // StandardTestDispatcher queues onto a TestCoroutineScheduler that only runs when
-            // something advances it — and `runTest`, the usual thing that does, is banned above.
-            // Code under test doing `withContext(dispatchers.io) { … }` then suspends forever,
-            // and the hang cannot be timed out: cancelling it needs that same dead scheduler to
-            // resume the continuation, so `withTimeout` and Turbine's own timeout both fail to
-            // fire and the Gradle test task hangs until something kills it from outside. This
-            // is not hypothetical — it is what `TestCenterPostDispatchers` used to do, and it
-            // hung `:features:order:impl:data:testAndroidHostTest` indefinitely in CI.
+        Then("no raw StandardTestDispatcher outside TestCenterPostDispatchers") {
+            // StandardTestDispatcher is the project's chosen test dispatcher, but it queues onto
+            // a TestCoroutineScheduler that only drains when something advances it — and
+            // `runTest`, the usual thing that does, is banned above. Constructing one ad hoc in a
+            // test hides that scheduler, leaving no way to advance it: code under test doing
+            // `withContext(dispatchers.io) { … }` then suspends forever, and the hang cannot be
+            // timed out, because cancelling it needs that same unadvanced scheduler to resume the
+            // continuation. `withTimeout` and Turbine's own timeout both fail to fire and the
+            // Gradle test task hangs until something kills it from outside — which is what hung
+            // `:features:order:impl:data:testAndroidHostTest` in CI until the task timeout.
+            // Going through TestCenterPostDispatchers keeps the scheduler reachable via
+            // `advanceUntilIdle()`.
             val violators = testFiles
+                .filter { it.name != "TestCenterPostDispatchers.kt" }
                 .filter { file ->
                     file.imports.any { it.name == "kotlinx.coroutines.test.StandardTestDispatcher" }
                 }
 
             assert(violators.isEmpty()) {
                 val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
-                "StandardTestDispatcher is not allowed — nothing in this project advances its " +
-                    "scheduler, so dispatched work never runs and the test hangs unkillably. " +
-                    "Use TestCenterPostDispatchers:\n$names"
+                "Construct StandardTestDispatcher through TestCenterPostDispatchers, not " +
+                    "directly — a hand-rolled one hides its scheduler, and unadvanced queued " +
+                    "work hangs the test unkillably:\n$names"
             }
         }
     }
