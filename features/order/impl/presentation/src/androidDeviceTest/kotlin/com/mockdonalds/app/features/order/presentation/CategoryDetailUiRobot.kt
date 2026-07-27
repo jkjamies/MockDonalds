@@ -55,6 +55,9 @@ class CategoryDetailUiRobot(private val rule: ComposeContentTestRule) {
         rule.onNodeWithTag(CategoryDetailTestTags.CART_BAR).assertIsDisplayed()
     }
 
+    // CategoryDetailUi has no orientation branch — this guards that the screen survives a
+    // landscape window rather than that a distinct compact layout renders. If one is added,
+    // this must assert what differs.
     fun assertLandscapeScreen() {
         rule.onNodeWithTag(CategoryDetailTestTags.TOP_BAR).assertIsDisplayed()
         rule.onNodeWithTag(CategoryDetailTestTags.BACK_BUTTON).assertIsDisplayed()

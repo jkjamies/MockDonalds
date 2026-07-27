@@ -35,6 +35,9 @@ final class OrderViewRobot {
         try body.find(viewWithAccessibilityIdentifier: tags.CART_BAR)
     }
 
+    // OrderView has no `isLandscape` branch, so this asserts the same identifiers as the
+    // default layout by design: it guards that the screen still renders every element under a
+    // compact vertical size class. Add branch-specific assertions if one is introduced.
     func assertLandscapeScreen() throws {
         let view = createLandscapeView()
         let body = try view.inspect()

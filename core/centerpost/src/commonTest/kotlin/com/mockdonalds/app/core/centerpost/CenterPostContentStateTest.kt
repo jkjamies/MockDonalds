@@ -113,6 +113,39 @@ class CenterPostContentStateTest : BehaviorSpec({
         }
     }
 
+    Given("an interactor that fails once and then succeeds") {
+        // The Error state is only useful if something can clear it. `invoke(Unit)` cannot:
+        // params are deduped, and a Unit-param interactor has no other params to pass.
+        var attempts = 0
+        val interactor = object : CenterPostSubjectInteractor<Unit, String>() {
+            override fun createObservable(params: Unit): Flow<String> = flow {
+                attempts += 1
+                if (attempts == 1) throw IllegalStateException("first attempt fails")
+                emit("recovered")
+            }
+        }
+
+        When("retry is called after the failure") {
+            Then("the stream restarts and reaches Content") {
+                interactor(Unit)
+                interactor.contentState.test {
+                    awaitItem() shouldBe CenterPostContentState.Loading
+                    awaitItem().shouldBeInstanceOf<CenterPostContentState.Error>()
+
+                    // Re-invoking with identical params is deduped, so this must not restart
+                    // anything — the `attempts` assertion below is what proves it.
+                    interactor(Unit)
+
+                    interactor.retry()
+                    awaitItem() shouldBe CenterPostContentState.Loading
+                    awaitItem() shouldBe CenterPostContentState.Content("recovered")
+                    cancelAndIgnoreRemainingEvents()
+                }
+                attempts shouldBe 2
+            }
+        }
+    }
+
     Given("content state accessors") {
         When("inspecting each state") {
             Then("dataOrNull, isLoading and errorOrNull report the right case") {

@@ -59,8 +59,14 @@ class ForbiddenPatternsTest : BehaviorSpec({
                     // CircuitPresenterKotlinBridge is its iOS counterpart: Molecule's
                     // `launchMolecule` requires a CoroutineScope to host the presenter
                     // composition, exactly as Compose's recomposer does on Android. Nothing
-                    // else under composeApp/iosMain gets this exemption.
-                    !it.name.startsWith("CircuitPresenterKotlinBridge")
+                    // else under composeApp/iosMain gets this exemption — and the exemption is
+                    // pinned to that one path, so a same-named file dropped into a feature
+                    // module (or into commonMain) does not inherit it.
+                    !(
+                        it.name.startsWith("CircuitPresenterKotlinBridge") &&
+                            it.resideInPath("..composeApp..") &&
+                            it.resideInPath("..iosMain..")
+                        )
             }
 
         Then("feature modules should not directly use CoroutineScope") {

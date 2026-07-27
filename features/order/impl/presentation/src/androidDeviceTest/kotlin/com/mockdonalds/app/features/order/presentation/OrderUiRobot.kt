@@ -49,6 +49,10 @@ class OrderUiRobot(private val rule: ComposeContentTestRule) {
         assertCartItemCount(2)
     }
 
+    // OrderUi has no orientation branch — there is no compact-height layout to distinguish
+    // from the default one. What this guards is that the screen survives a landscape window:
+    // a fixed height or a non-scrolling container would push the cart bar off-screen and fail
+    // here. If OrderUi ever grows an `isLandscape` branch, this must assert what differs.
     fun assertLandscapeScreen() {
         assertCategoryPreviewDisplayed("burgers")
         assertCategoryPreviewDisplayed("drinks")

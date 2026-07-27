@@ -28,6 +28,11 @@ concurrency:
   group: smoke-${{ github.ref }}
   cancel-in-progress: true
 
+# Read-only. Nothing here comments, pushes, or publishes; the only write this workflow
+# performs is `actions/upload-artifact`, which is authorised by the run itself.
+permissions:
+  contents: read
+
 jobs:
   android:
     name: Kotlin + Android (us-int-debug)
@@ -39,7 +44,11 @@ jobs:
     timeout-minutes: 90
 
     steps:
+      # persist-credentials: false — nothing in this job talks to git after checkout, so
+      # leaving the token in .git/config only widens what a compromised build script reaches.
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       # JDK 21 matches the `jvmToolchain(21)` declared by build-tooling and
       # testing/architecture-check. Everything else targets JVM 17 bytecode,
@@ -99,6 +108,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       # The Xcode build drives Gradle itself: the "Build Kotlin framework via Gradle"
       # preBuildScript runs `:composeApp:embedAndSignAppleFrameworkForXcode` with

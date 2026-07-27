@@ -45,7 +45,7 @@ core/
   test-fixtures/       — TestCenterPostDispatchers, KotestProjectConfig, StateRobot base
 ```
 
-testing/architecture-check/   — Konsist architecture rules (35 test classes, host JVM)
+testing/architecture-check/   — Konsist architecture rules (38 test classes, host JVM)
 testing/navint-tests/         — Navigation + integration tests (real presenters, fake data, real Circuit)
 testing/e2e-tests/            — End-to-end journey tests (real everything, UI Automator)
 testing/benchmarks/           — Android Macrobenchmarks (startup/scroll, `benchmark` build type)

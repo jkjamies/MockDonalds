@@ -147,7 +147,16 @@ fun OrderPresenter(navigator: Navigator, getOrderContent: GetOrderContent): Orde
 
 **Flatten it — never put `CenterPostContentState` on a `UiState`.** It is a sealed *interface*, and sealed interfaces do not bridge cleanly to Swift (see [ios-interop.md](ios-interop.md)). `UiState` carries primitives: `isLoading: Boolean`, `errorMessage: String?`.
 
-`Error` is terminal for the current params — `distinctUntilChanged()` on params means re-invoking with the same value will not restart a failed stream. Expose retry as an explicit event that re-invokes the interactor.
+**Retry with `retry()`, not `invoke()`.** `Error` is terminal for the current params, and `distinctUntilChanged()` on params means `invoke(sameParams)` is deduped — it does nothing. For a `CenterPostSubjectInteractor<Unit, T>` there are no other params to pass, so `invoke` can never be the retry path. `retry()` restarts the stream for whatever params are in flight:
+
+```kotlin
+eventSink = { event ->
+    when (event) {
+        is OrderEvent.Retry -> getOrderContent.retry()
+        // ...
+    }
+}
+```
 
 ### Migrating an existing screen to `contentState`
 

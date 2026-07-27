@@ -61,37 +61,41 @@ class PlatformParityTest : BehaviorSpec({
     }
 
     Given("screen registration parity") {
-        Then("the project should declare at least one screen on each platform") {
-            // Guards against the rule silently passing because a path assumption broke —
-            // an empty-set comparison is vacuously true and would hide every real violation.
-            assert(kotlinScreens.isNotEmpty()) {
-                "Found no Kotlin @CircuitInject screens — the scan path is wrong, not the code"
+
+        When("both platforms' @CircuitInject registrations are collected") {
+
+            Then("the project should declare at least one screen on each platform") {
+                // Guards against the rule silently passing because a path assumption broke —
+                // an empty-set comparison is vacuously true and would hide every real violation.
+                assert(kotlinScreens.isNotEmpty()) {
+                    "Found no Kotlin @CircuitInject screens — the scan path is wrong, not the code"
+                }
+                assert(swiftScreens.isNotEmpty()) {
+                    "Found no Swift @CircuitInject views under ${swiftViewsDir.path} — " +
+                        "the scan path is wrong, not the code"
+                }
             }
-            assert(swiftScreens.isNotEmpty()) {
-                "Found no Swift @CircuitInject views under ${swiftViewsDir.path} — " +
-                    "the scan path is wrong, not the code"
+
+            Then("every Kotlin screen should have a matching SwiftUI view") {
+                val missing = (kotlinScreens - swiftScreens).sorted()
+
+                assert(missing.isEmpty()) {
+                    "Screens wired on Android but not on iOS — each needs a " +
+                        "`iosApp/iosApp/Features/{Feature}/{Screen}View.swift` carrying " +
+                        "`@CircuitInject({Screen}.self, {Screen}UiState.self)`, or it renders as " +
+                        "the \"No UI for screen\" fallback:\n" +
+                        missing.joinToString("\n") { "  $it" }
+                }
             }
-        }
 
-        Then("every Kotlin screen should have a matching SwiftUI view") {
-            val missing = (kotlinScreens - swiftScreens).sorted()
+            Then("every SwiftUI view should have a matching Kotlin screen") {
+                val orphaned = (swiftScreens - kotlinScreens).sorted()
 
-            assert(missing.isEmpty()) {
-                "Screens wired on Android but not on iOS — each needs a " +
-                    "`iosApp/iosApp/Features/{Feature}/{Screen}View.swift` carrying " +
-                    "`@CircuitInject({Screen}.self, {Screen}UiState.self)`, or it renders as " +
-                    "the \"No UI for screen\" fallback:\n" +
-                    missing.joinToString("\n") { "  $it" }
-            }
-        }
-
-        Then("every SwiftUI view should have a matching Kotlin screen") {
-            val orphaned = (swiftScreens - kotlinScreens).sorted()
-
-            assert(orphaned.isEmpty()) {
-                "SwiftUI views registered for screens with no Kotlin presenter — " +
-                    "these can never resolve a presenter at runtime:\n" +
-                    orphaned.joinToString("\n") { "  $it" }
+                assert(orphaned.isEmpty()) {
+                    "SwiftUI views registered for screens with no Kotlin presenter — " +
+                        "these can never resolve a presenter at runtime:\n" +
+                        orphaned.joinToString("\n") { "  $it" }
+                }
             }
         }
     }

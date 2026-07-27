@@ -43,6 +43,9 @@ class NutritionUiRobot(private val rule: ComposeContentTestRule) {
         rule.onNodeWithTag(NutritionTestTags.WEBVIEW).assertIsDisplayed()
     }
 
+    // NutritionUi has no orientation branch — this guards that the screen survives a landscape
+    // window rather than that a distinct compact layout renders. If one is added, this must
+    // assert what differs.
     fun assertLandscapeScreen() {
         rule.onNodeWithTag(NutritionTestTags.SCREEN).assertIsDisplayed()
         rule.onNodeWithTag(NutritionTestTags.WEBVIEW).assertIsDisplayed()

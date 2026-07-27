@@ -34,7 +34,10 @@ public sealed interface CenterPostContentState<out T> {
 
 /** The value if loaded, else `null`. Prefer an exhaustive `when` where all three cases matter. */
 public val <T> CenterPostContentState<T>.dataOrNull: T?
-    get() = (this as? CenterPostContentState.Content)?.data
+    get() = when (this) {
+        is CenterPostContentState.Content -> data
+        is CenterPostContentState.Error, CenterPostContentState.Loading -> null
+    }
 
 /** True while waiting for the first value. */
 public val CenterPostContentState<*>.isLoading: Boolean
