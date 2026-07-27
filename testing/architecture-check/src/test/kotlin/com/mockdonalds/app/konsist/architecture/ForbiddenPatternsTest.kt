@@ -92,7 +92,11 @@ class ForbiddenPatternsTest : BehaviorSpec({
             // logic, so routing them through CenterPost would be wrong. The exemption is
             // narrow — the CoroutineScope and Dispatchers rules above still apply to UI files.
             val violators = featureAndPresenterFiles
-                .filter { !it.name.endsWith("Ui.kt") }
+                // `path`, not `name`: Konsist's file `name` carries no extension, so
+                // `name.endsWith("Ui.kt")` matched nothing and this carve-out never applied.
+                // No UI file trips the rule today, so it passed either way — but the exemption
+                // would not have fired the first time someone added a legitimate one.
+                .filter { !it.path.endsWith("Ui.kt") }
                 .flatMap { file ->
                     file.imports
                         .filter {
