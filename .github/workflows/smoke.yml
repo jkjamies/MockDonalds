@@ -1,22 +1,22 @@
 name: Smoke
 
-# Deliberately high-level and generic. This is NOT the verification pipeline —
-# that lives in `.agents/standards/verification.md` and is driven by the `verify`
-# skill (scopes: diff / full / all) on a developer machine with a simulator and
-# an emulator available.
+# Deliberately high-level. This is NOT the full verification pipeline — that lives
+# in `.agents/standards/verification.md`, is driven by the `verify` skill (scopes:
+# diff / full / all), and needs an emulator and a simulator. What runs here is one
+# market/env combo per platform: lint, architecture, build, unit tests.
 #
 # What this gate exists to catch is the class of failure that makes the repo
 # unusable for anyone who is not the author: a build that only configures on one
-# machine, a module that never got wired into settings.gradle.kts, an
-# architecture rule that has started failing, or a Kotlin/Native change that only
-# breaks once Xcode links the framework. Device-bound and matrix-bound test
-# levels stay out of scope on purpose.
+# machine, a module that never got wired into settings.gradle.kts, an architecture
+# rule that has started failing, or a Kotlin/Native change that only breaks once
+# Xcode links the framework. Device-bound test levels (androidDeviceTest, navint,
+# e2e) and the market × env matrix stay out of scope on purpose.
 #
-# Two jobs, because the platforms fail differently: `smoke` compiles the shared +
-# Android side on Linux, and `ios` links the actual framework on macOS. A
-# source-set or `export()` mistake is invisible to the Linux job — Apple targets
-# cannot be compiled off macOS at all — so the iOS job is the only thing that
-# proves the framework still builds.
+# Two jobs, because the platforms fail differently: `android` covers the shared +
+# Android side on Linux, `ios` links the actual framework on macOS. A source-set or
+# `export()` mistake is invisible to the Linux job — Apple targets cannot be built
+# off macOS at all — so the iOS job is the only thing that proves the framework
+# still builds.
 
 on:
   push:
@@ -29,10 +29,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  smoke:
-    name: Configuration + architecture
+  android:
+    name: Kotlin + Android (us-int-debug)
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - uses: actions/checkout@v4
@@ -49,32 +49,43 @@ jobs:
         with:
           validate-wrappers: true
 
-      # Configuration smoke: every module in the graph — including the features
-      # auto-discovered by settings.gradle.kts — resolves and configures.
+      # Configuration smoke first: every module in the graph — including the features
+      # auto-discovered by settings.gradle.kts — resolves and configures. Cheap, and
+      # it fails with a clearer message than a compile error when the graph is broken.
       # This is the step that would have caught the machine-pinned JDK path.
       - name: Configure module graph
         run: ./gradlew projects
 
-      # The repo's own architecture backbone. `verify diff` runs this
-      # unconditionally regardless of what changed, so CI does the same.
+      # Lint before the expensive steps so style failures surface fast.
+      # NOTE: this task analyses the commonMain metadata compilation only — it does
+      # NOT cover androidMain (where every *Ui.kt lives) or iosMain. Widening detekt
+      # to the platform source sets is worth doing, but it has never run against them,
+      # so it belongs in its own change where the fallout can be fixed deliberately.
+      - name: Lint (detekt, commonMain)
+        run: ./gradlew detektMetadataCommonMain
+
+      # The repo's own architecture backbone. `verify diff` runs this unconditionally
+      # regardless of what changed, so CI does the same.
       - name: Architecture (Konsist)
         run: ./gradlew :testing:architecture-check:test
 
-      # One variant, not the matrix. Configuration alone does not compile anything, so
-      # without this a Kotlin error or a broken DI graph reaches main unnoticed. `us`/`int`
-      # is the documented default combo.
-      - name: Compile (Android, us-int-debug)
+      # One variant, not the matrix. Configuration alone compiles nothing, so without
+      # this a Kotlin error or a broken DI graph reaches main unnoticed. `us`/`int` is
+      # the documented default combo.
+      - name: Build (Android, us-int-debug)
         run: ./gradlew :androidApp:assembleUsIntDebug
 
-      - name: Unit tests (Kotlin, host)
+      - name: Unit tests (Kotest, host)
         run: ./gradlew testAndroidHostTest
 
-      - name: Upload test report on failure
+      - name: Upload reports on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: architecture-check-report
-          path: testing/architecture-check/build/reports/tests/test/
+          name: android-reports
+          path: |
+            **/build/reports/tests/
+            **/build/reports/detekt/
           if-no-files-found: ignore
 
   ios:
@@ -113,6 +124,15 @@ jobs:
           key: swiftpm-${{ runner.os }}-${{ hashFiles('iosApp/iosApp.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved', '**/Package.swift') }}
           restore-keys: swiftpm-${{ runner.os }}-
 
+      # Lint first — it needs no build, so style failures do not cost a 20-minute
+      # compile to discover.
+      - name: Lint (SwiftLint)
+        run: |
+          if ! command -v swiftlint >/dev/null 2>&1; then
+            brew install swiftlint
+          fi
+          swiftlint --config .swiftlint.yml
+
       # Deliberately builds the COMMITTED project rather than running `xcodegen generate`
       # first. `iosApp/AGENTS.md` requires project.yml and project.pbxproj to be committed
       # together precisely so "CI and team members who don't run xcodegen locally" can
@@ -121,8 +141,9 @@ jobs:
       # `Package.resolved`), which would fail the build for reasons unrelated to the change
       # under test. A pbxproj-vs-project.yml drift check belongs in its own job.
 
-      # A generic simulator destination builds without booting a device, so this does
-      # not depend on which simulator runtimes the image happens to ship.
+      # A generic simulator destination builds without booting a device, so the build
+      # signal — the critical one, and the only check on Kotlin/Native output — does not
+      # depend on which simulator runtimes the image happens to ship.
       # -skipMacroValidation is required: CircuitMacros is a Swift macro package and
       # xcodebuild otherwise blocks on the non-interactive macro trust prompt.
       - name: Build iOS app
@@ -133,17 +154,27 @@ jobs:
             -scheme iOSApp \
             -configuration US-Int-Debug \
             -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/DerivedData \
+            -skipMacroValidation \
+            CODE_SIGNING_ALLOWED=NO
+
+      # Pure-logic Swift tests (`iosAppTests/Unit/`). Kept separate from the build so a
+      # simulator-availability problem cannot mask the build result. Shares DerivedData
+      # with the step above, so this is mostly link + run.
+      - name: Unit tests (Swift Testing, simulator)
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme iOSApp \
+            -configuration US-Int-Debug \
+            -testPlan UnitTests \
+            -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16' \
+            -derivedDataPath build/DerivedData \
             -skipMacroValidation \
             CODE_SIGNING_ALLOWED=NO
 
       # Harmonize — the iOS half of the architecture suite. Host-only, no simulator,
-      # and the counterpart to the Konsist run in the `smoke` job.
+      # and the counterpart to the Konsist run in the `android` job.
       - name: Architecture (Harmonize)
         run: swift test --package-path iosApp/ArchitectureCheck
-
-      # NOTE: SwiftLint (`swiftlint --config .swiftlint.yml`, pipeline step 2) is not wired
-      # in here yet. It has never run in CI, so its current pass/fail state is unknown —
-      # `force_cast` and `force_try` are opt-in at *error* severity and there are 41 lines
-      # over the 120-char warning threshold. Add the step once it has been run locally
-      # once and any surviving violations are fixed; adding it blind would just paint CI
-      # red on pre-existing code.
