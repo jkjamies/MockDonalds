@@ -34,7 +34,11 @@ public fun <T> CenterPostSubjectInteractor<Unit, T>.collectContentAsState(): Sta
     LaunchedEffect(this) {
         invoke(Unit)
     }
-    return contentState.collectAsState(initial = CenterPostContentState.Loading)
+    // Typed explicitly rather than passing `CenterPostContentState.Loading` inline: Compose's
+    // `Flow<T>.collectAsState(initial: R)` is generic in both T and R, and `Loading` is a
+    // `CenterPostContentState<Nothing>`, so pinning R here keeps inference off the critical path.
+    val initial: CenterPostContentState<T> = CenterPostContentState.Loading
+    return contentState.collectAsState(initial = initial)
 }
 
 @Composable

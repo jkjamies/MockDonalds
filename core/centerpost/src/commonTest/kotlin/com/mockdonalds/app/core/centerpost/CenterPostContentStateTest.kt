@@ -48,8 +48,8 @@ class CenterPostContentStateTest : BehaviorSpec({
                 interactor(Unit)
                 interactor.contentState.test {
                     awaitItem() shouldBe CenterPostContentState.Loading
-                    val error = awaitItem()
-                    error.shouldBeInstanceOf<CenterPostContentState.Error>()
+                    // Uses the return value rather than relying on the smart-cast contract.
+                    val error = awaitItem().shouldBeInstanceOf<CenterPostContentState.Error>()
                     error.error.shouldBeInstanceOf<CenterPostExecutionException>()
                     error.error.cause shouldBe failure
                     // contentState never completes — paramState is an infinite SharedFlow,
