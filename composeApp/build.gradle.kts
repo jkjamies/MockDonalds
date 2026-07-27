@@ -65,10 +65,26 @@ kotlin {
                     export(project(":features:$feature:impl:presentation"))
                 }
             export(project(":core:circuit"))
-            // `:api`, not `:impl`. Swift only implements the HarnessIosBridge contract; it has
-            // no business seeing RemoteConfigProviderImpl, RemoteConfigSource, or the multibind
-            // aggregator interfaces, and exporting them pins them as DCE roots.
+            // Both `:api` and `:impl` — and `:impl` is NOT removable, despite only one Swift
+            // symbol needing it. Do not "optimise" this without reading the next paragraph.
+            //
+            // `:api` carries the HarnessIosBridge contract that Swift implements. `:impl`
+            // carries `RemoteConfigBuildConfig`, a BuildKonfig-generated object (declared in
+            // core/remote-config/impl/build.gradle.kts under the *api* package name, so it does
+            // not appear in any source-file scan). `SwiftHarnessBridge` reads
+            // `RemoteConfigBuildConfig.shared.HARNESS_CLIENT_ID` directly, because AppDelegate
+            // constructs it BEFORE `IosApp` exists — it is the thing being passed in, so it
+            // cannot resolve the key through the DI graph.
+            //
+            // Dropping `:impl` here compiles and links on the Kotlin side and fails only at
+            // Swift compile with "cannot find 'RemoteConfigBuildConfig' in scope". Moving the
+            // BuildKonfig block to `:api` would fix it but would put the BuildKonfig plugin on
+            // the classpath of every consumer of remote-config:api — which is core:presentation,
+            // and therefore every feature presentation module — contradicting the rule in
+            // .agents/standards/build-config.md that the generated object and the plugin stay
+            // out of feature classpaths.
             export(project(":core:remote-config:api"))
+            export(project(":core:remote-config:impl"))
             export(project(":core:build-config:api"))
         }
     }
@@ -114,9 +130,10 @@ kotlin {
             implementation(project(":core:metro"))
             implementation(project(":core:analytics:impl"))
             implementation(project(":core:auth:impl"))
-            // impl is needed at runtime for its @ContributesBinding wiring, but is neither
-            // exported nor part of composeApp's own API surface.
-            implementation(project(":core:remote-config:impl"))
+            // `api`, not `implementation`: Kotlin/Native requires every exported project to be
+            // an api-dependency of the source set, and this one is exported for
+            // RemoteConfigBuildConfig — see the export block above.
+            api(project(":core:remote-config:impl"))
             implementation(project(":core:centerpost"))
             implementation(project(":core:theme"))
             implementation(project(":core:network:impl"))

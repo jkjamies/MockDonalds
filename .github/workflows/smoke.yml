@@ -32,7 +32,11 @@ jobs:
   android:
     name: Kotlin + Android (us-int-debug)
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # 90, not 45: the first run was cancelled at 45m14s. A cold build here is 60+ KMP modules
+    # through KSP, Metro codegen and the Compose compiler, with no Gradle cache to restore —
+    # `gradle/actions/setup-gradle` only writes cache entries from the default branch, and main
+    # has never run CI. Once this lands and main populates the cache, runs drop well under this.
+    timeout-minutes: 90
 
     steps:
       - uses: actions/checkout@v4
