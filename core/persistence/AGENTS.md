@@ -64,7 +64,7 @@ features/{name}/impl/data    -> Feature schema contributors (when persistence is
 @SingleIn(AppScope::class)
 class AppDatabaseProvider(driverFactory: DatabaseDriverFactory) {
     val database: AppDatabase = AppDatabase(
-        driver = driverFactory.create(AppDatabase.Schema, "mockdonalds.db"),
+        driver = driverFactory.create(AppDatabase.Schema, "sampleplatter.db"),
     )
 }
 ```
@@ -74,18 +74,18 @@ A feature that needs persistence:
 1. Apply the SQLDelight plugin in `features/{name}/impl/data/build.gradle.kts` and declare the same `AppDatabase` name + `packageName`:
    ```kotlin
    plugins {
-       id("mockdonalds.kmp.data")
+       id("sampleplatter.kmp.data")
        alias(libs.plugins.sqldelight)
    }
    sqldelight {
        databases {
            create("AppDatabase") {
-               packageName.set("com.mockdonalds.app.persistence")
+               packageName.set("com.jkjamies.sampleplatter.persistence")
            }
        }
    }
    ```
-2. Add `.sq` files under `src/commonMain/sqldelight/com/mockdonalds/app/features/{name}/` — these contain the feature's tables and queries.
+2. Add `.sq` files under `src/commonMain/sqldelight/com/jkjamies/sampleplatter/features/{name}/` — these contain the feature's tables and queries.
 3. Add `.sqm` migration files colocated with `.sq` for schema changes — each `.sq` file has its own version sequence.
 4. In `composeApp/build.gradle.kts`, add `dependency(project(":features:<name>:impl:data"))` inside the `create("AppDatabase")` block so the aggregator picks up the feature's schema.
 5. Inject the generated `<feature>Queries` class (exposed off `AppDatabase`) into the feature's data layer; expose results through the feature's repository interface.

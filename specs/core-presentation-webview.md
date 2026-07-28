@@ -23,7 +23,7 @@ Add a reusable, embeddable WebView primitive to `core:presentation` so multiple 
 **What the code does**:
 - `core:presentation` ships `commonMain`-only Compose code: `@Composable` extension functions over Compose-free core APIs (`core:centerpost`, `core:remote-config:api`).
 - Build script pulls only `compose.runtime` — no `compose.foundation`, no `compose.material3`, no `compose.ui`. The module is "Compose-runtime-aware, UI-rendering-free."
-- Convention plugin `mockdonalds.kmp.presentation` auto-wires `core:presentation` into every feature `impl/presentation` `commonMain`. Feature consumers pick up extensions automatically.
+- Convention plugin `sampleplatter.kmp.presentation` auto-wires `core:presentation` into every feature `impl/presentation` `commonMain`. Feature consumers pick up extensions automatically.
 - `ComposeIsolationTest` allows Compose imports under `core:presentation` (any path).
 - iOS uses SwiftUI for all rendering (`iosApp/iosApp/Features/{Home,Login,Order,...}`) — no Compose-MP-iOS UI today.
 - No iOS-side equivalent location for cross-cutting SwiftUI primitives. Each feature owns its own SwiftUI folder under `iosApp/iosApp/Features/{Name}/`.
@@ -31,7 +31,7 @@ Add a reusable, embeddable WebView primitive to `core:presentation` so multiple 
 **Relevant files**:
 - `core/presentation/build.gradle.kts`
 - `core/presentation/AGENTS.md`
-- `core/presentation/src/commonMain/kotlin/com/mockdonalds/app/core/presentation/{centerpost,remoteconfig}/`
+- `core/presentation/src/commonMain/kotlin/com/jkjamies/sampleplatter/core/presentation/{centerpost,remoteconfig}/`
 - `iosApp/iosApp/` (no `Presentation/` folder yet)
 - `testing/architecture-check/src/test/kotlin/.../ComposeIsolationTest.kt`
 
@@ -45,7 +45,7 @@ Add a reusable, embeddable WebView primitive to `core:presentation` so multiple 
 // Android consumer
 val state = rememberWebViewState()
 BackHandler(enabled = state.canGoBack) { state.goBack() }
-WebViewContent(url = "https://nutrition.mockdonalds.com/big-mac", state = state)
+WebViewContent(url = "https://nutrition.sampleplatter.com/big-mac", state = state)
 ```
 
 ```swift
@@ -285,9 +285,9 @@ androidx-browser = { group = "androidx.browser", name = "browser", version.ref =
 
 #### `core:presentation` (Android)
 
-The convention plugin gives `core:presentation` an `androidDeviceTest` source set already (`mockdonalds.kmp.presentation` plugin), but `core:presentation` itself doesn't apply that plugin — it uses `mockdonalds.kmp.library` + `org.jetbrains.compose` directly. Adding UI tests to `core:presentation` would require either:
+The convention plugin gives `core:presentation` an `androidDeviceTest` source set already (`sampleplatter.kmp.presentation` plugin), but `core:presentation` itself doesn't apply that plugin — it uses `sampleplatter.kmp.library` + `org.jetbrains.compose` directly. Adding UI tests to `core:presentation` would require either:
 
-1. Applying `mockdonalds.kmp.presentation` to `core:presentation` (likely circular — that plugin auto-wires `core:presentation` into itself).
+1. Applying `sampleplatter.kmp.presentation` to `core:presentation` (likely circular — that plugin auto-wires `core:presentation` into itself).
 2. Manually wiring `androidDeviceTest` source set in `core:presentation/build.gradle.kts`.
 3. Skipping UI tests at this level, exercising the primitive only via consumer features' UI Component tests.
 
@@ -355,7 +355,7 @@ core/presentation/
 
 **Public API table** — append four rows for `WebViewContent`, `rememberWebViewState`, `WebViewState`, `WebViewError` (note them as `androidMain` only).
 
-**Wiring section** — note that `core:presentation`'s `androidMain` deps are not auto-wired into consumers; the `mockdonalds.kmp.presentation` convention plugin already pulls Compose into feature androidMain, so `WebViewContent` is callable with no extra dep declaration.
+**Wiring section** — note that `core:presentation`'s `androidMain` deps are not auto-wired into consumers; the `sampleplatter.kmp.presentation` convention plugin already pulls Compose into feature androidMain, so `WebViewContent` is callable with no extra dep declaration.
 
 ### `iosApp/iosApp/Presentation/AGENTS.md` (NEW)
 
@@ -392,7 +392,7 @@ shared loading/error states.
 - **Android cookie clearing is best-effort** — `android.webkit.CookieManager` is a global singleton; there's no per-WebView-instance cookie jar. The implementation will call `CookieManager.getInstance().removeAllCookies(null)` (or per-host equivalent) on `onDispose` of the Composable, which clears cookies *for the entire app's WebViews*. This is a known Android-platform limitation. iOS uses `.nonPersistent()` which is properly per-instance.
 - **iOS asymmetry on back navigation** — SwiftUI's `NavigationStack` edge-swipe always pops the host stack; there's no equivalent of Android's `BackHandler`. Hosts must use a toolbar back button (or similar) to expose "back in WebView" when `canGoBack == true`. Document this asymmetry in consumer feature specs.
 - **No Compose-MP-iOS introduction** — this spec deliberately keeps iOS on SwiftUI. A future decision to render Compose UI on iOS would be a separate, larger architectural change.
-- **Off-host detection is host-only** — initial-host comparison covers `nutrition.mockdonalds.com` → `tracker.mockdonalds.com` correctly (different host, treated off-host). Subdomain matching is *not* fuzzy — if you want subdomains of a parent zone treated as in-frame, pass an `onExternalLink` callback that implements that policy.
+- **Off-host detection is host-only** — initial-host comparison covers `nutrition.sampleplatter.com` → `tracker.sampleplatter.com` correctly (different host, treated off-host). Subdomain matching is *not* fuzzy — if you want subdomains of a parent zone treated as in-frame, pass an `onExternalLink` callback that implements that policy.
 - **Authenticated WebView content is unsupported** — ephemeral cookies mean session tokens won't persist. If/when an authenticated WebView consumer lands (account portal, deletion flow), revisit by adding `persistentSession: Boolean = false` param. Non-breaking change, defer until needed.
 - **Custom Tabs availability on Android** — older Android devices without Chrome / a Custom-Tabs-capable browser fall back to `Intent.ACTION_VIEW`. The `androidx.browser:browser` lib handles this fallback automatically.
 
@@ -497,7 +497,7 @@ Downstream skill: /update (modifying existing core:presentation module).
 
 Codebase context:
 - core:presentation AGENTS.md is at /Users/jkjamies/GitHub/SamplePlatter/core/presentation/AGENTS.md.
-- Convention plugin mockdonalds.kmp.presentation already auto-wires this module into 
+- Convention plugin sampleplatter.kmp.presentation already auto-wires this module into 
   every feature impl/presentation.
 - Compose isolation is enforced by ComposeIsolationTest in testing:architecture-check.
 - Compose Multiplatform 1.10.3 + Kotlin 2.3.20.

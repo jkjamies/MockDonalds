@@ -40,9 +40,9 @@ Also verify `{Feature}TestTags.kt` exists in `api/navigation/`.
 Reference: `features/order/impl/presentation/src/androidDeviceTest/.../OrderStateRobot.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{name}.presentation
+package com.jkjamies.sampleplatter.features.{name}.presentation
 
-import com.mockdonalds.app.core.test.StateRobot
+import com.jkjamies.sampleplatter.core.test.StateRobot
 
 class {Feature}StateRobot : StateRobot<{Feature}UiState, {Feature}Event>() {
 
@@ -63,7 +63,7 @@ Key: every state variant must call `createEventSink()` for a fresh event sink â€
 Reference: `features/order/impl/presentation/src/androidDeviceTest/.../OrderUiRobot.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{name}.presentation
+package com.jkjamies.sampleplatter.features.{name}.presentation
 
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
@@ -71,9 +71,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import com.mockdonalds.app.core.theme.LocalWindowSizeClass
-import com.mockdonalds.app.core.theme.SamplePlatterTheme
-import com.mockdonalds.app.features.{name}.api.ui.{Feature}TestTags
+import com.jkjamies.sampleplatter.core.theme.LocalWindowSizeClass
+import com.jkjamies.sampleplatter.core.theme.SamplePlatterTheme
+import com.jkjamies.sampleplatter.features.{name}.api.ui.{Feature}TestTags
 
 class {Feature}UiRobot(private val rule: ComposeContentTestRule) {
 
@@ -113,7 +113,7 @@ class {Feature}UiRobot(private val rule: ComposeContentTestRule) {
 Reference: `features/order/impl/presentation/src/androidDeviceTest/.../OrderUiTest.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{name}.presentation
+package com.jkjamies.sampleplatter.features.{name}.presentation
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import io.kotest.core.spec.style.BehaviorSpec
@@ -143,7 +143,7 @@ class {Feature}UiTest : BehaviorSpec({
 Location: `features/{name}/api/navigation/src/commonMain/.../api/ui/{Feature}TestTags.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{name}.api.ui
+package com.jkjamies.sampleplatter.features.{name}.api.ui
 
 object {Feature}TestTags {
     const val SCREEN = "{name}_screen"

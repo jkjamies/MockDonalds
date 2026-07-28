@@ -1,10 +1,10 @@
-plugins { id("mockdonalds.kmp.presentation") }
+plugins { id("sampleplatter.kmp.presentation") }
 
 val catalog = project.extensions.getByType<VersionCatalogsExtension>().named("libs")
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.features.nutrition.presentation"
+        namespace = "com.jkjamies.sampleplatter.features.nutrition.presentation"
     }
 
     sourceSets {

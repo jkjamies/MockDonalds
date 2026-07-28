@@ -32,21 +32,21 @@ The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before produ
 - Core remote-config module: `core/remote-config/AGENTS.md`
 - `FeatureFlag` definition: `core/remote-config/api/src/commonMain/.../FeatureFlag.kt`
 - `RemoteConfigProvider` interface: `core/remote-config/api/src/commonMain/.../RemoteConfigProvider.kt`
-- `rememberFlag` Composable extension: `core/presentation/src/commonMain/kotlin/com/mockdonalds/app/core/presentation/remoteconfig/RememberFlag.kt`
+- `rememberFlag` Composable extension: `core/presentation/src/commonMain/kotlin/com/jkjamies/sampleplatter/core/presentation/remoteconfig/RememberFlag.kt`
 - Carve-out rationale (why no CenterPost interactor for flags): `.agents/standards/centerpost.md` → "Carve-out: core:remote-config"
 
 ## Files to Create / Modify
 
 ### 1. Flag Definition — `api/domain/`
 
-`features/{feature}/api/domain/src/commonMain/kotlin/com/mockdonalds/app/features/{feature}/api/domain/{Feature}Flags.kt`
+`features/{feature}/api/domain/src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{feature}/api/domain/{Feature}Flags.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{feature}.api.domain
+package com.jkjamies.sampleplatter.features.{feature}.api.domain
 
-import com.mockdonalds.app.core.remoteconfig.FeatureFlag
-import com.mockdonalds.app.core.remoteconfig.FeatureFlagDefinition
-import com.mockdonalds.app.core.remoteconfig.FlagLifecycle
+import com.jkjamies.sampleplatter.core.remoteconfig.FeatureFlag
+import com.jkjamies.sampleplatter.core.remoteconfig.FeatureFlagDefinition
+import com.jkjamies.sampleplatter.core.remoteconfig.FlagLifecycle
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoSet
 

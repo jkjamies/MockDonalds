@@ -49,7 +49,7 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.mockdonalds.app</string>
+			<string>com.jkjamies.sampleplatter</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>sampleplatter</string>

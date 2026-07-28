@@ -25,7 +25,7 @@ Minimal Android platform shell. Contains the Activity, Application class, manife
 
 ## Deep Linking
 
-Deep links arrive as intents with scheme `mockdonalds` and host `app`. The flow:
+Deep links arrive as intents with scheme `sampleplatter` and host `app`. The flow:
 
 1. `MainActivity` captures the intent (both cold start via `onCreate` and warm via `onNewIntent`)
 2. Passes it as `deepLinkIntent` to `SamplePlatterApp` in `composeApp`

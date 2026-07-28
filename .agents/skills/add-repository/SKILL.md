@@ -41,10 +41,10 @@ The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before produ
 
 ### 1. Interface — `impl/domain/`
 
-`features/{feature}/impl/domain/src/commonMain/kotlin/com/mockdonalds/app/features/{feature}/domain/{Name}Repository.kt`
+`features/{feature}/impl/domain/src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{feature}/domain/{Name}Repository.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{feature}.domain
+package com.jkjamies.sampleplatter.features.{feature}.domain
 
 import kotlinx.coroutines.flow.Flow
 
@@ -57,12 +57,12 @@ Repository functions should return `Flow<T>` for streaming data. Use `suspend fu
 
 ### 2. Implementation — `impl/data/`
 
-`features/{feature}/impl/data/src/commonMain/kotlin/com/mockdonalds/app/features/{feature}/data/{Name}RepositoryImpl.kt`
+`features/{feature}/impl/data/src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{feature}/data/{Name}RepositoryImpl.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{feature}.data
+package com.jkjamies.sampleplatter.features.{feature}.data
 
-import com.mockdonalds.app.features.{feature}.domain.{Name}Repository
+import com.jkjamies.sampleplatter.features.{feature}.domain.{Name}Repository
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import kotlinx.coroutines.flow.Flow
@@ -78,10 +78,10 @@ class {Name}RepositoryImpl : {Name}Repository {
 
 ### 3. Test — `impl/data/commonTest/`
 
-`features/{feature}/impl/data/src/commonTest/kotlin/com/mockdonalds/app/features/{feature}/data/{Name}RepositoryImplTest.kt`
+`features/{feature}/impl/data/src/commonTest/kotlin/com/jkjamies/sampleplatter/features/{feature}/data/{Name}RepositoryImplTest.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{feature}.data
+package com.jkjamies.sampleplatter.features.{feature}.data
 
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
@@ -104,10 +104,10 @@ class {Name}RepositoryImplTest : BehaviorSpec({
 
 ### 4. Remote Data Source (if network-backed) — `impl/data/remote/`
 
-`features/{feature}/impl/data/src/commonMain/kotlin/com/mockdonalds/app/features/{feature}/data/remote/{Name}RemoteDataSource.kt`
+`features/{feature}/impl/data/src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{feature}/data/remote/{Name}RemoteDataSource.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{feature}.data.remote
+package com.jkjamies.sampleplatter.features.{feature}.data.remote
 
 import kotlinx.coroutines.flow.Flow
 
@@ -116,13 +116,13 @@ interface {Name}RemoteDataSource {
 }
 ```
 
-`features/{feature}/impl/data/src/commonMain/kotlin/com/mockdonalds/app/features/{feature}/data/remote/{Name}RemoteDataSourceImpl.kt`
+`features/{feature}/impl/data/src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{feature}/data/remote/{Name}RemoteDataSourceImpl.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{feature}.data.remote
+package com.jkjamies.sampleplatter.features.{feature}.data.remote
 
-import com.mockdonalds.app.core.buildconfig.AppBuildConfig
-import com.mockdonalds.app.core.network.HttpClientFactory
+import com.jkjamies.sampleplatter.core.buildconfig.AppBuildConfig
+import com.jkjamies.sampleplatter.core.network.HttpClientFactory
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -149,10 +149,10 @@ class {Name}RemoteDataSourceImpl(
 
 ### 5. DTO (if network-backed) — `impl/data/remote/`
 
-`features/{feature}/impl/data/src/commonMain/kotlin/com/mockdonalds/app/features/{feature}/data/remote/{Name}Dto.kt`
+`features/{feature}/impl/data/src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{feature}/data/remote/{Name}Dto.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{feature}.data.remote
+package com.jkjamies.sampleplatter.features.{feature}.data.remote
 
 import kotlinx.serialization.Serializable
 

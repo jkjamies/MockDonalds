@@ -1187,7 +1187,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -1207,7 +1207,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -1227,7 +1227,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -1247,7 +1247,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -1267,7 +1267,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -1344,7 +1344,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -1364,7 +1364,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -1384,7 +1384,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -1404,7 +1404,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -1424,7 +1424,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -1476,7 +1476,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -1560,7 +1560,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -1669,7 +1669,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -1817,7 +1817,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -1837,7 +1837,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -1857,7 +1857,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -1909,7 +1909,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -1929,7 +1929,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -2013,7 +2013,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -2033,7 +2033,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -2053,7 +2053,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -2130,7 +2130,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -2150,7 +2150,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -2170,7 +2170,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -2190,7 +2190,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -2210,7 +2210,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -2287,7 +2287,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -2467,7 +2467,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -2487,7 +2487,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -2507,7 +2507,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -2623,7 +2623,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -2764,7 +2764,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -2784,7 +2784,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -2893,7 +2893,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -2913,7 +2913,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -2933,7 +2933,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -2953,7 +2953,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -2973,7 +2973,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -3025,7 +3025,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -3077,7 +3077,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -3154,7 +3154,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -3238,7 +3238,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -3258,7 +3258,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -3342,7 +3342,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -3483,7 +3483,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -3503,7 +3503,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -3523,7 +3523,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -3575,7 +3575,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -3659,7 +3659,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -3679,7 +3679,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -3699,7 +3699,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -3751,7 +3751,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -3803,7 +3803,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -3823,7 +3823,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -3843,7 +3843,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -3863,7 +3863,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -3883,7 +3883,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -3903,7 +3903,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -3980,7 +3980,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -4000,7 +4000,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -4180,7 +4180,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -4289,7 +4289,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -4373,7 +4373,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -4425,7 +4425,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -4509,7 +4509,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -4529,7 +4529,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -4549,7 +4549,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -4626,7 +4626,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -4646,7 +4646,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -4698,7 +4698,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -4775,7 +4775,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -4795,7 +4795,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -4815,7 +4815,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -4835,7 +4835,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -4912,7 +4912,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -4932,7 +4932,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -5009,7 +5009,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -5029,7 +5029,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -5170,7 +5170,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -5190,7 +5190,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -5210,7 +5210,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -5294,7 +5294,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -5314,7 +5314,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -5398,7 +5398,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -5418,7 +5418,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -5502,7 +5502,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp";
@@ -5586,7 +5586,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -5670,7 +5670,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.benchmarks;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.benchmarks;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -5690,7 +5690,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;
@@ -5710,7 +5710,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.e2etests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.e2etests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = iosApp;

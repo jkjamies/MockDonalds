@@ -18,7 +18,7 @@ core/remote-config/api            -> RemoteConfigProvider interface, FeatureFlag
                                      definition interfaces. Compose-free.
 core/presentation/                -> rememberFlag / rememberConfig Composable extensions over RemoteConfigProvider
                                      (lives in :core:presentation, see core/presentation/AGENTS.md). Auto-wired into
-                                     every feature impl/presentation module via mockdonalds.kmp.presentation plugin.
+                                     every feature impl/presentation module via sampleplatter.kmp.presentation plugin.
 core/remote-config/impl           -> RemoteConfigSource abstraction + Harness impls per platform
   └ commonMain                       RemoteConfigSource interface, RemoteConfigProviderImpl, RemoteConfigBuildConfig (BuildKonfig-generated)
   └ androidMain                      HarnessRemoteConfigSourceImpl → CfClient (io.harness:ff-android-client-sdk)
@@ -37,8 +37,8 @@ core/remote-config/test           -> FakeRemoteConfigProvider for consumer tests
 | `RemoteConfig<T>` | api | Sealed hierarchy: `StringConfig`, `LongConfig`, `DoubleConfig`, `JsonConfig<T>` (carries a `KSerializer<T>`). Each subtype pins `T` so impls dispatch via exhaustive `when` |
 | `jsonConfig<reified T>(key, default)` | api | Reified helper that builds `RemoteConfig.JsonConfig<T>` with the implicit `serializer<T>()`; payload type must be `@Serializable` |
 | `RemoteConfigProvider` | api | Interface with `isEnabled(flag): Boolean`, `observe(flag): Flow<Boolean>`, `getConfig(config): T`, `observeConfig(config): Flow<T>` |
-| `RemoteConfigProvider.rememberFlag(flag)` | `:core:presentation` | `@Composable` extension returning `State<Boolean>` — the presenter-only entry point for flags. Auto-wired via `mockdonalds.kmp.presentation` plugin. |
-| `RemoteConfigProvider.rememberConfig(config)` | `:core:presentation` | `@Composable` extension returning `State<T>` — the presenter-only entry point for typed configs. Auto-wired via `mockdonalds.kmp.presentation` plugin. |
+| `RemoteConfigProvider.rememberFlag(flag)` | `:core:presentation` | `@Composable` extension returning `State<Boolean>` — the presenter-only entry point for flags. Auto-wired via `sampleplatter.kmp.presentation` plugin. |
+| `RemoteConfigProvider.rememberConfig(config)` | `:core:presentation` | `@Composable` extension returning `State<T>` — the presenter-only entry point for typed configs. Auto-wired via `sampleplatter.kmp.presentation` plugin. |
 | `FeatureFlags`, `RemoteConfigs` | api | Empty registry objects for cross-cutting definitions (feature-specific keys live in their own `api/domain`) |
 | `FeatureFlagDefinition` | api | Interface wrapping a `FeatureFlag` with registry metadata (`description`, `owner`, `lifecycle: FlagLifecycle`). Every production flag must ship a `@ContributesIntoSet(AppScope::class)` definition so the debug-menu viewer can enumerate it |
 | `RemoteConfigDefinition<T>` | api | Parallel of `FeatureFlagDefinition` for typed configs — same metadata fields, carries a `RemoteConfig<T>` instead of a `FeatureFlag` |

@@ -29,14 +29,14 @@ If you pattern-match a field name like `*Enabled`, `*Flag`, `*Toggle`, `*Rollout
 
 ## Reference Files
 
-- Facade interface: `core/build-config/api/src/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/AppBuildConfig.kt`
-- Production impl: `core/build-config/impl/src/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/AppBuildConfigImpl.kt` (bound via `@ContributesBinding(AppScope::class)` — no separate providers module)
-- Fake impl: **auto-generated** by `:build-tooling:ksp-fake-app-build-config`; source lives at `core/build-config/test/build/generated/ksp/metadata/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/test/FakeAppBuildConfig.kt` after a build
-- Smoke test: `core/build-config/impl/src/commonTest/kotlin/com/mockdonalds/app/core/buildconfig/AppBuildConfigTest.kt`
+- Facade interface: `core/build-config/api/src/commonMain/kotlin/com/jkjamies/sampleplatter/core/buildconfig/AppBuildConfig.kt`
+- Production impl: `core/build-config/impl/src/commonMain/kotlin/com/jkjamies/sampleplatter/core/buildconfig/AppBuildConfigImpl.kt` (bound via `@ContributesBinding(AppScope::class)` — no separate providers module)
+- Fake impl: **auto-generated** by `:build-tooling:ksp-fake-app-build-config`; source lives at `core/build-config/test/build/generated/ksp/metadata/commonMain/kotlin/com/jkjamies/sampleplatter/core/buildconfig/test/FakeAppBuildConfig.kt` after a build
+- Smoke test: `core/build-config/impl/src/commonTest/kotlin/com/jkjamies/sampleplatter/core/buildconfig/AppBuildConfigTest.kt`
 - Defaults: `core/build-config/impl/Defaults.properties`
 - Combo files: `core/build-config/impl/markets/{market}/{market}-{env}.properties` — 15 combos (5 markets × 3 envs: us/ca/de/au/core × int/mte/prod)
-- Konsist coverage rule: `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigCoverageTest.kt`
-- Konsist facade boundary: `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigImportTest.kt`
+- Konsist coverage rule: `testing/architecture-check/src/test/kotlin/com/jkjamies/sampleplatter/konsist/core/BuildConfigCoverageTest.kt`
+- Konsist facade boundary: `testing/architecture-check/src/test/kotlin/com/jkjamies/sampleplatter/konsist/core/BuildConfigImportTest.kt`
 
 ## Steps
 
@@ -144,7 +144,7 @@ If none of these fit, write a real assertion on the value's shape. The goal is *
 
 The KSP processor at `:build-tooling:ksp-build-config-registry` reads `@DebugConfigField` annotations on `AppBuildConfig` and auto-generates `BuildConfigField.kt`'s `asFields()` at compile time. As long as step 4a's annotation is present, the new field will appear in the build-config debug menu on next build — no edit to `BuildConfigField.kt` required.
 
-The generated file lives at `core/build-config/api/build/generated/ksp/metadata/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/BuildConfigFieldRegistry.kt` (inspect it to confirm the new row landed).
+The generated file lives at `core/build-config/api/build/generated/ksp/metadata/commonMain/kotlin/com/jkjamies/sampleplatter/core/buildconfig/BuildConfigFieldRegistry.kt` (inspect it to confirm the new row landed).
 
 Konsist backstops:
 - `BuildConfigCoverageTest` — fast failure if the annotation is missing
@@ -163,7 +163,7 @@ Run in parallel:
 ```bash
 ./gradlew :core:build-config:api:build
 ./gradlew :core:build-config:impl:testAndroidHostTest
-./gradlew :testing:architecture-check:test --tests "com.mockdonalds.app.konsist.core.BuildConfig*"
+./gradlew :testing:architecture-check:test --tests "com.jkjamies.sampleplatter.konsist.core.BuildConfig*"
 ```
 
 All three must pass. Common failure modes:

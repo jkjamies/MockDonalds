@@ -1,0 +1,25 @@
+package com.jkjamies.sampleplatter.features.order.domain
+
+import com.jkjamies.sampleplatter.features.order.api.domain.GetOrderContent
+import com.jkjamies.sampleplatter.features.order.api.domain.OrderContent
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+
+@ContributesBinding(AppScope::class)
+class GetOrderContentImpl(
+    private val repository: OrderRepository,
+) : GetOrderContent() {
+    override fun createObservable(params: Unit): Flow<OrderContent> {
+        return combine(
+            repository.getCategoryPreviews(),
+            repository.getCartSummary(),
+        ) { previews, cart ->
+            OrderContent(
+                categoryPreviews = previews,
+                cartSummary = cart,
+            )
+        }
+    }
+}

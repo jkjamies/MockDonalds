@@ -1,11 +1,11 @@
 plugins {
-    id("mockdonalds.kmp.presentation")
+    id("sampleplatter.kmp.presentation")
 }
 
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.features.home.presentation"
+        namespace = "com.jkjamies.sampleplatter.features.home.presentation"
     }
 
     sourceSets {

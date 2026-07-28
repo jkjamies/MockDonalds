@@ -126,11 +126,11 @@ SamplePlatter/
 │
 └── build-logic/convention/             # Gradle convention plugins
     └── src/main/kotlin/
-        ├── mockdonalds.kmp.library.gradle.kts       # Base KMP (api modules)
-        ├── mockdonalds.kmp.domain.gradle.kts        # KMP + Metro
-        ├── mockdonalds.kmp.data.gradle.kts          # KMP + Metro + Serialization
-        ├── mockdonalds.kmp.presentation.gradle.kts  # KMP + Compose + Metro + Circuit codegen + auto core:strings on androidMain
-        └── mockdonalds.phrase.gradle.kts            # pullTranslations task (Phrase → Android XML + iOS .lproj)
+        ├── sampleplatter.kmp.library.gradle.kts       # Base KMP (api modules)
+        ├── sampleplatter.kmp.domain.gradle.kts        # KMP + Metro
+        ├── sampleplatter.kmp.data.gradle.kts          # KMP + Metro + Serialization
+        ├── sampleplatter.kmp.presentation.gradle.kts  # KMP + Compose + Metro + Circuit codegen + auto core:strings on androidMain
+        └── sampleplatter.phrase.gradle.kts            # pullTranslations task (Phrase → Android XML + iOS .lproj)
 ```
 
 ## Layer Dependency Rules
@@ -254,12 +254,12 @@ Key constraints:
 
 | Submodule | Responsibility | Plugin |
 |-----------|---------------|--------|
-| `api/domain` | Public models, abstract use cases (`CenterPostSubjectInteractor` subclasses) | `mockdonalds.kmp.library` |
-| `api/navigation` | Screen objects (`@Parcelize data object`), TestTags | `mockdonalds.kmp.library` |
-| `impl/domain` | UseCaseImpl classes, Repository interfaces | `mockdonalds.kmp.domain` |
-| `impl/data` | RepositoryImpl classes, DataSource interfaces+impls (`remote/`, `local/`), DTOs (`@Serializable` data classes with `Dto` suffix in `remote/`), network via `core:network:api` | `mockdonalds.kmp.data` |
-| `impl/presentation` | Presenter functions, UiState, Events, Compose UI | `mockdonalds.kmp.presentation` |
-| `test` | Fakes extending abstract use cases for testing | `mockdonalds.kmp.domain` |
+| `api/domain` | Public models, abstract use cases (`CenterPostSubjectInteractor` subclasses) | `sampleplatter.kmp.library` |
+| `api/navigation` | Screen objects (`@Parcelize data object`), TestTags | `sampleplatter.kmp.library` |
+| `impl/domain` | UseCaseImpl classes, Repository interfaces | `sampleplatter.kmp.domain` |
+| `impl/data` | RepositoryImpl classes, DataSource interfaces+impls (`remote/`, `local/`), DTOs (`@Serializable` data classes with `Dto` suffix in `remote/`), network via `core:network:api` | `sampleplatter.kmp.data` |
+| `impl/presentation` | Presenter functions, UiState, Events, Compose UI | `sampleplatter.kmp.presentation` |
+| `test` | Fakes extending abstract use cases for testing | `sampleplatter.kmp.domain` |
 
 ## Cross-Feature Import Rules
 
@@ -268,16 +268,16 @@ Cross-feature imports are ONLY permitted through `api/` modules. Enforced by `La
 Correct:
 ```kotlin
 // In features/order/impl/presentation/
-import com.mockdonalds.app.features.home.api.navigation.HomeScreen  // api module -- allowed
-import com.mockdonalds.app.features.login.api.domain.AuthStatus     // api module -- allowed
+import com.jkjamies.sampleplatter.features.home.api.navigation.HomeScreen  // api module -- allowed
+import com.jkjamies.sampleplatter.features.login.api.domain.AuthStatus     // api module -- allowed
 ```
 
 Incorrect:
 ```kotlin
 // In features/order/impl/presentation/
-import com.mockdonalds.app.features.home.domain.HomeRepository      // impl/domain -- FORBIDDEN
-import com.mockdonalds.app.features.home.data.HomeRepositoryImpl    // impl/data -- FORBIDDEN
-import com.mockdonalds.app.features.home.presentation.HomeUiState   // impl/presentation -- FORBIDDEN
+import com.jkjamies.sampleplatter.features.home.domain.HomeRepository      // impl/domain -- FORBIDDEN
+import com.jkjamies.sampleplatter.features.home.data.HomeRepositoryImpl    // impl/data -- FORBIDDEN
+import com.jkjamies.sampleplatter.features.home.presentation.HomeUiState   // impl/presentation -- FORBIDDEN
 ```
 
 ## Core Module Isolation
@@ -303,12 +303,12 @@ Note: `core:auth` currently exposes only `AuthManager` (interface) with no inter
 
 | Plugin | Module Type | What It Adds |
 |--------|------------|-------------|
-| `mockdonalds.kmp.library` | api/*, core/* | Base KMP (Android SDK 36/min 26, iOS targets, JVM 17), Parcelize, KSP, Kotest, Detekt, auto `:core:test-fixtures` in commonTest |
-| `mockdonalds.kmp.domain` | impl/domain | Everything in library + Metro DI (`@ContributesBinding` support), **auto-adds `core:logger:api` to `commonMain`** |
-| `mockdonalds.kmp.data` | impl/data | Everything in library + Metro DI + kotlinx.serialization, **auto-adds `core:logger:api` to `commonMain`** |
-| `mockdonalds.kmp.presentation` | impl/presentation | Everything in library + Compose Multiplatform + Compose Compiler + Metro DI with Circuit codegen (`enableCircuitCodegen`), Circuit dependencies, Material3, Coil, androidDeviceTest support, **auto-adds `core:strings` to `androidMain` and `core:logger:api` to `commonMain`** |
-| `mockdonalds.phrase` | `core:strings` | Registers the `pullTranslations` task (Phrase API → Android XML + iOS `.lproj/Localizable.strings`) |
-| `mockdonalds.detekt` | (transitive via library) | Detekt with `config/detekt/detekt.yml`, parallel execution, auto-correct, formatting plugin |
+| `sampleplatter.kmp.library` | api/*, core/* | Base KMP (Android SDK 36/min 26, iOS targets, JVM 17), Parcelize, KSP, Kotest, Detekt, auto `:core:test-fixtures` in commonTest |
+| `sampleplatter.kmp.domain` | impl/domain | Everything in library + Metro DI (`@ContributesBinding` support), **auto-adds `core:logger:api` to `commonMain`** |
+| `sampleplatter.kmp.data` | impl/data | Everything in library + Metro DI + kotlinx.serialization, **auto-adds `core:logger:api` to `commonMain`** |
+| `sampleplatter.kmp.presentation` | impl/presentation | Everything in library + Compose Multiplatform + Compose Compiler + Metro DI with Circuit codegen (`enableCircuitCodegen`), Circuit dependencies, Material3, Coil, androidDeviceTest support, **auto-adds `core:strings` to `androidMain` and `core:logger:api` to `commonMain`** |
+| `sampleplatter.phrase` | `core:strings` | Registers the `pullTranslations` task (Phrase API → Android XML + iOS `.lproj/Localizable.strings`) |
+| `sampleplatter.detekt` | (transitive via library) | Detekt with `config/detekt/detekt.yml`, parallel execution, auto-correct, formatting plugin |
 
 ## Gradle Module Wiring
 

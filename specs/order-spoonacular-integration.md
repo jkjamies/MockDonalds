@@ -86,7 +86,7 @@ This is also the **first networked feature** and the **first SQLDelight consumer
    - First `HttpClient` consumer in the codebase. Bind a Spoonacular-scoped `HttpClient` via Metro provider in `features/order/impl/data`. Configure: `baseUrl = "https://api.spoonacular.com/food"`, `authMode = AuthMode.NONE` (Spoonacular doesn't use Bearer; we set the API key header manually), `headers["x-api-key"] = AppBuildConfig.spoonacularApiKey`.
 
 6. **Persistence wiring**:
-   - First SQLDelight consumer. Add `features/order/impl/data/sqldelight/order/com/mockdonalds/app/features/order/data/MenuItem.sq` with `menuItem` table + queries.
+   - First SQLDelight consumer. Add `features/order/impl/data/sqldelight/order/com/jkjamies/sampleplatter/features/order/data/MenuItem.sq` with `menuItem` table + queries.
    - Apply SQLDelight plugin in `composeApp` (the aggregator) per CLAUDE.md's persistence pattern, depending on `:features:order:impl:data` so its `.sq` files are picked up.
    - `core:persistence` already provides `DatabaseDriverFactory`; verify it's wired into `AppDatabase` aggregation.
 
@@ -244,7 +244,7 @@ The `x-api-key` header is set on this client's `defaultRequest` — scope is per
 
 ## SQLDelight Schema
 
-`features/order/impl/data/src/commonMain/sqldelight/com/mockdonalds/app/features/order/data/MenuItem.sq`
+`features/order/impl/data/src/commonMain/sqldelight/com/jkjamies/sampleplatter/features/order/data/MenuItem.sq`
 
 ```sql
 CREATE TABLE menuItem (

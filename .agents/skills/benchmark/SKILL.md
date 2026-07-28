@@ -36,7 +36,7 @@ Add, run, and analyze macrobenchmarks for Android (`:testing:benchmarks`) and iO
 
 ### Android — Macrobenchmark + Perfetto
 
-Add benchmarks to `testing/benchmarks/src/main/kotlin/com/mockdonalds/app/benchmarks/`.
+Add benchmarks to `testing/benchmarks/src/main/kotlin/com/jkjamies/sampleplatter/benchmarks/`.
 
 #### Startup Benchmark
 
@@ -132,7 +132,7 @@ final class {Feature}PerformanceTest: XCTestCase {
 
 # Target a specific benchmark class
 ./gradlew :testing:benchmarks:connectedBenchmarkAndroidTest \
-  -Pandroid.testInstrumentationRunnerArguments.class=com.mockdonalds.app.benchmarks.{Feature}Benchmark
+  -Pandroid.testInstrumentationRunnerArguments.class=com.jkjamies.sampleplatter.benchmarks.{Feature}Benchmark
 
 # Market/env-specific
 ./gradlew :testing:benchmarks:connectedCoreIntBenchmarkAndroidTest
@@ -188,7 +188,7 @@ Look for: main-thread hangs > 16ms, ARC allocation spikes, SwiftUI body re-evalu
 ## Conventions
 
 - Benchmark class names end with `Benchmark` (Android) or `PerformanceTest` / `Benchmark` (iOS)
-- Android benchmarks live in `testing/benchmarks/src/main/kotlin/com/mockdonalds/app/benchmarks/`
+- Android benchmarks live in `testing/benchmarks/src/main/kotlin/com/jkjamies/sampleplatter/benchmarks/`
 - iOS benchmarks live in `iosApp/iosAppBenchmarks/` (dedicated Xcode target, runs via `Benchmarks.xctestplan`)
 - Minimum 5 iterations for statistical significance (stock `StartupBenchmark` uses 3 — acceptable for a boilerplate)
 - Custom trace sections use snake_case: `{feature}_{operation}`

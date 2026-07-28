@@ -1,10 +1,10 @@
 plugins {
-    id("mockdonalds.kmp.presentation")
+    id("sampleplatter.kmp.presentation")
 }
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.core.theme"
+        namespace = "com.jkjamies.sampleplatter.core.theme"
     }
 
     sourceSets {
@@ -26,7 +26,7 @@ kotlin {
         androidMain.dependencies {
             // compose.runtime (commonMain) and compose.foundation / material3 /
             // materialIconsExtended / ui (androidMain) are supplied by the
-            // `mockdonalds.kmp.presentation` convention plugin — do not re-declare them.
+            // `sampleplatter.kmp.presentation` convention plugin — do not re-declare them.
             api(libs.androidx.compose.material3.windowsizeclass)
         }
     }

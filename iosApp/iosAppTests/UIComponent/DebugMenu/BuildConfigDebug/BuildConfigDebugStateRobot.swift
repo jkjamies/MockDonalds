@@ -6,9 +6,9 @@ final class BuildConfigDebugStateRobot: BaseStateRobot<BuildConfigDebugUiState, 
     override func defaultState() -> BuildConfigDebugUiState {
         BuildConfigDebugUiState(
             fields: [
-                BuildConfigField(name: "appId", value: "us-mockdonalds-mobile-int", group: .identity),
+                BuildConfigField(name: "appId", value: "us-sampleplatter-mobile-int", group: .identity),
                 BuildConfigField(name: "market", value: "us", group: .identity),
-                BuildConfigField(name: "baseUrl", value: "https://int-api.mockdonalds.com", group: .urls),
+                BuildConfigField(name: "baseUrl", value: "https://int-api.sampleplatter.com", group: .urls),
                 BuildConfigField(name: "locale", value: "en-US", group: .localization),
             ],
             eventSink: createEventSink(),

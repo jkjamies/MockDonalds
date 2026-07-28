@@ -260,7 +260,7 @@ Get{Feature}Content
 
 | Field | Default | Per-Market | Description |
 |-------|---------|------------|-------------|
-| `{name}BaseUrl` | `https://api.mockdonalds.com/{name}` | yes | API base URL |
+| `{name}BaseUrl` | `https://api.sampleplatter.com/{name}` | yes | API base URL |
 
 ---
 

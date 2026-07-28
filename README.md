@@ -1,4 +1,4 @@
-# SamplePlatter
+# Sample Platter
 
 A Kotlin Multiplatform (KMP) reference app showcasing a clean, scalable architecture for shared business logic with native UI on both platforms: Jetpack Compose on Android and SwiftUI on iOS.
 

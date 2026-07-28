@@ -6,4 +6,4 @@ SWIFT_VERSION = 5.0
 ENABLE_USER_SCRIPT_SANDBOXING = NO
 
 // Bundle ID derived from MARKET. Each combo sets MARKET to "us", "de", etc.
-PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.$(MARKET)
+PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.$(MARKET)

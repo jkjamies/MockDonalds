@@ -1,15 +1,15 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
-import com.mockdonalds.buildlogic.BuildVariantResolver
+import com.jkjamies.sampleplatter.buildlogic.BuildVariantResolver
 import java.util.Properties
 
 plugins {
-    id("mockdonalds.kmp.data")
+    id("sampleplatter.kmp.data")
     alias(libs.plugins.buildkonfig)
 }
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.core.remoteconfig.impl"
+        namespace = "com.jkjamies.sampleplatter.core.remoteconfig.impl"
     }
 
     sourceSets {
@@ -41,7 +41,7 @@ require(file(configPath).exists()) {
 val config = loadProps(configPath)
 
 buildkonfig {
-    packageName = "com.mockdonalds.app.core.remoteconfig"
+    packageName = "com.jkjamies.sampleplatter.core.remoteconfig"
     objectName = "RemoteConfigBuildConfig"
     exposeObjectWithName = "RemoteConfigBuildConfig"
     defaultConfigs {

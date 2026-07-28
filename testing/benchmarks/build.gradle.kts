@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mockdonalds.app.benchmarks"
+    namespace = "com.jkjamies.sampleplatter.benchmarks"
     compileSdk = 36
 
     targetProjectPath = ":androidApp"

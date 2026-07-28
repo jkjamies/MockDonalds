@@ -1,11 +1,11 @@
 plugins {
-    id("mockdonalds.kmp.domain")
+    id("sampleplatter.kmp.domain")
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.core.remoteconfig.api"
+        namespace = "com.jkjamies.sampleplatter.core.remoteconfig.api"
     }
 
     sourceSets {

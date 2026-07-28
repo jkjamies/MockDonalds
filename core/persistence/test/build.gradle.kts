@@ -1,10 +1,10 @@
 plugins {
-    id("mockdonalds.kmp.domain")
+    id("sampleplatter.kmp.domain")
 }
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.core.persistence.test"
+        namespace = "com.jkjamies.sampleplatter.core.persistence.test"
     }
 
     sourceSets {

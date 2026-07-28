@@ -34,7 +34,7 @@ Macrobenchmarks measure production-representative runtime performance (startup, 
 - **Variant filter**: `androidComponents.beforeVariants { enable = false }` for every non-benchmark variant — only benchmark APKs are produced
 - **Runner**: JUnit4 `@RunWith(AndroidJUnit4::class)` — instrumented tests
 - **Element access**: UI Automator (`By.desc(testTag)`) — no direct access to target-app classes (R8 renames them anyway)
-- **Location**: `testing/benchmarks/src/main/kotlin/com/mockdonalds/app/benchmarks/`
+- **Location**: `testing/benchmarks/src/main/kotlin/com/jkjamies/sampleplatter/benchmarks/`
 
 ## Dependencies
 

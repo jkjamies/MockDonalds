@@ -43,12 +43,12 @@ The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before produ
 
 ### 1. Abstract Use Case — `api/domain/`
 
-`features/{feature}/api/domain/src/commonMain/kotlin/com/mockdonalds/app/features/{feature}/api/domain/{Name}.kt`
+`features/{feature}/api/domain/src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{feature}/api/domain/{Name}.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{feature}.api.domain
+package com.jkjamies.sampleplatter.features.{feature}.api.domain
 
-import com.mockdonalds.app.core.centerpost.CenterPostSubjectInteractor
+import com.jkjamies.sampleplatter.core.centerpost.CenterPostSubjectInteractor
 
 abstract class {Name} : CenterPostSubjectInteractor<Unit, {ResultType}>()
 ```
@@ -60,12 +60,12 @@ abstract class {Name} : CenterPostInteractor<{Params}, {ResultType}>()
 
 ### 2. Implementation — `impl/domain/`
 
-`features/{feature}/impl/domain/src/commonMain/kotlin/com/mockdonalds/app/features/{feature}/domain/{Name}Impl.kt`
+`features/{feature}/impl/domain/src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{feature}/domain/{Name}Impl.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{feature}.domain
+package com.jkjamies.sampleplatter.features.{feature}.domain
 
-import com.mockdonalds.app.features.{feature}.api.domain.{Name}
+import com.jkjamies.sampleplatter.features.{feature}.api.domain.{Name}
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import kotlinx.coroutines.flow.Flow
@@ -82,12 +82,12 @@ class {Name}Impl(
 
 ### 3. Fake — `test/`
 
-`features/{feature}/test/src/commonMain/kotlin/com/mockdonalds/app/features/{feature}/test/Fake{Name}.kt`
+`features/{feature}/test/src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{feature}/test/Fake{Name}.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{feature}.test
+package com.jkjamies.sampleplatter.features.{feature}.test
 
-import com.mockdonalds.app.features.{feature}.api.domain.{Name}
+import com.jkjamies.sampleplatter.features.{feature}.api.domain.{Name}
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -111,10 +111,10 @@ class Fake{Name}(
 
 ### 4. Test — `impl/domain/commonTest/`
 
-`features/{feature}/impl/domain/src/commonTest/kotlin/com/mockdonalds/app/features/{feature}/domain/{Name}ImplTest.kt`
+`features/{feature}/impl/domain/src/commonTest/kotlin/com/jkjamies/sampleplatter/features/{feature}/domain/{Name}ImplTest.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{feature}.domain
+package com.jkjamies.sampleplatter.features.{feature}.domain
 
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe

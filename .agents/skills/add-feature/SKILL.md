@@ -73,12 +73,12 @@ Create 6 submodules under `features/{name}/`:
 
 **api/domain/build.gradle.kts** — public models and use case abstractions:
 ```kotlin
-plugins { id("mockdonalds.kmp.library") }
+plugins { id("sampleplatter.kmp.library") }
 ```
 
 **api/navigation/build.gradle.kts** — Screen objects and TestTags:
 ```kotlin
-plugins { id("mockdonalds.kmp.library") }
+plugins { id("sampleplatter.kmp.library") }
 kotlin {
     sourceSets {
         commonMain.dependencies {
@@ -90,7 +90,7 @@ kotlin {
 
 **impl/domain/build.gradle.kts** — use case implementations:
 ```kotlin
-plugins { id("mockdonalds.kmp.domain") }
+plugins { id("sampleplatter.kmp.domain") }
 kotlin {
     sourceSets {
         commonMain.dependencies {
@@ -102,7 +102,7 @@ kotlin {
 
 **impl/data/build.gradle.kts** — repository implementations, data sources, DTOs:
 ```kotlin
-plugins { id("mockdonalds.kmp.data") }
+plugins { id("sampleplatter.kmp.data") }
 kotlin {
     sourceSets {
         commonMain.dependencies {
@@ -116,7 +116,7 @@ kotlin {
 
 **impl/presentation/build.gradle.kts** — presenter, UI, state:
 ```kotlin
-plugins { id("mockdonalds.kmp.presentation") }
+plugins { id("sampleplatter.kmp.presentation") }
 kotlin {
     sourceSets {
         commonMain.dependencies {
@@ -129,7 +129,7 @@ kotlin {
 
 **test/build.gradle.kts** — fakes for testing:
 ```kotlin
-plugins { id("mockdonalds.kmp.domain") }
+plugins { id("sampleplatter.kmp.domain") }
 kotlin {
     sourceSets {
         commonMain.dependencies {
@@ -142,11 +142,11 @@ kotlin {
 
 ### 2. Create Source Files
 
-**api/domain/** — `src/commonMain/kotlin/com/mockdonalds/app/features/{name}/api/domain/`
+**api/domain/** — `src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{name}/api/domain/`
 
 `{Feature}Content.kt`:
 ```kotlin
-package com.mockdonalds.app.features.{name}.api.domain
+package com.jkjamies.sampleplatter.features.{name}.api.domain
 
 import kotlinx.serialization.Serializable
 
@@ -158,20 +158,20 @@ data class {Feature}Content(
 
 `Get{Feature}Content.kt`:
 ```kotlin
-package com.mockdonalds.app.features.{name}.api.domain
+package com.jkjamies.sampleplatter.features.{name}.api.domain
 
-import com.mockdonalds.app.core.centerpost.CenterPostSubjectInteractor
+import com.jkjamies.sampleplatter.core.centerpost.CenterPostSubjectInteractor
 
 abstract class Get{Feature}Content : CenterPostSubjectInteractor<Unit, {Feature}Content>()
 ```
 
-**api/navigation/** — `src/commonMain/kotlin/com/mockdonalds/app/features/{name}/api/navigation/`
+**api/navigation/** — `src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{name}/api/navigation/`
 
 `{Feature}Screen.kt`:
 ```kotlin
-package com.mockdonalds.app.features.{name}.api.navigation
+package com.jkjamies.sampleplatter.features.{name}.api.navigation
 
-import com.mockdonalds.app.core.circuit.Parcelize
+import com.jkjamies.sampleplatter.core.circuit.Parcelize
 import com.slack.circuit.runtime.screen.Screen
 
 @Parcelize
@@ -183,21 +183,21 @@ For auth-gated screens, use `ProtectedScreen` instead of `Screen`.
 
 `{Feature}TestTags.kt`:
 ```kotlin
-package com.mockdonalds.app.features.{name}.api.ui
+package com.jkjamies.sampleplatter.features.{name}.api.ui
 
 object {Feature}TestTags {
     const val SCREEN = "{name}_screen"
 }
 ```
 
-**impl/domain/** — `src/commonMain/kotlin/com/mockdonalds/app/features/{name}/domain/`
+**impl/domain/** — `src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{name}/domain/`
 
 `Get{Feature}ContentImpl.kt`:
 ```kotlin
-package com.mockdonalds.app.features.{name}.domain
+package com.jkjamies.sampleplatter.features.{name}.domain
 
-import com.mockdonalds.app.features.{name}.api.domain.Get{Feature}Content
-import com.mockdonalds.app.features.{name}.api.domain.{Feature}Content
+import com.jkjamies.sampleplatter.features.{name}.api.domain.Get{Feature}Content
+import com.jkjamies.sampleplatter.features.{name}.api.domain.{Feature}Content
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import kotlinx.coroutines.flow.Flow
@@ -214,9 +214,9 @@ class Get{Feature}ContentImpl(
 
 `{Feature}Repository.kt`:
 ```kotlin
-package com.mockdonalds.app.features.{name}.domain
+package com.jkjamies.sampleplatter.features.{name}.domain
 
-import com.mockdonalds.app.features.{name}.api.domain.{Feature}Content
+import com.jkjamies.sampleplatter.features.{name}.api.domain.{Feature}Content
 import kotlinx.coroutines.flow.Flow
 
 interface {Feature}Repository {
@@ -224,15 +224,15 @@ interface {Feature}Repository {
 }
 ```
 
-**impl/data/** — `src/commonMain/kotlin/com/mockdonalds/app/features/{name}/data/`
+**impl/data/** — `src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{name}/data/`
 
 `{Feature}RepositoryImpl.kt`:
 ```kotlin
-package com.mockdonalds.app.features.{name}.data
+package com.jkjamies.sampleplatter.features.{name}.data
 
-import com.mockdonalds.app.features.{name}.api.domain.{Feature}Content
-import com.mockdonalds.app.features.{name}.data.remote.{Feature}RemoteDataSource
-import com.mockdonalds.app.features.{name}.domain.{Feature}Repository
+import com.jkjamies.sampleplatter.features.{name}.api.domain.{Feature}Content
+import com.jkjamies.sampleplatter.features.{name}.data.remote.{Feature}RemoteDataSource
+import com.jkjamies.sampleplatter.features.{name}.domain.{Feature}Repository
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -249,11 +249,11 @@ class {Feature}RepositoryImpl(
 }
 ```
 
-**impl/data/remote/** — `src/commonMain/kotlin/com/mockdonalds/app/features/{name}/data/remote/`
+**impl/data/remote/** — `src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{name}/data/remote/`
 
 `{Feature}RemoteDataSource.kt`:
 ```kotlin
-package com.mockdonalds.app.features.{name}.data.remote
+package com.jkjamies.sampleplatter.features.{name}.data.remote
 
 import kotlinx.coroutines.flow.Flow
 
@@ -264,10 +264,10 @@ interface {Feature}RemoteDataSource {
 
 `{Feature}RemoteDataSourceImpl.kt`:
 ```kotlin
-package com.mockdonalds.app.features.{name}.data.remote
+package com.jkjamies.sampleplatter.features.{name}.data.remote
 
-import com.mockdonalds.app.core.buildconfig.AppBuildConfig
-import com.mockdonalds.app.core.network.HttpClientFactory
+import com.jkjamies.sampleplatter.core.buildconfig.AppBuildConfig
+import com.jkjamies.sampleplatter.core.network.HttpClientFactory
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -294,9 +294,9 @@ class {Feature}RemoteDataSourceImpl(
 
 `{Feature}Dto.kt`:
 ```kotlin
-package com.mockdonalds.app.features.{name}.data.remote
+package com.jkjamies.sampleplatter.features.{name}.data.remote
 
-import com.mockdonalds.app.features.{name}.api.domain.{Feature}Content
+import com.jkjamies.sampleplatter.features.{name}.api.domain.{Feature}Content
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -374,14 +374,14 @@ Module discovery is automatic (`settings.gradle.kts` walks `features/`), but **r
 
 A `TabScreen` also needs `override val tag: String = "{name}"`, and the tag must match the deep-link path segment.
 
-**test/** — `src/commonMain/kotlin/com/mockdonalds/app/features/{name}/test/`
+**test/** — `src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{name}/test/`
 
 `FakeGet{Feature}Content.kt`:
 ```kotlin
-package com.mockdonalds.app.features.{name}.test
+package com.jkjamies.sampleplatter.features.{name}.test
 
-import com.mockdonalds.app.features.{name}.api.domain.Get{Feature}Content
-import com.mockdonalds.app.features.{name}.api.domain.{Feature}Content
+import com.jkjamies.sampleplatter.features.{name}.api.domain.Get{Feature}Content
+import com.jkjamies.sampleplatter.features.{name}.api.domain.{Feature}Content
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 

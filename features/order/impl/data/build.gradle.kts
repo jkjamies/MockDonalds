@@ -1,11 +1,11 @@
 plugins {
-    id("mockdonalds.kmp.data")
+    id("sampleplatter.kmp.data")
     alias(libs.plugins.sqldelight)
 }
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.features.order.data"
+        namespace = "com.jkjamies.sampleplatter.features.order.data"
     }
 
     sourceSets {
@@ -36,7 +36,7 @@ kotlin {
 sqldelight {
     databases {
         create("AppDatabase") {
-            packageName.set("com.mockdonalds.app.persistence")
+            packageName.set("com.jkjamies.sampleplatter.persistence")
         }
     }
 }

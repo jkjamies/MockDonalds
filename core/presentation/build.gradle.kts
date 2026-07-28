@@ -1,5 +1,5 @@
 plugins {
-    id("mockdonalds.kmp.library")
+    id("sampleplatter.kmp.library")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
 }
@@ -8,7 +8,7 @@ val catalog = project.extensions.getByType<VersionCatalogsExtension>().named("li
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.core.presentation"
+        namespace = "com.jkjamies.sampleplatter.core.presentation"
     }
 
     sourceSets {

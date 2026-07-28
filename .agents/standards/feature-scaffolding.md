@@ -8,24 +8,24 @@ Step-by-step guide for adding a new feature module. Use the `add-feature` skill 
 features/{name}/
 ├── api/
 │   ├── domain/                 # Domain models, abstract use case
-│   │   └── src/commonMain/kotlin/com/mockdonalds/app/features/{name}/api/domain/
+│   │   └── src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{name}/api/domain/
 │   │       ├── {Feature}Models.kt       # Data classes
 │   │       └── Get{Feature}Content.kt   # abstract : CenterPostSubjectInteractor<Unit, T>()
 │   └── navigation/             # Screen + TestTags
-│       └── src/commonMain/kotlin/com/mockdonalds/app/features/{name}/api/navigation/
+│       └── src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{name}/api/navigation/
 │           ├── {Feature}Screen.kt       # @Parcelize data object : Screen
 │           └── ui/
 │               └── {Feature}TestTags.kt # object with const val tags
 ├── impl/
 │   ├── domain/                 # Use case impl + repository interface
-│   │   └── src/commonMain/kotlin/com/mockdonalds/app/features/{name}/domain/
+│   │   └── src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{name}/domain/
 │   │       ├── Get{Feature}ContentImpl.kt  # @ContributesBinding : Get{Feature}Content()
 │   │       └── {Feature}Repository.kt      # interface
 │   ├── data/                   # Repository implementation
-│   │   └── src/commonMain/kotlin/com/mockdonalds/app/features/{name}/data/
+│   │   └── src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{name}/data/
 │   │       └── {Feature}RepositoryImpl.kt  # @ContributesBinding : {Feature}Repository
 │   └── presentation/
-│       ├── src/commonMain/kotlin/com/mockdonalds/app/features/{name}/presentation/
+│       ├── src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{name}/presentation/
 │       │   ├── {Feature}Presenter.kt       # @CircuitInject @Inject @Composable
 │       │   ├── {Feature}UiState.kt         # data class : CircuitUiState (with eventSink)
 │       │   └── {Feature}Event.kt           # sealed class

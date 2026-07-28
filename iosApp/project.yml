@@ -1,6 +1,6 @@
 name: iosApp
 options:
-  bundleIdPrefix: com.mockdonalds.app
+  bundleIdPrefix: com.jkjamies.sampleplatter
   deploymentTarget:
     iOS: "16.0"
   defaultConfig: US-Prod-Release
@@ -222,7 +222,7 @@ targets:
       CORE-Prod-Release: Configuration/core/CORE-Prod-Release.xcconfig
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.mockdonalds.app.tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.jkjamies.sampleplatter.tests
         GENERATE_INFOPLIST_FILE: YES
         BUNDLE_LOADER: $(TEST_HOST)
         TEST_HOST: $(BUILT_PRODUCTS_DIR)/iosApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iosApp
@@ -270,7 +270,7 @@ targets:
       CORE-Prod-Release: Configuration/core/CORE-Prod-Release.xcconfig
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.mockdonalds.app.e2etests
+        PRODUCT_BUNDLE_IDENTIFIER: com.jkjamies.sampleplatter.e2etests
         GENERATE_INFOPLIST_FILE: YES
         TEST_TARGET_NAME: iosApp
         CODE_SIGN_STYLE: Automatic
@@ -316,7 +316,7 @@ targets:
       CORE-Prod-Release: Configuration/core/CORE-Prod-Release.xcconfig
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.mockdonalds.app.benchmarks
+        PRODUCT_BUNDLE_IDENTIFIER: com.jkjamies.sampleplatter.benchmarks
         GENERATE_INFOPLIST_FILE: YES
         TEST_TARGET_NAME: iosApp
         CODE_SIGN_STYLE: Automatic
