@@ -62,10 +62,10 @@ struct MockDonaldsColorScheme {
 }
 
 private let darkScheme = MockDonaldsColorScheme(
-    primary: Color(hex: 0xDB0007),
-    secondary: Color(hex: 0xFFC72C),
+    primary: Color(hex: 0xC1272D),
+    secondary: Color(hex: 0xF2B705),
     onPrimary: Color(hex: 0xFFFFFF),
-    onSecondary: Color(hex: 0x584200),
+    onSecondary: Color(hex: 0x533D02),
     background: Color(hex: 0x131313),
     onBackground: Color(hex: 0xFFFFFF),
     surface: Color(hex: 0x131313),
@@ -75,19 +75,19 @@ private let darkScheme = MockDonaldsColorScheme(
     surfaceContainerHigh: Color(hex: 0x242424),
     surfaceContainerHighest: Color(hex: 0x2E2E2E),
     outline: Color(hex: 0x787878),
-    primaryDark: Color(hex: 0x930003),
-    primaryDarker: Color(hex: 0x690001),
+    primaryDark: Color(hex: 0x811A1E),
+    primaryDarker: Color(hex: 0x5D1316),
     onPrimaryButton: Color(hex: 0xFFEBE8),
-    onSecondaryTag: Color(hex: 0x584200),
-    onSecondaryContainer: Color(hex: 0x3F2E00),
-    secondaryLight: Color(hex: 0xFFDF99)
+    onSecondaryTag: Color(hex: 0x533D02),
+    onSecondaryContainer: Color(hex: 0x3C2B01),
+    secondaryLight: Color(hex: 0xF8E3A0)
 )
 
 private let lightScheme = MockDonaldsColorScheme(
-    primary: Color(hex: 0xDB0007),
-    secondary: Color(hex: 0xFFC72C),
+    primary: Color(hex: 0xC1272D),
+    secondary: Color(hex: 0xF2B705),
     onPrimary: .white,
-    onSecondary: Color(hex: 0x584200),
+    onSecondary: Color(hex: 0x533D02),
     background: Color(hex: 0xFFFBFF),
     onBackground: Color(hex: 0x1C1B1F),
     surface: Color(hex: 0xFFFBFF),
@@ -97,11 +97,11 @@ private let lightScheme = MockDonaldsColorScheme(
     surfaceContainerHigh: Color(hex: 0xEDE8E2),
     surfaceContainerHighest: Color(hex: 0xE8E0D8),
     outline: Color(hex: 0x79747E),
-    primaryDark: Color(hex: 0x930003),
-    primaryDarker: Color(hex: 0x690001),
+    primaryDark: Color(hex: 0x811A1E),
+    primaryDarker: Color(hex: 0x5D1316),
     onPrimaryButton: Color(hex: 0xFFEBE8),
-    onSecondaryTag: Color(hex: 0x584200),
-    onSecondaryContainer: Color(hex: 0x3F2E00),
+    onSecondaryTag: Color(hex: 0x533D02),
+    onSecondaryContainer: Color(hex: 0x3C2B01),
     secondaryLight: Color(hex: 0xB8860B)
 )
 
@@ -139,12 +139,12 @@ extension View {
 
 enum MockDonaldsColors {
     // Brand
-    static let primary = Color(hex: 0xDB0007)
-    static let secondary = Color(hex: 0xFFC72C)
+    static let primary = Color(hex: 0xC1272D)
+    static let secondary = Color(hex: 0xF2B705)
 
     // On-colors
     static let onPrimary = Color(hex: 0xFFFFFF)
-    static let onSecondary = Color(hex: 0x3F2E00)
+    static let onSecondary = Color(hex: 0x3C2B01)
 
     // Background & Surface
     static let background = Color(hex: 0x131313)

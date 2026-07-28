@@ -41,8 +41,8 @@ Brand colors (red, yellow) are constant across modes. Surface and text colors ad
 | Background | `#131313` (Deep Obsidian) | `#FFFBFF` (Warm White) |
 | Surface | `#131313` -- `#2E2E2E` (tonal grays) | `#FFFBFF` -- `#E8E0D8` (warm grays) |
 | On-surface | `#FFFFFF` / `#B3B3B3` | `#1C1B1F` / `#49454F` |
-| Primary | `#DB0007` (MockRed) | `#DB0007` (MockRed) |
-| Secondary | `#FFC72C` (MockYellow) | `#FFC72C` (MockYellow) |
+| Primary | `#C1272D` (PlatterRed) | `#C1272D` (PlatterRed) |
+| Secondary | `#F2B705` (PlatterYellow) | `#F2B705` (PlatterYellow) |
 
 Extended colors (`primaryDark`, `onPrimaryButton`, `secondaryLight`, etc.) handle brand gradients and accent text that don't map to Material 3 color roles.
 
