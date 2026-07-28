@@ -19,7 +19,7 @@ class RewardsStateRobot : StateRobot<RewardsUiState, RewardsEvent>() {
             VaultSpecial(id = "2", title = "Gold Shake", pointsCost = "1500 PTS", imageUrl = "", tag = null, isFeatured = false),
         ),
         history = listOf(
-            HistoryEntry(id = "1", title = "Big Mac Meal", subtitle = "Yesterday", points = "+150", isPositive = true, icon = "🍔"),
+            HistoryEntry(id = "1", title = "Signature Stack Meal", subtitle = "Yesterday", points = "+150", isPositive = true, icon = "🍔"),
         ),
         eventSink = createEventSink(),
     )

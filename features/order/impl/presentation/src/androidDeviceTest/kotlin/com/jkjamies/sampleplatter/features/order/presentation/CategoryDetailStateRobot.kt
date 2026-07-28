@@ -12,7 +12,7 @@ class CategoryDetailStateRobot : StateRobot<CategoryDetailUiState, CategoryDetai
         items = listOf(
             MenuItem(
                 id = "1",
-                title = "Big Mac",
+                title = "Signature Stack",
                 restaurantChain = "Sample Platter",
                 imageUrl = "",
                 servingSize = "214g",

@@ -38,7 +38,7 @@ class RecentsUiRobot(private val rule: ComposeContentTestRule) {
         rule.onNodeWithTag(RecentsTestTags.SCREEN).assertIsDisplayed()
         rule.onNodeWithTag(RecentsTestTags.LIST).assertIsDisplayed()
         rule.onNodeWithTag("${RecentsTestTags.ITEM}-1").assertIsDisplayed()
-        rule.onNodeWithText("Big Mac Combo").assertIsDisplayed()
+        rule.onNodeWithText("Signature Stack Combo").assertIsDisplayed()
     }
     
     fun assertEmptyScreen() {

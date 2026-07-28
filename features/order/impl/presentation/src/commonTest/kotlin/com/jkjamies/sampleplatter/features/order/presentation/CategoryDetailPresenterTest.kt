@@ -22,7 +22,7 @@ class CategoryDetailPresenterTest : BehaviorSpec({
                 items = listOf(
                     MenuItem(
                         id = "1",
-                        title = "Big Mac",
+                        title = "Signature Stack",
                         restaurantChain = "Sample Platter",
                         imageUrl = "img",
                         servingSize = "214g",
@@ -53,7 +53,7 @@ class CategoryDetailPresenterTest : BehaviorSpec({
                     val populated = expectMostRecentItem()
                     populated.categoryName shouldBe "Burgers"
                     populated.items.size shouldBe 1
-                    populated.items.first().title shouldBe "Big Mac"
+                    populated.items.first().title shouldBe "Signature Stack"
                 }
             }
         }
