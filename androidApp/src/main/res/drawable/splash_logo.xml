@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  McDonald's M (golden arches) splash screen icon.
+  Sample Platter cloche splash screen icon.
   432dp × 432dp canvas per SplashScreen API. The OS restricts visibility to the
   inner 288dp circle (radius 144 from center 216,216).
 -->
@@ -10,9 +10,12 @@
     android:viewportWidth="432"
     android:viewportHeight="432">
 
-    <!-- === LEFT ARCH === -->
-    <path android:name="left_arch_core" android:pathData="M136,286 C136,286 136,146 176,146 C216,146 216,226 216,226" android:strokeColor="#FFC72C" android:strokeWidth="16" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="@android:color/transparent" android:trimPathEnd="0" />
+    <!-- === DOME === -->
+    <path android:name="cloche_dome" android:pathData="M124,284 C124,224.4 165.2,176 216,176 C266.8,176 308,224.4 308,284" android:strokeColor="#F2B705" android:strokeWidth="16" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="@android:color/transparent" android:trimPathEnd="0" />
 
-    <!-- === RIGHT ARCH === -->
-    <path android:name="right_arch_core" android:pathData="M296,286 C296,286 296,146 256,146 C216,146 216,226 216,226" android:strokeColor="#FFC72C" android:strokeWidth="16" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="@android:color/transparent" android:trimPathEnd="0" />
+    <!-- === BASE === -->
+    <path android:name="cloche_base" android:pathData="M108,284 L324,284" android:strokeColor="#F2B705" android:strokeWidth="16" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="@android:color/transparent" android:trimPathEnd="0" />
+
+    <!-- === HANDLE === -->
+    <path android:name="cloche_handle" android:pathData="M216,148 L216,154" android:strokeColor="#F2B705" android:strokeWidth="16" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="@android:color/transparent" android:trimPathEnd="0" />
 </vector>

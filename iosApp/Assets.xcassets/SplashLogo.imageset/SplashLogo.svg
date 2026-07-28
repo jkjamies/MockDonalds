@@ -1,6 +1,8 @@
 <svg width="432" height="432" viewBox="0 0 432 432" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <!-- LEFT ARCH -->
-    <path d="M136 286C136 286 136 146 176 146C216 146 216 226 216 226" stroke="#FFC72C" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
-    <!-- RIGHT ARCH -->
-    <path d="M296 286C296 286 296 146 256 146C216 146 216 226 216 226" stroke="#FFC72C" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
+    <!-- DOME -->
+    <path d="M124 284C124 224.4 165.2 176 216 176C266.8 176 308 224.4 308 284" stroke="#F2B705" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
+    <!-- BASE -->
+    <path d="M108 284L324 284" stroke="#F2B705" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
+    <!-- HANDLE -->
+    <path d="M216 148L216 154" stroke="#F2B705" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
 </svg>
