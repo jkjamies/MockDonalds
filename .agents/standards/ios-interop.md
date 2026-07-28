@@ -136,7 +136,7 @@ This is enforced by Konsist's `CircuitConventionsTest`.
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-The iOS bridge lives in `composeApp/src/iosMain/kotlin/com/mockdonalds/app/bridge/`:
+The iOS bridge lives in `composeApp/src/iosMain/kotlin/com/jkjamies/sampleplatter/bridge/`:
 
 1. **IosApp** — entry point. Creates `ProdAppGraph`, `BridgeNavigator`, `InterceptingNavigator`
    with `AuthInterceptor`. Exposes `presenterBridge(screen:)` and `deepLink(uri:)` to Swift.

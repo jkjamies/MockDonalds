@@ -63,7 +63,7 @@ If a new user journey, deep link, or tab navigation flow was added, check whethe
 - Tests interact via UI Automator (`By.desc(testTag)`) — no direct code access
 - TestTags come from `features/*/api/navigation/`
 
-If a startup performance concern exists, check `testing/benchmarks/src/main/kotlin/com/mockdonalds/app/benchmarks/` (separate module, minified target):
+If a startup performance concern exists, check `testing/benchmarks/src/main/kotlin/com/jkjamies/sampleplatter/benchmarks/` (separate module, minified target):
 - Benchmark files end with `Benchmark.kt`
 - Uses `MacrobenchmarkRule` with `StartupTimingMetric()`
 

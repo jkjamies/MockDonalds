@@ -1,4 +1,4 @@
-# SamplePlatter
+# Sample Platter
 
 Kotlin Multiplatform reference app. Shared Kotlin business logic with native UI per platform: Jetpack Compose UI on Android, native SwiftUI on iOS. iOS uses the Compose _runtime_ (via Molecule) for state management only — not Compose UI for rendering. All iOS views are standard SwiftUI.
 
@@ -145,11 +145,11 @@ xcodebuild test -scheme iOSApp -testPlan E2ETests -destination '...'            
 
 | Plugin | Used By | Adds |
 |--------|---------|------|
-| `mockdonalds.kmp.library` | api modules, single-target core modules | Base KMP setup, Kotest |
-| `mockdonalds.kmp.domain` | impl/domain modules | Metro DI (`@ContributesBinding`) + auto-adds `core:logger:api` to `commonMain` |
-| `mockdonalds.kmp.data` | impl/data modules | Metro DI + kotlinx.serialization + auto-adds `core:logger:api` to `commonMain` |
-| `mockdonalds.kmp.presentation` | impl/presentation modules | Compose Multiplatform + Circuit codegen + auto-adds `core:strings` to `androidMain` and `core:logger:api` to `commonMain` |
-| `mockdonalds.phrase` | `core:strings` | Registers `pullTranslations` Gradle task pulling Phrase translations into Android XML + iOS `.lproj` files |
+| `sampleplatter.kmp.library` | api modules, single-target core modules | Base KMP setup, Kotest |
+| `sampleplatter.kmp.domain` | impl/domain modules | Metro DI (`@ContributesBinding`) + auto-adds `core:logger:api` to `commonMain` |
+| `sampleplatter.kmp.data` | impl/data modules | Metro DI + kotlinx.serialization + auto-adds `core:logger:api` to `commonMain` |
+| `sampleplatter.kmp.presentation` | impl/presentation modules | Compose Multiplatform + Circuit codegen + auto-adds `core:strings` to `androidMain` and `core:logger:api` to `commonMain` |
+| `sampleplatter.phrase` | `core:strings` | Registers `pullTranslations` Gradle task pulling Phrase translations into Android XML + iOS `.lproj` files |
 
 ## Subagent Dispatch (use them)
 

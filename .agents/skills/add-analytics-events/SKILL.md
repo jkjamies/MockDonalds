@@ -36,12 +36,12 @@ The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before produ
 
 ### 1. Event Definitions — `api/domain/`
 
-`features/{feature}/api/domain/src/commonMain/kotlin/com/mockdonalds/app/features/{feature}/api/domain/{Feature}AnalyticsEvent.kt`
+`features/{feature}/api/domain/src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{feature}/api/domain/{Feature}AnalyticsEvent.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{feature}.api.domain
+package com.jkjamies.sampleplatter.features.{feature}.api.domain
 
-import com.mockdonalds.app.core.analytics.AnalyticsEvent
+import com.jkjamies.sampleplatter.core.analytics.AnalyticsEvent
 
 sealed class {Feature}AnalyticsEvent(
     override val name: String,

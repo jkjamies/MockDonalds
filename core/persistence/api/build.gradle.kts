@@ -1,10 +1,10 @@
 plugins {
-    id("mockdonalds.kmp.library")
+    id("sampleplatter.kmp.library")
 }
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.core.persistence.api"
+        namespace = "com.jkjamies.sampleplatter.core.persistence.api"
     }
 
     sourceSets {

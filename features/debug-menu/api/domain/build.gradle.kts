@@ -1,9 +1,9 @@
 plugins {
-    id("mockdonalds.kmp.library")
+    id("sampleplatter.kmp.library")
 }
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.features.debugmenu.api.domain"
+        namespace = "com.jkjamies.sampleplatter.features.debugmenu.api.domain"
     }
 }

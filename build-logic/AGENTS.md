@@ -8,34 +8,34 @@ Convention plugins in `build-logic/convention/src/main/kotlin/` standardize modu
 
 ## Plugins
 
-### mockdonalds.kmp.library.gradle.kts
+### sampleplatter.kmp.library.gradle.kts
 
 Base plugin applied by all shared KMP modules. Provides:
 - Kotlin Multiplatform with Android (compileSdk 36, minSdk 26, JVM 17) and iOS targets (x64, arm64, simulatorArm64)
-- Parcelize with custom annotation (`com.mockdonalds.app.core.circuit.Parcelize`)
+- Parcelize with custom annotation (`com.jkjamies.sampleplatter.core.circuit.Parcelize`)
 - KSP, Kotest, and Detekt
 - commonTest dependencies: kotlin-test, kotest-framework-engine, kotest-assertions-core, kotlinx-coroutines-test, turbine
 - Auto-adds `:core:test-fixtures` to every module's commonTest (except itself)
 - Auto-generates per-module Kotest `ProjectConfig` subclass for native KSP discovery
 - androidHostTest with JUnit Platform (Kotest runner)
 
-### mockdonalds.kmp.domain.gradle.kts
+### sampleplatter.kmp.domain.gradle.kts
 
 For `impl/domain` modules. Applies:
-- `mockdonalds.kmp.library`
+- `sampleplatter.kmp.library`
 - Metro DI (`dev.zacsweers.metro`)
 
-### mockdonalds.kmp.data.gradle.kts
+### sampleplatter.kmp.data.gradle.kts
 
 For `impl/data` modules. Applies:
-- `mockdonalds.kmp.library`
+- `sampleplatter.kmp.library`
 - Metro DI
 - Kotlin Serialization
 
-### mockdonalds.kmp.presentation.gradle.kts
+### sampleplatter.kmp.presentation.gradle.kts
 
 For `impl/presentation` modules. Applies:
-- `mockdonalds.kmp.library`
+- `sampleplatter.kmp.library`
 - Compose Multiplatform + Compose Compiler
 - Metro DI with Circuit codegen enabled (`enableCircuitCodegen.set(true)`)
 - Circuit dependencies: foundation, runtime-presenter, retained, codegen-annotations, circuit-test (commonTest)
@@ -44,10 +44,10 @@ For `impl/presentation` modules. Applies:
 - androidDeviceTest: compose-ui-test-junit4, core:test-fixtures
 - Android device test instrumentation runner configured
 
-### mockdonalds.phrase.gradle.kts
+### sampleplatter.phrase.gradle.kts
 
 Applied only to `core:strings`. Registers the `pullTranslations` Gradle task (typed
-`PhraseTranslationTask` in `com.mockdonalds.buildlogic`). The task pulls translations
+`PhraseTranslationTask` in `com.jkjamies.sampleplatter.buildlogic`). The task pulls translations
 from Phrase and writes:
 
 - Android XML to `core/strings/src/androidMain/res/values{-locale}/strings.xml`
@@ -66,9 +66,9 @@ up-to-date checks within a workspace. Build-cache participation (cross-workspace
 sharing) requires `@CacheableTask`; add that once the Phrase API call is wired and
 output is deterministic.
 
-### mockdonalds.detekt.gradle.kts
+### sampleplatter.detekt.gradle.kts
 
-Applied transitively via `mockdonalds.kmp.library`. Configures:
+Applied transitively via `sampleplatter.kmp.library`. Configures:
 - Detekt with `config/detekt/detekt.yml`
 - Builds upon default config, parallel execution, auto-correct enabled
 - Excludes `/build/` directories
@@ -78,11 +78,11 @@ Applied transitively via `mockdonalds.kmp.library`. Configures:
 
 | Module Type | Plugin | Example Path |
 |-------------|--------|-------------|
-| api/domain | `mockdonalds.kmp.library` | features/home/api/domain |
-| api/navigation | `mockdonalds.kmp.library` | features/home/api/navigation |
-| impl/domain | `mockdonalds.kmp.domain` | features/home/impl/domain |
-| impl/data | `mockdonalds.kmp.data` | features/home/impl/data |
-| impl/presentation | `mockdonalds.kmp.presentation` | features/home/impl/presentation |
-| core/* | `mockdonalds.kmp.library` | core/circuit, core/theme |
-| core/strings | `mockdonalds.kmp.library` + `mockdonalds.phrase` | core/strings |
-| test modules | `mockdonalds.kmp.domain` | features/home/test |
+| api/domain | `sampleplatter.kmp.library` | features/home/api/domain |
+| api/navigation | `sampleplatter.kmp.library` | features/home/api/navigation |
+| impl/domain | `sampleplatter.kmp.domain` | features/home/impl/domain |
+| impl/data | `sampleplatter.kmp.data` | features/home/impl/data |
+| impl/presentation | `sampleplatter.kmp.presentation` | features/home/impl/presentation |
+| core/* | `sampleplatter.kmp.library` | core/circuit, core/theme |
+| core/strings | `sampleplatter.kmp.library` + `sampleplatter.phrase` | core/strings |
+| test modules | `sampleplatter.kmp.domain` | features/home/test |

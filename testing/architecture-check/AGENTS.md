@@ -16,7 +16,7 @@ All tests use Kotest BehaviorSpec (Given/Then style) and scan the project with `
 | circuit/ | NamingConventionsTest | Screens end with Screen, events with Event, @CircuitInject functions with Presenter or Ui, UiState classes with UiState, repository interfaces with Repository, implementations with Impl/RepositoryImpl. |
 | core/ | CodeHygieneTest | No wildcard imports, no println/System.out in production, no Thread.sleep or runBlocking, no force unwraps (!!), no lateinit var in shared code. |
 | core/ | DependencyInjectionTest | Every Repository interface has a @ContributesBinding implementation. Every abstract use case has a @ContributesBinding Impl. @CircuitInject presenters also have @Inject. |
-| core/ | PackageConventionsTest | Feature files use com.mockdonalds.app.features.* packages. Core files use com.mockdonalds.app.core.* packages. Package segments match module path. |
+| core/ | PackageConventionsTest | Feature files use com.jkjamies.sampleplatter.features.* packages. Core files use com.jkjamies.sampleplatter.core.* packages. Package segments match module path. |
 | core/ | VisibilityConventionsTest | @ContributesBinding classes are public. Domain modules expose only Repository interfaces and Impl classes. UiState classes are not internal. |
 | core/ | DependencyGraphScopeTest | @DependencyGraph only in consumer modules (composeApp, navint-tests). CircuitProviders only in core:circuit. AppGraph interface only in core:metro. |
 | core/ | CoreMetroConventionsTest | core:metro must not import from feature modules. core:metro must not import from impl modules. |
@@ -43,7 +43,7 @@ All tests use Kotest BehaviorSpec (Given/Then style) and scan the project with `
 
 ## Adding New Rules
 
-1. Create a new `BehaviorSpec` in the appropriate package under `architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/`
+1. Create a new `BehaviorSpec` in the appropriate package under `architecture-check/src/test/kotlin/com/jkjamies/sampleplatter/konsist/`
 2. Use `Konsist.scopeFromProject()` for project-wide checks
 3. Use `resideInPath("..impl/domain..")` for module-scoped checks
 4. Use `Konsist.scopeFromSourceSet("commonMain", "features..", "domain")` for source-set-scoped checks

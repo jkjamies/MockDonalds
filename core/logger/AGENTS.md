@@ -75,5 +75,5 @@ Metro auto-collects every `@ContributesIntoSet` contributor into the `Set<LogWri
 
 - Features MUST depend on `core:logger:api` only, never `core:logger:impl`
 - Raw `co.touchlab.kermit.*` imports outside `core:logger` are rejected by Konsist — use the `Logger` / `Severity` / `LogWriter` typealiases from `core:logger:api`
-- `core:logger:api` is auto-wired into `mockdonalds.kmp.domain` / `kmp.data` / `kmp.presentation` plugins, so feature impl modules can `import com.mockdonalds.app.core.logger.Logger` without declaring the dependency
+- `core:logger:api` is auto-wired into `sampleplatter.kmp.domain` / `kmp.data` / `kmp.presentation` plugins, so feature impl modules can `import com.jkjamies.sampleplatter.core.logger.Logger` without declaring the dependency
 - Test code asserts on log output via `kermit-test`'s `TestLogWriter`, re-exposed by `core:test-fixtures`

@@ -313,8 +313,8 @@ The `/add-config-field` skill automates all of the above. Run it before `/add-fe
 
 **Imports from**:
 - `core:circuit` — `Screen`, `Navigator`, `@Parcelize`
-- `core:centerpost` — `CenterPostSubjectInteractor` (auto-wired via `mockdonalds.kmp.domain` plugin)
-- `core:presentation` — `WebViewContent`, `WebViewState`, `rememberWebViewState` (auto-wired via `mockdonalds.kmp.presentation` plugin; Android-only deps)
+- `core:centerpost` — `CenterPostSubjectInteractor` (auto-wired via `sampleplatter.kmp.domain` plugin)
+- `core:presentation` — `WebViewContent`, `WebViewState`, `rememberWebViewState` (auto-wired via `sampleplatter.kmp.presentation` plugin; Android-only deps)
 - `core:build-config:api` — `AppBuildConfig` (read in `NutritionRepositoryImpl`)
 - `core:theme` — Compose `MaterialTheme.colorScheme`, `PlatterDimens` (Android); `samplePlatterColors` env (iOS)
 

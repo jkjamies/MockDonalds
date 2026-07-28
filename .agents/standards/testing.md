@@ -42,7 +42,7 @@ Comprehensive testing conventions for the SamplePlatter KMP project. Testing is 
 | Harmonize | Swift static analysis | iOS architecture tests |
 | core:test-fixtures | `TestCenterPostDispatchers`, `KotestProjectConfig`, `StateRobot` base, `FakeAuthManager` | Shared test infra |
 
-All libraries are auto-provisioned by convention plugins (`mockdonalds.kmp.library`, `mockdonalds.kmp.presentation`). No per-module configuration needed.
+All libraries are auto-provisioned by convention plugins (`sampleplatter.kmp.library`, `sampleplatter.kmp.presentation`). No per-module configuration needed.
 
 ## Test Quality Standards
 

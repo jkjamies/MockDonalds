@@ -24,10 +24,10 @@ All packages follow strict conventions enforced by `PackageConventionsTest`:
 
 | Module Location | Required Package Prefix |
 |----------------|------------------------|
-| `features/{name}/**` | `com.mockdonalds.app.features.{name}.*` |
-| `core/{module}/**` | `com.mockdonalds.app.core.{module}.*` |
+| `features/{name}/**` | `com.jkjamies.sampleplatter.features.{name}.*` |
+| `core/{module}/**` | `com.jkjamies.sampleplatter.core.{module}.*` |
 
-The feature name in the path must match the feature segment in the package. For example, `features/home/api/domain/` must use package `com.mockdonalds.app.features.home.api.domain`.
+The feature name in the path must match the feature segment in the package. For example, `features/home/api/domain/` must use package `com.jkjamies.sampleplatter.features.home.api.domain`.
 
 ## Visibility Rules
 

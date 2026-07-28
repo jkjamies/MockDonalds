@@ -1,12 +1,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
-    id("mockdonalds.kmp.library")
+    id("sampleplatter.kmp.library")
 }
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.core.buildconfig.api"
+        namespace = "com.jkjamies.sampleplatter.core.buildconfig.api"
     }
     sourceSets.getByName("commonMain") {
         kotlin.srcDir(layout.buildDirectory.dir("generated/ksp/metadata/commonMain/kotlin"))

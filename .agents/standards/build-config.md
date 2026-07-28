@@ -15,7 +15,7 @@ Compile-time market + environment configuration lives in `core:build-config` (sp
 
 ## Selection
 
-Selection is centralized in a single shared resolver — `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — which both `:core:build-config:impl` and `:core:remote-config:impl` call into as `BuildVariantResolver.market(project)` / `.env(project)` / `.buildType(project)`. The resolver applies a three-stage signal chain, giving both platforms equivalent UX:
+Selection is centralized in a single shared resolver — `build-logic/convention/src/main/kotlin/com/jkjamies/sampleplatter/buildlogic/BuildVariantResolver.kt` — which both `:core:build-config:impl` and `:core:remote-config:impl` call into as `BuildVariantResolver.market(project)` / `.env(project)` / `.buildType(project)`. The resolver applies a three-stage signal chain, giving both platforms equivalent UX:
 
 1. **Explicit `-P` property** (`-Pmarket`, `-Penv`, `-PbuildType`) — wins everything. Used by iOS's preBuildScript (which forwards `$MARKET` / `$ENV` / `$KOTLIN_FRAMEWORK_BUILD_TYPE` from the active xcconfig) and by CI / ad-hoc CLI invocations.
 2. **AGP variant task name parsing** — when a Gradle invocation contains a task like `assembleUsIntDebug`, `compileUsIntDebugKotlin`, or `connectedUsIntDebugAndroidTest`, the resolver extracts `market`/`env`/`buildType` from the camelCase triple via `(?i)(us|ca|de|au|core)(Int|Mte|Prod)(Debug|Release)`. This is how Android Studio's Build Variants dropdown feeds into BuildKonfig — picking `usIntDebug` in the IDE runs `:androidApp:assembleUsIntDebug`, which the resolver sees.
@@ -95,9 +95,9 @@ Selection flows through two paths that converge in `core:build-config:impl`'s re
 - **Android Studio Build Variants dropdown** — selecting `usIntDebug` runs `:androidApp:assembleUsIntDebug`; the resolver parses the task name and extracts market/env/buildType.
 - **CLI** — `./gradlew :androidApp:assembleDeProdRelease` or the explicit form `./gradlew :androidApp:assemble -Pmarket=de -Penv=prod -PbuildType=release`.
 
-`applicationId` is `com.mockdonalds.app` + the market flavor's `applicationIdSuffix` — so `usIntDebug` produces `com.mockdonalds.app.us`, a distinct Play Store app per market.
+`applicationId` is `com.jkjamies.sampleplatter` + the market flavor's `applicationIdSuffix` — so `usIntDebug` produces `com.jkjamies.sampleplatter.us`, a distinct Play Store app per market.
 
-**iOS** — `iosApp.xcodeproj` is generated from `iosApp/project.yml` by **xcodegen** (the yml is source of truth; `project.pbxproj` is a build artifact). Each combo has its own `.xcconfig` in `iosApp/Configuration/{market}/` setting `MARKET`, `ENV`, and `KOTLIN_FRAMEWORK_BUILD_TYPE`. The iosApp target has one build configuration per combo — `US-Int-Debug`, `US-Prod-Release`, `DE-Mte-Debug`, etc. The `iOSApp` shared scheme defaults Run/Test/Analyze to `US-Int-Debug` and Profile/Archive to `US-Prod-Release`. The Gradle build phase reads `$MARKET` / `$ENV` / `$KOTLIN_FRAMEWORK_BUILD_TYPE` from the active xcconfig and forwards them as `-Pmarket=` / `-Penv=` / `-PbuildType=` — so the iOS path always lands on rung 1 (explicit `-P`) of the selection chain. `PRODUCT_BUNDLE_IDENTIFIER` in `Base.xcconfig` is `com.mockdonalds.app.$(MARKET)` so every market gets a distinct App Store listing.
+**iOS** — `iosApp.xcodeproj` is generated from `iosApp/project.yml` by **xcodegen** (the yml is source of truth; `project.pbxproj` is a build artifact). Each combo has its own `.xcconfig` in `iosApp/Configuration/{market}/` setting `MARKET`, `ENV`, and `KOTLIN_FRAMEWORK_BUILD_TYPE`. The iosApp target has one build configuration per combo — `US-Int-Debug`, `US-Prod-Release`, `DE-Mte-Debug`, etc. The `iOSApp` shared scheme defaults Run/Test/Analyze to `US-Int-Debug` and Profile/Archive to `US-Prod-Release`. The Gradle build phase reads `$MARKET` / `$ENV` / `$KOTLIN_FRAMEWORK_BUILD_TYPE` from the active xcconfig and forwards them as `-Pmarket=` / `-Penv=` / `-PbuildType=` — so the iOS path always lands on rung 1 (explicit `-P`) of the selection chain. `PRODUCT_BUNDLE_IDENTIFIER` in `Base.xcconfig` is `com.jkjamies.sampleplatter.$(MARKET)` so every market gets a distinct App Store listing.
 
 **Regenerating the Xcode project** (after editing `project.yml` or adding/removing xcconfigs): `cd iosApp && xcodegen generate`. Commit both `project.yml` and the regenerated `project.pbxproj` in the same commit.
 
@@ -131,7 +131,7 @@ core/build-config/
     build/generated/ksp/metadata/commonMain/kotlin/.../test/FakeAppBuildConfig.kt   generated @ContributesBinding test double, mutable var fields, type-empty defaults
 
 iosApp/Configuration/
-  Base.xcconfig                               shared base (deployment target, bundle-id = com.mockdonalds.app.$(MARKET))
+  Base.xcconfig                               shared base (deployment target, bundle-id = com.jkjamies.sampleplatter.$(MARKET))
   us/  US-Int-Debug.xcconfig, US-Int-Release.xcconfig, US-Mte-Debug.xcconfig, US-Mte-Release.xcconfig, US-Prod-Debug.xcconfig, US-Prod-Release.xcconfig
   ca/  CA-*-*.xcconfig × 6
   de/  DE-*-*.xcconfig × 6
@@ -184,8 +184,8 @@ The `@ContributesBinding(AppScope::class)` on `AppBuildConfigImpl` registers it 
 - composeApp bootstrap (`App.kt`, `IosApp.kt`): read from `graph.appBuildConfig`. Never static.
 
 **Never allowed:**
-- `import com.mockdonalds.app.core.buildconfig.BuildConfig` outside this module
-- `import com.mockdonalds.app.core.buildconfig.AppBuildConfigImpl` anywhere outside this module (it's `internal`, so this is enforced by the compiler)
+- `import com.jkjamies.sampleplatter.core.buildconfig.BuildConfig` outside this module
+- `import com.jkjamies.sampleplatter.core.buildconfig.AppBuildConfigImpl` anywhere outside this module (it's `internal`, so this is enforced by the compiler)
 - Static references like `AppBuildConfig.market` — the interface has no companion; it must be injected.
 
 Why the interface shape: the facade gives us a single place to rename, type-coerce, or doc-comment a field; `internal` keeps generated code internal; and the interface + Metro shape means every consumer is trivially testable with a hand-rolled fake. Konsist enforces coverage against the interface's declared properties.
@@ -224,7 +224,7 @@ Each market adds **6 iOS build configurations** (3 envs × 2 build types), **3 A
    ```kotlin
    create("{market}") { dimension = "market"; applicationIdSuffix = ".{market}" }
    ```
-   Android Studio's Build Variants window will then expose 6 new rows (`{market}IntDebug`, `{market}IntRelease`, …, `{market}ProdRelease`). `applicationId` resolves to `com.mockdonalds.app.{market}` automatically. **Also** extend the market alternation in the shared resolver — `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — so the task-name parser recognizes the new market. This is the single place the `(us|ca|de|au|core)` list lives; both `:core:build-config:impl` and `:core:remote-config:impl` consume it.
+   Android Studio's Build Variants window will then expose 6 new rows (`{market}IntDebug`, `{market}IntRelease`, …, `{market}ProdRelease`). `applicationId` resolves to `com.jkjamies.sampleplatter.{market}` automatically. **Also** extend the market alternation in the shared resolver — `build-logic/convention/src/main/kotlin/com/jkjamies/sampleplatter/buildlogic/BuildVariantResolver.kt` — so the task-name parser recognizes the new market. This is the single place the `(us|ca|de|au|core)` list lives; both `:core:build-config:impl` and `:core:remote-config:impl` consume it.
 
 3. **iOS xcconfigs.** Create `iosApp/Configuration/{market}/` with all 6 files:
    ```
@@ -255,7 +255,7 @@ The `add-market` skill (`.agents/skills/add-market/SKILL.md`) automates steps 1,
 
 ## Adding a new environment
 
-Same shape as a market, but multiplied the other way: 5 new `*-{env}.properties` files (one per market), one AGP env flavor entry (`create("{env}") { dimension = "env" }`) in `androidApp/build.gradle.kts`, and 10 new xcconfigs (5 markets × 2 build types). Extend `project.yml` `configs:` and every target's `configFiles:` map, then regenerate. Also update `knownEnvs` in the `validateAllMarkets` task in `core/build-config/impl/build.gradle.kts` and extend the env alternation `(Int|Mte|Prod)` in the shared resolver `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` so the new env resolves through the variant path.
+Same shape as a market, but multiplied the other way: 5 new `*-{env}.properties` files (one per market), one AGP env flavor entry (`create("{env}") { dimension = "env" }`) in `androidApp/build.gradle.kts`, and 10 new xcconfigs (5 markets × 2 build types). Extend `project.yml` `configs:` and every target's `configFiles:` map, then regenerate. Also update `knownEnvs` in the `validateAllMarkets` task in `core/build-config/impl/build.gradle.kts` and extend the env alternation `(Int|Mte|Prod)` in the shared resolver `build-logic/convention/src/main/kotlin/com/jkjamies/sampleplatter/buildlogic/BuildVariantResolver.kt` so the new env resolves through the variant path.
 
 ## Enforced rules (Konsist + code review)
 
@@ -306,13 +306,13 @@ The split is deliberate: `validate-all-markets` runs in milliseconds against `.p
 - `.agents/standards/markets.md` — cross-cutting market concept: what a market is and how it surfaces across Android, iOS, CI, localization, analytics
 - `core/build-config/api/build.gradle.kts` — pure facade module build script
 - `core/build-config/impl/build.gradle.kts` — the merge + BuildKonfig wiring; `validateAllMarkets` task config (`knownEnvs`, market/env regexes) lives here
-- `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — shared `(market, env, buildType)` resolver consumed by both `:core:build-config:impl` and `:core:remote-config:impl`; the `(us|ca|de|au|core)` and `(Int|Mte|Prod)` alternations live here
+- `build-logic/convention/src/main/kotlin/com/jkjamies/sampleplatter/buildlogic/BuildVariantResolver.kt` — shared `(market, env, buildType)` resolver consumed by both `:core:build-config:impl` and `:core:remote-config:impl`; the `(us|ca|de|au|core)` and `(Int|Mte|Prod)` alternations live here
 - `core/build-config/test/build.gradle.kts` — test-fixtures module build script
 - `core/build-config/AGENTS.md` — module-level summary for agents
-- `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigCoverageTest.kt` — the facade coverage rule (smoke-test refs + `@DebugConfigField` presence)
-- `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigRegistryIntegrityTest.kt` — locks down both KSP-generated artefacts: registry contract (no hand-rolled `listOf`, no shadow `generatedFields()`) and fake contract (no hand-written `FakeAppBuildConfig`)
-- `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigImportTest.kt` — the facade import boundary rule
-- `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/core/BuildConfigSchemaParityTest.kt` — `AppBuildConfig` ↔ `Defaults.properties` key parity and per-market env coverage parity
+- `testing/architecture-check/src/test/kotlin/com/jkjamies/sampleplatter/konsist/core/BuildConfigCoverageTest.kt` — the facade coverage rule (smoke-test refs + `@DebugConfigField` presence)
+- `testing/architecture-check/src/test/kotlin/com/jkjamies/sampleplatter/konsist/core/BuildConfigRegistryIntegrityTest.kt` — locks down both KSP-generated artefacts: registry contract (no hand-rolled `listOf`, no shadow `generatedFields()`) and fake contract (no hand-written `FakeAppBuildConfig`)
+- `testing/architecture-check/src/test/kotlin/com/jkjamies/sampleplatter/konsist/core/BuildConfigImportTest.kt` — the facade import boundary rule
+- `testing/architecture-check/src/test/kotlin/com/jkjamies/sampleplatter/konsist/core/BuildConfigSchemaParityTest.kt` — `AppBuildConfig` ↔ `Defaults.properties` key parity and per-market env coverage parity
 - `build-tooling/ksp-build-config-registry/` — the KSP processor that reads `@DebugConfigField` and emits `generatedFields()` into `:core:build-config:api`
 - `build-tooling/ksp-fake-app-build-config/` — the KSP processor that reads `AppBuildConfig` properties and emits `FakeAppBuildConfig` into `:core:build-config:test`
 - `iosApp/project.yml` — **source of truth** for the Xcode project; lists all 30 configs and per-target xcconfig bindings

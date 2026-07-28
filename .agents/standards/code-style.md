@@ -3,7 +3,7 @@
 ## Detekt Configuration
 
 Config file: `config/detekt/detekt.yml`
-Applied via: `mockdonalds.detekt` convention plugin (transitively through `mockdonalds.kmp.library`)
+Applied via: `sampleplatter.detekt` convention plugin (transitively through `sampleplatter.kmp.library`)
 Mode: `buildUponDefaultConfig = true` — only overrides rules that need tuning
 
 ### Key Detekt Rules
@@ -27,7 +27,7 @@ Mode: `buildUponDefaultConfig = true` — only overrides rules that need tuning
 ### detekt-formatting (ktlint Rules)
 
 - `autoCorrect = true` — formatting issues are auto-fixed when `--auto-correct` is passed
-- Provided by the detekt-formatting plugin, configured in `mockdonalds.detekt.gradle.kts`
+- Provided by the detekt-formatting plugin, configured in `sampleplatter.detekt.gradle.kts`
 - MaximumLineLength disabled in formatting block (defers to style.MaxLineLength to avoid double-reporting)
 
 ### Compose-Specific Exception

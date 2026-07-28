@@ -23,7 +23,7 @@ The Nutrition screen embeds a third-party nutrition reference (Spoonacular) in a
 ## Cross-Feature Dependencies
 - Navigates to: none (back-only — `BackClicked → navigator.pop()`).
 - Imported by: `composeApp` (auto-discovered via `settings.gradle.kts` glob); `features:more:impl:presentation` imports `features:nutrition:api:navigation` to route `MoreEvent.MenuItemClicked(id = "3")` → `goTo(NutritionScreen)`.
-- Core deps: `core:centerpost`, `core:circuit`, `core:theme`, `core:build-config:api` (data layer reads `nutritionUrl`), `core:presentation` (WebView primitive auto-wired via `mockdonalds.kmp.presentation` plugin).
+- Core deps: `core:centerpost`, `core:circuit`, `core:theme`, `core:build-config:api` (data layer reads `nutritionUrl`), `core:presentation` (WebView primitive auto-wired via `sampleplatter.kmp.presentation` plugin).
 - Entry point: the existing hardcoded `MoreMenuItem(id = "3", icon = "🥗", title = "Nutrition")` in `MoreRepositoryImpl`; `MorePresenter` routes id "3" to `NutritionScreen`. **Not** contributed via `MoreTabExtension` — same pattern as Recents (id "1" → `RecentsScreen`).
 
 ## Feature-Specific Patterns

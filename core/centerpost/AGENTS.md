@@ -51,13 +51,13 @@ class ObserveCartInteractor @Inject constructor(
 ### Compose-scoped fire-and-forget
 
 ```kotlin
-import com.mockdonalds.app.core.presentation.centerpost.rememberCenterPost
+import com.jkjamies.sampleplatter.core.presentation.centerpost.rememberCenterPost
 
 val centerPost = rememberCenterPost(dispatchers)
 centerPost { repo.syncData() }
 ```
 
-`rememberCenterPost` (and `CenterPostSubjectInteractor.collectAsState`) live in `:core:presentation` so this module stays Compose-free. Both are auto-wired into every feature `impl/presentation` module via the `mockdonalds.kmp.presentation` plugin.
+`rememberCenterPost` (and `CenterPostSubjectInteractor.collectAsState`) live in `:core:presentation` so this module stays Compose-free. Both are auto-wired into every feature `impl/presentation` module via the `sampleplatter.kmp.presentation` plugin.
 
 ## Rules
 

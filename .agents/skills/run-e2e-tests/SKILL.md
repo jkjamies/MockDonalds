@@ -38,12 +38,12 @@ Runs against the debug target (unminified, full Compose UI test deps available).
 
 ```bash
 ./gradlew :testing:e2e-tests:connectedAndroidTest \
-  -Pandroid.testInstrumentationRunnerArguments.class=com.mockdonalds.app.e2e.suites.GuestJourneyTest
+  -Pandroid.testInstrumentationRunnerArguments.class=com.jkjamies.sampleplatter.e2e.suites.GuestJourneyTest
 ```
 
 ### Test Structure
 
-- Journey tests live in `testing/e2e-tests/src/main/kotlin/com/mockdonalds/app/e2e/suites/`
+- Journey tests live in `testing/e2e-tests/src/main/kotlin/com/jkjamies/sampleplatter/e2e/suites/`
 - Files end with `JourneyTest` (Konsist-enforced)
 - Use `@RunWith(AndroidJUnit4::class)` and `AppRobot` for all interactions
 - Element access via `By.desc(testTag)` — TestTags imported from `features/*/api/navigation`

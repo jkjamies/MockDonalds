@@ -1,5 +1,5 @@
 plugins {
-    id("mockdonalds.kmp.library")
+    id("sampleplatter.kmp.library")
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.metro)
@@ -11,10 +11,10 @@ metro {
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.navint"
+        namespace = "com.jkjamies.sampleplatter.navint"
 
         withDeviceTest {
-            instrumentationRunner = "com.mockdonalds.app.navint.TestRunner"
+            instrumentationRunner = "com.jkjamies.sampleplatter.navint.TestRunner"
             packaging {
                 resources.excludes.addAll(
                     listOf(
