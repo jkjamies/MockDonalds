@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  App Icon Foreground - McDonald's M (golden arches)
+  App Icon Foreground - Sample Platter cloche
   Clean logo (no glow) for the app icon, as requested, to avoid blurriness at small scales.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
@@ -9,19 +9,28 @@
     android:viewportWidth="432"
     android:viewportHeight="432">
 
-    <!-- === LEFT ARCH (Clean Core) === -->
+    <!-- === DOME (Clean Core) === -->
     <path
-        android:pathData="M136,286 C136,286 136,146 176,146 C216,146 216,226 216,226"
-        android:strokeColor="#FFC72C"
+        android:pathData="M124,284 C124,224.4 165.2,176 216,176 C266.8,176 308,224.4 308,284"
+        android:strokeColor="#F2B705"
         android:strokeWidth="24"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:fillColor="@android:color/transparent" />
 
-    <!-- === RIGHT ARCH (Clean Core) === -->
+    <!-- === BASE (Clean Core) === -->
     <path
-        android:pathData="M296,286 C296,286 296,146 256,146 C216,146 216,226 216,226"
-        android:strokeColor="#FFC72C"
+        android:pathData="M108,284 L324,284"
+        android:strokeColor="#F2B705"
+        android:strokeWidth="24"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent" />
+
+    <!-- === HANDLE (Clean Core) === -->
+    <path
+        android:pathData="M216,148 L216,154"
+        android:strokeColor="#F2B705"
         android:strokeWidth="24"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
