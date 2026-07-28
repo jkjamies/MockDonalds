@@ -26,7 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import com.mockdonalds.app.core.buildconfig.BuildConfigField
-import com.mockdonalds.app.core.theme.MockDimens
+import com.mockdonalds.app.core.theme.PlatterDimens
 import com.mockdonalds.app.features.debugmenu.api.navigation.BuildConfigDebugScreen
 import com.mockdonalds.app.features.debugmenu.api.ui.BuildConfigDebugTestTags
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -61,8 +61,8 @@ fun BuildConfigDebugUi(state: BuildConfigDebugUiState, modifier: Modifier = Modi
                 .fillMaxSize()
                 .padding(paddingValues)
                 .testTag(BuildConfigDebugTestTags.FIELD_LIST),
-            contentPadding = PaddingValues(MockDimens.SpacingMd),
-            verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingSm),
+            contentPadding = PaddingValues(PlatterDimens.SpacingMd),
+            verticalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingSm),
         ) {
             BuildConfigField.Group.entries.forEach { group ->
                 val fields = grouped[group].orEmpty()
@@ -83,7 +83,7 @@ private fun GroupHeader(group: BuildConfigField.Group) {
         text = group.name,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = MockDimens.SpacingMd, bottom = MockDimens.SpacingXs)
+            .padding(top = PlatterDimens.SpacingMd, bottom = PlatterDimens.SpacingXs)
             .testTag("${BuildConfigDebugTestTags.GROUP_HEADER}-${group.name}"),
         style = MaterialTheme.typography.titleSmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -99,10 +99,10 @@ private fun FieldRow(field: BuildConfigField) {
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
         ),
-        shape = RoundedCornerShape(MockDimens.RadiusMd),
+        shape = RoundedCornerShape(PlatterDimens.RadiusMd),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(MockDimens.SpacingLg),
+            modifier = Modifier.fillMaxWidth().padding(PlatterDimens.SpacingLg),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {

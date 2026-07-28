@@ -7,16 +7,16 @@ private let tags = ProfileTestTags.shared
 @CircuitInject(ProfileScreen.self, ProfileUiState.self)
 struct ProfileView: View {
     let state: ProfileUiState
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
 
     var body: some View {
         ScrollView {
-            VStack(spacing: MockDimens.spacingXl) {
-                Spacer().frame(height: MockDimens.spacingXl)
+            VStack(spacing: PlatterDimens.spacingXl) {
+                Spacer().frame(height: PlatterDimens.spacingXl)
 
                 avatar
 
-                VStack(spacing: MockDimens.spacingSm) {
+                VStack(spacing: PlatterDimens.spacingSm) {
                     Text(state.name)
                         .font(.title)
                         .fontWeight(.black)
@@ -40,7 +40,7 @@ struct ProfileView: View {
                     .foregroundColor(colors.onSurfaceVariant)
                     .accessibilityIdentifier(tags.MEMBER_SINCE)
 
-                Spacer().frame(height: MockDimens.spacingXl)
+                Spacer().frame(height: PlatterDimens.spacingXl)
 
                 Button(
                     action: {
@@ -52,14 +52,14 @@ struct ProfileView: View {
                             .fontWeight(.bold)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, MockDimens.spacingMd)
+                            .padding(.vertical, PlatterDimens.spacingMd)
                             .background(colors.primary)
-                            .cornerRadius(MockDimens.radiusMd)
+                            .cornerRadius(PlatterDimens.radiusMd)
                     }
                 )
                 .accessibilityIdentifier(tags.LOGOUT_BUTTON)
             }
-            .padding(.horizontal, MockDimens.spacingXxl)
+            .padding(.horizontal, PlatterDimens.spacingXxl)
         }
         .background(colors.background)
     }

@@ -46,7 +46,7 @@ Each test validates:
 
 - Tests use `ComposeContentTestRule` with semantic matchers (`onNodeWithTag`, `onNodeWithText`)
 - `TestTags` are defined in `api/navigation/{Feature}TestTags.kt`
-- All UI is wrapped in `MockDonaldsTheme` + `LocalWindowSizeClass` provider
+- All UI is wrapped in `SamplePlatterTheme` + `LocalWindowSizeClass` provider
 
 ## iOS UI Tests
 

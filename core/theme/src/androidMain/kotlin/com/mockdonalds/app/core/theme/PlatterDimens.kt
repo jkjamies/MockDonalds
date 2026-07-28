@@ -2,7 +2,7 @@ package com.mockdonalds.app.core.theme
 
 import androidx.compose.ui.unit.dp
 
-object MockDimens {
+object PlatterDimens {
     // Spacing scale
     val SpacingXs = 4.dp
     val SpacingSm = 8.dp

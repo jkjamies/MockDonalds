@@ -28,7 +28,7 @@ import kotlin.time.Duration.Companion.seconds
 class HttpClientFactoryImplTest : BehaviorSpec({
 
     fun buildConfig(env: String = "dev") = object : AppBuildConfig {
-        override val appName = "MockDonalds"
+        override val appName = "SamplePlatter"
         override val appId = "us-mockdonalds-mobile-$env"
         override val market = "us"
         override val env = env
@@ -190,7 +190,7 @@ class HttpClientFactoryImplTest : BehaviorSpec({
                 }
                 appId shouldBe "us-mockdonalds-mobile-stage"
                 market shouldBe "us"
-                userAgent!! shouldContain "MockDonalds/stage-us (debug)"
+                userAgent!! shouldContain "SamplePlatter/stage-us (debug)"
             }
         }
     }

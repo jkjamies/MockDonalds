@@ -1,4 +1,4 @@
-# MockDonalds
+# SamplePlatter
 
 A Kotlin Multiplatform (KMP) reference app showcasing a clean, scalable architecture for shared business logic with native UI on both platforms: Jetpack Compose on Android and SwiftUI on iOS.
 
@@ -161,26 +161,26 @@ Specs run concurrently (up to 4 in parallel) via `KotestProjectConfig` in `core:
 
 ### Deep Link Testing
 
-The app supports deep links via `mockdonalds://app/{path}`. Auth-gated screens (e.g. `profile`) automatically redirect to login and return after authentication.
+The app supports deep links via `sampleplatter://app/{path}`. Auth-gated screens (e.g. `profile`) automatically redirect to login and return after authentication.
 
 **Android (requires emulator/device):**
 
 ```bash
 # Navigate to More tab
-adb shell am start -a android.intent.action.VIEW -d "mockdonalds://app/more"
+adb shell am start -a android.intent.action.VIEW -d "sampleplatter://app/more"
 
 # Navigate to Profile via More tab (auth-gated — redirects to Login if not authenticated)
-adb shell am start -a android.intent.action.VIEW -d "mockdonalds://app/more/profile"
+adb shell am start -a android.intent.action.VIEW -d "sampleplatter://app/more/profile"
 ```
 
 **iOS (requires simulator):**
 
 ```bash
 # Navigate to More tab
-xcrun simctl openurl booted "mockdonalds://app/more"
+xcrun simctl openurl booted "sampleplatter://app/more"
 
 # Navigate to Profile via More tab (auth-gated — redirects to Login if not authenticated)
-xcrun simctl openurl booted "mockdonalds://app/more/profile"
+xcrun simctl openurl booted "sampleplatter://app/more/profile"
 ```
 
 Available path segments: `home`, `order`, `rewards`, `scan`, `more`, `profile`, `login`. Segments can be chained (e.g. `more/profile`) to build a navigation stack.

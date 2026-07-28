@@ -123,7 +123,7 @@ class OrderRepositoryImplTest : BehaviorSpec({
                 SpoonacularMenuItemDto(
                     id = 99,
                     title = "Fresh Burger",
-                    restaurantChain = "McDonald's",
+                    restaurantChain = "Sample Platter",
                     image = "https://img/fresh.jpg",
                     servingSize = null,
                 ),
@@ -155,7 +155,7 @@ class OrderRepositoryImplTest : BehaviorSpec({
                 SpoonacularMenuItemDto(
                     id = 1,
                     title = "Big Mac",
-                    restaurantChain = "McDonald's",
+                    restaurantChain = "Sample Platter",
                     image = "https://img/big-mac.jpg",
                     servingSize = "214g",
                 ),

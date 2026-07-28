@@ -24,7 +24,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "MockDonalds"
+rootProject.name = "SamplePlatter"
 
 // Build tooling (JVM-only, not part of the shipped app)
 include(":build-tooling:ksp-build-config-registry")

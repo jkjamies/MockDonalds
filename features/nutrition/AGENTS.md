@@ -1,7 +1,7 @@
 # Nutrition Feature
 
 ## Business Context
-The Nutrition screen embeds the per-market McDonald's nutrition calculator in an in-app WebView so users can browse nutrition info without leaving the app. The first real consumer of the WebView primitive in `core:presentation`. Reachable via a contributed entry on the More tab; visible in all builds, all markets.
+The Nutrition screen embeds a third-party nutrition reference (Spoonacular) in an in-app WebView so users can browse nutrition info without leaving the app. The first real consumer of the WebView primitive in `core:presentation`. Reachable via a contributed entry on the More tab; visible in all builds, all markets.
 
 ## Key Types
 
@@ -35,9 +35,8 @@ The Nutrition screen embeds the per-market McDonald's nutrition calculator in an
 - **Sentinel URL hygiene in tests.** All tests use `https://example.test/nutrition` (RFC2606 reserved domain) to avoid hermetic-test network round-trips.
 
 ## Per-Market Configuration
-- Default `NUTRITION_URL=https://www.mcdonalds.com/us/en-us/about-our-food/nutrition-calculator.html`.
-- `ca-int`, `ca-mte`, `ca-prod` override with the `/ca/en-ca/` variant.
-- `us`, `de`, `au`, `core` inherit the default (DE/AU localized variants pending validation).
+- Default `NUTRITION_URL=https://spoonacular.com/`.
+- All markets inherit the default; no market currently overrides it.
 
 ## Testing
 - Unit (presenter): `impl/presentation/src/commonTest/.../NutritionPresenterTest.kt`

@@ -5,13 +5,13 @@ import ComposeApp
 private let tags = CategoryDetailTestTags.shared
 
 /// Vertical offset reserved for the floating cart bar so the LazyVStack content
-/// doesn't disappear beneath it. Mirrors `MockDimens.CartBarOffset` on Android
+/// doesn't disappear beneath it. Mirrors `PlatterDimens.CartBarOffset` on Android
 /// (64.dp); iOS uses 96 because the cart bar component is taller in SwiftUI.
 private let cartBarOffset: CGFloat = 96
 
 @CircuitInject(CategoryDetailScreen.self, CategoryDetailUiState.self)
 struct CategoryDetailView: View {
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
 
     let state: CategoryDetailUiState
 
@@ -20,7 +20,7 @@ struct CategoryDetailView: View {
             VStack(spacing: 0) {
                 topBar
                 ScrollView {
-                    LazyVStack(spacing: MockDimens.spacingXxl) {
+                    LazyVStack(spacing: PlatterDimens.spacingXxl) {
                         ForEach(state.items, id: \.id) { item in
                             MenuItemCardView(
                                 item: item,
@@ -35,9 +35,9 @@ struct CategoryDetailView: View {
                             )
                         }
                     }
-                    .padding(.horizontal, MockDimens.spacingXl)
-                    .padding(.top, MockDimens.spacingLg)
-                    .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: false) + cartBarOffset)
+                    .padding(.horizontal, PlatterDimens.spacingXl)
+                    .padding(.top, PlatterDimens.spacingLg)
+                    .padding(.bottom, PlatterDimens.adaptiveBottomBarPadding(isLandscape: false) + cartBarOffset)
                 }
             }
 
@@ -56,8 +56,8 @@ struct CategoryDetailView: View {
                         Circle()
                             .fill(colors.surfaceContainerHigh)
                             .frame(
-                                width: MockDimens.spacingXxl,
-                                height: MockDimens.spacingXxl
+                                width: PlatterDimens.spacingXxl,
+                                height: PlatterDimens.spacingXxl
                             )
                         Text("<")
                             .font(.title3)
@@ -72,11 +72,11 @@ struct CategoryDetailView: View {
                 .font(.title2)
                 .fontWeight(.black)
                 .foregroundColor(colors.onSurface)
-                .padding(.leading, MockDimens.spacingLg)
+                .padding(.leading, PlatterDimens.spacingLg)
 
             Spacer()
         }
-        .padding(MockDimens.spacingXl)
+        .padding(PlatterDimens.spacingXl)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(tags.TOP_BAR)
     }
@@ -94,13 +94,13 @@ struct CategoryDetailView: View {
 }
 
 struct MenuItemCardView: View {
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
 
     let item: MenuItem
     var onAddToOrder: () -> Void = {}
 
     var body: some View {
-        VStack(alignment: .leading, spacing: MockDimens.spacingMd) {
+        VStack(alignment: .leading, spacing: PlatterDimens.spacingMd) {
             Color.clear
                 .aspectRatio(16.0 / 9.0, contentMode: .fit)
                 .overlay {
@@ -116,7 +116,7 @@ struct MenuItemCardView: View {
                     )
                 }
                 .clipped()
-                .cornerRadius(MockDimens.radiusMd)
+                .cornerRadius(PlatterDimens.radiusMd)
 
             Text(item.title)
                 .font(.title3)
@@ -139,9 +139,9 @@ struct MenuItemCardView: View {
                     .fontWeight(.bold)
                     .foregroundColor(colors.secondary)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, MockDimens.spacingLg)
+                    .padding(.vertical, PlatterDimens.spacingLg)
                     .background(colors.surfaceContainerHighest)
-                    .cornerRadius(MockDimens.radiusSm)
+                    .cornerRadius(PlatterDimens.radiusSm)
             }
             .accessibilityIdentifier("\(CategoryDetailTestTags.shared.ADD_TO_ORDER_BUTTON)-\(item.id)")
         }

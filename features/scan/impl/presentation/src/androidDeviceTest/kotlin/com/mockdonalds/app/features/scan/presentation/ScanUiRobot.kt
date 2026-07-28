@@ -11,7 +11,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.mockdonalds.app.core.theme.LocalWindowSizeClass
-import com.mockdonalds.app.core.theme.MockDonaldsTheme
+import com.mockdonalds.app.core.theme.SamplePlatterTheme
 import com.mockdonalds.app.features.scan.api.ui.ScanTestTags
 
 class ScanUiRobot(private val rule: ComposeContentTestRule) {
@@ -25,7 +25,7 @@ class ScanUiRobot(private val rule: ComposeContentTestRule) {
             CompositionLocalProvider(
                 LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(size),
             ) {
-                MockDonaldsTheme { ScanUi(state = state) }
+                SamplePlatterTheme { ScanUi(state = state) }
             }
         }
     }

@@ -10,7 +10,7 @@ import ComposeApp
     @Test func deepLinkToProfileViaMoreTab() {
         let manager = NavigationStateManager(initialTab: "home")
 
-        // mockdonalds://app/more/profile → SwitchTab(more) + GoTo(profile)
+        // sampleplatter://app/more/profile → SwitchTab(more) + GoTo(profile)
         manager.handle(actions: [
             NavigationAction.SwitchTab(tag: MoreScreen.shared.tag),
             NavigationAction.GoTo(screen: ProfileScreen.shared),
@@ -50,7 +50,7 @@ import ComposeApp
     @Test func deepLinkToTabRootOnly() {
         let manager = NavigationStateManager(initialTab: "home")
 
-        // Deep link to just a tab (e.g. mockdonalds://app/order)
+        // Deep link to just a tab (e.g. sampleplatter://app/order)
         manager.handle(actions: [
             NavigationAction.SwitchTab(tag: OrderScreen.shared.tag),
         ])

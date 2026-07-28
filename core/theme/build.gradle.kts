@@ -11,7 +11,7 @@ kotlin {
         commonMain.dependencies {
             // The Kotlin design system is Android-only: every consumer of these types is in
             // an `androidMain` or `androidDeviceTest` source set, and iOS renders with its own
-            // `iosApp/iosApp/Theme/MockDonaldsTheme.swift`. Keeping MaterialTheme, Typography,
+            // `iosApp/iosApp/Theme/SamplePlatterTheme.swift`. Keeping MaterialTheme, Typography,
             // Brush, TextStyle and dp/sp in commonMain compiled the whole Compose UI stack for
             // iosX64/iosArm64/iosSimulatorArm64 on every build, for code iOS can never reach —
             // so the sources now live in androidMain.

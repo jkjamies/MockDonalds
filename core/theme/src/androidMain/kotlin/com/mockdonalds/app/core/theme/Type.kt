@@ -28,7 +28,7 @@ val ManropeFamily: FontFamily
     )
 
 @Composable
-fun MockDonaldsTypography(): Typography {
+fun SamplePlatterTypography(): Typography {
     val epilogue = EpilogueFamily
     val manrope = ManropeFamily
 

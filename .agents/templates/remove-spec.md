@@ -82,7 +82,7 @@
 | Source Screen | Navigation Call | Action |
 |---------------|-----------------|--------|
 | `HomeScreen` | `navigator.goTo({Removed}Screen)` | Remove or redirect |
-| Deep link `mockdonalds:///{path}` | Routes to removed screen | Remove deep link |
+| Deep link `sampleplatter:///{path}` | Routes to removed screen | Remove deep link |
 
 ---
 

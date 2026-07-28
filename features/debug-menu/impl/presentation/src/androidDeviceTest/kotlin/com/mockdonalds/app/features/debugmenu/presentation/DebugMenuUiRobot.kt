@@ -10,7 +10,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.mockdonalds.app.core.theme.LocalWindowSizeClass
-import com.mockdonalds.app.core.theme.MockDonaldsTheme
+import com.mockdonalds.app.core.theme.SamplePlatterTheme
 import com.mockdonalds.app.features.debugmenu.api.ui.DebugMenuTestTags
 
 class DebugMenuUiRobot(private val rule: ComposeContentTestRule) {
@@ -24,7 +24,7 @@ class DebugMenuUiRobot(private val rule: ComposeContentTestRule) {
             CompositionLocalProvider(
                 LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(size),
             ) {
-                MockDonaldsTheme { DebugMenuUi(state = state) }
+                SamplePlatterTheme { DebugMenuUi(state = state) }
             }
         }
     }

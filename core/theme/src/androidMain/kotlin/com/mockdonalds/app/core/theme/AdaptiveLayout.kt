@@ -23,13 +23,13 @@ fun isExpandedWidth(): Boolean {
 }
 
 @Composable
-fun adaptiveHeroHeight(): Dp = if (isCompactHeight()) 240.dp else MockDimens.HeroHeight
+fun adaptiveHeroHeight(): Dp = if (isCompactHeight()) 240.dp else PlatterDimens.HeroHeight
 
 @Composable
 fun adaptiveQrCodeSize(): Dp = if (isCompactHeight()) 180.dp else 256.dp
 
 @Composable
-fun adaptiveBottomBarPadding(): Dp = if (isCompactHeight()) 72.dp else MockDimens.BottomBarPadding
+fun adaptiveBottomBarPadding(): Dp = if (isCompactHeight()) 72.dp else PlatterDimens.BottomBarPadding
 
 @Composable
-fun adaptiveBottomNavHeight(): Dp = if (isCompactHeight()) 56.dp else MockDimens.BottomNavHeight
+fun adaptiveBottomNavHeight(): Dp = if (isCompactHeight()) 56.dp else PlatterDimens.BottomNavHeight

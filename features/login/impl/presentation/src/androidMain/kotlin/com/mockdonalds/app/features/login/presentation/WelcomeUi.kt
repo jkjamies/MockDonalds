@@ -25,8 +25,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mockdonalds.app.core.theme.MockDimens
-import com.mockdonalds.app.core.theme.MockDonaldsTheme
+import com.mockdonalds.app.core.theme.PlatterDimens
+import com.mockdonalds.app.core.theme.SamplePlatterTheme
 import com.mockdonalds.app.features.login.api.navigation.WelcomeScreen
 import com.mockdonalds.app.features.login.api.ui.WelcomeTestTags
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -46,7 +46,7 @@ fun WelcomeUi(state: WelcomeUiState, modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .statusBarsPadding()
-                .padding(horizontal = MockDimens.SpacingXxl),
+                .padding(horizontal = PlatterDimens.SpacingXxl),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
@@ -63,7 +63,7 @@ fun WelcomeUi(state: WelcomeUiState, modifier: Modifier = Modifier) {
                     .testTag(WelcomeTestTags.LOGO),
             )
 
-            Spacer(modifier = Modifier.height(MockDimens.SpacingXxl))
+            Spacer(modifier = Modifier.height(PlatterDimens.SpacingXxl))
 
             Text(
                 text = "Welcome!",
@@ -75,7 +75,7 @@ fun WelcomeUi(state: WelcomeUiState, modifier: Modifier = Modifier) {
                 modifier = Modifier.testTag(WelcomeTestTags.TITLE),
             )
 
-            Spacer(modifier = Modifier.height(MockDimens.SpacingMd))
+            Spacer(modifier = Modifier.height(PlatterDimens.SpacingMd))
 
             Text(
                 text = "You're all set",
@@ -84,18 +84,18 @@ fun WelcomeUi(state: WelcomeUiState, modifier: Modifier = Modifier) {
                 modifier = Modifier.testTag(WelcomeTestTags.SUBTITLE),
             )
 
-            Spacer(modifier = Modifier.height(MockDimens.SpacingXxxl))
+            Spacer(modifier = Modifier.height(PlatterDimens.SpacingXxxl))
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(64.dp)
-                    .clip(RoundedCornerShape(MockDimens.RadiusMd))
+                    .clip(RoundedCornerShape(PlatterDimens.RadiusMd))
                     .background(
                         Brush.horizontalGradient(
                             listOf(
                                 MaterialTheme.colorScheme.primary,
-                                MockDonaldsTheme.extendedColors.primaryDark,
+                                SamplePlatterTheme.extendedColors.primaryDark,
                             ),
                         ),
                     )
@@ -109,7 +109,7 @@ fun WelcomeUi(state: WelcomeUiState, modifier: Modifier = Modifier) {
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = (-0.5).sp,
                     ),
-                    color = MockDonaldsTheme.extendedColors.onPrimaryButton,
+                    color = SamplePlatterTheme.extendedColors.onPrimaryButton,
                 )
             }
         }

@@ -26,7 +26,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import com.mockdonalds.app.core.theme.MockDimens
+import com.mockdonalds.app.core.theme.PlatterDimens
 import com.mockdonalds.app.features.debugmenu.api.navigation.DebugMenuScreen
 import com.mockdonalds.app.features.debugmenu.api.ui.DebugMenuTestTags
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -58,8 +58,8 @@ fun DebugMenuUi(state: DebugMenuUiState, modifier: Modifier = Modifier) {
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize().testTag(DebugMenuTestTags.ENTRY_LIST),
-                contentPadding = PaddingValues(MockDimens.SpacingMd),
-                verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
+                contentPadding = PaddingValues(PlatterDimens.SpacingMd),
+                verticalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingMd),
             ) {
                 items(state.entries, key = { it.id }) { entry ->
                     DebugEntryCard(entry = entry) {
@@ -80,10 +80,10 @@ private fun DebugEntryCard(entry: DebugMenuEntry, onClick: () -> Unit) {
             .fillMaxWidth()
             .testTag("${DebugMenuTestTags.ENTRY_ITEM}-${entry.id}"),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        shape = RoundedCornerShape(MockDimens.RadiusMd),
+        shape = RoundedCornerShape(PlatterDimens.RadiusMd),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(MockDimens.SpacingLg),
+            modifier = Modifier.fillMaxWidth().padding(PlatterDimens.SpacingLg),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column {

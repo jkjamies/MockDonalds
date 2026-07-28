@@ -18,7 +18,7 @@ class GetCategoryDetailContentImplTest : BehaviorSpec({
                 MenuItem(
                     id = "1",
                     title = "Big Mac",
-                    restaurantChain = "McDonald's",
+                    restaurantChain = "Sample Platter",
                     imageUrl = "img",
                     servingSize = "214g",
                     categoryId = "burgers",

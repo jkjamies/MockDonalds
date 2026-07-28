@@ -164,7 +164,7 @@ Get{Feature}Content
 
      UI rules:
      - All colors come from MaterialTheme.colorScheme — never hardcode Color.Gray, Color.White, etc.
-     - All spacing from MockDimens (SpacingXs/Sm/Md/Lg/Xl/Xxl/Xxxl), all radii from MockDimens (RadiusSm/Md/Lg)
+     - All spacing from PlatterDimens (SpacingXs/Sm/Md/Lg/Xl/Xxl/Xxxl), all radii from PlatterDimens (RadiusSm/Md/Lg)
      - Icons use Material Icons (Icons.Default.*, Icons.AutoMirrored.*), never text characters like "<" or "i"
      - Events are a separate file: {Feature}Event.kt (sealed class, not sealed interface — iOS interop)
      - UiState is a separate file: {Feature}UiState.kt
@@ -227,7 +227,7 @@ Get{Feature}Content
 - `{Other}Screen` — on item tap
 - `Navigator.pop()` — on back
 
-**Deep link** (if applicable): `mockdonalds:///{path}`
+**Deep link** (if applicable): `sampleplatter:///{path}`
 
 ---
 

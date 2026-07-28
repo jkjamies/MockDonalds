@@ -13,7 +13,7 @@ class CategoryDetailStateRobot : StateRobot<CategoryDetailUiState, CategoryDetai
             MenuItem(
                 id = "1",
                 title = "Big Mac",
-                restaurantChain = "McDonald's",
+                restaurantChain = "Sample Platter",
                 imageUrl = "",
                 servingSize = "214g",
                 categoryId = "burgers",

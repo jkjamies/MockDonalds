@@ -45,7 +45,7 @@ data class BottomNavItem(
 )
 
 @Composable
-fun MockDonaldsBottomNavigation(
+fun SamplePlatterBottomNavigation(
     currentRoute: String,
     onNavigate: (String) -> Unit,
     modifier: Modifier = Modifier

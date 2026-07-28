@@ -1,4 +1,4 @@
-# MockDonalds
+# SamplePlatter
 
 Kotlin Multiplatform reference app. Shared Kotlin business logic with native UI per platform: Jetpack Compose UI on Android, native SwiftUI on iOS. iOS uses the Compose _runtime_ (via Molecule) for state management only — not Compose UI for rendering. All iOS views are standard SwiftUI.
 
@@ -41,7 +41,7 @@ core/
   presentation/        — Compose/SwiftUI-facing helpers: `rememberCenterPost`, `collectAsState`, `rememberFlag`/`rememberConfig`, and the Android WebView primitive (`androidMain`; iOS has its own SwiftUI `WebView.swift`)
   remote-config/       — FeatureFlag/RemoteConfig contracts + RemoteConfigProvider (api/), Harness-backed provider (impl/), FakeRemoteConfigProvider (test/)
   strings/             — Android-only `R.string` resources populated by `pullTranslations` (Phrase). iOS reads its own `iosApp/iosApp/Resources/{locale}.lproj/` files.
-  theme/               — MockDonaldsTheme, colors, typography, dimens, AdaptiveLayout. Kotlin sources are `androidMain`-only (Compose UI); iOS uses `iosApp/iosApp/Theme/MockDonaldsTheme.swift`. Only `composeResources/font/` lives in `commonMain`.
+  theme/               — SamplePlatterTheme, colors, typography, dimens, AdaptiveLayout. Kotlin sources are `androidMain`-only (Compose UI); iOS uses `iosApp/iosApp/Theme/SamplePlatterTheme.swift`. Only `composeResources/font/` lives in `commonMain`.
   test-fixtures/       — TestCenterPostDispatchers, KotestProjectConfig, StateRobot base
 ```
 

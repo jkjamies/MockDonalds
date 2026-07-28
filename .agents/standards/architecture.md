@@ -67,18 +67,18 @@ graph TB
 ## Project Structure
 
 ```
-MockDonalds/
+SamplePlatter/
 ├── androidApp/                         # Android application entry point
 │   └── src/main/kotlin/
 │       ├── MainActivity.kt             # Sets content to App()
-│       └── MockDonaldsApplication.kt   # Application class
+│       └── SamplePlatterApplication.kt   # Application class
 │
 ├── composeApp/                         # Shared application module
 │   └── src/
 │       ├── commonMain/kotlin/
 │       │   ├── AppGraph.kt             # ProdAppGraph — extends AppGraph (core:metro)
-│       │   ├── MockDonaldsBottomNavigation.kt
-│       │   └── MockDonaldsIcons.kt
+│       │   ├── SamplePlatterBottomNavigation.kt
+│       │   └── SamplePlatterIcons.kt
 │       ├── androidMain/kotlin/
 │       │   └── App.kt                  # NavigableCircuitContent + predictive back
 │       └── iosMain/kotlin/
@@ -119,9 +119,9 @@ MockDonalds/
 ├── iosApp/                             # iOS application (Xcode project)
 │   └── iosApp/
 │       ├── Circuit/                    # CircuitIos, CircuitView, CircuitContent, CircuitNavigator
-│       ├── Theme/                      # MockDonaldsTheme (light/dark colors, dimens)
+│       ├── Theme/                      # SamplePlatterTheme (light/dark colors, dimens)
 │       ├── Features/                   # SwiftUI views per feature
-│       ├── MockDonaldsApp.swift        # Tab bar + CircuitNavigator
+│       ├── SamplePlatterApp.swift        # Tab bar + CircuitNavigator
 │       └── AppDelegate.swift           # ScreenUiFactory registration
 │
 └── build-logic/convention/             # Gradle convention plugins

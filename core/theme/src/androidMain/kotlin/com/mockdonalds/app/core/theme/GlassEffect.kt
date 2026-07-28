@@ -35,6 +35,6 @@ fun Modifier.ambientGradient(
 /**
  * Brand gradient — primary red to secondary yellow.
  */
-val MockDonaldsBrandGradient = Brush.horizontalGradient(
+val SamplePlatterBrandGradient = Brush.horizontalGradient(
     colors = listOf(PlatterRed, PlatterYellow),
 )

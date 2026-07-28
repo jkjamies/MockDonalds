@@ -109,7 +109,7 @@ targets:
       base:
         INFOPLIST_FILE: iosApp/Info.plist
         GENERATE_INFOPLIST_FILE: NO
-        INFOPLIST_KEY_CFBundleDisplayName: MockDonalds
+        INFOPLIST_KEY_CFBundleDisplayName: SamplePlatter
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES

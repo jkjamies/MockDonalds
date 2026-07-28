@@ -38,7 +38,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.mockdonalds.app.core.theme.MockDimens
+import com.mockdonalds.app.core.theme.PlatterDimens
 import com.mockdonalds.app.core.theme.adaptiveBottomBarPadding
 import com.mockdonalds.app.features.recents.api.domain.RecentItem
 import com.mockdonalds.app.features.recents.api.navigation.RecentsScreen
@@ -103,13 +103,13 @@ private fun RecentsEmptyUi(modifier: Modifier = Modifier) {
             modifier = Modifier.size(48.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(modifier = Modifier.height(MockDimens.SpacingLg))
+        Spacer(modifier = Modifier.height(PlatterDimens.SpacingLg))
         Text(
             text = "No recent activity",
             style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(MockDimens.SpacingSm))
+        Spacer(modifier = Modifier.height(PlatterDimens.SpacingSm))
         Text(
             text = "Your recent orders and items will appear here",
             style = MaterialTheme.typography.bodyMedium,
@@ -125,8 +125,8 @@ private fun RecentsSuccessUi(items: List<RecentItem>, eventSink: (RecentsEvent) 
         modifier = Modifier
             .fillMaxSize()
             .testTag(RecentsTestTags.LIST),
-        contentPadding = PaddingValues(MockDimens.SpacingMd),
-        verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd)
+        contentPadding = PaddingValues(PlatterDimens.SpacingMd),
+        verticalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingMd)
     ) {
         items(items) { item ->
             RecentItemCard(item = item, onClick = { eventSink(RecentsEvent.OnItemTapped(item.id)) })
@@ -143,16 +143,16 @@ private fun RecentItemCard(item: RecentItem, onClick: () -> Unit) {
             .fillMaxWidth()
             .testTag("${RecentsTestTags.ITEM}-${item.id}"),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        shape = RoundedCornerShape(MockDimens.RadiusMd)
+        shape = RoundedCornerShape(PlatterDimens.RadiusMd)
     ) {
         Row(
-            modifier = Modifier.padding(MockDimens.SpacingMd),
+            modifier = Modifier.padding(PlatterDimens.SpacingMd),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
                 modifier = Modifier
                     .size(64.dp)
-                    .clip(RoundedCornerShape(MockDimens.RadiusSm)),
+                    .clip(RoundedCornerShape(PlatterDimens.RadiusSm)),
                 color = MaterialTheme.colorScheme.surface
             ) {
                 AsyncImage(
@@ -162,7 +162,7 @@ private fun RecentItemCard(item: RecentItem, onClick: () -> Unit) {
                     modifier = Modifier.fillMaxSize()
                 )
             }
-            Spacer(modifier = Modifier.width(MockDimens.SpacingMd))
+            Spacer(modifier = Modifier.width(PlatterDimens.SpacingMd))
             Column {
                 Text(
                     text = item.name,

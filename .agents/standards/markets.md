@@ -1,6 +1,6 @@
 # Markets Standard
 
-A **market** is a distinct shippable binary of MockDonalds — one country or sandbox region, with its own bundle identifier, App Store / Play Store listing, backend endpoints, locale, and currency. Markets are the outermost axis of the build matrix; envs and build types sit inside them.
+A **market** is a distinct shippable binary of SamplePlatter — one country or sandbox region, with its own bundle identifier, App Store / Play Store listing, backend endpoints, locale, and currency. Markets are the outermost axis of the build matrix; envs and build types sit inside them.
 
 This doc is the cross-cutting reference for the market concept: what it is, which markets exist, and how each one surfaces across every layer of the stack. For the compile-time config schema and validation rules, see `.agents/standards/build-config.md`. For the operational steps to add a new market, see `.agents/skills/add-market/SKILL.md`.
 

@@ -1,6 +1,6 @@
 # Agent Infrastructure
 
-This directory contains automation skills, spec templates, and reference standards for AI agents working on MockDonalds.
+This directory contains automation skills, spec templates, and reference standards for AI agents working on SamplePlatter.
 
 ## Standards
 

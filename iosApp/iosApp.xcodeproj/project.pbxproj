@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		09F0FA134D3E4F7562713DFB /* MockDonaldsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F2873D9968532C8D741D3F /* MockDonaldsApp.swift */; };
+		09F0FA134D3E4F7562713DFB /* SamplePlatterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F2873D9968532C8D741D3F /* SamplePlatterApp.swift */; };
 		0B5B17FD5D73AB8CCEFD4ABF /* AuthFlowNavigationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE8A27DFA24EC01CCE58A089 /* AuthFlowNavigationTest.swift */; };
 		0CF38DAC0F5E23FB0954488F /* DebugMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF3C5A20D1D8B5FFA6105E1 /* DebugMenuView.swift */; };
 		120CA82FACD15A3ECEB68D0A /* MoreViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD176D6C8E3CD288191E0DF3 /* MoreViewTest.swift */; };
@@ -81,7 +81,7 @@
 		D572535D7C6BF8E98B258980 /* StartupPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 236744B8615A52FCF06E62CE /* StartupPerformanceTest.swift */; };
 		D5FA0344548A43A26A25E3CD /* CircuitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8230EA110BD42922302F20 /* CircuitView.swift */; };
 		D69FC88016F05FD3B9A1A6FD /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B32E1749C096CF28B113D18D /* WelcomeView.swift */; };
-		D8CFD50752C25C34E17A1810 /* MockDonaldsTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEAFBC0A9A7E027934A6EE7 /* MockDonaldsTheme.swift */; };
+		D8CFD50752C25C34E17A1810 /* SamplePlatterTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEAFBC0A9A7E027934A6EE7 /* SamplePlatterTheme.swift */; };
 		D92730FBF992C2AB643847B9 /* FeatureFlagsDebugViewRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51452D1E8493A309EB8CE060 /* FeatureFlagsDebugViewRobot.swift */; };
 		DADCBA24E9FD46A2056B9ACC /* NutritionStateRobot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D24EB5EB6939979F9324842 /* NutritionStateRobot.swift */; };
 		DE2F6DE6227DCA077CFF40D9 /* FeatureFlagsDebugViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C98902D9F9B5E721BF4BE366 /* FeatureFlagsDebugViewTest.swift */; };
@@ -184,7 +184,7 @@
 		649997444C003AB72D398725 /* WelcomeStateRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeStateRobot.swift; sourceTree = "<group>"; };
 		69CE32184CE840B5941B93A9 /* AU-Prod-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "AU-Prod-Release.xcconfig"; sourceTree = "<group>"; };
 		6EF516B1F9F72A0BBB8CAE65 /* MoreStateRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreStateRobot.swift; sourceTree = "<group>"; };
-		70F2873D9968532C8D741D3F /* MockDonaldsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDonaldsApp.swift; sourceTree = "<group>"; };
+		70F2873D9968532C8D741D3F /* SamplePlatterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplePlatterApp.swift; sourceTree = "<group>"; };
 		71A10C9FD71FD2C4DA115201 /* CA-Prod-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "CA-Prod-Debug.xcconfig"; sourceTree = "<group>"; };
 		787AB5A772052BD85A531135 /* RecentsViewRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentsViewRobot.swift; sourceTree = "<group>"; };
 		7BDF906DCB7D45BB8F026AAA /* US-Int-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "US-Int-Debug.xcconfig"; sourceTree = "<group>"; };
@@ -242,7 +242,7 @@
 		DFF33FB51AA42C12A5D12273 /* StateRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateRobot.swift; sourceTree = "<group>"; };
 		E8B31DD1960E4A68BC692BBA /* HomeViewRobot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewRobot.swift; sourceTree = "<group>"; };
 		EAC63D086DCAFC73108404DA /* RecentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentsView.swift; sourceTree = "<group>"; };
-		EDEAFBC0A9A7E027934A6EE7 /* MockDonaldsTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDonaldsTheme.swift; sourceTree = "<group>"; };
+		EDEAFBC0A9A7E027934A6EE7 /* SamplePlatterTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplePlatterTheme.swift; sourceTree = "<group>"; };
 		EE8A27DFA24EC01CCE58A089 /* AuthFlowNavigationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthFlowNavigationTest.swift; sourceTree = "<group>"; };
 		EF8230EA110BD42922302F20 /* CircuitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircuitView.swift; sourceTree = "<group>"; };
 		F25C263997D7E32D39F4A95D /* SwiftAkamaiSensorBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftAkamaiSensorBridge.swift; sourceTree = "<group>"; };
@@ -350,17 +350,17 @@
 				4795698A257B423F254DDC14 /* Theme */,
 				8B6C1F485E0CF8BB70C9DDD2 /* AppDelegate.swift */,
 				A9F2DB67645546F2662250AF /* AppIconForeground.png */,
-				70F2873D9968532C8D741D3F /* MockDonaldsApp.swift */,
+				70F2873D9968532C8D741D3F /* SamplePlatterApp.swift */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
 		};
-		1F89104FB695BB395DE5803D /* MockDonalds */ = {
+		1F89104FB695BB395DE5803D /* SamplePlatter */ = {
 			isa = PBXGroup;
 			children = (
 				BFA89950C9F2BC4E0F5B490C /* CLAUDE.md */,
 			);
-			name = MockDonalds;
+			name = SamplePlatter;
 			path = ..;
 			sourceTree = "<group>";
 		};
@@ -454,7 +454,7 @@
 				3DD46C25E23D37E35EF5ADF2 /* iosAppBenchmarks */,
 				DDA6207795B385A3B1A9E59C /* iosAppE2ETests */,
 				407F741E7FEBA273A8579B0E /* iosAppTests */,
-				1F89104FB695BB395DE5803D /* MockDonalds */,
+				1F89104FB695BB395DE5803D /* SamplePlatter */,
 				2BE9D1071031C3FC069C34FC /* Packages */,
 				B1720870E51445F47D3045A0 /* Assets.xcassets */,
 				3666012298E772D226418813 /* Frameworks */,
@@ -502,7 +502,7 @@
 			isa = PBXGroup;
 			children = (
 				910C7E718B1A2BF3BF62972A /* AdaptiveLayout.swift */,
-				EDEAFBC0A9A7E027934A6EE7 /* MockDonaldsTheme.swift */,
+				EDEAFBC0A9A7E027934A6EE7 /* SamplePlatterTheme.swift */,
 			);
 			path = Theme;
 			sourceTree = "<group>";
@@ -1080,8 +1080,8 @@
 				E8BEE027C5D289022EC74C18 /* GeneratedCircuitFactories.swift in Sources */,
 				44414C784143D022614D1BE3 /* HomeView.swift in Sources */,
 				9ED9498463DC1DA344DCF800 /* LoginView.swift in Sources */,
-				09F0FA134D3E4F7562713DFB /* MockDonaldsApp.swift in Sources */,
-				D8CFD50752C25C34E17A1810 /* MockDonaldsTheme.swift in Sources */,
+				09F0FA134D3E4F7562713DFB /* SamplePlatterApp.swift in Sources */,
+				D8CFD50752C25C34E17A1810 /* SamplePlatterTheme.swift in Sources */,
 				C83A6FDF9A4D8F0E0E7BEBD0 /* MoreView.swift in Sources */,
 				EBCC6A59A2A2CA48D608A308 /* NavigationStateManager.swift in Sources */,
 				97325C45FCE304B80D9D5D53 /* NutritionView.swift in Sources */,
@@ -1445,7 +1445,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -1581,7 +1581,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -1690,7 +1690,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -1786,7 +1786,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -1878,7 +1878,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -1950,7 +1950,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -1982,7 +1982,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -2372,7 +2372,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -2404,7 +2404,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -2436,7 +2436,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -2528,7 +2528,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -2701,7 +2701,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -2733,7 +2733,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -2805,7 +2805,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -2994,7 +2994,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -3046,7 +3046,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -3175,7 +3175,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -3207,7 +3207,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -3544,7 +3544,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -3720,7 +3720,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -3772,7 +3772,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -4085,7 +4085,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -4201,7 +4201,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -4394,7 +4394,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -4446,7 +4446,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -4478,7 +4478,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -4667,7 +4667,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -5607,7 +5607,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -5639,7 +5639,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -5731,7 +5731,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MockDonalds;
+				INFOPLIST_KEY_CFBundleDisplayName = SamplePlatter;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;

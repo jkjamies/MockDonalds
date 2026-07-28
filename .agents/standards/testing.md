@@ -1,6 +1,6 @@
 # Testing Standards
 
-Comprehensive testing conventions for the MockDonalds KMP project. Testing is organized into 5 levels, each with its own standards document. All rules are enforced by Konsist architecture tests (`testing/architecture-check/`) and Harmonize (`iosApp/ArchitectureCheck/`).
+Comprehensive testing conventions for the SamplePlatter KMP project. Testing is organized into 5 levels, each with its own standards document. All rules are enforced by Konsist architecture tests (`testing/architecture-check/`) and Harmonize (`iosApp/ArchitectureCheck/`).
 
 ## Test Levels
 

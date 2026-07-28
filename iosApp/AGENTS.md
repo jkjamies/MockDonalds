@@ -33,7 +33,7 @@ The iOS app is a thin SwiftUI shell that consumes shared KMP presenters from the
 
 ### Entry Point
 
-- `MockDonaldsApp.swift` -- `@main` App struct with TabView wired to KMP Screen objects
+- `SamplePlatterApp.swift` -- `@main` App struct with TabView wired to KMP Screen objects
 - `AppDelegate.swift` -- Creates `CircuitIos` with `IosApp` (from KMP) and consumes `CircuitIos.generatedFactories()` — the per-screen `ScreenUiFactory` list is auto-generated, no hand-maintained registration table here
 - `Generated/GeneratedCircuitFactories.swift` -- regenerated on every build by the `CircuitFactoryRegistry` Run Script Phase. Walks every `*.swift` under `iosApp/iosApp/`, finds SwiftUI views annotated with `@CircuitInject(Screen.self, UiState.self)`, and emits an `extension CircuitIos { static func generatedFactories() -> [UiFactory] }`. Tracks `#if DEBUG` nesting so debug-only screens stay debug-only.
 - Deep links handled via `.onOpenURL` -> `AppDelegate.handleDeepLink` -> `IosApp.deepLink(uri:)`

@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
         deepLinkIntent = intent
         setContent {
             val windowSizeClass = calculateWindowSizeClass(this)
-            MockDonaldsApp(
+            SamplePlatterApp(
                 application = application,
                 windowSizeClass = windowSizeClass,
                 deepLinkIntent = deepLinkIntent,

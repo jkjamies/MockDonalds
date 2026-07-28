@@ -16,7 +16,7 @@ internal fun interface NavigationStateUpdate {
     fun onNavigationStateChanged(canGoBack: Boolean)
 }
 
-internal class MockDonaldsWebViewClient(
+internal class SamplePlatterWebViewClient(
     private val initialHost: String?,
     private val initialScheme: String?,
     private val context: Context,

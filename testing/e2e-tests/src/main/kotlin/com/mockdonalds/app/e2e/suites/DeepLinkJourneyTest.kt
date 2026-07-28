@@ -21,19 +21,19 @@ class DeepLinkJourneyTest {
 
     @Test
     fun deepLinkToOrderScreen() {
-        robot.launchWithDeepLink("mockdonalds://app/order")
+        robot.launchWithDeepLink("sampleplatter://app/order")
         robot.assertElementDisplayed("${OrderTestTags.CATEGORY_PREVIEW_CARD}-burgers")
     }
 
     @Test
     fun deepLinkToMoreScreen() {
-        robot.launchWithDeepLink("mockdonalds://app/more")
+        robot.launchWithDeepLink("sampleplatter://app/more")
         robot.assertElementDisplayed(MoreTestTags.MENU_LIST)
     }
 
     @Test
     fun deepLinkToProfileRedirectsToLoginWhenUnauthenticated() {
-        robot.launchWithDeepLink("mockdonalds://app/more/profile")
+        robot.launchWithDeepLink("sampleplatter://app/more/profile")
 
         // Auth interception should redirect to login since user is not authenticated
         // Profile screen (ProfileTestTags.AVATAR, NAME, etc.) requires authentication
@@ -43,7 +43,7 @@ class DeepLinkJourneyTest {
 
     @Test
     fun deepLinkToProfileSignInFlowShowsWelcomeScreen() {
-        robot.launchWithDeepLink("mockdonalds://app/more/profile")
+        robot.launchWithDeepLink("sampleplatter://app/more/profile")
 
         // Login screen appears via auth interception
         robot.assertElementDisplayed(LoginTestTags.SIGN_IN_BUTTON)
