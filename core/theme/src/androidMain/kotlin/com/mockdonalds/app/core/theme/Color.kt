@@ -3,8 +3,8 @@ package com.mockdonalds.app.core.theme
 import androidx.compose.ui.graphics.Color
 
 // ── Brand colors (same in both modes) ──
-val MockRed = Color(0xFFDB0007)
-val MockYellow = Color(0xFFFFC72C)
+val PlatterRed = Color(0xFFC1272D)
+val PlatterYellow = Color(0xFFF2B705)
 
 // ── Dark palette ──
 val DeepObsidian = Color(0xFF131313)
@@ -36,11 +36,11 @@ val StatusError = Color(0xFFCF6679)
 val StatusWarning = Color(0xFFFFC107)
 
 // ── Extended colors (brand accents, not in M3 ColorScheme) ──
-val PrimaryDark = Color(0xFF930003)
-val PrimaryDarker = Color(0xFF690001)
+val PrimaryDark = Color(0xFF811A1E)
+val PrimaryDarker = Color(0xFF5D1316)
 val OnPrimaryButton = Color(0xFFFFEBE8)
-val OnSecondaryTag = Color(0xFF584200)
-val OnSecondaryContainer = Color(0xFF3F2E00)
+val OnSecondaryTag = Color(0xFF533D02)
+val OnSecondaryContainer = Color(0xFF3C2B01)
 
-val DarkSecondaryLight = Color(0xFFFFDF99)
+val DarkSecondaryLight = Color(0xFFF8E3A0)
 val LightSecondaryLight = Color(0xFFB8860B)

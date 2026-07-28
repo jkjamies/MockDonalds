@@ -11,9 +11,9 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
-    primary = MockRed,
+    primary = PlatterRed,
     onPrimary = DarkOnSurfacePrimary,
-    secondary = MockYellow,
+    secondary = PlatterYellow,
     onSecondary = DeepObsidian,
     background = DeepObsidian,
     onBackground = DarkOnSurfacePrimary,
@@ -33,9 +33,9 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = MockRed,
+    primary = PlatterRed,
     onPrimary = Color.White,
-    secondary = MockYellow,
+    secondary = PlatterYellow,
     onSecondary = OnSecondaryTag,
     background = LightSurfaceBase,
     onBackground = LightOnSurfacePrimary,
