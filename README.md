@@ -247,3 +247,7 @@ mkdir -p .claude && ln -s ../.agents/skills .claude/skills
 ```
 
 See [`AGENTS.md`](AGENTS.md) for the full rule set and [`.agents/AGENTS.md`](.agents/AGENTS.md) for the skill system.
+
+## License
+
+[MIT](LICENSE) © Jason Jamieson
