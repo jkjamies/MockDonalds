@@ -7,8 +7,8 @@ class RecentsStateRobot : StateRobot<RecentsUiState, RecentsEvent>() {
 
     override fun defaultState() = RecentsUiState.Success(
         items = listOf(
-            RecentItem("1", "Big Mac Combo", "Combo Meal", "2 days ago", null),
-            RecentItem("2", "McFlurry Oreo", "Dessert", "Last week", null),
+            RecentItem("1", "Signature Stack Combo", "Combo Meal", "2 days ago", null),
+            RecentItem("2", "Cookie Swirl Cup", "Dessert", "Last week", null),
         ),
         eventSink = createEventSink(),
     )

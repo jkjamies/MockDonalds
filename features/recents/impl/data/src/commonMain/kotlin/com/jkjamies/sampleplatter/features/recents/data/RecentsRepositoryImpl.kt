@@ -15,21 +15,21 @@ class RecentsRepositoryImpl : RecentsRepository {
         listOf(
             RecentItem(
                 id = "1",
-                name = "Big Mac Combo",
+                name = "Signature Stack Combo",
                 description = "Combo Meal",
                 relativeTime = "2 days ago",
                 imageUrl = null,
             ),
             RecentItem(
                 id = "2",
-                name = "McFlurry Oreo",
+                name = "Cookie Swirl Cup",
                 description = "Dessert",
                 relativeTime = "Last week",
                 imageUrl = null,
             ),
             RecentItem(
                 id = "3",
-                name = "10 pc. Chicken McNuggets",
+                name = "10 pc. Chicken Bites",
                 description = "Chicken",
                 relativeTime = "2 weeks ago",
                 imageUrl = null,

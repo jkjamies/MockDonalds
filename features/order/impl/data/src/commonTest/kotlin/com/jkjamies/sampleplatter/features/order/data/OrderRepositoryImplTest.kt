@@ -154,7 +154,7 @@ class OrderRepositoryImplTest : BehaviorSpec({
             items = listOf(
                 SpoonacularMenuItemDto(
                     id = 1,
-                    title = "Big Mac",
+                    title = "Signature Stack",
                     restaurantChain = "Sample Platter",
                     image = "https://img/big-mac.jpg",
                     servingSize = "214g",
@@ -169,7 +169,7 @@ class OrderRepositoryImplTest : BehaviorSpec({
                     fixture.advanceUntilIdle()
                     val populated = awaitItem()
                     populated shouldHaveSize 1
-                    populated.first().title shouldBe "Big Mac"
+                    populated.first().title shouldBe "Signature Stack"
                     fixture.advanceUntilIdle()
                     cancel()
                 }

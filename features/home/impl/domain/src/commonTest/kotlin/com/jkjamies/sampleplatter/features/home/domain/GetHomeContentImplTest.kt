@@ -24,7 +24,7 @@ class GetHomeContentImplTest : BehaviorSpec({
             ),
         )
         val cravings = MutableStateFlow(
-            listOf(Craving(id = "1", title = "Big Mac", subtitle = "Classic", imageUrl = "")),
+            listOf(Craving(id = "1", title = "Signature Stack", subtitle = "Classic", imageUrl = "")),
         )
         val exploreItems = MutableStateFlow(
             listOf(ExploreItem(id = "1", icon = "star", title = "Deals", subtitle = "Save more")),

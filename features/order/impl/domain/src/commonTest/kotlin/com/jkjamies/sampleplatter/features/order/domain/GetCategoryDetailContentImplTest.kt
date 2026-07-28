@@ -17,7 +17,7 @@ class GetCategoryDetailContentImplTest : BehaviorSpec({
             listOf(
                 MenuItem(
                     id = "1",
-                    title = "Big Mac",
+                    title = "Signature Stack",
                     restaurantChain = "Sample Platter",
                     imageUrl = "img",
                     servingSize = "214g",
@@ -44,7 +44,7 @@ class GetCategoryDetailContentImplTest : BehaviorSpec({
                     detail.categoryId shouldBe "burgers"
                     detail.categoryName shouldBe "Burgers"
                     detail.items.size shouldBe 1
-                    detail.items.first().title shouldBe "Big Mac"
+                    detail.items.first().title shouldBe "Signature Stack"
                 }
             }
         }

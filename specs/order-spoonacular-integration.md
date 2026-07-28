@@ -141,7 +141,7 @@ OrderContent
 ```
 MenuItem
   ├── id: String                     // Spoonacular item id, stringified
-  ├── title: String                  // e.g. "Big Mac"
+  ├── title: String                  // e.g. "Signature Stack"
   ├── restaurantChain: String        // e.g. "Sample Platter"
   ├── imageUrl: String               // Spoonacular CDN URL
   ├── servingSize: String?           // e.g. "1 sandwich (214g)" — sometimes null

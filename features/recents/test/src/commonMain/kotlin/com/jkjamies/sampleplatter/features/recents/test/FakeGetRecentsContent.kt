@@ -23,9 +23,9 @@ class FakeGetRecentsContent(
     companion object {
         val DEFAULT = RecentsContent(
             items = listOf(
-                RecentItem("1", "Big Mac Combo", "Combo Meal", "2 days ago", null),
-                RecentItem("2", "McFlurry Oreo", "Dessert", "Last week", null),
-                RecentItem("3", "10 pc. Chicken McNuggets", "Chicken", "2 weeks ago", null),
+                RecentItem("1", "Signature Stack Combo", "Combo Meal", "2 days ago", null),
+                RecentItem("2", "Cookie Swirl Cup", "Dessert", "Last week", null),
+                RecentItem("3", "10 pc. Chicken Bites", "Chicken", "2 weeks ago", null),
                 RecentItem("4", "Medium Fries", "Sides", "1 month ago", null),
                 RecentItem("5", "Large Iced Coffee", "Beverages", "1 month ago", null),
             ),

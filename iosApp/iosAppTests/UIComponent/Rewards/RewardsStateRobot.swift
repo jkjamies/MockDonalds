@@ -13,7 +13,7 @@ final class RewardsStateRobot: BaseStateRobot<RewardsUiState, RewardsEvent> {
             vaultSpecials: [
                 VaultSpecial(
                     id: "1",
-                    title: "Double Quarter",
+                    title: "Twin Patty Melt",
                     pointsCost: "3000 PTS",
                     imageUrl: "",
                     tag: "LIMITED",
@@ -21,7 +21,7 @@ final class RewardsStateRobot: BaseStateRobot<RewardsUiState, RewardsEvent> {
                 ),
                 VaultSpecial(
                     id: "2",
-                    title: "McFlurry",
+                    title: "Cookie Swirl",
                     pointsCost: "1500 PTS",
                     imageUrl: "",
                     tag: nil,
@@ -31,7 +31,7 @@ final class RewardsStateRobot: BaseStateRobot<RewardsUiState, RewardsEvent> {
             history: [
                 HistoryEntry(
                     id: "1",
-                    title: "Big Mac Meal",
+                    title: "Signature Stack Meal",
                     subtitle: "Yesterday",
                     points: "+150",
                     isPositive: true,
@@ -48,7 +48,7 @@ final class RewardsStateRobot: BaseStateRobot<RewardsUiState, RewardsEvent> {
             vaultSpecials: [
                 VaultSpecial(
                     id: "1",
-                    title: "Double Quarter",
+                    title: "Twin Patty Melt",
                     pointsCost: "3000 PTS",
                     imageUrl: "",
                     tag: "LIMITED",
@@ -58,7 +58,7 @@ final class RewardsStateRobot: BaseStateRobot<RewardsUiState, RewardsEvent> {
             history: [
                 HistoryEntry(
                     id: "1",
-                    title: "Big Mac Meal",
+                    title: "Signature Stack Meal",
                     subtitle: "Yesterday",
                     points: "+150",
                     isPositive: true,
@@ -81,7 +81,7 @@ final class RewardsStateRobot: BaseStateRobot<RewardsUiState, RewardsEvent> {
             history: [
                 HistoryEntry(
                     id: "1",
-                    title: "Big Mac Meal",
+                    title: "Signature Stack Meal",
                     subtitle: "Yesterday",
                     points: "+150",
                     isPositive: true,
@@ -103,7 +103,7 @@ final class RewardsStateRobot: BaseStateRobot<RewardsUiState, RewardsEvent> {
             vaultSpecials: [
                 VaultSpecial(
                     id: "1",
-                    title: "Double Quarter",
+                    title: "Twin Patty Melt",
                     pointsCost: "3000 PTS",
                     imageUrl: "",
                     tag: "LIMITED",

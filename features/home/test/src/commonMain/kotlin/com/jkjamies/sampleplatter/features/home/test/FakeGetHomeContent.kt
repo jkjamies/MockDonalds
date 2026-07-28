@@ -34,7 +34,7 @@ class FakeGetHomeContent(
                 ctaText = "Order Now",
             ),
             recentCravings = listOf(
-                Craving(id = "1", title = "Big Mac", subtitle = "Classic", imageUrl = ""),
+                Craving(id = "1", title = "Signature Stack", subtitle = "Classic", imageUrl = ""),
             ),
             exploreItems = listOf(
                 ExploreItem(id = "1", icon = "star", title = "Deals", subtitle = "Save more"),
