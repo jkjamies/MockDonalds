@@ -6,7 +6,7 @@ private let tags = HomeTestTags.shared
 
 @CircuitInject(HomeScreen.self, HomeUiState.self)
 struct HomeView: View {
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     let state: HomeUiState
 
@@ -14,20 +14,20 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: MockDimens.spacingXxxl) {
+            VStack(alignment: .leading, spacing: PlatterDimens.spacingXxxl) {
                 greetingSection
                 heroBanner
                 recentCravingsSection
                 exploreSection
-                Spacer().frame(height: MockDimens.spacingXl)
+                Spacer().frame(height: PlatterDimens.spacingXl)
             }
-            .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: isLandscape))
+            .padding(.bottom, PlatterDimens.adaptiveBottomBarPadding(isLandscape: isLandscape))
         }
         .background(colors.background)
     }
 
     private var greetingSection: some View {
-        VStack(alignment: .leading, spacing: MockDimens.spacingXs) {
+        VStack(alignment: .leading, spacing: PlatterDimens.spacingXs) {
             Text("GOOD EVENING, GOURMET")
                 .font(.caption)
                 .fontWeight(.bold)
@@ -38,14 +38,14 @@ struct HomeView: View {
                 .foregroundColor(colors.onSurface)
                 .accessibilityIdentifier(tags.USER_NAME)
         }
-        .padding(.horizontal, MockDimens.spacingXl)
+        .padding(.horizontal, PlatterDimens.spacingXl)
     }
 
     @ViewBuilder
     private var heroBanner: some View {
         if let hero = state.heroPromotion {
             Color.clear
-                .frame(height: MockDimens.adaptiveHeroHeight(isLandscape: isLandscape))
+                .frame(height: PlatterDimens.adaptiveHeroHeight(isLandscape: isLandscape))
                 .overlay {
                     AsyncImage(
                         url: URL(string: hero.imageUrl),
@@ -88,13 +88,13 @@ struct HomeView: View {
     private func heroOverlayContent(
         hero: HeroPromotion
     ) -> some View {
-        VStack(alignment: .leading, spacing: MockDimens.spacingLg) {
+        VStack(alignment: .leading, spacing: PlatterDimens.spacingLg) {
             Text(hero.tag)
                 .font(.caption2)
                 .fontWeight(.bold)
                 .foregroundColor(colors.onSecondaryTag)
-                .padding(.horizontal, MockDimens.spacingMd)
-                .padding(.vertical, MockDimens.spacingXs)
+                .padding(.horizontal, PlatterDimens.spacingMd)
+                .padding(.vertical, PlatterDimens.spacingXs)
                 .background(colors.secondary)
                 .clipShape(Capsule())
 
@@ -118,8 +118,8 @@ struct HomeView: View {
                     .font(.caption)
                     .fontWeight(.bold)
                     .foregroundColor(colors.onPrimaryButton)
-                    .padding(.horizontal, MockDimens.spacingXxl)
-                    .padding(.vertical, MockDimens.spacingLg)
+                    .padding(.horizontal, PlatterDimens.spacingXxl)
+                    .padding(.vertical, PlatterDimens.spacingLg)
                     .background(
                         LinearGradient(
                             colors: [
@@ -130,19 +130,19 @@ struct HomeView: View {
                             endPoint: .trailing
                         )
                     )
-                    .cornerRadius(MockDimens.radiusSm)
+                    .cornerRadius(PlatterDimens.radiusSm)
                 }
             )
             .accessibilityIdentifier(tags.HERO_CTA_BUTTON)
-            .padding(.top, MockDimens.spacingLg)
+            .padding(.top, PlatterDimens.spacingLg)
         }
-        .padding(MockDimens.spacingXxl)
+        .padding(PlatterDimens.spacingXxl)
     }
 
     @ViewBuilder
     private var recentCravingsSection: some View {
         if !state.recentCravings.isEmpty {
-            VStack(alignment: .leading, spacing: MockDimens.spacingXl) {
+            VStack(alignment: .leading, spacing: PlatterDimens.spacingXl) {
                 HStack {
                     Text("Recent Cravings")
                         .font(.title3)
@@ -154,10 +154,10 @@ struct HomeView: View {
                         .fontWeight(.bold)
                         .foregroundColor(colors.secondary)
                 }
-                .padding(.horizontal, MockDimens.spacingXl)
+                .padding(.horizontal, PlatterDimens.spacingXl)
 
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: MockDimens.spacingXl) {
+                    HStack(spacing: PlatterDimens.spacingXl) {
                         ForEach(
                             Array(state.recentCravings.enumerated()),
                             id: \.offset
@@ -179,7 +179,7 @@ struct HomeView: View {
                             )
                         }
                     }
-                    .padding(.horizontal, MockDimens.spacingXl)
+                    .padding(.horizontal, PlatterDimens.spacingXl)
                 }
             }
             .accessibilityIdentifier(tags.RECENT_CRAVINGS_SECTION)
@@ -189,7 +189,7 @@ struct HomeView: View {
     @ViewBuilder
     private var exploreSection: some View {
         if !state.exploreItems.isEmpty {
-            VStack(alignment: .leading, spacing: MockDimens.spacingXl) {
+            VStack(alignment: .leading, spacing: PlatterDimens.spacingXl) {
                 Text("Explore")
                     .font(.title3)
                     .fontWeight(.bold)
@@ -198,7 +198,7 @@ struct HomeView: View {
                 exploreBentoGrid
                 exploreListItems
             }
-            .padding(.horizontal, MockDimens.spacingXl)
+            .padding(.horizontal, PlatterDimens.spacingXl)
             .accessibilityIdentifier(tags.EXPLORE_SECTION)
         }
     }
@@ -206,7 +206,7 @@ struct HomeView: View {
     private var exploreBentoGrid: some View {
         let gridCount = isLandscape ? 3 : 2
         let gridItems = Array(state.exploreItems.prefix(gridCount))
-        return HStack(spacing: MockDimens.spacingLg) {
+        return HStack(spacing: PlatterDimens.spacingLg) {
             ForEach(
                 Array(gridItems.enumerated()),
                 id: \.offset
@@ -234,10 +234,10 @@ struct HomeView: View {
             Array(state.exploreItems.dropFirst(gridCount).enumerated()),
             id: \.offset
         ) { _, item in
-            HStack(spacing: MockDimens.spacingLg) {
+            HStack(spacing: PlatterDimens.spacingLg) {
                 Circle()
                     .fill(colors.surfaceContainerHighest)
-                    .frame(width: MockDimens.iconLg, height: MockDimens.iconLg)
+                    .frame(width: PlatterDimens.iconLg, height: PlatterDimens.iconLg)
                     .overlay(Text(item.icon))
                 VStack(alignment: .leading) {
                     Text(item.title)
@@ -256,9 +256,9 @@ struct HomeView: View {
                         colors.onSurface.opacity(0.3)
                     )
             }
-            .padding(MockDimens.spacingXl)
+            .padding(PlatterDimens.spacingXl)
             .background(colors.surfaceContainerLow)
-            .cornerRadius(MockDimens.radiusMd)
+            .cornerRadius(PlatterDimens.radiusMd)
             .accessibilityIdentifier(
                 "\(tags.EXPLORE_ITEM)-\(item.id)"
             )
@@ -272,7 +272,7 @@ struct HomeView: View {
 }
 
 struct CravingCard: View {
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
     let title: String
     let subtitle: String
     let imageUrl: String
@@ -290,7 +290,7 @@ struct CravingCard: View {
                     colors.surfaceContainerHigh
                 }
             )
-            .frame(width: MockDimens.cardWidth, height: MockDimens.cardHeight)
+            .frame(width: PlatterDimens.cardWidth, height: PlatterDimens.cardHeight)
             .clipped()
 
             HStack {
@@ -308,7 +308,7 @@ struct CravingCard: View {
                 Spacer()
                 Circle()
                     .fill(colors.surfaceContainerHighest)
-                    .frame(width: MockDimens.iconMd, height: MockDimens.iconMd)
+                    .frame(width: PlatterDimens.iconMd, height: PlatterDimens.iconMd)
                     .overlay(
                         Text("+")
                             .fontWeight(.bold)
@@ -317,15 +317,15 @@ struct CravingCard: View {
             }
             .padding(20)
         }
-        .frame(width: MockDimens.cardWidth)
+        .frame(width: PlatterDimens.cardWidth)
         .background(colors.surfaceContainerLow)
-        .cornerRadius(MockDimens.radiusMd)
+        .cornerRadius(PlatterDimens.radiusMd)
         .onTapGesture(perform: onTap)
     }
 }
 
 struct BentoCard: View {
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
     let icon: String
     let title: String
     let subtitle: String
@@ -349,9 +349,9 @@ struct BentoCard: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(height: MockDimens.thumbnailHeight)
-        .padding(MockDimens.spacingXl)
+        .frame(height: PlatterDimens.thumbnailHeight)
+        .padding(PlatterDimens.spacingXl)
         .background(colors.surfaceContainerLow)
-        .cornerRadius(MockDimens.radiusMd)
+        .cornerRadius(PlatterDimens.radiusMd)
     }
 }

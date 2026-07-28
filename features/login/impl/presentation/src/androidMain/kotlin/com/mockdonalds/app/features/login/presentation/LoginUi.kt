@@ -48,8 +48,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.mockdonalds.app.core.theme.MockDimens
-import com.mockdonalds.app.core.theme.MockDonaldsTheme
+import com.mockdonalds.app.core.theme.PlatterDimens
+import com.mockdonalds.app.core.theme.SamplePlatterTheme
 import com.mockdonalds.app.core.theme.isCompactHeight
 import com.mockdonalds.app.features.login.api.navigation.LoginScreen
 import com.mockdonalds.app.features.login.api.ui.LoginTestTags
@@ -100,7 +100,7 @@ fun LoginUi(state: LoginUiState, modifier: Modifier = Modifier) {
                 .fillMaxSize()
                 .statusBarsPadding()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = MockDimens.SpacingXxl, vertical = MockDimens.SpacingXl),
+                .padding(horizontal = PlatterDimens.SpacingXxl, vertical = PlatterDimens.SpacingXl),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // Close Button
@@ -131,7 +131,7 @@ fun LoginUi(state: LoginUiState, modifier: Modifier = Modifier) {
             // Drag Handle
             Box(
                 modifier = Modifier
-                    .padding(vertical = MockDimens.SpacingSm)
+                    .padding(vertical = PlatterDimens.SpacingSm)
                     .width(48.dp)
                     .height(6.dp)
                     .clip(RoundedCornerShape(50))
@@ -139,13 +139,13 @@ fun LoginUi(state: LoginUiState, modifier: Modifier = Modifier) {
                     .testTag(LoginTestTags.DRAG_HANDLE),
             )
 
-            Spacer(modifier = Modifier.height(MockDimens.SpacingXl))
+            Spacer(modifier = Modifier.height(PlatterDimens.SpacingXl))
 
             if (landscape) {
                 // Two-column: branding left, form + social right
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingXxl),
+                    horizontalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingXxl),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Box(
@@ -160,7 +160,7 @@ fun LoginUi(state: LoginUiState, modifier: Modifier = Modifier) {
                     Column(
                         modifier = Modifier.weight(1f),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXl),
+                        verticalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingXl),
                     ) {
                         LoginForm(state = state, onSignInClick = { showSignInDialog = true })
                         OrDivider()
@@ -168,27 +168,27 @@ fun LoginUi(state: LoginUiState, modifier: Modifier = Modifier) {
                     }
                 }
             } else {
-                Spacer(modifier = Modifier.height(MockDimens.SpacingMd))
+                Spacer(modifier = Modifier.height(PlatterDimens.SpacingMd))
 
                 BrandingSection(
                     logoUrl = state.logoUrl,
                     modifier = Modifier.testTag(LoginTestTags.BRANDING),
                 )
 
-                Spacer(modifier = Modifier.height(MockDimens.SpacingXxxl))
+                Spacer(modifier = Modifier.height(PlatterDimens.SpacingXxxl))
 
                 LoginForm(state = state, onSignInClick = { showSignInDialog = true })
 
-                Spacer(modifier = Modifier.height(MockDimens.SpacingXxxl))
+                Spacer(modifier = Modifier.height(PlatterDimens.SpacingXxxl))
 
                 OrDivider()
 
-                Spacer(modifier = Modifier.height(MockDimens.SpacingXxxl))
+                Spacer(modifier = Modifier.height(PlatterDimens.SpacingXxxl))
 
                 SocialButtons(state = state)
             }
 
-            Spacer(modifier = Modifier.height(MockDimens.SpacingXxl))
+            Spacer(modifier = Modifier.height(PlatterDimens.SpacingXxl))
         }
     }
 }
@@ -198,16 +198,16 @@ private fun BrandingSection(logoUrl: String, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
+        verticalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingLg),
     ) {
         AsyncImage(
             model = logoUrl,
-            contentDescription = "MockDonalds Logo",
+            contentDescription = "SamplePlatter Logo",
             contentScale = ContentScale.Fit,
             modifier = Modifier.size(64.dp),
         )
         Text(
-            text = "MockDonalds",
+            text = "SamplePlatter",
             style = MaterialTheme.typography.headlineLarge.copy(
                 fontWeight = FontWeight.Black,
                 fontStyle = FontStyle.Italic,
@@ -220,9 +220,9 @@ private fun BrandingSection(logoUrl: String, modifier: Modifier = Modifier) {
 
 @Composable
 private fun LoginForm(state: LoginUiState, onSignInClick: () -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg)) {
+    Column(verticalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingLg)) {
         // Email Field
-        Column(verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingSm)) {
+        Column(verticalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingSm)) {
             Text(
                 text = "EMAIL ADDRESS",
                 style = MaterialTheme.typography.labelSmall.copy(
@@ -230,7 +230,7 @@ private fun LoginForm(state: LoginUiState, onSignInClick: () -> Unit) {
                     letterSpacing = 2.sp,
                 ),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-                modifier = Modifier.padding(start = MockDimens.SpacingXs),
+                modifier = Modifier.padding(start = PlatterDimens.SpacingXs),
             )
             TextField(
                 value = state.email,
@@ -243,7 +243,7 @@ private fun LoginForm(state: LoginUiState, onSignInClick: () -> Unit) {
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 singleLine = true,
-                shape = RoundedCornerShape(MockDimens.RadiusMd),
+                shape = RoundedCornerShape(PlatterDimens.RadiusMd),
                 colors = TextFieldDefaults.colors(
                     unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
@@ -258,7 +258,7 @@ private fun LoginForm(state: LoginUiState, onSignInClick: () -> Unit) {
             )
         }
 
-        Spacer(modifier = Modifier.height(MockDimens.SpacingSm))
+        Spacer(modifier = Modifier.height(PlatterDimens.SpacingSm))
 
         // Sign In Button
         Button(
@@ -269,7 +269,7 @@ private fun LoginForm(state: LoginUiState, onSignInClick: () -> Unit) {
                 .fillMaxWidth()
                 .height(64.dp)
                 .testTag(LoginTestTags.SIGN_IN_BUTTON),
-            shape = RoundedCornerShape(MockDimens.RadiusMd),
+            shape = RoundedCornerShape(PlatterDimens.RadiusMd),
         ) {
             Box(
                 modifier = Modifier
@@ -278,7 +278,7 @@ private fun LoginForm(state: LoginUiState, onSignInClick: () -> Unit) {
                         Brush.horizontalGradient(
                             listOf(
                                 MaterialTheme.colorScheme.primary,
-                                MockDonaldsTheme.extendedColors.primaryDark,
+                                SamplePlatterTheme.extendedColors.primaryDark,
                             ),
                         ),
                     ),
@@ -290,7 +290,7 @@ private fun LoginForm(state: LoginUiState, onSignInClick: () -> Unit) {
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = (-0.5).sp,
                     ),
-                    color = MockDonaldsTheme.extendedColors.onPrimaryButton,
+                    color = SamplePlatterTheme.extendedColors.onPrimaryButton,
                 )
             }
         }
@@ -314,7 +314,7 @@ private fun OrDivider() {
                 letterSpacing = 3.sp,
             ),
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
-            modifier = Modifier.padding(horizontal = MockDimens.SpacingLg),
+            modifier = Modifier.padding(horizontal = PlatterDimens.SpacingLg),
         )
         HorizontalDivider(
             modifier = Modifier.weight(1f),
@@ -327,7 +327,7 @@ private fun OrDivider() {
 private fun SocialButtons(state: LoginUiState) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
+        horizontalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingLg),
     ) {
         SocialButton(
             label = "GOOGLE",
@@ -350,13 +350,13 @@ private fun SocialButton(
     Box(
         modifier = modifier
             .height(56.dp)
-            .clip(RoundedCornerShape(MockDimens.RadiusMd))
+            .clip(RoundedCornerShape(PlatterDimens.RadiusMd))
             .background(MaterialTheme.colorScheme.surfaceContainerHighest)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
+            horizontalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingMd),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(

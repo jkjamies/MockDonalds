@@ -7,7 +7,7 @@ private let tags = RecentsTestTags.shared
 @CircuitInject(RecentsScreen.self, RecentsUiState.self)
 struct RecentsView: View {
     let state: RecentsUiState
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     private var isLandscape: Bool { verticalSizeClass == .compact }
@@ -29,7 +29,7 @@ struct RecentsView: View {
                 }
             } else if let successState = state as? RecentsUiState.Success {
                 ScrollView {
-                    VStack(spacing: MockDimens.spacingMd) {
+                    VStack(spacing: PlatterDimens.spacingMd) {
                         ForEach(successState.items, id: \.id) { item in
                             RecentItemCard(item: item)
                                 .onTapGesture {
@@ -37,8 +37,8 @@ struct RecentsView: View {
                                 }
                         }
                     }
-                    .padding(MockDimens.spacingMd)
-                    .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: isLandscape))
+                    .padding(PlatterDimens.spacingMd)
+                    .padding(.bottom, PlatterDimens.adaptiveBottomBarPadding(isLandscape: isLandscape))
                 }
                 .accessibilityIdentifier(tags.LIST)
             }
@@ -51,7 +51,7 @@ struct RecentsView: View {
     }
 
     private var emptyStateView: some View {
-        VStack(spacing: MockDimens.spacingLg) {
+        VStack(spacing: PlatterDimens.spacingLg) {
             Image(systemName: "info.circle")
                 .resizable()
                 .scaledToFit()
@@ -67,7 +67,7 @@ struct RecentsView: View {
                 .font(.body)
                 .foregroundColor(colors.onSurfaceVariant)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, MockDimens.spacingXl)
+                .padding(.horizontal, PlatterDimens.spacingXl)
         }
         .accessibilityIdentifier(tags.EMPTY)
     }
@@ -75,11 +75,11 @@ struct RecentsView: View {
 
 struct RecentItemCard: View {
     let item: RecentItem
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
     private let tags = RecentsTestTags.shared
 
     var body: some View {
-        HStack(spacing: MockDimens.spacingMd) {
+        HStack(spacing: PlatterDimens.spacingMd) {
             Group {
                 if let urlString = item.imageUrl, let url = URL(string: urlString) {
                     AsyncImage(url: url) { phase in
@@ -99,7 +99,7 @@ struct RecentItemCard: View {
                 }
             }
             .frame(width: 64, height: 64)
-            .cornerRadius(MockDimens.radiusSm)
+            .cornerRadius(PlatterDimens.radiusSm)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.name)
@@ -117,9 +117,9 @@ struct RecentItemCard: View {
 
             Spacer()
         }
-        .padding(MockDimens.spacingMd)
+        .padding(PlatterDimens.spacingMd)
         .background(colors.surfaceContainerHighest)
-        .cornerRadius(MockDimens.radiusMd)
+        .cornerRadius(PlatterDimens.radiusMd)
         .accessibilityIdentifier("\(tags.ITEM)-\(item.id)")
     }
 }

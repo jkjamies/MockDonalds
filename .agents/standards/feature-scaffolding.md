@@ -172,12 +172,12 @@ struct {Feature}View: View {
     var body: some View {
         ScrollView {
             if isLandscape {
-                HStack(alignment: .top, spacing: MockDimens.spacingXl) { /* ... */ }
+                HStack(alignment: .top, spacing: PlatterDimens.spacingXl) { /* ... */ }
             } else {
                 VStack { /* portrait layout */ }
             }
         }
-        .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: isLandscape))
+        .padding(.bottom, PlatterDimens.adaptiveBottomBarPadding(isLandscape: isLandscape))
     }
 }
 ```
@@ -212,7 +212,7 @@ is {Feature}Screen -> "{feature}"
 "{feature}" -> {Feature}Screen
 ```
 
-**Tab navigation (MockDonaldsApp.swift)** -- if this is a tab:
+**Tab navigation (SamplePlatterApp.swift)** -- if this is a tab:
 ```swift
 CircuitContent(screen: {Feature}Screen.shared)
     .tabItem { Label("{Feature}", systemImage: "star") }

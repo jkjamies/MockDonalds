@@ -7,7 +7,7 @@ private let tags = WelcomeTestTags.shared
 @CircuitInject(WelcomeScreen.self, WelcomeUiState.self)
 struct WelcomeView: View {
     let state: WelcomeUiState
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
 
     var body: some View {
         VStack(spacing: 0) {
@@ -20,7 +20,7 @@ struct WelcomeView: View {
                 .frame(width: 100, height: 100)
                 .accessibilityIdentifier(tags.LOGO)
 
-            Spacer().frame(height: MockDimens.spacingXxl)
+            Spacer().frame(height: PlatterDimens.spacingXxl)
 
             Text("Welcome!")
                 .font(.system(size: 32, weight: .black))
@@ -28,7 +28,7 @@ struct WelcomeView: View {
                 .foregroundColor(colors.onSurface)
                 .accessibilityIdentifier(tags.TITLE)
 
-            Spacer().frame(height: MockDimens.spacingMd)
+            Spacer().frame(height: PlatterDimens.spacingMd)
 
             Text("You're all set")
                 .font(.body)
@@ -54,14 +54,14 @@ struct WelcomeView: View {
                                 endPoint: .trailing
                             )
                         )
-                        .cornerRadius(MockDimens.radiusMd)
+                        .cornerRadius(PlatterDimens.radiusMd)
                 }
             )
             .accessibilityIdentifier(tags.CONTINUE_BUTTON)
 
-            Spacer().frame(height: MockDimens.spacingXxl)
+            Spacer().frame(height: PlatterDimens.spacingXxl)
         }
-        .padding(.horizontal, MockDimens.spacingXxl)
+        .padding(.horizontal, PlatterDimens.spacingXxl)
         .background(colors.surfaceContainerLow)
         .navigationBarBackButtonHidden(true)
     }

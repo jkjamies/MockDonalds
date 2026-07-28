@@ -7,7 +7,7 @@ private let tags = NutritionTestTags.shared
 @CircuitInject(NutritionScreen.self, NutritionUiState.self)
 struct NutritionView: View {
     let state: NutritionUiState
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
     @State private var canGoBack: Bool = false
 
     var body: some View {

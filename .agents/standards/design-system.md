@@ -5,32 +5,32 @@ Unified design system across Android (Compose) and iOS (SwiftUI) with light/dark
 ## Theme Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         Theme Stack                                  │
-│                                                                      │
-│  ┌─────────────────────────────┐  ┌──────────────────────────────┐  │
-│  │     Kotlin (Compose)        │  │      Swift (SwiftUI)         │  │
-│  │                             │  │                              │  │
-│  │  MockDonaldsTheme { }       │  │  .mockDonaldsTheme()         │  │
-│  │  ├── MaterialTheme          │  │  ├── MockDonaldsColorScheme  │  │
-│  │  │   ├── colorScheme        │  │  │   ├── @Environment       │  │
-│  │  │   └── typography         │  │  │   │   (\.colorScheme)     │  │
-│  │  │       (Epilogue+Manrope) │  │  │   └── System fonts        │  │
-│  │  ├── ExtendedColors         │  │  ├── MockDimens enum         │  │
-│  │  │   (CompositionLocal)     │  │  │   (matching Kotlin vals)  │  │
-│  │  └── MockDimens object      │  │  └── AdaptiveLayout ext     │  │
-│  │      (spacing, radii, sizes)│  │      (orientation tokens)    │  │
-│  └─────────────────────────────┘  └──────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                               Theme Stack                               │
+│                                                                         │
+│  ┌───────────────────────────────┐  ┌────────────────────────────────┐  │
+│  │        Kotlin (Compose)       │  │        Swift (SwiftUI)         │  │
+│  │                               │  │                                │  │
+│  │  SamplePlatterTheme { }       │  │  .samplePlatterTheme()         │  │
+│  │  ├── MaterialTheme            │  │  ├── SamplePlatterColorScheme  │  │
+│  │  │   ├── colorScheme          │  │  │   ├── @Environment          │  │
+│  │  │   └── typography           │  │  │   │   (\.colorScheme)       │  │
+│  │  │       (Epilogue+Manrope)   │  │  │   └── System fonts          │  │
+│  │  ├── ExtendedColors           │  │  ├── PlatterDimens enum        │  │
+│  │  │   (CompositionLocal)       │  │  │   (matching Kotlin vals)    │  │
+│  │  └── PlatterDimens object     │  │  └── AdaptiveLayout ext        │  │
+│  │      (spacing, radii, sizes)  │  │      (orientation tokens)      │  │
+│  └───────────────────────────────┘  └────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
 | Layer | Kotlin (Compose) | Swift (SwiftUI) |
 |-------|------------------|-----------------|
-| **Color schemes** | `darkColorScheme()` / `lightColorScheme()` via `isSystemInDarkTheme()` | `MockDonaldsColorScheme` resolved via `@Environment(\.colorScheme)` |
-| **Extended colors** | `MockDonaldsExtendedColors` via `CompositionLocal` | Part of `MockDonaldsColorScheme` struct |
-| **Design tokens** | `MockDimens` object (spacing, radii, sizes) | `MockDimens` enum (matching values) |
-| **Typography** | `MockDonaldsTypography()` -- Epilogue (headlines) + Manrope (body) | System fonts (SwiftUI) |
-| **Theme provider** | `MockDonaldsTheme { }` composable wrapping content | `.mockDonaldsTheme()` modifier at app root |
+| **Color schemes** | `darkColorScheme()` / `lightColorScheme()` via `isSystemInDarkTheme()` | `SamplePlatterColorScheme` resolved via `@Environment(\.colorScheme)` |
+| **Extended colors** | `SamplePlatterExtendedColors` via `CompositionLocal` | Part of `SamplePlatterColorScheme` struct |
+| **Design tokens** | `PlatterDimens` object (spacing, radii, sizes) | `PlatterDimens` enum (matching values) |
+| **Typography** | `SamplePlatterTypography()` -- Epilogue (headlines) + Manrope (body) | System fonts (SwiftUI) |
+| **Theme provider** | `SamplePlatterTheme { }` composable wrapping content | `.samplePlatterTheme()` modifier at app root |
 
 ## Color System
 
@@ -46,7 +46,7 @@ Brand colors (red, yellow) are constant across modes. Surface and text colors ad
 
 Extended colors (`primaryDark`, `onPrimaryButton`, `secondaryLight`, etc.) handle brand gradients and accent text that don't map to Material 3 color roles.
 
-## Design Tokens (MockDimens)
+## Design Tokens (PlatterDimens)
 
 Spacing, corner radii, and component sizes are centralized -- no magic numbers in UI files:
 
@@ -58,21 +58,21 @@ Sizes:    HeroHeight(480) CardWidth(288) CardHeight(176) IconLg(48) IconMd(40)
 
 ## Usage
 
-**Kotlin** -- colors via `MaterialTheme.colorScheme.*` and `MockDonaldsTheme.extendedColors.*`, tokens via `MockDimens.*`:
+**Kotlin** -- colors via `MaterialTheme.colorScheme.*` and `SamplePlatterTheme.extendedColors.*`, tokens via `PlatterDimens.*`:
 ```kotlin
 Text(
     color = MaterialTheme.colorScheme.onSurface,
-    modifier = Modifier.padding(MockDimens.SpacingXl),
+    modifier = Modifier.padding(PlatterDimens.SpacingXl),
 )
-// Extended: MockDonaldsTheme.extendedColors.primaryDark
+// Extended: SamplePlatterTheme.extendedColors.primaryDark
 ```
 
-**Swift** -- colors via `@Environment(\.mockDonaldsColors)`, tokens via `MockDimens.*`:
+**Swift** -- colors via `@Environment(\.samplePlatterColors)`, tokens via `PlatterDimens.*`:
 ```swift
-@Environment(\.mockDonaldsColors) private var colors
+@Environment(\.samplePlatterColors) private var colors
 // ...
 Text("Hello").foregroundColor(colors.onSurface)
-    .padding(MockDimens.spacingXl)
+    .padding(PlatterDimens.spacingXl)
 ```
 
 ## Landscape & Adaptive Layout
@@ -91,7 +91,7 @@ All screens support both portrait and landscape orientations with a "compress ve
 ```kotlin
 val windowSizeClass = calculateWindowSizeClass(activity)
 CompositionLocalProvider(LocalWindowSizeClass provides windowSizeClass) {
-    MockDonaldsTheme { /* ... */ }
+    SamplePlatterTheme { /* ... */ }
 }
 ```
 
@@ -137,7 +137,7 @@ private fun setContentWith(state: HomeUiState, landscape: Boolean = false) {
     rule.setContent {
         CompositionLocalProvider(
             LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(size),
-        ) { MockDonaldsTheme { HomeUi(state = state) } }
+        ) { SamplePlatterTheme { HomeUi(state = state) } }
     }
 }
 ```
@@ -155,10 +155,10 @@ func createLandscapeView() -> some View {
 
 ```
 core/theme/.../Color.kt              -- Light + dark color palettes, extended brand colors
-core/theme/.../Theme.kt              -- Dual ColorScheme, CompositionLocal, MockDonaldsTheme composable
-core/theme/.../MockDimens.kt         -- Spacing, radii, component size tokens
+core/theme/.../Theme.kt              -- Dual ColorScheme, CompositionLocal, SamplePlatterTheme composable
+core/theme/.../PlatterDimens.kt         -- Spacing, radii, component size tokens
 core/theme/.../Type.kt               -- Typography (Epilogue + Manrope font families)
 core/theme/.../AdaptiveLayout.kt     -- WindowSizeClass, landscape detection, adaptive tokens (Android)
-iosApp/.../Theme/MockDonaldsTheme.swift  -- iOS color scheme, dimens, environment key
+iosApp/.../Theme/SamplePlatterTheme.swift  -- iOS color scheme, dimens, environment key
 iosApp/.../Theme/AdaptiveLayout.swift    -- Adaptive dimension tokens (iOS)
 ```

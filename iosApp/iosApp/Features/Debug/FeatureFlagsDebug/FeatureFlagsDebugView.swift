@@ -8,7 +8,7 @@ private let tags = FeatureFlagsDebugTestTags.shared
 @CircuitInject(FeatureFlagsDebugScreen.self, FeatureFlagsDebugUiState.self)
 struct FeatureFlagsDebugView: View {
     let state: FeatureFlagsDebugUiState
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
 
     var body: some View {
         Group {
@@ -23,12 +23,12 @@ struct FeatureFlagsDebugView: View {
                 }
             } else {
                 ScrollView {
-                    LazyVStack(spacing: MockDimens.spacingSm) {
+                    LazyVStack(spacing: PlatterDimens.spacingSm) {
                         ForEach(state.rows, id: \.key) { row in
                             FeatureFlagCard(row: row)
                         }
                     }
-                    .padding(MockDimens.spacingMd)
+                    .padding(PlatterDimens.spacingMd)
                 }
                 .accessibilityIdentifier(tags.FLAG_LIST)
             }
@@ -43,7 +43,7 @@ struct FeatureFlagsDebugView: View {
 
 private struct FeatureFlagCard: View {
     let row: FeatureFlagRow
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
 
     var body: some View {
         HStack {
@@ -65,9 +65,9 @@ private struct FeatureFlagCard: View {
                 .labelsHidden()
                 .disabled(true)
         }
-        .padding(MockDimens.spacingLg)
+        .padding(PlatterDimens.spacingLg)
         .background(colors.surfaceContainerHighest)
-        .cornerRadius(MockDimens.radiusMd)
+        .cornerRadius(PlatterDimens.radiusMd)
         .accessibilityIdentifier("\(tags.FLAG_ROW)-\(row.key)")
     }
 

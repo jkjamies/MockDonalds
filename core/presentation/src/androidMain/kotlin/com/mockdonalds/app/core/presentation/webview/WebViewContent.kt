@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import com.mockdonalds.app.core.presentation.webview.internal.MockDonaldsWebViewClient
+import com.mockdonalds.app.core.presentation.webview.internal.SamplePlatterWebViewClient
 import com.mockdonalds.app.core.presentation.webview.internal.WebViewErrorView
 import com.mockdonalds.app.core.presentation.webview.internal.WebViewLoadingIndicator
 
@@ -46,7 +46,7 @@ fun WebViewContent(
         WebView(context).apply {
             settings.javaScriptEnabled = allowJs
             settings.domStorageEnabled = allowJs
-            webViewClient = MockDonaldsWebViewClient(
+            webViewClient = SamplePlatterWebViewClient(
                 initialHost = initialUri.host,
                 initialScheme = initialUri.scheme,
                 context = context,

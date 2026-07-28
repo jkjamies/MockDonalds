@@ -61,7 +61,7 @@ The plugin splits Compose deliberately, and modules must not re-declare them:
 
 Everything in `commonMain` is compiled for `iosX64`, `iosArm64` and `iosSimulatorArm64` on every build, so a Compose UI dependency there pulls the material3/foundation/ui stack into the iOS framework for code iOS can never reach. `ForbiddenPatternsTest` → "Compose runtime, not Compose UI, in shared code" fails the build on a Compose UI import in `commonMain` or `iosMain`.
 
-`core:theme` follows the same rule: its Kotlin sources live in `androidMain` because every consumer is an `androidMain`/`androidDeviceTest` file and iOS uses `iosApp/iosApp/Theme/MockDonaldsTheme.swift`. Only `composeResources/font/` stays in `commonMain`, where the generated `Res` accessor is emitted.
+`core:theme` follows the same rule: its Kotlin sources live in `androidMain` because every consumer is an `androidMain`/`androidDeviceTest` file and iOS uses `iosApp/iosApp/Theme/SamplePlatterTheme.swift`. Only `composeResources/font/` stays in `commonMain`, where the generated `Res` accessor is emitted.
 
 ## mockdonalds.kmp.library
 

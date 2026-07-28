@@ -39,7 +39,7 @@ struct CircuitNavigator<Content: View>: View {
             content()
                 .navigationDestination(for: ScreenEntry.self) { entry in
                     CircuitContent(screen: entry.screen)
-                        .mockDonaldsTheme()
+                        .samplePlatterTheme()
                         .id(entry.id)
                 }
         }
@@ -50,10 +50,10 @@ struct CircuitNavigator<Content: View>: View {
             if let rootScreen = stateManager.flowRootScreen {
                 NavigationStack(path: $stateManager.flowPath) {
                     CircuitContent(screen: rootScreen)
-                        .mockDonaldsTheme()
+                        .samplePlatterTheme()
                         .navigationDestination(for: ScreenEntry.self) { entry in
                             CircuitContent(screen: entry.screen)
-                                .mockDonaldsTheme()
+                                .samplePlatterTheme()
                                 .id(entry.id)
                         }
                 }

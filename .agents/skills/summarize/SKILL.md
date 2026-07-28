@@ -39,7 +39,7 @@ Read these in order of priority:
 ### Project Overview
 
 ```
-# Project Summary: MockDonalds
+# Project Summary: SamplePlatter
 
 ## What This Is
 [1-2 sentences: KMP app, platforms, purpose]

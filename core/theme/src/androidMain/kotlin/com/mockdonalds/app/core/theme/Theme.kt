@@ -55,7 +55,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Immutable
-data class MockDonaldsExtendedColors(
+data class SamplePlatterExtendedColors(
     val primaryDark: Color,
     val primaryDarker: Color,
     val onPrimaryButton: Color,
@@ -64,7 +64,7 @@ data class MockDonaldsExtendedColors(
     val secondaryLight: Color,
 )
 
-private val DarkExtendedColors = MockDonaldsExtendedColors(
+private val DarkExtendedColors = SamplePlatterExtendedColors(
     primaryDark = PrimaryDark,
     primaryDarker = PrimaryDarker,
     onPrimaryButton = OnPrimaryButton,
@@ -73,7 +73,7 @@ private val DarkExtendedColors = MockDonaldsExtendedColors(
     secondaryLight = DarkSecondaryLight,
 )
 
-private val LightExtendedColors = MockDonaldsExtendedColors(
+private val LightExtendedColors = SamplePlatterExtendedColors(
     primaryDark = PrimaryDark,
     primaryDarker = PrimaryDarker,
     onPrimaryButton = OnPrimaryButton,
@@ -82,26 +82,26 @@ private val LightExtendedColors = MockDonaldsExtendedColors(
     secondaryLight = LightSecondaryLight,
 )
 
-val LocalMockDonaldsExtendedColors = staticCompositionLocalOf { DarkExtendedColors }
+val LocalSamplePlatterExtendedColors = staticCompositionLocalOf { DarkExtendedColors }
 
 @Composable
-fun MockDonaldsTheme(
+fun SamplePlatterTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
     val extendedColors = if (darkTheme) DarkExtendedColors else LightExtendedColors
 
-    CompositionLocalProvider(LocalMockDonaldsExtendedColors provides extendedColors) {
+    CompositionLocalProvider(LocalSamplePlatterExtendedColors provides extendedColors) {
         MaterialTheme(
             colorScheme = colorScheme,
-            typography = MockDonaldsTypography(),
+            typography = SamplePlatterTypography(),
             content = content,
         )
     }
 }
 
-object MockDonaldsTheme {
-    val extendedColors: MockDonaldsExtendedColors
-        @Composable get() = LocalMockDonaldsExtendedColors.current
+object SamplePlatterTheme {
+    val extendedColors: SamplePlatterExtendedColors
+        @Composable get() = LocalSamplePlatterExtendedColors.current
 }

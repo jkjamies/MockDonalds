@@ -12,7 +12,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.mockdonalds.app.core.theme.LocalWindowSizeClass
-import com.mockdonalds.app.core.theme.MockDonaldsTheme
+import com.mockdonalds.app.core.theme.SamplePlatterTheme
 import com.mockdonalds.app.features.home.api.ui.HomeTestTags
 
 class HomeUiRobot(private val rule: ComposeContentTestRule) {
@@ -26,7 +26,7 @@ class HomeUiRobot(private val rule: ComposeContentTestRule) {
             CompositionLocalProvider(
                 LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(size),
             ) {
-                MockDonaldsTheme { HomeUi(state = state) }
+                SamplePlatterTheme { HomeUi(state = state) }
             }
         }
     }

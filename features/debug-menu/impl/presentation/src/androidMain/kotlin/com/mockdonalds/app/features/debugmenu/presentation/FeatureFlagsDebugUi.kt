@@ -27,7 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import com.mockdonalds.app.core.theme.MockDimens
+import com.mockdonalds.app.core.theme.PlatterDimens
 import com.mockdonalds.app.features.debugmenu.api.navigation.FeatureFlagsDebugScreen
 import com.mockdonalds.app.features.debugmenu.api.ui.FeatureFlagsDebugTestTags
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -74,8 +74,8 @@ fun FeatureFlagsDebugUi(state: FeatureFlagsDebugUiState, modifier: Modifier = Mo
                     .fillMaxSize()
                     .padding(paddingValues)
                     .testTag(FeatureFlagsDebugTestTags.FLAG_LIST),
-                contentPadding = PaddingValues(MockDimens.SpacingMd),
-                verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingSm),
+                contentPadding = PaddingValues(PlatterDimens.SpacingMd),
+                verticalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingSm),
             ) {
                 items(state.rows, key = { it.key }) { row ->
                     FeatureFlagCard(row)
@@ -92,10 +92,10 @@ private fun FeatureFlagCard(row: FeatureFlagRow) {
             .fillMaxWidth()
             .testTag("${FeatureFlagsDebugTestTags.FLAG_ROW}-${row.key}"),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        shape = RoundedCornerShape(MockDimens.RadiusMd),
+        shape = RoundedCornerShape(PlatterDimens.RadiusMd),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(MockDimens.SpacingLg),
+            modifier = Modifier.fillMaxWidth().padding(PlatterDimens.SpacingLg),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {

@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Design Tokens (Spacing, Radii, Sizes)
 
-enum MockDimens {
+enum PlatterDimens {
     // Spacing scale
     static let spacingXs: CGFloat = 4
     static let spacingSm: CGFloat = 8
@@ -30,7 +30,7 @@ enum MockDimens {
 
 // MARK: - Color System (Light + Dark)
 
-struct MockDonaldsColorScheme {
+struct SamplePlatterColorScheme {
     // Brand
     let primary: Color
     let secondary: Color
@@ -61,7 +61,7 @@ struct MockDonaldsColorScheme {
     let secondaryLight: Color
 }
 
-private let darkScheme = MockDonaldsColorScheme(
+private let darkScheme = SamplePlatterColorScheme(
     primary: Color(hex: 0xC1272D),
     secondary: Color(hex: 0xF2B705),
     onPrimary: Color(hex: 0xFFFFFF),
@@ -83,7 +83,7 @@ private let darkScheme = MockDonaldsColorScheme(
     secondaryLight: Color(hex: 0xF8E3A0)
 )
 
-private let lightScheme = MockDonaldsColorScheme(
+private let lightScheme = SamplePlatterColorScheme(
     primary: Color(hex: 0xC1272D),
     secondary: Color(hex: 0xF2B705),
     onPrimary: .white,
@@ -107,37 +107,37 @@ private let lightScheme = MockDonaldsColorScheme(
 
 // MARK: - Environment Key
 
-private struct MockDonaldsColorsKey: EnvironmentKey {
-    static let defaultValue: MockDonaldsColorScheme = darkScheme
+private struct SamplePlatterColorsKey: EnvironmentKey {
+    static let defaultValue: SamplePlatterColorScheme = darkScheme
 }
 
 extension EnvironmentValues {
-    var mockDonaldsColors: MockDonaldsColorScheme {
-        get { self[MockDonaldsColorsKey.self] }
-        set { self[MockDonaldsColorsKey.self] = newValue }
+    var samplePlatterColors: SamplePlatterColorScheme {
+        get { self[SamplePlatterColorsKey.self] }
+        set { self[SamplePlatterColorsKey.self] = newValue }
     }
 }
 
 // MARK: - Theme Modifier
 
-struct MockDonaldsTheme: ViewModifier {
+struct SamplePlatterTheme: ViewModifier {
     @Environment(\.colorScheme) private var colorScheme
 
     func body(content: Content) -> some View {
         content
-            .environment(\.mockDonaldsColors, colorScheme == .dark ? darkScheme : lightScheme)
+            .environment(\.samplePlatterColors, colorScheme == .dark ? darkScheme : lightScheme)
     }
 }
 
 extension View {
-    func mockDonaldsTheme() -> some View {
-        modifier(MockDonaldsTheme())
+    func samplePlatterTheme() -> some View {
+        modifier(SamplePlatterTheme())
     }
 }
 
 // MARK: - Static Convenience (backward compat during migration)
 
-enum MockDonaldsColors {
+enum SamplePlatterColors {
     // Brand
     static let primary = Color(hex: 0xC1272D)
     static let secondary = Color(hex: 0xF2B705)

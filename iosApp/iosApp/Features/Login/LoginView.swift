@@ -7,7 +7,7 @@ private let tags = LoginTestTags.shared
 @CircuitInject(LoginScreen.self, LoginUiState.self)
 struct LoginView: View {
     let state: LoginUiState
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     @State private var showSignInDialog = false
     private var isLandscape: Bool { verticalSizeClass == .compact }
@@ -20,10 +20,10 @@ struct LoginView: View {
 
                 if isLandscape {
                     // Two-column: branding left, form + social right
-                    HStack(alignment: .center, spacing: MockDimens.spacingXxl) {
+                    HStack(alignment: .center, spacing: PlatterDimens.spacingXxl) {
                         brandingSection
                             .frame(maxWidth: .infinity)
-                        VStack(spacing: MockDimens.spacingXl) {
+                        VStack(spacing: PlatterDimens.spacingXl) {
                             loginForm
                             orDivider
                             socialButtons
@@ -37,9 +37,9 @@ struct LoginView: View {
                     socialButtons
                 }
 
-                Spacer().frame(height: MockDimens.spacingXxl)
+                Spacer().frame(height: PlatterDimens.spacingXxl)
             }
-            .padding(.horizontal, MockDimens.spacingXxl)
+            .padding(.horizontal, PlatterDimens.spacingXxl)
         }
         .background(colors.surfaceContainerLow)
         .alert("Sign In", isPresented: $showSignInDialog) {
@@ -68,19 +68,19 @@ struct LoginView: View {
             )
             .accessibilityIdentifier(tags.CLOSE_BUTTON)
         }
-        .padding(.top, MockDimens.spacingMd)
+        .padding(.top, PlatterDimens.spacingMd)
     }
 
     private var dragHandle: some View {
         RoundedRectangle(cornerRadius: 3)
             .fill(colors.surfaceContainerHighest.opacity(0.4))
             .frame(width: 48, height: 6)
-            .padding(.vertical, MockDimens.spacingSm)
+            .padding(.vertical, PlatterDimens.spacingSm)
             .accessibilityIdentifier(tags.DRAG_HANDLE)
     }
 
     private var brandingSection: some View {
-        VStack(spacing: MockDimens.spacingLg) {
+        VStack(spacing: PlatterDimens.spacingLg) {
             AsyncImage(
                 url: URL(string: state.logoUrl),
                 content: { image in
@@ -93,30 +93,30 @@ struct LoginView: View {
             )
             .frame(width: 64, height: 64)
 
-            Text("MockDonalds")
+            Text("SamplePlatter")
                 .font(.system(size: 32, weight: .black))
                 .italic()
                 .tracking(-1)
                 .foregroundColor(colors.onSurface)
         }
-        .padding(.top, MockDimens.spacingXxl)
-        .padding(.bottom, MockDimens.spacingXxxl)
+        .padding(.top, PlatterDimens.spacingXxl)
+        .padding(.bottom, PlatterDimens.spacingXxxl)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(tags.BRANDING)
     }
 
     private var loginForm: some View {
-        VStack(spacing: MockDimens.spacingLg) {
+        VStack(spacing: PlatterDimens.spacingLg) {
             emailField
 
-            Spacer().frame(height: MockDimens.spacingSm)
+            Spacer().frame(height: PlatterDimens.spacingSm)
 
             signInButton
         }
     }
 
     private var emailField: some View {
-        VStack(alignment: .leading, spacing: MockDimens.spacingSm) {
+        VStack(alignment: .leading, spacing: PlatterDimens.spacingSm) {
             Text("EMAIL ADDRESS")
                 .font(.caption2)
                 .fontWeight(.bold)
@@ -124,7 +124,7 @@ struct LoginView: View {
                 .foregroundColor(
                     colors.onSurface.opacity(0.4)
                 )
-                .padding(.leading, MockDimens.spacingXs)
+                .padding(.leading, PlatterDimens.spacingXs)
 
             TextField(
                 "",
@@ -144,10 +144,10 @@ struct LoginView: View {
             .keyboardType(.emailAddress)
             .autocapitalization(.none)
             .foregroundColor(colors.onSurface)
-            .padding(.horizontal, MockDimens.spacingLg)
+            .padding(.horizontal, PlatterDimens.spacingLg)
             .frame(height: 56)
             .background(colors.surfaceContainerHighest)
-            .cornerRadius(MockDimens.radiusMd)
+            .cornerRadius(PlatterDimens.radiusMd)
             .accessibilityIdentifier(tags.EMAIL_INPUT)
         }
     }
@@ -175,7 +175,7 @@ struct LoginView: View {
                             endPoint: .trailing
                         )
                     )
-                    .cornerRadius(MockDimens.radiusMd)
+                    .cornerRadius(PlatterDimens.radiusMd)
             }
         )
         .accessibilityIdentifier(tags.SIGN_IN_BUTTON)
@@ -196,18 +196,18 @@ struct LoginView: View {
                     colors.onSurface.opacity(0.3)
                 )
                 .fixedSize()
-                .padding(.horizontal, MockDimens.spacingLg)
+                .padding(.horizontal, PlatterDimens.spacingLg)
             Rectangle()
                 .fill(
                     colors.onSurfaceVariant.opacity(0.2)
                 )
                 .frame(height: 1)
         }
-        .padding(.vertical, MockDimens.spacingXxxl)
+        .padding(.vertical, PlatterDimens.spacingXxxl)
     }
 
     private var socialButtons: some View {
-        HStack(spacing: MockDimens.spacingLg) {
+        HStack(spacing: PlatterDimens.spacingLg) {
             SocialLoginButton(
                 icon: "\u{F8FF}",
                 label: "APPLE",
@@ -234,7 +234,7 @@ struct LoginView: View {
 }
 
 struct SocialLoginButton: View {
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
     let icon: String
     let label: String
     let action: () -> Void
@@ -243,7 +243,7 @@ struct SocialLoginButton: View {
         Button(
             action: action,
             label: {
-                HStack(spacing: MockDimens.spacingMd) {
+                HStack(spacing: PlatterDimens.spacingMd) {
                     Text(icon)
                         .font(.title3)
                         .foregroundColor(colors.onSurface)
@@ -256,7 +256,7 @@ struct SocialLoginButton: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
                 .background(colors.surfaceContainerHighest)
-                .cornerRadius(MockDimens.radiusMd)
+                .cornerRadius(PlatterDimens.radiusMd)
             }
         )
     }

@@ -12,8 +12,8 @@ class AppBuildConfigTest : BehaviorSpec({
         val config: AppBuildConfig = AppBuildConfigImpl()
 
         When("reading each field") {
-            Then("appName is MockDonalds") {
-                config.appName shouldBe "MockDonalds"
+            Then("appName is SamplePlatter") {
+                config.appName shouldBe "SamplePlatter"
             }
 
             Then("appId is a non-empty identifier") {

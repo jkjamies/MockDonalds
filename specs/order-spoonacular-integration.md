@@ -142,7 +142,7 @@ OrderContent
 MenuItem
   ├── id: String                     // Spoonacular item id, stringified
   ├── title: String                  // e.g. "Big Mac"
-  ├── restaurantChain: String        // e.g. "McDonald's"
+  ├── restaurantChain: String        // e.g. "Sample Platter"
   ├── imageUrl: String               // Spoonacular CDN URL
   ├── servingSize: String?           // e.g. "1 sandwich (214g)" — sometimes null
   └── categoryId: String             // FK to CategoryPreview.id; assigned at mapper time
@@ -238,7 +238,7 @@ The `x-api-key` header is set on this client's `defaultRequest` — scope is per
 
 ### Akamai Exception (documented in spec + AGENTS.md)
 
-> Spoonacular is a third-party reference integration. It does **not** route through Akamai. The "Akamai required in all envs" rule applies to first-party MockDonalds backend services only — third-party reference APIs (Spoonacular, etc.) call the public endpoint directly. This exception must be documented in `features/order/impl/data/AGENTS.md`.
+> Spoonacular is a third-party reference integration. It does **not** route through Akamai. The "Akamai required in all envs" rule applies to first-party SamplePlatter backend services only — third-party reference APIs (Spoonacular, etc.) call the public endpoint directly. This exception must be documented in `features/order/impl/data/AGENTS.md`.
 
 ---
 

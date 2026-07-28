@@ -10,7 +10,7 @@ final class CategoryDetailStateRobot: BaseStateRobot<CategoryDetailUiState, Cate
                 MenuItem(
                     id: "1",
                     title: "Big Mac",
-                    restaurantChain: "McDonald's",
+                    restaurantChain: "Sample Platter",
                     imageUrl: "",
                     servingSize: "214g",
                     categoryId: "burgers"
@@ -29,7 +29,7 @@ final class CategoryDetailStateRobot: BaseStateRobot<CategoryDetailUiState, Cate
                 MenuItem(
                     id: "1",
                     title: "Big Mac",
-                    restaurantChain: "McDonald's",
+                    restaurantChain: "Sample Platter",
                     imageUrl: "",
                     servingSize: "214g",
                     categoryId: "burgers"

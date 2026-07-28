@@ -6,7 +6,7 @@ import io.kotest.core.spec.style.BehaviorSpec
 /**
  * Enforces the SQLDelight ownership boundary.
  *
- * MockDonalds uses the Slack / Cash App pattern: a single application-wide
+ * SamplePlatter uses the Slack / Cash App pattern: a single application-wide
  * `AppDatabase` aggregated in `composeApp`, with each feature contributing its
  * own `.sq` schemas inside `features/{name}/impl/data/sqldelight/`. The umbrella
  * `core:persistence` module owns shared infrastructure (`DatabaseDriverFactory`

@@ -6,14 +6,14 @@ private let tags = OrderTestTags.shared
 
 @CircuitInject(OrderScreen.self, OrderUiState.self)
 struct OrderView: View {
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
 
     let state: OrderUiState
 
     var body: some View {
         ZStack(alignment: .bottom) {
             ScrollView {
-                VStack(spacing: MockDimens.spacingLg) {
+                VStack(spacing: PlatterDimens.spacingLg) {
                     ForEach(state.categoryPreviews, id: \.id) { preview in
                         CategoryPreviewCardView(
                             name: preview.name,
@@ -29,9 +29,9 @@ struct OrderView: View {
                         )
                     }
                 }
-                .padding(.horizontal, MockDimens.spacingXl)
-                .padding(.vertical, MockDimens.spacingXl)
-                .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: false))
+                .padding(.horizontal, PlatterDimens.spacingXl)
+                .padding(.vertical, PlatterDimens.spacingXl)
+                .padding(.bottom, PlatterDimens.adaptiveBottomBarPadding(isLandscape: false))
             }
 
             cartBar
@@ -52,7 +52,7 @@ struct OrderView: View {
 }
 
 struct CategoryPreviewCardView: View {
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
 
     let name: String
     let firstItemImageUrl: String?
@@ -89,26 +89,26 @@ struct CategoryPreviewCardView: View {
             Text(name)
                 .font(.system(size: 28, weight: .black))
                 .foregroundColor(.white)
-                .padding(MockDimens.spacingXl)
+                .padding(PlatterDimens.spacingXl)
         }
-        .cornerRadius(MockDimens.radiusMd)
+        .cornerRadius(PlatterDimens.radiusMd)
         .contentShape(Rectangle())
         .onTapGesture(perform: onTap)
     }
 }
 
 struct OrderCartBarView: View {
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
 
     let cart: CartSummary
     var onTap: () -> Void = {}
 
     var body: some View {
         HStack {
-            HStack(spacing: MockDimens.spacingMd) {
+            HStack(spacing: PlatterDimens.spacingMd) {
                 Circle()
                     .fill(colors.primaryDarker.opacity(0.2))
-                    .frame(width: MockDimens.spacingXxl, height: MockDimens.spacingXxl)
+                    .frame(width: PlatterDimens.spacingXxl, height: PlatterDimens.spacingXxl)
                     .overlay(
                         Text("\(cart.itemCount)")
                             .font(.caption)
@@ -122,7 +122,7 @@ struct OrderCartBarView: View {
                     .tracking(2)
             }
             Spacer()
-            HStack(spacing: MockDimens.spacingSm) {
+            HStack(spacing: PlatterDimens.spacingSm) {
                 Text(cart.total)
                     .font(.title3)
                     .fontWeight(.black)
@@ -132,11 +132,11 @@ struct OrderCartBarView: View {
                     .foregroundColor(colors.onPrimaryButton)
             }
         }
-        .padding(.horizontal, MockDimens.spacingXl)
-        .padding(.vertical, MockDimens.spacingLg)
+        .padding(.horizontal, PlatterDimens.spacingXl)
+        .padding(.vertical, PlatterDimens.spacingLg)
         .background(colors.primary)
-        .cornerRadius(MockDimens.radiusMd)
-        .padding(.horizontal, MockDimens.spacingXl)
+        .cornerRadius(PlatterDimens.radiusMd)
+        .padding(.horizontal, PlatterDimens.spacingXl)
         .padding(.bottom, 88)
         .onTapGesture(perform: onTap)
     }

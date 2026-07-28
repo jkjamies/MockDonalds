@@ -12,7 +12,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.mockdonalds.app.core.theme.LocalWindowSizeClass
-import com.mockdonalds.app.core.theme.MockDonaldsTheme
+import com.mockdonalds.app.core.theme.SamplePlatterTheme
 import com.mockdonalds.app.features.login.api.ui.LoginTestTags
 
 class LoginUiRobot(private val rule: ComposeContentTestRule) {
@@ -26,7 +26,7 @@ class LoginUiRobot(private val rule: ComposeContentTestRule) {
             CompositionLocalProvider(
                 LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(size),
             ) {
-                MockDonaldsTheme { LoginUi(state = state) }
+                SamplePlatterTheme { LoginUi(state = state) }
             }
         }
     }
@@ -71,7 +71,7 @@ class LoginUiRobot(private val rule: ComposeContentTestRule) {
 
     private fun assertBrandingDisplayed() {
         rule.onNodeWithTag(LoginTestTags.BRANDING).assertIsDisplayed()
-        rule.onNodeWithText("MockDonalds").assertIsDisplayed()
+        rule.onNodeWithText("SamplePlatter").assertIsDisplayed()
     }
 
     private fun assertEmailInputDisplayed() {

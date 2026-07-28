@@ -33,7 +33,7 @@ All tests use Kotest BehaviorSpec (Given/Then style) and scan the project with `
 | testing/ | TestFileNamingTest | Test classes end with Test/Tests. All specs extend BehaviorSpec. No runBlocking, runTest, or UnconfinedTestDispatcher in tests. |
 | testing/ | TestModuleCoverageTest | Every feature has a dedicated test module. Every use case Impl, presenter, and RepositoryImpl has a corresponding test file. Every feature TestTags referenced in at least one e2e test. |
 | testing/ | TestBoundaryTest | Feature UI tests must not use real Navigator or call resetRoot()/goTo(). navint-tests must not import feature-level UiRobot/StateRobot or from impl/domain or impl/data. e2e-tests must not import from feature test/ modules or impl/domain or impl/data. Journey tests in testing/e2e-tests/suites/ end with JourneyTest. Benchmark files in testing/benchmarks/ end with Benchmark. |
-| testing/ | UiTestConventionsTest | Every *Ui.kt has a *UiTest in androidDeviceTest. Robot pattern: UiTest -> UiRobot -> StateRobot. UiRobots wrap in MockDonaldsTheme, provide LocalWindowSizeClass, have landscape methods. TestTags objects in api module. |
+| testing/ | UiTestConventionsTest | Every *Ui.kt has a *UiTest in androidDeviceTest. Robot pattern: UiTest -> UiRobot -> StateRobot. UiRobots wrap in SamplePlatterTheme, provide LocalWindowSizeClass, have landscape methods. TestTags objects in api module. |
 
 ## Running
 

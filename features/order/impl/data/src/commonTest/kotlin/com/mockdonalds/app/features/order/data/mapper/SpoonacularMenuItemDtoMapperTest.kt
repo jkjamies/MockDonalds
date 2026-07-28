@@ -10,7 +10,7 @@ class SpoonacularMenuItemDtoMapperTest : BehaviorSpec({
                 val dto = SpoonacularMenuItemDto(
                     id = 12345,
                     title = "Big Mac",
-                    restaurantChain = "McDonald's",
+                    restaurantChain = "Sample Platter",
                     image = "https://img/big-mac.jpg",
                     servingSize = "1 sandwich (214g)",
                 )
@@ -19,7 +19,7 @@ class SpoonacularMenuItemDtoMapperTest : BehaviorSpec({
 
                 item.id shouldBe "12345"
                 item.title shouldBe "Big Mac"
-                item.restaurantChain shouldBe "McDonald's"
+                item.restaurantChain shouldBe "Sample Platter"
                 item.imageUrl shouldBe "https://img/big-mac.jpg"
                 item.servingSize shouldBe "1 sandwich (214g)"
                 item.categoryId shouldBe "burgers"

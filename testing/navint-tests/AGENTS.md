@@ -44,7 +44,7 @@ navint-tests depends on:
   core/auth/api                — AuthManager interface
   core/analytics/test          — FakeAnalyticsDispatcher, FakeTrackAnalyticsEvent
   core/centerpost              — CenterPost interactors
-  core/theme                   — MockDonaldsTheme, design tokens
+  core/theme                   — SamplePlatterTheme, design tokens
   core/test-fixtures           — FakeAuthManager, TestCenterPostDispatchers
 
 navint-tests does NOT depend on:

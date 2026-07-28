@@ -23,35 +23,35 @@ class DeepLinkParserTest : BehaviorSpec({
     Given("a deep link parser") {
 
         When("parsing a valid single-segment URI with a tab root") {
-            val result = parser.parse("mockdonalds://app/home")
+            val result = parser.parse("sampleplatter://app/home")
             Then("it should return the matching screen") {
                 result shouldBe listOf(HomeScreen)
             }
         }
 
         When("parsing a multi-segment URI with tab root and nested screen") {
-            val result = parser.parse("mockdonalds://app/home/profile")
+            val result = parser.parse("sampleplatter://app/home/profile")
             Then("it should return screens in order") {
                 result shouldBe listOf(HomeScreen, ProfileScreen)
             }
         }
 
         When("parsing a URI with unknown segments") {
-            val result = parser.parse("mockdonalds://app/home/unknown/profile")
+            val result = parser.parse("sampleplatter://app/home/unknown/profile")
             Then("it should skip unknown segments") {
                 result shouldBe listOf(HomeScreen, ProfileScreen)
             }
         }
 
         When("parsing a URI with no matching segments") {
-            val result = parser.parse("mockdonalds://app/unknown")
+            val result = parser.parse("sampleplatter://app/unknown")
             Then("it should return null") {
                 result shouldBe null
             }
         }
 
         When("parsing an empty path") {
-            val result = parser.parse("mockdonalds://app/")
+            val result = parser.parse("sampleplatter://app/")
             Then("it should return null") {
                 result shouldBe null
             }

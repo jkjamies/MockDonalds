@@ -33,7 +33,7 @@ Mode: `buildUponDefaultConfig = true` — only overrides rules that need tuning
 ### Compose-Specific Exception
 
 `FunctionNaming` ignores `@Composable` annotated functions, allowing PascalCase naming
-(e.g., `HomeUi`, `MockDonaldsBottomNavigation`) per Compose conventions.
+(e.g., `HomeUi`, `SamplePlatterBottomNavigation`) per Compose conventions.
 
 ## Auto-Fix Commands (Kotlin)
 

@@ -72,7 +72,7 @@ import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.mockdonalds.app.core.theme.LocalWindowSizeClass
-import com.mockdonalds.app.core.theme.MockDonaldsTheme
+import com.mockdonalds.app.core.theme.SamplePlatterTheme
 import com.mockdonalds.app.features.{name}.api.ui.{Feature}TestTags
 
 class {Feature}UiRobot(private val rule: ComposeContentTestRule) {
@@ -86,7 +86,7 @@ class {Feature}UiRobot(private val rule: ComposeContentTestRule) {
             CompositionLocalProvider(
                 LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(size),
             ) {
-                MockDonaldsTheme { {Feature}Ui(state = state) }
+                SamplePlatterTheme { {Feature}Ui(state = state) }
             }
         }
     }

@@ -8,18 +8,18 @@ private let tags = BuildConfigDebugTestTags.shared
 @CircuitInject(BuildConfigDebugScreen.self, BuildConfigDebugUiState.self)
 struct BuildConfigDebugView: View {
     let state: BuildConfigDebugUiState
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
 
     var body: some View {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: MockDimens.spacingSm) {
+            LazyVStack(alignment: .leading, spacing: PlatterDimens.spacingSm) {
                 ForEach(BuildConfigFieldGroup.allCases, id: \.self) { group in
                     let fieldsInGroup = state.fields.filter { $0.group == group.kotlinValue }
                     if !fieldsInGroup.isEmpty {
                         Text(group.displayName)
                             .font(.subheadline)
                             .foregroundColor(colors.onSurfaceVariant)
-                            .padding(.top, MockDimens.spacingMd)
+                            .padding(.top, PlatterDimens.spacingMd)
                             .accessibilityIdentifier("\(tags.GROUP_HEADER)-\(group.displayName)")
                         ForEach(fieldsInGroup, id: \.name) { field in
                             FieldRow(field: field)
@@ -27,7 +27,7 @@ struct BuildConfigDebugView: View {
                     }
                 }
             }
-            .padding(MockDimens.spacingMd)
+            .padding(PlatterDimens.spacingMd)
             .accessibilityIdentifier(tags.FIELD_LIST)
         }
         .background(colors.background)
@@ -39,7 +39,7 @@ struct BuildConfigDebugView: View {
 
 private struct FieldRow: View {
     let field: BuildConfigField
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
 
     var body: some View {
         HStack {
@@ -56,9 +56,9 @@ private struct FieldRow: View {
                 .font(.caption)
                 .foregroundColor(colors.onSurfaceVariant)
         }
-        .padding(MockDimens.spacingLg)
+        .padding(PlatterDimens.spacingLg)
         .background(colors.surfaceContainerHighest.opacity(0.6))
-        .cornerRadius(MockDimens.radiusMd)
+        .cornerRadius(PlatterDimens.radiusMd)
         .accessibilityIdentifier("\(tags.FIELD_ROW)-\(field.name)")
     }
 }

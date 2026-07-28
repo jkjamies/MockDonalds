@@ -33,8 +33,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import coil3.compose.AsyncImage
-import com.mockdonalds.app.core.theme.MockDimens
-import com.mockdonalds.app.core.theme.MockDonaldsTheme
+import com.mockdonalds.app.core.theme.PlatterDimens
+import com.mockdonalds.app.core.theme.SamplePlatterTheme
 import com.mockdonalds.app.core.theme.adaptiveBottomBarPadding
 import com.mockdonalds.app.features.order.api.domain.MenuItem
 import com.mockdonalds.app.features.order.api.navigation.CategoryDetailScreen
@@ -61,12 +61,12 @@ fun CategoryDetailUi(state: CategoryDetailUiState, modifier: Modifier = Modifier
 
             LazyColumn(
                 contentPadding = PaddingValues(
-                    start = MockDimens.SpacingXl,
-                    end = MockDimens.SpacingXl,
-                    top = MockDimens.SpacingLg,
-                    bottom = adaptiveBottomBarPadding() + MockDimens.CartBarOffset,
+                    start = PlatterDimens.SpacingXl,
+                    end = PlatterDimens.SpacingXl,
+                    top = PlatterDimens.SpacingLg,
+                    bottom = adaptiveBottomBarPadding() + PlatterDimens.CartBarOffset,
                 ),
-                verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXxl),
+                verticalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingXxl),
             ) {
                 items(state.items, key = { it.id }) { item ->
                     MenuItemCard(
@@ -99,12 +99,12 @@ private fun CategoryDetailTopBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(MockDimens.SpacingXl),
+            .padding(PlatterDimens.SpacingXl),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             modifier = Modifier
-                .size(MockDimens.SpacingXxl)
+                .size(PlatterDimens.SpacingXxl)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                 .clickable { onBackClick() }
@@ -121,7 +121,7 @@ private fun CategoryDetailTopBar(
             text = title,
             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Black),
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(start = MockDimens.SpacingLg),
+            modifier = Modifier.padding(start = PlatterDimens.SpacingLg),
         )
     }
 }
@@ -132,12 +132,12 @@ private fun MenuItemCard(
     onAddToOrder: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd)) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingMd)) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
-                .clip(RoundedCornerShape(MockDimens.RadiusMd))
+                .clip(RoundedCornerShape(PlatterDimens.RadiusMd))
                 .background(MaterialTheme.colorScheme.surfaceContainerLow),
         ) {
             AsyncImage(
@@ -175,13 +175,13 @@ private fun MenuItemCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag("${CategoryDetailTestTags.ADD_TO_ORDER_BUTTON}-${item.id}"),
-            shape = RoundedCornerShape(MockDimens.RadiusSm),
+            shape = RoundedCornerShape(PlatterDimens.RadiusSm),
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                    .padding(vertical = MockDimens.SpacingLg),
+                    .padding(vertical = PlatterDimens.SpacingLg),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(

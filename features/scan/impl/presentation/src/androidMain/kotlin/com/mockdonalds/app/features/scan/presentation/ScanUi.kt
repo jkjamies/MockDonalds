@@ -43,7 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.mockdonalds.app.core.theme.MockDimens
+import com.mockdonalds.app.core.theme.PlatterDimens
 import com.mockdonalds.app.core.theme.adaptiveBottomBarPadding
 import com.mockdonalds.app.core.theme.adaptiveQrCodeSize
 import com.mockdonalds.app.core.theme.isCompactHeight
@@ -66,24 +66,24 @@ fun ScanUi(state: ScanUiState, modifier: Modifier = Modifier) {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
-            .padding(horizontal = MockDimens.SpacingXl)
+            .padding(horizontal = PlatterDimens.SpacingXl)
             .padding(bottom = adaptiveBottomBarPadding())
             .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(if (landscape) MockDimens.SpacingXl else 40.dp),
+        verticalArrangement = Arrangement.spacedBy(if (landscape) PlatterDimens.SpacingXl else 40.dp),
     ) {
         if (landscape) {
             // Two-column layout: QR card left, supplementary right
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingXl),
+                horizontalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingXl),
             ) {
                 Box(modifier = Modifier.weight(1f)) {
                     MemberCard(state = state, qrSize = qrSize)
                 }
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingXl),
+                    verticalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingXl),
                 ) {
                     RewardsProgress(state = state)
                     ActionButtons(state = state)
@@ -105,7 +105,7 @@ private fun MemberCard(state: ScanUiState, qrSize: androidx.compose.ui.unit.Dp) 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(MockDimens.RadiusMd))
+                .clip(RoundedCornerShape(PlatterDimens.RadiusMd))
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
                 .testTag(ScanTestTags.MEMBER_CARD),
         ) {
@@ -113,36 +113,36 @@ private fun MemberCard(state: ScanUiState, qrSize: androidx.compose.ui.unit.Dp) 
                 modifier = Modifier
                     .size(128.dp)
                     .align(Alignment.TopEnd)
-                    .offset(x = MockDimens.SpacingXxxl, y = -MockDimens.SpacingXxxl)
+                    .offset(x = PlatterDimens.SpacingXxxl, y = -PlatterDimens.SpacingXxxl)
                     .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape)
-                    .blur(MockDimens.SpacingXxxl),
+                    .blur(PlatterDimens.SpacingXxxl),
             )
             Box(
                 modifier = Modifier
                     .size(128.dp)
                     .align(Alignment.BottomStart)
-                    .offset(x = -MockDimens.SpacingXxxl, y = MockDimens.SpacingXxxl)
+                    .offset(x = -PlatterDimens.SpacingXxxl, y = PlatterDimens.SpacingXxxl)
                     .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f), CircleShape)
-                    .blur(MockDimens.SpacingXxxl),
+                    .blur(PlatterDimens.SpacingXxxl),
             )
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(MockDimens.SpacingXxl),
+                    .padding(PlatterDimens.SpacingXxl),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
                     text = "MOCK REWARDS",
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(bottom = MockDimens.SpacingSm),
+                    modifier = Modifier.padding(bottom = PlatterDimens.SpacingSm),
                 )
                 Text(
                     text = "Scan at the counter to earn & redeem",
                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = MockDimens.SpacingXxl),
+                    modifier = Modifier.padding(bottom = PlatterDimens.SpacingXxl),
                 )
 
                 val infiniteTransition = rememberInfiniteTransition()
@@ -177,7 +177,7 @@ private fun MemberCard(state: ScanUiState, qrSize: androidx.compose.ui.unit.Dp) 
                             }
                             drawContent()
                         }
-                        .padding(MockDimens.SpacingXs),
+                        .padding(PlatterDimens.SpacingXs),
                 ) {
                     AsyncImage(
                         model = member.qrCodeUrl,
@@ -188,8 +188,8 @@ private fun MemberCard(state: ScanUiState, qrSize: androidx.compose.ui.unit.Dp) 
                 }
 
                 Row(
-                    modifier = Modifier.padding(top = MockDimens.SpacingXxl),
-                    horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
+                    modifier = Modifier.padding(top = PlatterDimens.SpacingXxl),
+                    horizontalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingMd),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(text = "⭐", color = MaterialTheme.colorScheme.secondary)
@@ -209,7 +209,7 @@ private fun RewardsProgress(state: ScanUiState) {
     state.rewardsProgress?.let { progress ->
         Column(
             modifier = Modifier.fillMaxWidth().testTag(ScanTestTags.REWARDS_PROGRESS),
-            verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
+            verticalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingLg),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -226,7 +226,7 @@ private fun RewardsProgress(state: ScanUiState) {
                 )
                 Row(
                     verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingXs),
+                    horizontalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingXs),
                 ) {
                     Text(
                         text = "${progress.currentPoints}",
@@ -277,17 +277,17 @@ private fun RewardsProgress(state: ScanUiState) {
 private fun ActionButtons(state: ScanUiState) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
+        horizontalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingLg),
     ) {
         Button(
             onClick = { state.eventSink(ScanEvent.PayNowClicked) },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-            shape = RoundedCornerShape(MockDimens.RadiusMd),
+            shape = RoundedCornerShape(PlatterDimens.RadiusMd),
             contentPadding = PaddingValues(vertical = 20.dp),
             modifier = Modifier.weight(1f).testTag(ScanTestTags.PAY_NOW_BUTTON),
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
+                horizontalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingMd),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(text = "💳", color = MaterialTheme.colorScheme.secondary)
@@ -302,12 +302,12 @@ private fun ActionButtons(state: ScanUiState) {
         Button(
             onClick = { state.eventSink(ScanEvent.ViewOffersClicked) },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-            shape = RoundedCornerShape(MockDimens.RadiusMd),
+            shape = RoundedCornerShape(PlatterDimens.RadiusMd),
             contentPadding = PaddingValues(vertical = 20.dp),
             modifier = Modifier.weight(1f).testTag(ScanTestTags.VIEW_OFFERS_BUTTON),
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
+                horizontalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingMd),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(text = "🏷️", color = MaterialTheme.colorScheme.secondary)
@@ -326,15 +326,15 @@ private fun ProTip() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(MockDimens.RadiusMd))
+            .clip(RoundedCornerShape(PlatterDimens.RadiusMd))
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .testTag(ScanTestTags.PRO_TIP)
-            .padding(start = MockDimens.SpacingXs)
+            .padding(start = PlatterDimens.SpacingXs)
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .padding(20.dp),
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
+            horizontalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingLg),
             verticalAlignment = Alignment.Top,
         ) {
             Box(
@@ -350,7 +350,7 @@ private fun ProTip() {
                     text = "Pro Tip",
                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(bottom = MockDimens.SpacingXs),
+                    modifier = Modifier.padding(bottom = PlatterDimens.SpacingXs),
                 )
                 Text(
                     text = "Ensure your screen brightness is turned up " +

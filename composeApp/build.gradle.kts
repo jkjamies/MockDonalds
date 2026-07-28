@@ -163,8 +163,8 @@ kotlin {
         }
 
         androidMain.dependencies {
-            // Compose UI is Android-only by design — App.kt, MockDonaldsBottomNavigation.kt
-            // and MockDonaldsIcons.kt are the only Compose UI consumers in this module.
+            // Compose UI is Android-only by design — App.kt, SamplePlatterBottomNavigation.kt
+            // and SamplePlatterIcons.kt are the only Compose UI consumers in this module.
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)

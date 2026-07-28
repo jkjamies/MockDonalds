@@ -24,7 +24,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.mockdonalds.app.core.theme.MockDimens
+import com.mockdonalds.app.core.theme.PlatterDimens
 import com.mockdonalds.app.features.profile.api.navigation.ProfileScreen
 import com.mockdonalds.app.features.profile.api.ui.ProfileTestTags
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -40,10 +40,10 @@ fun ProfileUi(state: ProfileUiState, modifier: Modifier = Modifier) {
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .statusBarsPadding()
-            .padding(MockDimens.SpacingXxl),
+            .padding(PlatterDimens.SpacingXxl),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(modifier = Modifier.height(MockDimens.SpacingXxl))
+        Spacer(modifier = Modifier.height(PlatterDimens.SpacingXxl))
 
         AsyncImage(
             model = state.avatarUrl,
@@ -55,7 +55,7 @@ fun ProfileUi(state: ProfileUiState, modifier: Modifier = Modifier) {
                 .testTag(ProfileTestTags.AVATAR),
         )
 
-        Spacer(modifier = Modifier.height(MockDimens.SpacingXl))
+        Spacer(modifier = Modifier.height(PlatterDimens.SpacingXl))
 
         Text(
             text = state.name,
@@ -65,7 +65,7 @@ fun ProfileUi(state: ProfileUiState, modifier: Modifier = Modifier) {
             modifier = Modifier.testTag(ProfileTestTags.NAME),
         )
 
-        Spacer(modifier = Modifier.height(MockDimens.SpacingSm))
+        Spacer(modifier = Modifier.height(PlatterDimens.SpacingSm))
 
         Text(
             text = state.email,
@@ -74,7 +74,7 @@ fun ProfileUi(state: ProfileUiState, modifier: Modifier = Modifier) {
             modifier = Modifier.testTag(ProfileTestTags.EMAIL),
         )
 
-        Spacer(modifier = Modifier.height(MockDimens.SpacingLg))
+        Spacer(modifier = Modifier.height(PlatterDimens.SpacingLg))
 
         Text(
             text = "${state.tier} \u2022 ${state.points}",
@@ -84,7 +84,7 @@ fun ProfileUi(state: ProfileUiState, modifier: Modifier = Modifier) {
             modifier = Modifier.testTag(ProfileTestTags.TIER_POINTS),
         )
 
-        Spacer(modifier = Modifier.height(MockDimens.SpacingSm))
+        Spacer(modifier = Modifier.height(PlatterDimens.SpacingSm))
 
         Text(
             text = state.memberSince,
@@ -93,7 +93,7 @@ fun ProfileUi(state: ProfileUiState, modifier: Modifier = Modifier) {
             modifier = Modifier.testTag(ProfileTestTags.MEMBER_SINCE),
         )
 
-        Spacer(modifier = Modifier.height(MockDimens.SpacingXxxl))
+        Spacer(modifier = Modifier.height(PlatterDimens.SpacingXxxl))
 
         Button(
             onClick = { state.eventSink(ProfileEvent.LogoutClicked) },

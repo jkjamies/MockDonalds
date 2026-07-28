@@ -20,7 +20,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import com.mockdonalds.app.core.theme.LocalWindowSizeClass
-import com.mockdonalds.app.core.theme.MockDonaldsTheme
+import com.mockdonalds.app.core.theme.SamplePlatterTheme
 import com.mockdonalds.app.core.circuit.TabScreen
 import com.mockdonalds.app.features.home.api.navigation.HomeScreen
 import com.mockdonalds.app.features.login.api.navigation.LoginScreen
@@ -38,7 +38,7 @@ import dev.zacsweers.metro.createGraphFactory
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun MockDonaldsApp(
+fun SamplePlatterApp(
     application: Application,
     windowSizeClass: WindowSizeClass,
     deepLinkIntent: Intent? = null,
@@ -54,7 +54,7 @@ fun MockDonaldsApp(
     CompositionLocalProvider(
         LocalWindowSizeClass provides windowSizeClass,
     ) {
-    MockDonaldsTheme {
+    SamplePlatterTheme {
         val backStack = rememberSaveableBackStack(root = HomeScreen)
         val circuitNavigator = rememberCircuitNavigator(
             backStack = backStack,
@@ -101,11 +101,11 @@ fun MockDonaldsApp(
                 modifier = Modifier.semantics { testTagsAsResourceId = true },
                 bottomBar = {
                     if (currentRoute.isNotEmpty()) {
-                        MockDonaldsBottomNavigation(
+                        SamplePlatterBottomNavigation(
                             currentRoute = currentRoute,
                             onNavigate = { route ->
                                 val target = findTabByTag(route)
-                                    ?: return@MockDonaldsBottomNavigation
+                                    ?: return@SamplePlatterBottomNavigation
                                 navigator.resetRoot(target)
                             },
                         )

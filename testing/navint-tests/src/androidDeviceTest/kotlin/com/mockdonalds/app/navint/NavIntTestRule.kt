@@ -10,7 +10,7 @@ import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.mockdonalds.app.core.theme.LocalWindowSizeClass
-import com.mockdonalds.app.core.theme.MockDonaldsTheme
+import com.mockdonalds.app.core.theme.SamplePlatterTheme
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
@@ -33,7 +33,7 @@ fun ComposeContentTestRule.setNavIntContent(
         CompositionLocalProvider(
             LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(size),
         ) {
-            MockDonaldsTheme {
+            SamplePlatterTheme {
                 val backStack = rememberSaveableBackStack(root = root)
                 val navigator = rememberCircuitNavigator(
                     backStack = backStack,

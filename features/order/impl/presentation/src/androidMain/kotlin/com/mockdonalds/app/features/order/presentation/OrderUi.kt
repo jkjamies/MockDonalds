@@ -32,8 +32,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.mockdonalds.app.core.theme.MockDimens
-import com.mockdonalds.app.core.theme.MockDonaldsTheme
+import com.mockdonalds.app.core.theme.PlatterDimens
+import com.mockdonalds.app.core.theme.SamplePlatterTheme
 import com.mockdonalds.app.core.theme.adaptiveBottomBarPadding
 import com.mockdonalds.app.features.order.api.domain.CartSummary
 import com.mockdonalds.app.features.order.api.domain.CategoryPreview
@@ -53,12 +53,12 @@ fun OrderUi(state: OrderUiState, modifier: Modifier = Modifier) {
                 .fillMaxSize()
                 .statusBarsPadding(),
             contentPadding = PaddingValues(
-                start = MockDimens.SpacingXl,
-                end = MockDimens.SpacingXl,
-                top = MockDimens.SpacingXl,
-                bottom = adaptiveBottomBarPadding() + MockDimens.CartBarOffset,
+                start = PlatterDimens.SpacingXl,
+                end = PlatterDimens.SpacingXl,
+                top = PlatterDimens.SpacingXl,
+                bottom = adaptiveBottomBarPadding() + PlatterDimens.CartBarOffset,
             ),
-            verticalArrangement = Arrangement.spacedBy(MockDimens.SpacingLg),
+            verticalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingLg),
         ) {
             items(state.categoryPreviews, key = { it.id }) { preview ->
                 CategoryPreviewCard(
@@ -91,7 +91,7 @@ private fun CategoryPreviewCard(
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(2f)
-            .clip(RoundedCornerShape(MockDimens.RadiusMd))
+            .clip(RoundedCornerShape(PlatterDimens.RadiusMd))
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .clickable { onTap() },
     ) {
@@ -123,7 +123,7 @@ private fun CategoryPreviewCard(
             color = Color.White,
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(MockDimens.SpacingXl),
+                .padding(PlatterDimens.SpacingXl),
         )
     }
 }
@@ -136,13 +136,13 @@ internal fun OrderCartBar(
 ) {
     Box(
         modifier = modifier
-            .padding(MockDimens.SpacingXl)
-            .padding(bottom = MockDimens.CartBarOffset)
+            .padding(PlatterDimens.SpacingXl)
+            .padding(bottom = PlatterDimens.CartBarOffset)
             .fillMaxWidth()
-            .clip(RoundedCornerShape(MockDimens.RadiusMd))
+            .clip(RoundedCornerShape(PlatterDimens.RadiusMd))
             .background(MaterialTheme.colorScheme.primary)
             .clickable { onClick() }
-            .padding(horizontal = MockDimens.SpacingXl, vertical = MockDimens.SpacingLg),
+            .padding(horizontal = PlatterDimens.SpacingXl, vertical = PlatterDimens.SpacingLg),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -150,14 +150,14 @@ internal fun OrderCartBar(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingMd),
+                horizontalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingMd),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(
                     modifier = Modifier
-                        .size(MockDimens.SpacingXxl)
+                        .size(PlatterDimens.SpacingXxl)
                         .background(
-                            MockDonaldsTheme.extendedColors.primaryDarker.copy(alpha = 0.2f),
+                            SamplePlatterTheme.extendedColors.primaryDarker.copy(alpha = 0.2f),
                             CircleShape,
                         ),
                     contentAlignment = Alignment.Center,
@@ -165,29 +165,29 @@ internal fun OrderCartBar(
                     Text(
                         text = "${cart.itemCount}",
                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MockDonaldsTheme.extendedColors.onPrimaryButton,
+                        color = SamplePlatterTheme.extendedColors.onPrimaryButton,
                     )
                 }
                 Text(
                     text = "${cart.itemCount} ITEMS",
                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MockDonaldsTheme.extendedColors.onPrimaryButton,
+                    color = SamplePlatterTheme.extendedColors.onPrimaryButton,
                     letterSpacing = 2.sp,
                 )
             }
             Row(
-                horizontalArrangement = Arrangement.spacedBy(MockDimens.SpacingSm),
+                horizontalArrangement = Arrangement.spacedBy(PlatterDimens.SpacingSm),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = cart.total,
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Black),
-                    color = MockDonaldsTheme.extendedColors.onPrimaryButton,
+                    color = SamplePlatterTheme.extendedColors.onPrimaryButton,
                 )
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = null,
-                    tint = MockDonaldsTheme.extendedColors.onPrimaryButton,
+                    tint = SamplePlatterTheme.extendedColors.onPrimaryButton,
                 )
             }
         }

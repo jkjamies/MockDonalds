@@ -369,7 +369,7 @@ Module discovery is automatic (`settings.gradle.kts` walks `features/`), but **r
 |---|---|---|
 | is a bottom-nav tab | `composeApp/.../navigation/DeepLinkParser.kt` | add the screen to `tabScreens` |
 | should be deep-linkable | same file, `createDeepLinkParser()` | add `"{path}" to { {Feature}Screen }` |
-| is a tab | `composeApp/src/androidMain/.../MockDonaldsBottomNavigation.kt` | add the nav item |
+| is a tab | `composeApp/src/androidMain/.../SamplePlatterBottomNavigation.kt` | add the nav item |
 | is reachable from More | `features/{name}/impl/presentation/` | contribute a `MoreTabExtension` via `@ContributesIntoSet` (see `features/debug-menu/.../DebugMenuTabExtension.kt`) |
 
 A `TabScreen` also needs `override val tag: String = "{name}"`, and the tag must match the deep-link path segment.

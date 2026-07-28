@@ -8,11 +8,11 @@ private let tags = DebugMenuTestTags.shared
 @CircuitInject(DebugMenuScreen.self, DebugMenuUiState.self)
 struct DebugMenuView: View {
     let state: DebugMenuUiState
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
 
     var body: some View {
         ScrollView {
-            VStack(spacing: MockDimens.spacingMd) {
+            VStack(spacing: PlatterDimens.spacingMd) {
                 ForEach(state.entries, id: \.id) { entry in
                     DebugEntryCard(entry: entry)
                         .onTapGesture {
@@ -20,7 +20,7 @@ struct DebugMenuView: View {
                         }
                 }
             }
-            .padding(MockDimens.spacingMd)
+            .padding(PlatterDimens.spacingMd)
             .accessibilityIdentifier(tags.ENTRY_LIST)
         }
         .background(colors.background)
@@ -32,7 +32,7 @@ struct DebugMenuView: View {
 
 private struct DebugEntryCard: View {
     let entry: DebugMenuEntry
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
 
     var body: some View {
         HStack {
@@ -48,9 +48,9 @@ private struct DebugEntryCard: View {
             Text(">")
                 .foregroundColor(colors.onSurfaceVariant)
         }
-        .padding(MockDimens.spacingLg)
+        .padding(PlatterDimens.spacingLg)
         .background(colors.surfaceContainerHighest)
-        .cornerRadius(MockDimens.radiusMd)
+        .cornerRadius(PlatterDimens.radiusMd)
         .accessibilityIdentifier("\(DebugMenuTestTags.shared.ENTRY_ITEM)-\(entry.id)")
     }
 }

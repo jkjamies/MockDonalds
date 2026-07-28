@@ -2,7 +2,7 @@ import SwiftUI
 import ComposeApp
 
 @main
-struct MockDonaldsApp: App {
+struct SamplePlatterApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @State private var selectedTab = "home"
 
@@ -27,8 +27,8 @@ struct MockDonaldsApp: App {
                             .tabItem { Label("MORE", systemImage: "ellipsis") }
                             .tag(MoreScreen.shared.tag)
                     }
-                    .tint(MockDonaldsColors.secondary)
-                    .mockDonaldsTheme()
+                    .tint(SamplePlatterColors.secondary)
+                    .samplePlatterTheme()
                 }
             }
             .overlay(alignment: .topTrailing) {

@@ -10,7 +10,7 @@ import java.io.File
  * - Every *Ui.kt in androidMain has a corresponding *UiTest in androidDeviceTest
  * - Every *UiTest has a corresponding *UiRobot and *StateRobot
  * - UiRobot classes own a StateRobot (composition, not inheritance)
- * - UiRobot setContent calls wrap in MockDonaldsTheme
+ * - UiRobot setContent calls wrap in SamplePlatterTheme
  * - TestTags objects live alongside their Ui composable
  * - StateRobots extend the shared StateRobot base class
  */
@@ -168,7 +168,7 @@ class UiTestConventionsTest : BehaviorSpec({
     }
 
     Given("theme wrapping") {
-        Then("UiRobot setContent calls should wrap in MockDonaldsTheme") {
+        Then("UiRobot setContent calls should wrap in SamplePlatterTheme") {
             val uiRobotFiles = Konsist.scopeFromProject()
                 .files
                 .filter { it.resideInPath("..androidDeviceTest..") }
@@ -176,12 +176,12 @@ class UiTestConventionsTest : BehaviorSpec({
 
             val violators = uiRobotFiles.filter { file ->
                 val text = file.text
-                text.contains("setContent") && !text.contains("MockDonaldsTheme")
+                text.contains("setContent") && !text.contains("SamplePlatterTheme")
             }
 
             assert(violators.isEmpty()) {
                 val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
-                "UiRobot setContent calls must wrap content in MockDonaldsTheme for accurate rendering:\n$names"
+                "UiRobot setContent calls must wrap content in SamplePlatterTheme for accurate rendering:\n$names"
             }
         }
     }
