@@ -132,10 +132,15 @@ class TestFileNamingTest : BehaviorSpec({
                     val wildcardImport = file.imports.any {
                         it.isWildcard && it.name.startsWith("kotlinx.coroutines.test")
                     }
+                    // Both patterns tolerate whitespace before the paren: Kotlin accepts
+                    // `StandardTestDispatcher ()`, so a literal "...Dispatcher(" substring left a
+                    // third way through — a spaced fully-qualified call, which needs no import and
+                    // so never reached the wildcard branch either.
                     val constructsIt =
                         Regex("""\bStandardTestDispatcher\s*\(""").containsMatchIn(file.text)
                     val fullyQualified =
-                        file.text.contains("kotlinx.coroutines.test.StandardTestDispatcher(")
+                        Regex("""\bkotlinx\.coroutines\.test\.StandardTestDispatcher\s*\(""")
+                            .containsMatchIn(file.text)
 
                     exactImport || fullyQualified || (wildcardImport && constructsIt)
                 }
