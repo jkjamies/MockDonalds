@@ -63,7 +63,7 @@ Never suppress EMULATOR in CI — results will be noise.
 
 ## Adding Tests
 
-1. Benchmark files must end with `Benchmark` and live under `src/main/kotlin/com/mockdonalds/app/benchmarks/`
+1. Benchmark files must end with `Benchmark` and live under `src/main/kotlin/com/jkjamies/sampleplatter/benchmarks/`
 2. Use `MacrobenchmarkRule` + one of the stock metrics (`StartupTimingMetric`, `FrameTimingMetric`, `TraceSectionMetric`)
 3. Drive the app with `UiDevice` / `UiAutomator` — never reference target app classes by name (obfuscation will rename them)
 4. All tests use JUnit4 `@RunWith(AndroidJUnit4::class)`

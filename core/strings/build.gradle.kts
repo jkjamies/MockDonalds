@@ -1,10 +1,10 @@
 plugins {
-    id("mockdonalds.kmp.library")
-    id("mockdonalds.phrase")
+    id("sampleplatter.kmp.library")
+    id("sampleplatter.phrase")
 }
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.core.strings"
+        namespace = "com.jkjamies.sampleplatter.core.strings"
     }
 }

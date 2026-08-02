@@ -1,4 +1,4 @@
-# MockDonalds
+# Sample Platter
 
 Kotlin Multiplatform reference app. Shared Kotlin business logic with native UI per platform: Jetpack Compose UI on Android, native SwiftUI on iOS. iOS uses the Compose _runtime_ (via Molecule) for state management only — not Compose UI for rendering. All iOS views are standard SwiftUI.
 
@@ -41,7 +41,7 @@ core/
   presentation/        — Compose/SwiftUI-facing helpers: `rememberCenterPost`, `collectAsState`, `rememberFlag`/`rememberConfig`, and the Android WebView primitive (`androidMain`; iOS has its own SwiftUI `WebView.swift`)
   remote-config/       — FeatureFlag/RemoteConfig contracts + RemoteConfigProvider (api/), Harness-backed provider (impl/), FakeRemoteConfigProvider (test/)
   strings/             — Android-only `R.string` resources populated by `pullTranslations` (Phrase). iOS reads its own `iosApp/iosApp/Resources/{locale}.lproj/` files.
-  theme/               — MockDonaldsTheme, colors, typography, dimens, AdaptiveLayout. Kotlin sources are `androidMain`-only (Compose UI); iOS uses `iosApp/iosApp/Theme/MockDonaldsTheme.swift`. Only `composeResources/font/` lives in `commonMain`.
+  theme/               — SamplePlatterTheme, colors, typography, dimens, AdaptiveLayout. Kotlin sources are `androidMain`-only (Compose UI); iOS uses `iosApp/iosApp/Theme/SamplePlatterTheme.swift`. Only `composeResources/font/` lives in `commonMain`.
   test-fixtures/       — TestCenterPostDispatchers, KotestProjectConfig, StateRobot base
 ```
 
@@ -145,11 +145,11 @@ xcodebuild test -scheme iOSApp -testPlan E2ETests -destination '...'            
 
 | Plugin | Used By | Adds |
 |--------|---------|------|
-| `mockdonalds.kmp.library` | api modules, single-target core modules | Base KMP setup, Kotest |
-| `mockdonalds.kmp.domain` | impl/domain modules | Metro DI (`@ContributesBinding`) + auto-adds `core:logger:api` to `commonMain` |
-| `mockdonalds.kmp.data` | impl/data modules | Metro DI + kotlinx.serialization + auto-adds `core:logger:api` to `commonMain` |
-| `mockdonalds.kmp.presentation` | impl/presentation modules | Compose Multiplatform + Circuit codegen + auto-adds `core:strings` to `androidMain` and `core:logger:api` to `commonMain` |
-| `mockdonalds.phrase` | `core:strings` | Registers `pullTranslations` Gradle task pulling Phrase translations into Android XML + iOS `.lproj` files |
+| `sampleplatter.kmp.library` | api modules, single-target core modules | Base KMP setup, Kotest |
+| `sampleplatter.kmp.domain` | impl/domain modules | Metro DI (`@ContributesBinding`) + auto-adds `core:logger:api` to `commonMain` |
+| `sampleplatter.kmp.data` | impl/data modules | Metro DI + kotlinx.serialization + auto-adds `core:logger:api` to `commonMain` |
+| `sampleplatter.kmp.presentation` | impl/presentation modules | Compose Multiplatform + Circuit codegen + auto-adds `core:strings` to `androidMain` and `core:logger:api` to `commonMain` |
+| `sampleplatter.phrase` | `core:strings` | Registers `pullTranslations` Gradle task pulling Phrase translations into Android XML + iOS `.lproj` files |
 
 ## Subagent Dispatch (use them)
 

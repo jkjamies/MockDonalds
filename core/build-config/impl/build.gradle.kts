@@ -1,16 +1,16 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
-import com.mockdonalds.buildlogic.BuildVariantResolver
+import com.jkjamies.sampleplatter.buildlogic.BuildVariantResolver
 import java.net.URI
 import java.util.Properties
 
 plugins {
-    id("mockdonalds.kmp.domain")
+    id("sampleplatter.kmp.domain")
     alias(libs.plugins.buildkonfig)
 }
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.core.buildconfig.impl"
+        namespace = "com.jkjamies.sampleplatter.core.buildconfig.impl"
     }
 
     sourceSets {
@@ -55,7 +55,7 @@ val localProperties: Properties = Properties().apply {
 val spoonacularApiKey: String = localProperties.getProperty("spoonacularApiKey", "")
 
 buildkonfig {
-    packageName = "com.mockdonalds.app.core.buildconfig"
+    packageName = "com.jkjamies.sampleplatter.core.buildconfig"
     objectName = "BuildConfig"
     defaultConfigs {
         merged.forEach { (key, value) ->

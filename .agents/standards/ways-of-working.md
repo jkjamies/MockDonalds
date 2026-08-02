@@ -118,7 +118,7 @@ Documentation that drifts from reality is worse than no documentation — it act
 ## How to Add a New Konsist Rule
 
 1. Create a new `BehaviorSpec` in the appropriate category under
-   `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/architecture-check/`
+   `testing/architecture-check/src/test/kotlin/com/jkjamies/sampleplatter/architecture-check/`
 2. Use `Konsist.scopeFromProject()` for project-wide checks
 3. Use `resideInPath("..impl/domain..")` for module-scoped checks
 4. Use `Konsist.scopeFromSourceSet("commonMain", "features..", "domain")` for source-set-scoped checks

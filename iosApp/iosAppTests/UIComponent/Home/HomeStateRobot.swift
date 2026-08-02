@@ -13,7 +13,7 @@ final class HomeStateRobot: BaseStateRobot<HomeUiState, HomeEvent> {
                 ctaText: "Order Now"
             ),
             recentCravings: [
-                Craving(id: "1", title: "Big Mac", subtitle: "Classic", imageUrl: ""),
+                Craving(id: "1", title: "Signature Stack", subtitle: "Classic", imageUrl: ""),
             ],
             exploreItems: [
                 ExploreItem(id: "1", icon: "star", title: "Deals", subtitle: "Save more"),
@@ -28,7 +28,7 @@ final class HomeStateRobot: BaseStateRobot<HomeUiState, HomeEvent> {
             userName: "TestUser",
             heroPromotion: nil,
             recentCravings: [
-                Craving(id: "1", title: "Big Mac", subtitle: "Classic", imageUrl: ""),
+                Craving(id: "1", title: "Signature Stack", subtitle: "Classic", imageUrl: ""),
             ],
             exploreItems: [
                 ExploreItem(id: "1", icon: "star", title: "Deals", subtitle: "Save more"),

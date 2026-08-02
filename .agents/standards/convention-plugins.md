@@ -5,17 +5,17 @@ Convention plugins in `build-logic/convention/` eliminate boilerplate across 20+
 ## Plugin Hierarchy
 
 ```
-mockdonalds.kmp.library (base)
-  ├── mockdonalds.kmp.domain      = library + Metro DI
+sampleplatter.kmp.library (base)
+  ├── sampleplatter.kmp.domain      = library + Metro DI
   │                                 + auto-wires core:logger:api on commonMain
-  ├── mockdonalds.kmp.data        = library + Metro DI + Serialization
+  ├── sampleplatter.kmp.data        = library + Metro DI + Serialization
   │                                 + auto-wires core:logger:api on commonMain
-  └── mockdonalds.kmp.presentation = library + Compose + Metro DI + Circuit codegen + Coil
+  └── sampleplatter.kmp.presentation = library + Compose + Metro DI + Circuit codegen + Coil
                                      + auto-wires core:strings on androidMain
                                      + auto-wires core:logger:api on commonMain
 
-mockdonalds.detekt (applied transitively via library)
-mockdonalds.phrase  (standalone, applied only to core:strings — registers pullTranslations task)
+sampleplatter.detekt (applied transitively via library)
+sampleplatter.phrase  (standalone, applied only to core:strings — registers pullTranslations task)
 ```
 
 ## Critical: What NOT to Do in Feature build.gradle.kts
@@ -23,15 +23,15 @@ mockdonalds.phrase  (standalone, applied only to core:strings — registers pull
 Convention plugins handle nearly everything. Feature `build.gradle.kts` files should be minimal — just the plugin ID and dependencies. Specifically:
 
 - **Do NOT declare `android { namespace = ... }`** — the convention plugin derives it automatically from the module path
-- **Do NOT add test framework dependencies** (Kotest, Turbine, coroutines-test) — provided by `mockdonalds.kmp.library`
-- **Do NOT add serialization dependencies in `impl/domain` or `api/*`** — only `mockdonalds.kmp.data` includes serialization
-- **Do NOT add Compose, Circuit, or Coil dependencies** — provided by `mockdonalds.kmp.presentation`
-- **Do NOT add Metro/DI dependencies** — provided by `mockdonalds.kmp.domain`, `.data`, and `.presentation`
+- **Do NOT add test framework dependencies** (Kotest, Turbine, coroutines-test) — provided by `sampleplatter.kmp.library`
+- **Do NOT add serialization dependencies in `impl/domain` or `api/*`** — only `sampleplatter.kmp.data` includes serialization
+- **Do NOT add Compose, Circuit, or Coil dependencies** — provided by `sampleplatter.kmp.presentation`
+- **Do NOT add Metro/DI dependencies** — provided by `sampleplatter.kmp.domain`, `.data`, and `.presentation`
 
 A typical feature `impl/presentation/build.gradle.kts` looks like:
 
 ```kotlin
-plugins { id("mockdonalds.kmp.presentation") }
+plugins { id("sampleplatter.kmp.presentation") }
 
 kotlin {
     sourceSets {
@@ -61,9 +61,9 @@ The plugin splits Compose deliberately, and modules must not re-declare them:
 
 Everything in `commonMain` is compiled for `iosX64`, `iosArm64` and `iosSimulatorArm64` on every build, so a Compose UI dependency there pulls the material3/foundation/ui stack into the iOS framework for code iOS can never reach. `ForbiddenPatternsTest` → "Compose runtime, not Compose UI, in shared code" fails the build on a Compose UI import in `commonMain` or `iosMain`.
 
-`core:theme` follows the same rule: its Kotlin sources live in `androidMain` because every consumer is an `androidMain`/`androidDeviceTest` file and iOS uses `iosApp/iosApp/Theme/MockDonaldsTheme.swift`. Only `composeResources/font/` stays in `commonMain`, where the generated `Res` accessor is emitted.
+`core:theme` follows the same rule: its Kotlin sources live in `androidMain` because every consumer is an `androidMain`/`androidDeviceTest` file and iOS uses `iosApp/iosApp/Theme/SamplePlatterTheme.swift`. Only `composeResources/font/` stays in `commonMain`, where the generated `Res` accessor is emitted.
 
-## mockdonalds.kmp.library
+## sampleplatter.kmp.library
 
 Base KMP library plugin. Used by `api/domain`, `api/navigation`, and `core/*` modules.
 
@@ -77,24 +77,24 @@ Provides:
 - Auto-generated `KotestProjectConfig` per module (for native KSP discovery)
 - `core:test-fixtures` as `commonTest` dependency (except for test-fixtures itself)
 - `kotest-runner-junit6` on `androidHostTest` with JUnit Platform configuration
-- Detekt (via transitive `mockdonalds.detekt`)
+- Detekt (via transitive `sampleplatter.detekt`)
 
-## mockdonalds.kmp.domain
+## sampleplatter.kmp.domain
 
 ```kotlin
 plugins {
-    id("mockdonalds.kmp.library")
+    id("sampleplatter.kmp.library")
     id("dev.zacsweers.metro")           // Compile-time DI
 }
 ```
 
 For `impl/domain` and `test` modules. Use case implementations use `@ContributesBinding` to wire to their abstractions. Test modules use it so fakes can have `@ContributesBinding` for navint-tests DI auto-discovery.
 
-## mockdonalds.kmp.data
+## sampleplatter.kmp.data
 
 ```kotlin
 plugins {
-    id("mockdonalds.kmp.library")
+    id("sampleplatter.kmp.library")
     id("dev.zacsweers.metro")           // Compile-time DI
     id("org.jetbrains.kotlin.plugin.serialization")  // JSON serialization
 }
@@ -102,11 +102,11 @@ plugins {
 
 For `impl/data` modules containing repository implementations, DTOs, and network/storage calls.
 
-## mockdonalds.kmp.presentation
+## sampleplatter.kmp.presentation
 
 ```kotlin
 plugins {
-    id("mockdonalds.kmp.library")
+    id("sampleplatter.kmp.library")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
     id("dev.zacsweers.metro")
@@ -133,7 +133,7 @@ For `impl/presentation` modules. Provides:
 
 ### `core:strings` auto-wiring
 
-`mockdonalds.kmp.presentation` adds `implementation(project(":core:strings"))` to every
+`sampleplatter.kmp.presentation` adds `implementation(project(":core:strings"))` to every
 applying module's `androidMain` source set. Feature presentation `build.gradle.kts` files
 do **not** declare this dependency themselves — `stringResource(R.string.…)` is available
 in any Compose UI in `androidMain` without per-module setup. iOS source sets never see
@@ -141,17 +141,17 @@ in any Compose UI in `androidMain` without per-module setup. iOS source sets nev
 
 ### `core:logger:api` auto-wiring
 
-`mockdonalds.kmp.domain`, `.data`, and `.presentation` all add `implementation(project(":core:logger:api"))`
-to `commonMain`. Feature impl modules can `import com.mockdonalds.app.core.logger.Logger` (and
+`sampleplatter.kmp.domain`, `.data`, and `.presentation` all add `implementation(project(":core:logger:api"))`
+to `commonMain`. Feature impl modules can `import com.jkjamies.sampleplatter.core.logger.Logger` (and
 `Severity`, `LogWriter`, `featureLogger`) without declaring the dependency. `core:logger:impl`
 itself is excluded from the `kmp.domain` auto-wire to avoid a self-edge — it declares its api
 dependency explicitly. The Kermit SDK is hidden behind the api typealiases; raw `co.touchlab.kermit.*`
 imports outside `core:logger` are rejected by Konsist (`CodeHygieneTest`).
 
-## mockdonalds.phrase
+## sampleplatter.phrase
 
 Applied only to `core:strings`. Registers the `pullTranslations` Gradle task
-(`PhraseTranslationTask` in `com.mockdonalds.buildlogic`) which pulls translations from
+(`PhraseTranslationTask` in `com.jkjamies.sampleplatter.buildlogic`) which pulls translations from
 the Phrase API and writes:
 
 - Android XML → `core/strings/src/androidMain/res/values{-locale}/strings.xml`
@@ -172,9 +172,9 @@ The task currently throws a clear "skeleton — not wired to Phrase API" error; 
 call is the next milestone for localization. Outputs are declared as `@OutputDirectory`
 so Gradle's build cache can short-circuit re-runs once wired.
 
-## mockdonalds.detekt
+## sampleplatter.detekt
 
-Applied transitively via `mockdonalds.kmp.library`:
+Applied transitively via `sampleplatter.kmp.library`:
 - Config: `config/detekt/detekt.yml`
 - `buildUponDefaultConfig = true`
 - Parallel execution enabled

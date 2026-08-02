@@ -7,7 +7,7 @@ private let tags = MoreTestTags.shared
 @CircuitInject(MoreScreen.self, MoreUiState.self)
 struct MoreView: View {
     let state: MoreUiState
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     private var isLandscape: Bool { verticalSizeClass == .compact }
@@ -19,8 +19,8 @@ struct MoreView: View {
                 menuList
                 joinTeamBanner
             }
-            .padding(.horizontal, MockDimens.spacingXl)
-            .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: isLandscape))
+            .padding(.horizontal, PlatterDimens.spacingXl)
+            .padding(.bottom, PlatterDimens.adaptiveBottomBarPadding(isLandscape: isLandscape))
         }
         .background(colors.background)
     }
@@ -49,9 +49,9 @@ struct MoreView: View {
                 Text(">")
                     .foregroundColor(colors.secondary)
             }
-            .padding(MockDimens.spacingXl)
+            .padding(PlatterDimens.spacingXl)
             .background(colors.surfaceContainerLow)
-            .cornerRadius(MockDimens.radiusMd)
+            .cornerRadius(PlatterDimens.radiusMd)
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier(tags.PROFILE_SECTION)
             .onTapGesture {
@@ -109,7 +109,7 @@ struct MoreView: View {
     @ViewBuilder
     private var menuList: some View {
         if !state.menuItems.isEmpty {
-            VStack(spacing: MockDimens.spacingXs) {
+            VStack(spacing: PlatterDimens.spacingXs) {
                 ForEach(
                     Array(state.menuItems.enumerated()),
                     id: \.offset
@@ -155,7 +155,7 @@ struct MoreView: View {
             .overlay(alignment: .leading) {
                 joinTeamContent
             }
-            .cornerRadius(MockDimens.radiusMd)
+            .cornerRadius(PlatterDimens.radiusMd)
             .accessibilityIdentifier(tags.JOIN_TEAM_BANNER)
     }
 
@@ -175,7 +175,7 @@ struct MoreView: View {
     }
 
     private var joinTeamContent: some View {
-        VStack(alignment: .leading, spacing: MockDimens.spacingLg) {
+        VStack(alignment: .leading, spacing: PlatterDimens.spacingLg) {
             Text("Join the Team")
                 .font(.title2)
                 .fontWeight(.black)
@@ -195,8 +195,8 @@ struct MoreView: View {
                         .font(.caption)
                         .fontWeight(.bold)
                         .foregroundColor(.white)
-                        .padding(.horizontal, MockDimens.spacingXl)
-                        .padding(.vertical, MockDimens.spacingMd)
+                        .padding(.horizontal, PlatterDimens.spacingXl)
+                        .padding(.vertical, PlatterDimens.spacingMd)
                         .background(
                             LinearGradient(
                                 colors: [
@@ -207,12 +207,12 @@ struct MoreView: View {
                                 endPoint: .trailing
                             )
                         )
-                        .cornerRadius(MockDimens.radiusSm)
+                        .cornerRadius(PlatterDimens.radiusSm)
                 }
             )
-            .padding(.top, MockDimens.spacingSm)
+            .padding(.top, PlatterDimens.spacingSm)
         }
-        .padding(MockDimens.spacingXxl)
+        .padding(PlatterDimens.spacingXxl)
     }
 }
 
@@ -220,11 +220,11 @@ struct MenuItemView: View {
     let icon: String
     let title: String
     let isOdd: Bool
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
 
     var body: some View {
         HStack {
-            HStack(spacing: MockDimens.spacingLg) {
+            HStack(spacing: PlatterDimens.spacingLg) {
                 Text(icon)
                     .foregroundColor(
                         colors.onSurfaceVariant
@@ -246,6 +246,6 @@ struct MenuItemView: View {
                 ? colors.surface
                 : colors.surfaceContainerLow
         )
-        .cornerRadius(MockDimens.radiusMd)
+        .cornerRadius(PlatterDimens.radiusMd)
     }
 }

@@ -12,17 +12,17 @@ final class DeepLinkJourneyTest: XCTestCase {
     }
 
     func testDeepLinkToOrderScreen() {
-        robot.launchWithDeepLink("mockdonalds://app/order")
+        robot.launchWithDeepLink("sampleplatter://app/order")
         robot.assertElementDisplayed("OrderCategoryPreviewCard-burgers")
     }
 
     func testDeepLinkToMoreScreen() {
-        robot.launchWithDeepLink("mockdonalds://app/more")
+        robot.launchWithDeepLink("sampleplatter://app/more")
         robot.assertElementDisplayed("MoreMenuList")
     }
 
     func testDeepLinkToProfileRedirectsToLoginWhenUnauthenticated() {
-        robot.launchWithDeepLink("mockdonalds://app/more/profile")
+        robot.launchWithDeepLink("sampleplatter://app/more/profile")
 
         // Auth interception should redirect to login since user is not authenticated
         robot.assertElementNotDisplayed("ProfileAvatar")
@@ -30,7 +30,7 @@ final class DeepLinkJourneyTest: XCTestCase {
     }
 
     func testDeepLinkToProfileSignInFlowShowsWelcomeScreen() {
-        robot.launchWithDeepLink("mockdonalds://app/more/profile")
+        robot.launchWithDeepLink("sampleplatter://app/more/profile")
 
         // Login screen appears via auth interception
         robot.assertElementDisplayed("LoginSignInButton")

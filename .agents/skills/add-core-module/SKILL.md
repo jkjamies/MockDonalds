@@ -10,7 +10,7 @@ Scaffold a core module with api/impl split for shared infrastructure.
 **Parameters**:
 - `name` (lowercase kebab-case, e.g., `feature-flag`) — required
 - `hasTest` (boolean, default `true`) — whether to create a `test/` submodule with fakes
-- `plugin` (`mockdonalds.kmp.domain` for modules needing Metro DI, `mockdonalds.kmp.library` for pure contracts) — default `mockdonalds.kmp.domain`
+- `plugin` (`sampleplatter.kmp.domain` for modules needing Metro DI, `sampleplatter.kmp.library` for pure contracts) — default `sampleplatter.kmp.domain`
 
 ## Reference Standards
 
@@ -33,12 +33,12 @@ Create submodules under `core/{name}/`:
 **api/build.gradle.kts** — public contract (interfaces, abstract interactors, types):
 ```kotlin
 plugins {
-    id("mockdonalds.kmp.domain")
+    id("sampleplatter.kmp.domain")
 }
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.core.{name}.api"
+        namespace = "com.jkjamies.sampleplatter.core.{name}.api"
     }
 
     sourceSets {
@@ -49,17 +49,17 @@ kotlin {
 }
 ```
 
-For pure contract modules with no DI needs, use `mockdonalds.kmp.library` instead.
+For pure contract modules with no DI needs, use `sampleplatter.kmp.library` instead.
 
 **impl/build.gradle.kts** — concrete implementations:
 ```kotlin
 plugins {
-    id("mockdonalds.kmp.domain")
+    id("sampleplatter.kmp.domain")
 }
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.core.{name}.impl"
+        namespace = "com.jkjamies.sampleplatter.core.{name}.impl"
     }
 
     sourceSets {
@@ -73,12 +73,12 @@ kotlin {
 **test/build.gradle.kts** (if `hasTest` is true) — fakes for consumer tests:
 ```kotlin
 plugins {
-    id("mockdonalds.kmp.domain")
+    id("sampleplatter.kmp.domain")
 }
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.core.{name}.test"
+        namespace = "com.jkjamies.sampleplatter.core.{name}.test"
     }
 
     sourceSets {
@@ -102,9 +102,9 @@ include(":core:{name}:test")  // if hasTest
 
 ### 3. Create Source Files
 
-**api/** — `src/commonMain/kotlin/com/mockdonalds/app/core/{name}/`
+**api/** — `src/commonMain/kotlin/com/jkjamies/sampleplatter/core/{name}/`
 
-Place public interfaces, abstract interactors, and data types here. Package: `com.mockdonalds.app.core.{name}`.
+Place public interfaces, abstract interactors, and data types here. Package: `com.jkjamies.sampleplatter.core.{name}`.
 
 - Interfaces define the contract — consumers depend only on these
 - Abstract interactors extend `CenterPostInteractor` or `CenterPostSubjectInteractor`
@@ -122,9 +122,9 @@ Core modules with api/impl expose CenterPost interactors for presenter consumpti
 
 For fire-and-forget interactors, the `inProgress` loading state simply goes uncollected — it's opt-in with zero overhead. The value of wrapping even void operations in CenterPost: structured execution, error handling, timeout protection, dispatcher correctness.
 
-**impl/** — `src/commonMain/kotlin/com/mockdonalds/app/core/{name}/impl/`
+**impl/** — `src/commonMain/kotlin/com/jkjamies/sampleplatter/core/{name}/impl/`
 
-Place concrete implementations here. Package: `com.mockdonalds.app.core.{name}.impl`.
+Place concrete implementations here. Package: `com.jkjamies.sampleplatter.core.{name}.impl`.
 
 Key rules:
 - All implementations: `@ContributesBinding(AppScope::class)` (Metro implicitly provides `@Inject` — do NOT add explicit `@Inject`)
@@ -142,9 +142,9 @@ Key rules:
   }
   ```
 
-**test/** — `src/commonMain/kotlin/com/mockdonalds/app/core/{name}/test/`
+**test/** — `src/commonMain/kotlin/com/jkjamies/sampleplatter/core/{name}/test/`
 
-Place fakes here (in `commonMain`, NOT `commonTest`). Package: `com.mockdonalds.app.core.{name}.test`.
+Place fakes here (in `commonMain`, NOT `commonTest`). Package: `com.jkjamies.sampleplatter.core.{name}.test`.
 
 - Fakes are `MutableStateFlow`-backed with control methods (`setXxx()`, `reset()`)
 - Annotate with `@ContributesBinding(AppScope::class)` for test graph auto-wiring
@@ -155,7 +155,7 @@ Place fakes here (in `commonMain`, NOT `commonTest`). Package: `com.mockdonalds.
 
 ### 4. Create Tests
 
-Place unit tests in `impl/src/commonTest/kotlin/com/mockdonalds/app/core/{name}/impl/`.
+Place unit tests in `impl/src/commonTest/kotlin/com/jkjamies/sampleplatter/core/{name}/impl/`.
 
 - Use Kotest `BehaviorSpec` with `Given`/`When`/`Then` structure
 - Use inline anonymous-object fakes for internal interfaces
@@ -250,7 +250,7 @@ Should show all submodules (api, impl, test if applicable).
 
 ## Key Rules
 
-- Package convention: `com.mockdonalds.app.core.{name}` (api), `.impl` (impl), `.test` (test)
+- Package convention: `com.jkjamies.sampleplatter.core.{name}` (api), `.impl` (impl), `.test` (test)
 - No `@Inject` on impl classes — `@ContributesBinding` handles it implicitly
 - Fakes live in `test/src/commonMain/` — they are published dependencies, not test-only
 - AGENTS.md is required (Konsist-enforced via `AgentDocumentationTest`)

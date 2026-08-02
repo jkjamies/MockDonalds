@@ -15,7 +15,7 @@ metro {
 
 // SQLDelight schema declaration is owned by the contributing feature module —
 // `features/order/impl/data` applies the `app.cash.sqldelight` plugin and declares
-// the application-wide `AppDatabase` (packageName = "com.mockdonalds.app.persistence").
+// the application-wide `AppDatabase` (packageName = "com.jkjamies.sampleplatter.persistence").
 // composeApp imports the generated class via its existing `implementation(project(...))`
 // dependency on the feature and instantiates `AppDatabase(driver)` in `DatabaseProviders`.
 //
@@ -27,7 +27,7 @@ metro {
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.composeapp"
+        namespace = "com.jkjamies.sampleplatter.composeapp"
         compileSdk = 36
         minSdk = 26
 
@@ -163,8 +163,8 @@ kotlin {
         }
 
         androidMain.dependencies {
-            // Compose UI is Android-only by design — App.kt, MockDonaldsBottomNavigation.kt
-            // and MockDonaldsIcons.kt are the only Compose UI consumers in this module.
+            // Compose UI is Android-only by design — App.kt, SamplePlatterBottomNavigation.kt
+            // and SamplePlatterIcons.kt are the only Compose UI consumers in this module.
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)

@@ -1,17 +1,17 @@
 plugins {
-    id("mockdonalds.kmp.presentation")
+    id("sampleplatter.kmp.presentation")
 }
 
 kotlin {
     android {
-        namespace = "com.mockdonalds.app.core.theme"
+        namespace = "com.jkjamies.sampleplatter.core.theme"
     }
 
     sourceSets {
         commonMain.dependencies {
             // The Kotlin design system is Android-only: every consumer of these types is in
             // an `androidMain` or `androidDeviceTest` source set, and iOS renders with its own
-            // `iosApp/iosApp/Theme/MockDonaldsTheme.swift`. Keeping MaterialTheme, Typography,
+            // `iosApp/iosApp/Theme/SamplePlatterTheme.swift`. Keeping MaterialTheme, Typography,
             // Brush, TextStyle and dp/sp in commonMain compiled the whole Compose UI stack for
             // iosX64/iosArm64/iosSimulatorArm64 on every build, for code iOS can never reach —
             // so the sources now live in androidMain.
@@ -26,7 +26,7 @@ kotlin {
         androidMain.dependencies {
             // compose.runtime (commonMain) and compose.foundation / material3 /
             // materialIconsExtended / ui (androidMain) are supplied by the
-            // `mockdonalds.kmp.presentation` convention plugin — do not re-declare them.
+            // `sampleplatter.kmp.presentation` convention plugin — do not re-declare them.
             api(libs.androidx.compose.material3.windowsizeclass)
         }
     }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.MockDonalds" parent="android:Theme.Material.NoActionBar">
+    <style name="Theme.SamplePlatter" parent="android:Theme.Material.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
@@ -14,11 +14,11 @@
       - windowSplashScreenAnimationDuration: duration for the icon animation
       - postSplashScreenTheme: theme applied after splash dismisses
     -->
-    <style name="Theme.MockDonalds.Splash" parent="Theme.SplashScreen">
+    <style name="Theme.SamplePlatter.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/deep_obsidian</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_logo_animated</item>
         <item name="windowSplashScreenAnimationDuration">1000</item>
-        <item name="postSplashScreenTheme">@style/Theme.MockDonalds</item>
+        <item name="postSplashScreenTheme">@style/Theme.SamplePlatter</item>
     </style>
 
 </resources>

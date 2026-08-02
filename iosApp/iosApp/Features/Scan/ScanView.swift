@@ -8,7 +8,7 @@ private let tags = ScanTestTags.shared
 struct ScanView: View {
     let state: ScanUiState
     @State private var gradientAngle: Double = 0
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     private var isLandscape: Bool { verticalSizeClass == .compact }
 
@@ -16,18 +16,18 @@ struct ScanView: View {
         ScrollView {
             if isLandscape {
                 // Two-column: QR card left, supplementary right
-                HStack(alignment: .top, spacing: MockDimens.spacingXl) {
+                HStack(alignment: .top, spacing: PlatterDimens.spacingXl) {
                     memberCard
                         .frame(maxWidth: .infinity)
-                    VStack(spacing: MockDimens.spacingXl) {
+                    VStack(spacing: PlatterDimens.spacingXl) {
                         rewardsProgressSection
                         actionButtons
                         proTipSection
                     }
                     .frame(maxWidth: .infinity)
                 }
-                .padding(.horizontal, MockDimens.spacingXl)
-                .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: true))
+                .padding(.horizontal, PlatterDimens.spacingXl)
+                .padding(.bottom, PlatterDimens.adaptiveBottomBarPadding(isLandscape: true))
             } else {
                 VStack(spacing: 40) {
                     memberCard
@@ -35,8 +35,8 @@ struct ScanView: View {
                     actionButtons
                     proTipSection
                 }
-                .padding(.horizontal, MockDimens.spacingXl)
-                .padding(.bottom, MockDimens.adaptiveBottomBarPadding(isLandscape: false))
+                .padding(.horizontal, PlatterDimens.spacingXl)
+                .padding(.bottom, PlatterDimens.adaptiveBottomBarPadding(isLandscape: false))
             }
         }
         .background(colors.background)
@@ -51,18 +51,18 @@ struct ScanView: View {
                         .font(.title3)
                         .fontWeight(.bold)
                         .foregroundColor(colors.onSurface)
-                        .padding(.bottom, MockDimens.spacingSm)
+                        .padding(.bottom, PlatterDimens.spacingSm)
                     Text("Scan at the counter to earn & redeem")
                         .font(.caption)
                         .fontWeight(.medium)
                         .foregroundColor(
                             colors.onSurfaceVariant
                         )
-                        .padding(.bottom, MockDimens.spacingXxl)
+                        .padding(.bottom, PlatterDimens.spacingXxl)
 
                     qrCodeView(member: member)
 
-                    HStack(spacing: MockDimens.spacingMd) {
+                    HStack(spacing: PlatterDimens.spacingMd) {
                         Text("\u{2B50}")
                             .foregroundColor(
                                 colors.secondary
@@ -74,12 +74,12 @@ struct ScanView: View {
                                 colors.onSurface
                             )
                     }
-                    .padding(.top, MockDimens.spacingXxl)
+                    .padding(.top, PlatterDimens.spacingXxl)
                 }
-                .padding(MockDimens.spacingXxl)
+                .padding(PlatterDimens.spacingXxl)
             }
             .background(colors.surfaceContainerLow)
-            .cornerRadius(MockDimens.radiusMd)
+            .cornerRadius(PlatterDimens.radiusMd)
             .accessibilityIdentifier(tags.MEMBER_CARD)
         }
     }
@@ -109,7 +109,7 @@ struct ScanView: View {
                 angle: .degrees(gradientAngle)
             )
             .frame(width: 260, height: 260)
-            .clipShape(RoundedRectangle(cornerRadius: MockDimens.radiusLg))
+            .clipShape(RoundedRectangle(cornerRadius: PlatterDimens.radiusLg))
             .onAppear {
                 withAnimation(
                     .linear(duration: 3)
@@ -137,7 +137,7 @@ struct ScanView: View {
     @ViewBuilder
     private var rewardsProgressSection: some View {
         if let progress = state.rewardsProgress {
-            VStack(spacing: MockDimens.spacingLg) {
+            VStack(spacing: PlatterDimens.spacingLg) {
                 HStack(alignment: .bottom) {
                     Text("REWARDS PROGRESS")
                         .font(.caption2)
@@ -147,7 +147,7 @@ struct ScanView: View {
                             colors.onSurfaceVariant
                         )
                     Spacer()
-                    HStack(alignment: .bottom, spacing: MockDimens.spacingXs) {
+                    HStack(alignment: .bottom, spacing: PlatterDimens.spacingXs) {
                         Text("\(progress.currentPoints)")
                             .font(.title3)
                             .fontWeight(.black)
@@ -170,7 +170,7 @@ struct ScanView: View {
                                 colors
                                     .surfaceContainerHighest
                             )
-                            .frame(height: MockDimens.spacingSm)
+                            .frame(height: PlatterDimens.spacingSm)
                         Capsule()
                             .fill(
                                 LinearGradient(
@@ -187,11 +187,11 @@ struct ScanView: View {
                                     * CGFloat(
                                         progress.progressFraction
                                     ),
-                                height: MockDimens.spacingSm
+                                height: PlatterDimens.spacingSm
                             )
                     }
                 }
-                .frame(height: MockDimens.spacingSm)
+                .frame(height: PlatterDimens.spacingSm)
 
                 Text(progress.message)
                     .font(.caption)
@@ -205,13 +205,13 @@ struct ScanView: View {
     }
 
     private var actionButtons: some View {
-        HStack(spacing: MockDimens.spacingLg) {
+        HStack(spacing: PlatterDimens.spacingLg) {
             Button(
                 action: {
                     state.eventSink(ScanEvent.PayNowClicked())
                 },
                 label: {
-                    HStack(spacing: MockDimens.spacingMd) {
+                    HStack(spacing: PlatterDimens.spacingMd) {
                         Text("\u{1F4B3}")
                             .foregroundColor(
                                 colors.secondary
@@ -228,7 +228,7 @@ struct ScanView: View {
                     .background(
                         colors.surfaceContainerHigh
                     )
-                    .cornerRadius(MockDimens.radiusMd)
+                    .cornerRadius(PlatterDimens.radiusMd)
                 }
             )
             .accessibilityIdentifier(tags.PAY_NOW_BUTTON)
@@ -239,7 +239,7 @@ struct ScanView: View {
                     )
                 },
                 label: {
-                    HStack(spacing: MockDimens.spacingMd) {
+                    HStack(spacing: PlatterDimens.spacingMd) {
                         Text("\u{1F3F7}\u{FE0F}")
                             .foregroundColor(
                                 colors.secondary
@@ -256,7 +256,7 @@ struct ScanView: View {
                     .background(
                         colors.surfaceContainerHigh
                     )
-                    .cornerRadius(MockDimens.radiusMd)
+                    .cornerRadius(PlatterDimens.radiusMd)
                 }
             )
             .accessibilityIdentifier(tags.VIEW_OFFERS_BUTTON)
@@ -264,12 +264,12 @@ struct ScanView: View {
     }
 
     private var proTipSection: some View {
-        HStack(alignment: .top, spacing: MockDimens.spacingLg) {
+        HStack(alignment: .top, spacing: PlatterDimens.spacingLg) {
             Circle()
                 .fill(colors.surfaceContainerHighest)
-                .frame(width: MockDimens.iconMd, height: MockDimens.iconMd)
+                .frame(width: PlatterDimens.iconMd, height: PlatterDimens.iconMd)
                 .overlay(Text("\u{2139}\u{FE0F}"))
-            VStack(alignment: .leading, spacing: MockDimens.spacingXs) {
+            VStack(alignment: .leading, spacing: PlatterDimens.spacingXs) {
                 Text("Pro Tip")
                     .font(.caption)
                     .fontWeight(.bold)
@@ -287,7 +287,7 @@ struct ScanView: View {
         }
         .padding(20)
         .background(colors.surfaceContainerLow)
-        .cornerRadius(MockDimens.radiusMd)
+        .cornerRadius(PlatterDimens.radiusMd)
         .accessibilityIdentifier(tags.PRO_TIP)
     }
 }

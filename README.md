@@ -1,6 +1,22 @@
-# MockDonalds
+# Sample Platter
 
 A Kotlin Multiplatform (KMP) reference app showcasing a clean, scalable architecture for shared business logic with native UI on both platforms: Jetpack Compose on Android and SwiftUI on iOS.
+
+## About this project
+
+Sample Platter is a personal portfolio project written to demonstrate Kotlin Multiplatform architecture. It is not affiliated with, endorsed by, sponsored by, or connected to any company, restaurant chain, or brand, and it is not derived from any employer's codebase.
+
+Everything user-facing is invented: the name, the logo, the palette, the menu items, the markets, and every API hostname. There is no real backend. The only live third-party service the app can reach is the public [Spoonacular](https://spoonacular.com/food-api) food API, which requires your own key.
+
+The enterprise integrations here are wiring demonstrations rather than working deployments, included to show how such systems sit behind an abstraction:
+
+| Integration | Status in this repo |
+|-------------|---------------------|
+| Bot-protection sensor data | Interface contract only — no SDK dependency; the iOS bridge returns an empty string |
+| Remote feature flags | Links the public Harness SDK; every client ID in the repo is a `REPLACE_WITH_*` placeholder |
+| Translations | Gradle task requiring Phrase credentials you supply |
+
+No credentials, keys, tokens, or real endpoints are committed. Everything secret is read from `local.properties`, which is gitignored.
 
 ## Tech Stack
 
@@ -161,26 +177,26 @@ Specs run concurrently (up to 4 in parallel) via `KotestProjectConfig` in `core:
 
 ### Deep Link Testing
 
-The app supports deep links via `mockdonalds://app/{path}`. Auth-gated screens (e.g. `profile`) automatically redirect to login and return after authentication.
+The app supports deep links via `sampleplatter://app/{path}`. Auth-gated screens (e.g. `profile`) automatically redirect to login and return after authentication.
 
 **Android (requires emulator/device):**
 
 ```bash
 # Navigate to More tab
-adb shell am start -a android.intent.action.VIEW -d "mockdonalds://app/more"
+adb shell am start -a android.intent.action.VIEW -d "sampleplatter://app/more"
 
 # Navigate to Profile via More tab (auth-gated — redirects to Login if not authenticated)
-adb shell am start -a android.intent.action.VIEW -d "mockdonalds://app/more/profile"
+adb shell am start -a android.intent.action.VIEW -d "sampleplatter://app/more/profile"
 ```
 
 **iOS (requires simulator):**
 
 ```bash
 # Navigate to More tab
-xcrun simctl openurl booted "mockdonalds://app/more"
+xcrun simctl openurl booted "sampleplatter://app/more"
 
 # Navigate to Profile via More tab (auth-gated — redirects to Login if not authenticated)
-xcrun simctl openurl booted "mockdonalds://app/more/profile"
+xcrun simctl openurl booted "sampleplatter://app/more/profile"
 ```
 
 Available path segments: `home`, `order`, `rewards`, `scan`, `more`, `profile`, `login`. Segments can be chained (e.g. `more/profile`) to build a navigation stack.
@@ -231,3 +247,7 @@ mkdir -p .claude && ln -s ../.agents/skills .claude/skills
 ```
 
 See [`AGENTS.md`](AGENTS.md) for the full rule set and [`.agents/AGENTS.md`](.agents/AGENTS.md) for the skill system.
+
+## License
+
+[MIT](LICENSE) © Jason Jamieson

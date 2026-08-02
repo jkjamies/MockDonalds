@@ -86,7 +86,7 @@ This is also the **first networked feature** and the **first SQLDelight consumer
    - First `HttpClient` consumer in the codebase. Bind a Spoonacular-scoped `HttpClient` via Metro provider in `features/order/impl/data`. Configure: `baseUrl = "https://api.spoonacular.com/food"`, `authMode = AuthMode.NONE` (Spoonacular doesn't use Bearer; we set the API key header manually), `headers["x-api-key"] = AppBuildConfig.spoonacularApiKey`.
 
 6. **Persistence wiring**:
-   - First SQLDelight consumer. Add `features/order/impl/data/sqldelight/order/com/mockdonalds/app/features/order/data/MenuItem.sq` with `menuItem` table + queries.
+   - First SQLDelight consumer. Add `features/order/impl/data/sqldelight/order/com/jkjamies/sampleplatter/features/order/data/MenuItem.sq` with `menuItem` table + queries.
    - Apply SQLDelight plugin in `composeApp` (the aggregator) per CLAUDE.md's persistence pattern, depending on `:features:order:impl:data` so its `.sq` files are picked up.
    - `core:persistence` already provides `DatabaseDriverFactory`; verify it's wired into `AppDatabase` aggregation.
 
@@ -141,8 +141,8 @@ OrderContent
 ```
 MenuItem
   ├── id: String                     // Spoonacular item id, stringified
-  ├── title: String                  // e.g. "Big Mac"
-  ├── restaurantChain: String        // e.g. "McDonald's"
+  ├── title: String                  // e.g. "Signature Stack"
+  ├── restaurantChain: String        // e.g. "Sample Platter"
   ├── imageUrl: String               // Spoonacular CDN URL
   ├── servingSize: String?           // e.g. "1 sandwich (214g)" — sometimes null
   └── categoryId: String             // FK to CategoryPreview.id; assigned at mapper time
@@ -238,13 +238,13 @@ The `x-api-key` header is set on this client's `defaultRequest` — scope is per
 
 ### Akamai Exception (documented in spec + AGENTS.md)
 
-> Spoonacular is a third-party reference integration. It does **not** route through Akamai. The "Akamai required in all envs" rule applies to first-party MockDonalds backend services only — third-party reference APIs (Spoonacular, etc.) call the public endpoint directly. This exception must be documented in `features/order/impl/data/AGENTS.md`.
+> Spoonacular is a third-party reference integration. It does **not** route through Akamai. The "Akamai required in all envs" rule applies to first-party SamplePlatter backend services only — third-party reference APIs (Spoonacular, etc.) call the public endpoint directly. This exception must be documented in `features/order/impl/data/AGENTS.md`.
 
 ---
 
 ## SQLDelight Schema
 
-`features/order/impl/data/src/commonMain/sqldelight/com/mockdonalds/app/features/order/data/MenuItem.sq`
+`features/order/impl/data/src/commonMain/sqldelight/com/jkjamies/sampleplatter/features/order/data/MenuItem.sq`
 
 ```sql
 CREATE TABLE menuItem (

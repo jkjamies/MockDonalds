@@ -1,6 +1,6 @@
 # Markets Standard
 
-A **market** is a distinct shippable binary of MockDonalds — one country or sandbox region, with its own bundle identifier, App Store / Play Store listing, backend endpoints, locale, and currency. Markets are the outermost axis of the build matrix; envs and build types sit inside them.
+A **market** is a distinct shippable binary of Sample Platter — one country or sandbox region, with its own bundle identifier, App Store / Play Store listing, backend endpoints, locale, and currency. Markets are the outermost axis of the build matrix; envs and build types sit inside them.
 
 This doc is the cross-cutting reference for the market concept: what it is, which markets exist, and how each one surfaces across every layer of the stack. For the compile-time config schema and validation rules, see `.agents/standards/build-config.md`. For the operational steps to add a new market, see `.agents/skills/add-market/SKILL.md`.
 
@@ -30,7 +30,7 @@ A market *is*:
 | `au` | Australia | `.com.au` | `en-AU` | `AUD` | Real |
 | `core` | Synthetic sandbox (based on `us`) | `.com` with `core-` host prefix | `en-US` | `USD` | Sandbox |
 
-`core` exists so market-neutral work (shared presenters, design-system changes, infra rewiring) can be exercised end-to-end without pointing at a real region's backend. Its URLs resolve to isolated sandbox infrastructure; its applicationId (`com.mockdonalds.app.core`) is not a submittable store identity. Treat it like any other market for code purposes — the validator does — but never ship it.
+`core` exists so market-neutral work (shared presenters, design-system changes, infra rewiring) can be exercised end-to-end without pointing at a real region's backend. Its URLs resolve to isolated sandbox infrastructure; its applicationId (`com.jkjamies.sampleplatter.core`) is not a submittable store identity. Treat it like any other market for code purposes — the validator does — but never ship it.
 
 The market regex in `validateAllMarkets` accepts any 2+ lowercase letters, not strictly ISO 3166-1 alpha-2, precisely to accommodate `core` and any future synthetic variants (`core2`, `staging`, etc.).
 
@@ -56,14 +56,14 @@ android {
 }
 ```
 
-So selecting `deIntDebug` in the Build Variants window (or running `./gradlew :androidApp:assembleDeProdRelease`) produces `com.mockdonalds.app.de`, a distinct Play Store app. The explicit CLI form `-Pmarket=de -Penv=prod -PbuildType=release` still works and is the path iOS uses. Both paths converge in the shared resolver — `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt` — which `:core:build-config:impl` and `:core:remote-config:impl` call at configure time to pick the right `.properties` files. `versionCode` / `versionName` are currently market-agnostic; if future store submission policy requires per-market versioning, that belongs in `androidApp/build.gradle.kts` next to the flavor declarations.
+So selecting `deIntDebug` in the Build Variants window (or running `./gradlew :androidApp:assembleDeProdRelease`) produces `com.jkjamies.sampleplatter.de`, a distinct Play Store app. The explicit CLI form `-Pmarket=de -Penv=prod -PbuildType=release` still works and is the path iOS uses. Both paths converge in the shared resolver — `build-logic/convention/src/main/kotlin/com/jkjamies/sampleplatter/buildlogic/BuildVariantResolver.kt` — which `:core:build-config:impl` and `:core:remote-config:impl` call at configure time to pick the right `.properties` files. `versionCode` / `versionName` are currently market-agnostic; if future store submission policy requires per-market versioning, that belongs in `androidApp/build.gradle.kts` next to the flavor declarations.
 
 ### iOS
 
 `PRODUCT_BUNDLE_IDENTIFIER` in `iosApp/Configuration/Base.xcconfig` is:
 
 ```
-PRODUCT_BUNDLE_IDENTIFIER = com.mockdonalds.app.$(MARKET)
+PRODUCT_BUNDLE_IDENTIFIER = com.jkjamies.sampleplatter.$(MARKET)
 ```
 
 Each combo xcconfig sets `MARKET = {market}` (lowercase) and `#include "../Base.xcconfig"`, so Xcode substitutes it into the bundle ID at build time. That means every iOS market also produces a distinct App Store Connect record.
@@ -111,7 +111,7 @@ App Store Connect and Play Console records are managed outside this repo. The `a
 
 ### Future: backend provisioning
 
-The URLs in `markets/{market}/*.properties` must point at infrastructure that already exists. Adding `markets/jp/` without the backend team having provisioned `int-api.mockdonalds.jp` produces a binary that builds fine and 404s at runtime. The `add-market` skill flags this; PRs that add a market should include confirmation that the endpoints resolve.
+The URLs in `markets/{market}/*.properties` must point at infrastructure that already exists. Adding `markets/jp/` without the backend team having provisioned `int-api.sampleplatter.jp` produces a binary that builds fine and 404s at runtime. The `add-market` skill flags this; PRs that add a market should include confirmation that the endpoints resolve.
 
 ## Asymmetry is forbidden
 

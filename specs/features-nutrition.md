@@ -8,7 +8,7 @@
 
 ## Overview
 
-`features/nutrition` is the first consumer of the WebView primitive shipped in `core:presentation`. It exposes a single Circuit destination — `NutritionScreen` — that renders the per-market McDonald's nutrition calculator inside an embedded WebView. Reachable via a contributed entry on the More tab; no API, no domain logic, no feature flag — just a typed destination with a build-config-supplied URL.
+`features/nutrition` is the first consumer of the WebView primitive shipped in `core:presentation`. It exposes a single Circuit destination — `NutritionScreen` — that renders a third-party nutrition reference inside an embedded WebView. Reachable via a contributed entry on the More tab; no API, no domain logic, no feature flag — just a typed destination with a build-config-supplied URL.
 
 **Name**: `nutrition`
 **Primary screen**: `NutritionScreen`
@@ -18,21 +18,21 @@
 
 ## Business Context
 
-The McDonald's nutrition calculator is a publicly available web page (the official nutrition reference). Embedding it inside the app via WebView lets users access nutrition info without leaving the app — better UX than punting to system browser, and matches how every other major QSR app handles this surface.
+The nutrition reference is a publicly available web page from Spoonacular, the same provider backing the order feature's menu data. Embedding it inside the app via WebView lets users access nutrition info without leaving the app — better UX than punting to system browser, and matches how every other major QSR app handles this surface.
 
 This feature is also the first real consumer of the WebView primitive that landed in `core:presentation`, validating the cross-feature reusability of that primitive.
 
-**User story**: As a MockDonalds app user, I want to view nutrition information for the menu so that I can make informed food choices without leaving the app.
+**User story**: As a SamplePlatter app user, I want to view nutrition information for the menu so that I can make informed food choices without leaving the app.
 
 **Acceptance criteria**:
 - [ ] The existing "🥗 Nutrition" entry (id `"3"`) in the More tab navigates to `NutritionScreen` when tapped — wired via `MorePresenter`'s `MenuItemClicked` event handler, same pattern as id `"1"` → `RecentsScreen`.
-- [ ] `NutritionScreen` renders an embedded WebView pointing at the per-market nutrition calculator URL.
+- [ ] `NutritionScreen` renders an embedded WebView pointing at the build-config nutrition reference URL.
 - [ ] Top app bar shows the title "Nutrition" with a back chevron that returns to the More tab.
 - [ ] On Android, the WebView's internal back history is wired via `BackHandler` — system back walks page history before popping the screen.
 - [ ] On iOS, the standard `NavigationStack` chevron / edge-swipe pops to More (per the WebView primitive's documented iOS asymmetry).
 - [ ] JavaScript is enabled inside the WebView (the calculator uses interactive controls).
 - [ ] Off-host links inside the page (e.g., social media, terms of service) open in Custom Tabs (Android) / system browser (iOS), not in-frame.
-- [ ] The build-config field `nutritionUrl` defaults to `https://www.mcdonalds.com/us/en-us/about-our-food/nutrition-calculator.html`. The CA market overrides with the `/ca/en-ca/` variant. US/DE/AU/CORE inherit the default.
+- [ ] The build-config field `nutritionUrl` defaults to `https://spoonacular.com`. All markets inherit the default; the per-market override mechanism remains available if a market-specific nutrition destination is ever configured.
 - [ ] Page-view tracking fires automatically via `AnalyticsNavigationListener` on `goTo(NutritionScreen)` — no per-feature analytics code.
 
 ---
@@ -184,7 +184,7 @@ private let tags = NutritionTestTags.shared
 @CircuitInject(NutritionScreen.self, NutritionUiState.self)
 struct NutritionView: View {
     let state: NutritionUiState
-    @Environment(\.mockDonaldsColors) private var colors
+    @Environment(\.samplePlatterColors) private var colors
     @State private var canGoBack: Bool = false
 
     var body: some View {
@@ -213,7 +213,7 @@ struct NutritionView: View {
 - **Standard `NavigationStack` chevron** handles return-to-More — no custom toolbar back button, matching `RecentsView`'s pattern.
 - **`canGoBack` binding**: declared (required by `WebView` API) but unread. iOS edge-swipe always pops host per the WebView spec's documented platform contract.
 - **Initial frame**: centered `ProgressView` while `state.url == nil`, switches to `WebView` once non-null. Mirrors how `RecentsView.Loading` renders.
-- **Theme**: `mockDonaldsColors` env binding for background, matching every other feature view.
+- **Theme**: `samplePlatterColors` env binding for background, matching every other feature view.
 
 ### Test Tags
 
@@ -279,23 +279,22 @@ n/a — nutrition is always on. Removing it requires a code change (delete `Nutr
 
 | Field | Default | Per-Market | Description |
 |-------|---------|------------|-------------|
-| `nutritionUrl` | `https://www.mcdonalds.com/us/en-us/about-our-food/nutrition-calculator.html` | partial — see below | Per-market nutrition calculator URL |
+| `nutritionUrl` | `https://spoonacular.com` | overridable, none set | Nutrition reference URL |
 
 ### Per-market values
 
 | Market | `NUTRITION_URL` value |
 |--------|------------------------|
 | `us` | inherits default |
-| `ca` | `https://www.mcdonalds.com/ca/en-ca/about-our-food/nutrition-calculator.html` |
-| `de` | inherits default (no DE-specific URL configured v1) |
-| `au` | inherits default (no AU-specific URL configured v1) |
+| `ca` | inherits default |
+| `de` | inherits default |
+| `au` | inherits default |
 | `core` | inherits default (synthetic sandbox market) |
 
 ### Files to change
 
-- `core/build-config/impl/Defaults.properties` — add `NUTRITION_URL=https://www.mcdonalds.com/us/en-us/about-our-food/nutrition-calculator.html`
-- `core/build-config/impl/markets/ca/ca-int.properties`, `ca-mte.properties`, `ca-prod.properties` — each adds `NUTRITION_URL=https://www.mcdonalds.com/ca/en-ca/about-our-food/nutrition-calculator.html`
-- US/DE/AU/CORE per-market property files: no override needed (inherit default).
+- `core/build-config/impl/Defaults.properties` — add `NUTRITION_URL=https://spoonacular.com`
+- Per-market property files: no override needed — every market inherits the default.
 - `core/build-config/api/src/commonMain/.../AppBuildConfig.kt` — add `@DebugConfigField(Group.Urls) val nutritionUrl: String`
 - `core/build-config/impl/.../AppBuildConfigImpl.kt` — wire field from BuildKonfig
 - `core/build-config/impl/build.gradle.kts` BuildKonfig block — add `NUTRITION_URL` field mapping
@@ -304,10 +303,9 @@ n/a — nutrition is always on. Removing it requires a code change (delete `Nutr
 The `/add-config-field` skill automates all of the above. Run it before `/add-feature`:
 
 ```
-/add-config-field nutritionUrl url --default "https://www.mcdonalds.com/us/en-us/about-our-food/nutrition-calculator.html"
+/add-config-field nutritionUrl url --default "https://spoonacular.com"
 ```
 
-Then manually edit the three CA `.properties` files to add the `/ca/en-ca/` override.
 
 ---
 
@@ -315,10 +313,10 @@ Then manually edit the three CA `.properties` files to add the `/ca/en-ca/` over
 
 **Imports from**:
 - `core:circuit` — `Screen`, `Navigator`, `@Parcelize`
-- `core:centerpost` — `CenterPostSubjectInteractor` (auto-wired via `mockdonalds.kmp.domain` plugin)
-- `core:presentation` — `WebViewContent`, `WebViewState`, `rememberWebViewState` (auto-wired via `mockdonalds.kmp.presentation` plugin; Android-only deps)
+- `core:centerpost` — `CenterPostSubjectInteractor` (auto-wired via `sampleplatter.kmp.domain` plugin)
+- `core:presentation` — `WebViewContent`, `WebViewState`, `rememberWebViewState` (auto-wired via `sampleplatter.kmp.presentation` plugin; Android-only deps)
 - `core:build-config:api` — `AppBuildConfig` (read in `NutritionRepositoryImpl`)
-- `core:theme` — Compose `MaterialTheme.colorScheme`, `MockDimens` (Android); `mockDonaldsColors` env (iOS)
+- `core:theme` — Compose `MaterialTheme.colorScheme`, `PlatterDimens` (Android); `samplePlatterColors` env (iOS)
 
 **Imported by**:
 - `composeApp` — graph wiring; the convention plugin auto-discovers via `settings.gradle.kts` glob
@@ -405,7 +403,7 @@ Total new files created by `/add-feature`:
 - **Sentinel URL hygiene** — tests must use `https://example.test/nutrition` (or another RFC2606 reserved domain). Real URLs in tests would attempt network round-trips and flake.
 - **iOS navigation asymmetry** — per the WebView primitive's contract, iOS edge-swipe always pops host; there's no "back in WebView" affordance on iOS in v1. The `canGoBack` binding is dead-state on iOS; live on Android via `BackHandler`. Documented in the iOS Presentation AGENTS.md.
 - **Page-view tracking dependency** — relies on `composeApp/src/commonMain/.../navigation/AnalyticsNavigationListener.kt` continuing to fire `trackScreenView` on `goTo`. If that listener is ever removed or its behavior changes, nutrition silently loses tracking. AGENTS.md should call this dependency out.
-- **CA-only per-market override** — DE and AU localized variants of the McDonald's nutrition calculator may exist but were not validated for v1; both fall back to the US default. When DE/AU validate, override the per-market `.properties` files (no code changes required).
+- **No per-market override** — the nutrition destination is a single global reference. If a market-specific one is ever wanted, override `NUTRITION_URL` in that market's `.properties` files (no code changes required).
 
 ---
 
@@ -416,7 +414,7 @@ Total new files created by `/add-feature`:
 - **Offline cache / pre-fetch** — WebView always fetches fresh; no offline support.
 - **`nutrition_viewed` per-feature analytics event** — page-view tracking is auto-handled by `AnalyticsNavigationListener`. Custom per-feature events (e.g., scroll-depth, calculator-completion) are not in scope.
 - **Feature flag (`nutrition.enabled`)** — nutrition is always on. Disabling requires removing the `NutritionTabExtension` contribution.
-- **Native nutrition UI** — v1 embeds the McDonald's web calculator. A native rendering of nutrition data (charts, filters, allergen badges) would be a separate effort.
+- **Native nutrition UI** — v1 embeds the Sample Platter web calculator. A native rendering of nutrition data (charts, filters, allergen badges) would be a separate effort.
 - **iOS-specific "back in WebView" UX** — accepted asymmetry per the WebView primitive's documented platform contract.
 - **DE / AU per-market URL overrides** — both fall back to US default v1 until DE/AU calculator URLs are validated.
 - **iOS navint test for More→Nutrition→Back** — Android navint covers this; iOS navint coverage is a follow-up if the team expects it.
@@ -438,9 +436,9 @@ Each row logs a grilled question, the chosen answer, and the rationale.
 | 4 | Data source (network or none) | **No network v1.** No `RemoteDataSource`, no DTO, no mapper, no Ktor client. `NutritionRepositoryImpl` reads from `AppBuildConfig` only. | URL is compile-time market config, not server-driven. v2 can add a RemoteDataSource behind the existing repository interface without breaking presenter contracts. |
 | 5 | Loading/error UX layering | **Feature owns scaffold; WebView owns body.** Scaffold: TopAppBar with `"Nutrition"` title + back chevron. Body: `WebViewContent` (Android) / `WebView` (iOS). When `state.url == null`: blank `Box` (Android) / centered `ProgressView` (iOS). | No double-loading-state. WebView primitive's loading/error UX is sufficient for the body. iOS uses ProgressView matching `RecentsView` Loading pattern; Android uses blank Box because the URL flow is synchronous from build-config. |
 | 6 | More tab entry shape | **Use the existing hardcoded `MoreMenuItem(id = "3", icon = "🥗", title = "Nutrition")`** in `MoreRepositoryImpl`. `MorePresenter` routes id `"3"` → `goTo(NutritionScreen)`, same pattern as id `"1"` → `RecentsScreen`. | The Nutrition entry already exists in the More menu — adding a `NutritionTabExtension` would duplicate it. The `MoreTabExtension` Metro multibinding is for features that need to inject themselves dynamically (debug-only, plugin-style); permanent core entries live in the hardcoded menu list. User correction during scaffolding. |
-| 7 | iOS scaffold | **Standard `NavigationStack` chevron**, no custom toolbar back button. `canGoBack` binding declared but unread (iOS edge-swipe always pops host per WebView primitive contract). `ProgressView` shown when `state.url == nil`. JS opted in. `mockDonaldsColors` env, `accessibilityIdentifier(tags.SCREEN)`/`tags.WEBVIEW`. | Matches `RecentsView` pattern. Doesn't fight platform-native back gesture semantics. iOS Compose-MP not introduced. |
+| 7 | iOS scaffold | **Standard `NavigationStack` chevron**, no custom toolbar back button. `canGoBack` binding declared but unread (iOS edge-swipe always pops host per WebView primitive contract). `ProgressView` shown when `state.url == nil`. JS opted in. `samplePlatterColors` env, `accessibilityIdentifier(tags.SCREEN)`/`tags.WEBVIEW`. | Matches `RecentsView` pattern. Doesn't fight platform-native back gesture semantics. iOS Compose-MP not introduced. |
 | 8 | Analytics integration | **Nothing to wire.** `AnalyticsNavigationListener` in `composeApp` already fires `trackScreenView("NutritionScreen")` on every `goTo`. No per-feature analytics code. | Discovered the existing nav-level listener after the user pointed out "the analytics other screens also already have are fine, should be built into the navigation." Page-view tracking is a navigation concern, not a feature concern; nutrition gets it free. |
-| 9 | Test scope | **7 artifacts, non-network only.** Tests verify state→props plumbing using sentinel URL (`https://example.test/nutrition`); explicitly do NOT assert WebView content rendering, JS execution, or page-load callbacks. | The WebView primitive's content behavior is the WebView spec's coverage concern. Hermetic tests can't (and shouldn't) hit `mcdonalds.com`. Sentinel URL avoids real network round-trips. |
+| 9 | Test scope | **7 artifacts, non-network only.** Tests verify state→props plumbing using sentinel URL (`https://example.test/nutrition`); explicitly do NOT assert WebView content rendering, JS execution, or page-load callbacks. | The WebView primitive's content behavior is the WebView spec's coverage concern. Hermetic tests can't (and shouldn't) hit `spoonacular.com`. Sentinel URL avoids real network round-trips. |
 | 10 | Feature flag | **No flag.** Nutrition is always on. | User pushback: "if using build config what about this makes you think we need a feature flag? there is no feature flag it is always turned on." Build-config supplies the URL; the feature is simply present. KillSwitch on a low-risk public-info surface is feature-flag cargo-cult. |
 
 ### Deferred

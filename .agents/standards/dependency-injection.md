@@ -7,9 +7,9 @@
 Metro is an Anvil-compatible, compile-time dependency injection framework. It generates the DI graph at compile time with no runtime reflection. KSP is used for code generation but Metro itself does not require separate KSP configuration -- the convention plugins handle this.
 
 Metro is enabled by:
-- `mockdonalds.kmp.domain` plugin (for impl/domain modules)
-- `mockdonalds.kmp.data` plugin (for impl/data modules)
-- `mockdonalds.kmp.presentation` plugin (for impl/presentation modules, with `enableCircuitCodegen.set(true)`)
+- `sampleplatter.kmp.domain` plugin (for impl/domain modules)
+- `sampleplatter.kmp.data` plugin (for impl/data modules)
+- `sampleplatter.kmp.presentation` plugin (for impl/presentation modules, with `enableCircuitCodegen.set(true)`)
 
 ## @ContributesBinding(AppScope::class)
 

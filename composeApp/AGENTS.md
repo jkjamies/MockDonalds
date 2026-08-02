@@ -24,9 +24,9 @@ Application shell that wires all feature modules together. Contains platform ent
 | File | Purpose |
 |------|---------|
 | `AppGraph.kt` | `ProdAppGraph` with `@DependencyGraph.Factory` taking `@Provides Application`. Invoked via `createGraphFactory<ProdAppGraph.Factory>().create(application)`. |
-| `App.kt` | `MockDonaldsApp` composable -- takes `Application`, creates `ProdAppGraph` via its factory, sets up `rememberSaveableBackStack(root = HomeScreen)`, wires `InterceptingNavigator` with `AuthInterceptor`, handles deep link intents, renders `NavigableCircuitContent` with gesture navigation and `MockDonaldsBottomNavigation`. |
-| `MockDonaldsBottomNavigation.kt` | Custom bottom nav bar with glass effect. Uses `TabScreen.tag` for route matching. |
-| `MockDonaldsIcons.kt` | Custom `ImageVector` icons for bottom navigation tabs. |
+| `App.kt` | `SamplePlatterApp` composable -- takes `Application`, creates `ProdAppGraph` via its factory, sets up `rememberSaveableBackStack(root = HomeScreen)`, wires `InterceptingNavigator` with `AuthInterceptor`, handles deep link intents, renders `NavigableCircuitContent` with gesture navigation and `SamplePlatterBottomNavigation`. |
+| `SamplePlatterBottomNavigation.kt` | Custom bottom nav bar with glass effect. Uses `TabScreen.tag` for route matching. |
+| `SamplePlatterIcons.kt` | Custom `ImageVector` icons for bottom navigation tabs. |
 
 ### iosMain (KMP-to-Swift Bridge)
 
@@ -54,7 +54,7 @@ Android resolves Screen → Composable Ui via `@CircuitInject` on the Compose `U
 
 ## Navigation Flow
 
-1. Android: `MockDonaldsApp` -> `rememberSaveableBackStack` -> `InterceptingNavigator` -> `NavigableCircuitContent`
+1. Android: `SamplePlatterApp` -> `rememberSaveableBackStack` -> `InterceptingNavigator` -> `NavigableCircuitContent`
 2. iOS: `IosApp` -> `BridgeNavigator` -> Channel -> Swift `CircuitNavigator` observes actions -> SwiftUI TabView/NavigationStack
 3. Deep links: URI -> `DeepLinkParser.parse()` -> `InterceptingNavigator.deepLink()` (applies auth interceptor) -> push screens
 4. Auth guard: `ProtectedScreen` navigation -> `AuthInterceptor` rewrites to `LoginScreen(returnTo = originalScreen)`
@@ -158,7 +158,7 @@ InterceptingNavigator(
 Deep links bypass `InterceptingNavigator` for the actual navigation (to avoid tracking intermediate screens) and explicitly track only the final destination:
 
 ```
-URI "mockdonalds://app/more/profile"
+URI "sampleplatter://app/more/profile"
   → parse: [MoreScreen, ProfileScreen]
   → intercept: auth-check each screen
   → navigate: push all screens onto the stack

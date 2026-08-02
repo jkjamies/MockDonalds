@@ -24,7 +24,7 @@ No emulator or simulator required. These are fast (~10s each) and should always 
 
 ## Konsist (Kotlin)
 
-38 architecture test classes in `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/`. All use Kotest BehaviorSpec and scan the project with `Konsist.scopeFromProject()`.
+38 architecture test classes in `testing/architecture-check/src/test/kotlin/com/jkjamies/sampleplatter/konsist/`. All use Kotest BehaviorSpec and scan the project with `Konsist.scopeFromProject()`.
 
 ### Source-set scoping — read this before writing a rule
 
@@ -56,7 +56,7 @@ Third trap: **do not identify core impl types by an `.impl.` substring in the im
 | circuit/ | `NamingConventionsTest` | Screens end with Screen, events with Event, presenters with Presenter, UiState with UiState, repositories with Repository/RepositoryImpl. |
 | core/ | `CodeHygieneTest` | No wildcard imports, no println/System.out, no Thread.sleep/runBlocking, no !!, no lateinit var in shared code. |
 | core/ | `DependencyInjectionTest` | Every Repository has @ContributesBinding impl. Every abstract use case has @ContributesBinding Impl. @CircuitInject presenters have @Inject. |
-| core/ | `PackageConventionsTest` | Package segments match module path. Features use com.mockdonalds.app.features.*. Core uses com.mockdonalds.app.core.*. |
+| core/ | `PackageConventionsTest` | Package segments match module path. Features use com.jkjamies.sampleplatter.features.*. Core uses com.jkjamies.sampleplatter.core.*. |
 | core/ | `VisibilityConventionsTest` | @ContributesBinding classes are public. UiState not internal. |
 | core/ | `DependencyGraphScopeTest` | @DependencyGraph only in consumer modules (composeApp, navint-tests). CircuitProviders only in core:circuit. AppGraph in core:metro. |
 | core/ | `CoreMetroConventionsTest` | core:metro must not import from features or impl modules. |
@@ -80,7 +80,7 @@ Third trap: **do not identify core impl types by an `.impl.` substring in the im
 
 ### Adding Konsist Rules
 
-1. Create a new `BehaviorSpec` in the appropriate package under `testing/architecture-check/src/test/kotlin/com/mockdonalds/app/konsist/`
+1. Create a new `BehaviorSpec` in the appropriate package under `testing/architecture-check/src/test/kotlin/com/jkjamies/sampleplatter/konsist/`
 2. Use `Konsist.scopeFromProject()` for project-wide checks
 3. Use `resideInPath("..impl/domain..")` for module-scoped checks
 4. Use `Konsist.scopeFromSourceSet("commonMain", "features..", "domain")` for source-set-scoped checks

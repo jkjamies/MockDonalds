@@ -7,7 +7,7 @@ Android instrumented test module that validates full user journeys against the *
 ## How It Works
 
 - Uses `com.android.test` plugin with `targetProjectPath = ":androidApp"`
-- Test APK instruments against the real app (com.mockdonalds.app) **debug** variant
+- Test APK instruments against the real app (com.jkjamies.sampleplatter) **debug** variant
 - Tests run in a separate process using UI Automator for element access
 - No test doubles — everything is real
 

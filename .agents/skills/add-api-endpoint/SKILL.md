@@ -40,10 +40,10 @@ The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before produ
 
 ### 1. Remote Data Source Interface — `impl/data/remote/`
 
-`features/{feature}/impl/data/src/commonMain/kotlin/com/mockdonalds/app/features/{feature}/data/remote/{Name}RemoteDataSource.kt`
+`features/{feature}/impl/data/src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{feature}/data/remote/{Name}RemoteDataSource.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{feature}.data.remote
+package com.jkjamies.sampleplatter.features.{feature}.data.remote
 
 import kotlinx.coroutines.flow.Flow
 
@@ -55,13 +55,13 @@ interface {Name}RemoteDataSource {
 
 ### 2. Remote Data Source Implementation — `impl/data/remote/`
 
-`features/{feature}/impl/data/src/commonMain/kotlin/com/mockdonalds/app/features/{feature}/data/remote/{Name}RemoteDataSourceImpl.kt`
+`features/{feature}/impl/data/src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{feature}/data/remote/{Name}RemoteDataSourceImpl.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{feature}.data.remote
+package com.jkjamies.sampleplatter.features.{feature}.data.remote
 
-import com.mockdonalds.app.core.buildconfig.AppBuildConfig
-import com.mockdonalds.app.core.network.HttpClientFactory
+import com.jkjamies.sampleplatter.core.buildconfig.AppBuildConfig
+import com.jkjamies.sampleplatter.core.network.HttpClientFactory
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -103,10 +103,10 @@ class {Name}RemoteDataSourceImpl(
 
 ### 3. DTO — `impl/data/remote/`
 
-`features/{feature}/impl/data/src/commonMain/kotlin/com/mockdonalds/app/features/{feature}/data/remote/{Name}Dto.kt`
+`features/{feature}/impl/data/src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{feature}/data/remote/{Name}Dto.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{feature}.data.remote
+package com.jkjamies.sampleplatter.features.{feature}.data.remote
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

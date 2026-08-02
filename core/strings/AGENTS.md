@@ -3,7 +3,7 @@
 ## Purpose
 
 Single source of Android `R.string` resources for every feature. Translations are pulled
-from Phrase by the `pullTranslations` Gradle task (registered via the `mockdonalds.phrase`
+from Phrase by the `pullTranslations` Gradle task (registered via the `sampleplatter.phrase`
 convention plugin) and written into `src/androidMain/res/values/` (default locale) and
 `values-{locale}/` for translated locales. iOS SwiftUI reads its own
 `.lproj/Localizable.strings` files in `iosApp/iosApp/Resources/`, which the same task
@@ -15,7 +15,7 @@ No Kotlin types, no commonMain code — Android resources only. Consume via the 
 Android resource API:
 
 ```kotlin
-import com.mockdonalds.app.core.strings.R
+import com.jkjamies.sampleplatter.core.strings.R
 
 Text(text = stringResource(R.string.menu_title))
 ```
@@ -24,7 +24,7 @@ Text(text = stringResource(R.string.menu_title))
 
 ### From a feature presentation module
 
-`mockdonalds.kmp.presentation` adds `core:strings` to every feature's `androidMain`
+`sampleplatter.kmp.presentation` adds `core:strings` to every feature's `androidMain`
 classpath automatically. No per-feature `build.gradle.kts` change is needed; reference
 keys with `stringResource(R.string.…)` from any Compose UI in `androidMain`.
 

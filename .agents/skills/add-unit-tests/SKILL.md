@@ -43,11 +43,11 @@ Check if the test file exists. If it exists, check if new code paths need additi
 Reference: `features/order/impl/presentation/src/commonTest/.../OrderPresenterTest.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{name}.presentation
+package com.jkjamies.sampleplatter.features.{name}.presentation
 
-import com.mockdonalds.app.core.test.TestCenterPostDispatchers
-import com.mockdonalds.app.features.{name}.api.navigation.{Feature}Screen
-import com.mockdonalds.app.features.{name}.test.FakeGet{Feature}Content
+import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.features.{name}.api.navigation.{Feature}Screen
+import com.jkjamies.sampleplatter.features.{name}.test.FakeGet{Feature}Content
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.presenterTestOf
 import io.kotest.core.spec.style.BehaviorSpec
@@ -88,9 +88,9 @@ class {Feature}PresenterTest : BehaviorSpec({
 Reference: `features/order/impl/domain/src/commonTest/.../GetOrderContentImplTest.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{name}.domain
+package com.jkjamies.sampleplatter.features.{name}.domain
 
-import com.mockdonalds.app.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.flow.first
@@ -116,7 +116,7 @@ class Get{Feature}ContentImplTest : BehaviorSpec({
 Reference: `features/order/impl/data/src/commonTest/.../OrderRepositoryImplTest.kt`
 
 ```kotlin
-package com.mockdonalds.app.features.{name}.data
+package com.jkjamies.sampleplatter.features.{name}.data
 
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe

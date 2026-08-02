@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!--
-      Instruments the :androidApp benchmark variant (com.mockdonalds.app.*).
+      Instruments the :androidApp benchmark variant (com.jkjamies.sampleplatter.*).
 
       Under self-instrumenting the test APK runs as its own process. Android 11+
       package visibility rules hide other processes from ActivityManager queries

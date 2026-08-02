@@ -38,7 +38,7 @@ Data flow:
 ```
 UiTest calls robot.setDefaultContent()
   → UiRobot creates state via StateRobot.defaultState()
-  → UiRobot wraps in MockDonaldsTheme + LocalWindowSizeClass
+  → UiRobot wraps in SamplePlatterTheme + LocalWindowSizeClass
   → UiRobot sets ComposeContentTestRule content
   → UiTest calls robot.assertDefaultScreen()
   → UiRobot asserts via onNodeWithTag(TestTags.CONSTANT)
@@ -82,7 +82,7 @@ features/{feature}/
 
 - `UiTest` uses `UiRobot` only -- never `StateRobot` directly
 - `UiRobot` owns `StateRobot` -- single source of state creation
-- All content wrapped in `MockDonaldsTheme` + `CompositionLocalProvider(LocalWindowSizeClass)`
+- All content wrapped in `SamplePlatterTheme` + `CompositionLocalProvider(LocalWindowSizeClass)`
 
 ### Required Methods
 
@@ -102,7 +102,7 @@ private fun setContentWith(state: HomeUiState, landscape: Boolean = false) {
         CompositionLocalProvider(
             LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(size),
         ) {
-            MockDonaldsTheme { HomeUi(state = state) }
+            SamplePlatterTheme { HomeUi(state = state) }
         }
     }
 }

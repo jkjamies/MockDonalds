@@ -1,0 +1,139 @@
+package com.jkjamies.sampleplatter
+
+import android.app.Application
+import android.content.Intent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
+import androidx.compose.ui.unit.dp
+import com.jkjamies.sampleplatter.core.theme.LocalWindowSizeClass
+import com.jkjamies.sampleplatter.core.theme.SamplePlatterTheme
+import com.jkjamies.sampleplatter.core.circuit.TabScreen
+import com.jkjamies.sampleplatter.features.home.api.navigation.HomeScreen
+import com.jkjamies.sampleplatter.features.login.api.navigation.LoginScreen
+import com.jkjamies.sampleplatter.navigation.AnalyticsNavigationListener
+import com.jkjamies.sampleplatter.navigation.AuthInterceptor
+import com.jkjamies.sampleplatter.navigation.InterceptingNavigator
+import com.jkjamies.sampleplatter.navigation.createDeepLinkParser
+import com.jkjamies.sampleplatter.navigation.findTabByTag
+import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.foundation.CircuitCompositionLocals
+import com.slack.circuit.foundation.NavigableCircuitContent
+import com.slack.circuit.foundation.rememberCircuitNavigator
+import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
+import dev.zacsweers.metro.createGraphFactory
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun SamplePlatterApp(
+    application: Application,
+    windowSizeClass: WindowSizeClass,
+    deepLinkIntent: Intent? = null,
+) {
+    val graph = remember(application) {
+        createGraphFactory<ProdAppGraph.Factory>().create(application).also {
+            it.loggerInitializer.initialize()
+        }
+    }
+
+    val deepLinkParser = remember { createDeepLinkParser() }
+
+    CompositionLocalProvider(
+        LocalWindowSizeClass provides windowSizeClass,
+    ) {
+    SamplePlatterTheme {
+        val backStack = rememberSaveableBackStack(root = HomeScreen)
+        val circuitNavigator = rememberCircuitNavigator(
+            backStack = backStack,
+            onRootPop = { },
+        )
+        val analyticsListener = remember { AnalyticsNavigationListener(graph.analyticsDispatcher) }
+        val navigator = remember(circuitNavigator) {
+            InterceptingNavigator(
+                delegate = circuitNavigator,
+                interceptors = listOf(
+                    AuthInterceptor(graph.authManager) { returnTo ->
+                        LoginScreen(returnTo = returnTo)
+                    },
+                ),
+                listeners = listOf(analyticsListener),
+            )
+        }
+
+        LaunchedEffect(Unit) {
+            analyticsListener.onResetRoot(HomeScreen)
+        }
+
+        LaunchedEffect(deepLinkIntent) {
+            val uri = deepLinkIntent?.data?.toString() ?: return@LaunchedEffect
+            val screens = deepLinkParser.parse(uri) ?: return@LaunchedEffect
+            val intercepted = navigator.deepLink(screens)
+            if (intercepted.isNotEmpty()) {
+                circuitNavigator.resetRoot(intercepted.first())
+                intercepted.drop(1).forEach { circuitNavigator.goTo(it) }
+                if (intercepted.size == 1) {
+                    analyticsListener.onResetRoot(intercepted.first())
+                } else {
+                    analyticsListener.onGoTo(intercepted.last())
+                }
+            }
+        }
+
+        CircuitCompositionLocals(graph.circuit) {
+            val topScreen = backStack.topRecord?.screen
+
+            val currentRoute = (topScreen as? TabScreen)?.tag ?: ""
+
+            Scaffold(
+                modifier = Modifier.semantics { testTagsAsResourceId = true },
+                bottomBar = {
+                    if (currentRoute.isNotEmpty()) {
+                        SamplePlatterBottomNavigation(
+                            currentRoute = currentRoute,
+                            onNavigate = { route ->
+                                val target = findTabByTag(route)
+                                    ?: return@SamplePlatterBottomNavigation
+                                navigator.resetRoot(target)
+                            },
+                        )
+                    }
+                },
+            ) { innerPadding ->
+                Box(modifier = Modifier.fillMaxSize()) {
+                    NavigableCircuitContent(
+                        navigator = navigator,
+                        backStack = backStack,
+                        decoratorFactory = remember(navigator) {
+                            GestureNavigationDecorationFactory(
+                                onBackInvoked = navigator::pop,
+                            )
+                        },
+                    )
+                    if (currentRoute.isNotEmpty()) {
+                        Text(
+                            text = "${graph.appBuildConfig.market.uppercase()}/${graph.appBuildConfig.env}",
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .statusBarsPadding(),
+                        )
+                    }
+                }
+            }
+
+        }
+    }
+    }
+}

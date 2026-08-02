@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>MockDonalds</string>
+	<string>SamplePlatter</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -49,10 +49,10 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.mockdonalds.app</string>
+			<string>com.jkjamies.sampleplatter</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>mockdonalds</string>
+				<string>sampleplatter</string>
 			</array>
 		</dict>
 	</array>

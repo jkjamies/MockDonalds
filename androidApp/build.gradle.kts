@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.mockdonalds.app"
+    namespace = "com.jkjamies.sampleplatter"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.mockdonalds.app"
+        applicationId = "com.jkjamies.sampleplatter"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

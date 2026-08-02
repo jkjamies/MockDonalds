@@ -35,26 +35,26 @@ Ask the user for any missing parameters. Don't proceed with placeholders. Explic
 - Locale (`{LOCALE}`)
 - Currency (`{CURRENCY}`)
 - TLD for URLs (`{TLD}`, e.g. `.jp`)
-- Is this a "real" market or a synthetic sandbox like `core`? If sandbox, URLs use the sandbox pattern (e.g. `{market}-int-api.mockdonalds.com`); see `markets/core/*.properties` for the pattern.
+- Is this a "real" market or a synthetic sandbox like `core`? If sandbox, URLs use the sandbox pattern (e.g. `{market}-int-api.sampleplatter.com`); see `markets/core/*.properties` for the pattern.
 
 Uppercase variants needed downstream: `{MARKET_UPPER} = market.toUpperCase()` (e.g. `JP`). For the xcconfig files: `{MARKET_UPPER}` in filenames but `MARKET={market}` (lowercase) in file contents — the validator regex requires lowercase in the value.
 
 ### 2. Create `core/build-config/impl/markets/{market}/` and three .properties files
 
-For a real market (URL pattern: `{env-prefix}-{service}-api.mockdonalds{tld}`):
+For a real market (URL pattern: `{env-prefix}-{service}-api.sampleplatter{tld}`):
 
 **`{market}-int.properties`:**
 ```
-APP_ID={market}-mockdonalds-mobile-int
+APP_ID={market}-sampleplatter-mobile-int
 MARKET={market}
 ENV=int
-BASE_URL=https://int-api.mockdonalds{TLD}
-CDN_URL=https://int-cdn.mockdonalds{TLD}
-MENU_BASE_URL=https://int-menu-api.mockdonalds{TLD}
-ORDER_BASE_URL=https://int-order-api.mockdonalds{TLD}
-ACCOUNT_BASE_URL=https://int-account-api.mockdonalds{TLD}
-REWARDS_BASE_URL=https://int-rewards-api.mockdonalds{TLD}
-STORE_BASE_URL=https://int-stores-api.mockdonalds{TLD}
+BASE_URL=https://int-api.sampleplatter{TLD}
+CDN_URL=https://int-cdn.sampleplatter{TLD}
+MENU_BASE_URL=https://int-menu-api.sampleplatter{TLD}
+ORDER_BASE_URL=https://int-order-api.sampleplatter{TLD}
+ACCOUNT_BASE_URL=https://int-account-api.sampleplatter{TLD}
+REWARDS_BASE_URL=https://int-rewards-api.sampleplatter{TLD}
+STORE_BASE_URL=https://int-stores-api.sampleplatter{TLD}
 LOCALE={LOCALE}
 CURRENCY={CURRENCY}
 ```
@@ -63,18 +63,18 @@ CURRENCY={CURRENCY}
 
 **`{market}-prod.properties`:** same, but **drop the env prefix from URLs and APP_ID**:
 ```
-APP_ID={market}-mockdonalds-mobile
+APP_ID={market}-sampleplatter-mobile
 MARKET={market}
 ENV=prod
-BASE_URL=https://api.mockdonalds{TLD}
-CDN_URL=https://cdn.mockdonalds{TLD}
-MENU_BASE_URL=https://menu-api.mockdonalds{TLD}
+BASE_URL=https://api.sampleplatter{TLD}
+CDN_URL=https://cdn.sampleplatter{TLD}
+MENU_BASE_URL=https://menu-api.sampleplatter{TLD}
 ...
 LOCALE={LOCALE}
 CURRENCY={CURRENCY}
 ```
 
-For a synthetic sandbox market: use `{market}-int-{service}.mockdonalds.com` pattern (always `.com` TLD, never a real country suffix). Copy from `impl/markets/core/core-int.properties` as the template.
+For a synthetic sandbox market: use `{market}-int-{service}.sampleplatter.com` pattern (always `.com` TLD, never a real country suffix). Copy from `impl/markets/core/core-int.properties` as the template.
 
 **Validate immediately:**
 ```bash
@@ -93,9 +93,9 @@ Two small edits make the new market selectable from Android Studio's Build Varia
 create("{market}") { dimension = "market"; applicationIdSuffix = ".{market}" }
 ```
 
-AGP will now expose 6 new rows (`{market}IntDebug`, `{market}IntRelease`, `{market}MteDebug`, `{market}MteRelease`, `{market}ProdDebug`, `{market}ProdRelease`) and `applicationId` resolves to `com.mockdonalds.app.{market}` automatically.
+AGP will now expose 6 new rows (`{market}IntDebug`, `{market}IntRelease`, `{market}MteDebug`, `{market}MteRelease`, `{market}ProdDebug`, `{market}ProdRelease`) and `applicationId` resolves to `com.jkjamies.sampleplatter.{market}` automatically.
 
-**b. `build-logic/convention/src/main/kotlin/com/mockdonalds/buildlogic/BuildVariantResolver.kt`** — extend the market alternation in `variantRe`:
+**b. `build-logic/convention/src/main/kotlin/com/jkjamies/sampleplatter/buildlogic/BuildVariantResolver.kt`** — extend the market alternation in `variantRe`:
 
 ```kotlin
 private val variantRe = Regex("""(?i)(us|ca|de|au|core|{market})(Int|Mte|Prod)(Debug|Release)""")
@@ -215,7 +215,7 @@ Summarize to the user:
 
 - **Localized strings / resources.** This skill adds the *config* binary for a market, not translated content. String tables, date/number formatting, and copy stay with whatever localization system the project adopts (Compose Multiplatform resources for KMP shared strings, `.strings`/`.stringsdict` for iOS-native, XML for Android-native).
 - **App Store / Play Store listings.** Market config defines the binary identity (bundle ID, app ID); the store listings themselves are submitted via App Store Connect / Play Console and aren't part of this repo.
-- **Backend provisioning.** The URLs in `.properties` must point at infrastructure that already exists. If the backend team hasn't provisioned `int-api.mockdonalds.jp`, the market is not ready — verify DNS / backend readiness before merging.
+- **Backend provisioning.** The URLs in `.properties` must point at infrastructure that already exists. If the backend team hasn't provisioned `int-api.sampleplatter.jp`, the market is not ready — verify DNS / backend readiness before merging.
 - **Market-specific feature toggles.** Compile-time config should not carry `*Enabled` flags. If a feature is gated per-market, that belongs in Harness (runtime), not here.
 
 ## Related

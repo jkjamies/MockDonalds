@@ -7,14 +7,14 @@ final class RecentsStateRobot: BaseStateRobot<RecentsUiState, RecentsEvent> {
             items: [
                 RecentItem(
                     id: "1",
-                    name: "Big Mac Combo",
+                    name: "Signature Stack Combo",
                     description: "Combo Meal",
                     relativeTime: "2 days ago",
                     imageUrl: nil
                 ),
                 RecentItem(
                     id: "2",
-                    name: "McFlurry Oreo",
+                    name: "Cookie Swirl Cup",
                     description: "Dessert",
                     relativeTime: "Last week",
                     imageUrl: nil

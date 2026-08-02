@@ -1,6 +1,6 @@
 # Forbidden Patterns
 
-Every banned pattern in the MockDonalds codebase with rationale, alternative, and enforcing Konsist test.
+Every banned pattern in the SamplePlatter codebase with rationale, alternative, and enforcing Konsist test.
 
 ## Code Hygiene
 

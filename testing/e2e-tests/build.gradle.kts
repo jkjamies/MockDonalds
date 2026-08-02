@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mockdonalds.app.e2e"
+    namespace = "com.jkjamies.sampleplatter.e2e"
     compileSdk = 36
 
     targetProjectPath = ":androidApp"
