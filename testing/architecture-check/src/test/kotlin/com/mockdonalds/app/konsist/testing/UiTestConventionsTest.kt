@@ -125,8 +125,16 @@ class UiTestConventionsTest : BehaviorSpec({
     }
 
     Given("test tags") {
-        Then("every *Ui.kt in androidMain should have a *TestTags object in the api module") {
-            val uiFileNames = Konsist.scopeFromProject()
+        // Pair every screen with the feature module that owns it. Screen name alone is not a
+        // usable key: WelcomeUi lives in :features:login and CategoryDetailUi in :features:order,
+        // so deriving the module from the name would look for :features:welcome and
+        // :features:categorydetail, neither of which exists. Comparing bare names also let a
+        // TestTags object in any module satisfy a Ui composable in a different one.
+        fun featureOf(path: String): String? =
+            Regex("""/features/([^/]+)/""").find(path)?.groupValues?.get(1)
+
+        Then("every *Ui.kt in androidMain should have a *TestTags object in its own feature") {
+            val uiKeys = Konsist.scopeFromProject()
                 .functions()
                 .filter {
                     it.hasAnnotation { a -> a.name == "CircuitInject" } &&
@@ -134,35 +142,47 @@ class UiTestConventionsTest : BehaviorSpec({
                         it.resideInPath("..androidMain..")
                 }
                 .filter { it.name.endsWith("Ui") }
-                .map { it.name.removeSuffix("Ui") }
+                .mapNotNull { fn -> featureOf(fn.path)?.let { it to fn.name.removeSuffix("Ui") } }
                 .toSet()
 
-            val testTagObjects = Konsist.scopeFromProject()
+            val tagKeys = Konsist.scopeFromProject()
                 .objects()
-                .filter { it.resideInPath("..api..") }
+                .filter { it.resideInPath("..api/navigation..") }
                 .filter { it.name.endsWith("TestTags") }
-                .map { it.name.removeSuffix("TestTags") }
+                .mapNotNull { obj ->
+                    featureOf(obj.path)?.let { it to obj.name.removeSuffix("TestTags") }
+                }
                 .toSet()
 
-            val missing = uiFileNames.filter { it !in testTagObjects }
+            val missing = uiKeys.filterNot { it in tagKeys }
 
             assert(missing.isEmpty()) {
-                "UI composables missing TestTags object in api:navigation module:\n${missing.joinToString("\n") { "  ${it}Ui — expected ${it}TestTags in :features:${it.lowercase()}:api:navigation" }}"
+                val names = missing.joinToString("\n") { (feature, screen) ->
+                    "  ${screen}Ui — expected ${screen}TestTags in :features:$feature:api:navigation"
+                }
+                "UI composables missing a TestTags object in their own feature's " +
+                    "api:navigation module:\n$names"
             }
         }
 
-        Then("TestTags objects should reside in the api.ui package") {
-            val testTagObjects = Konsist.scopeFromProject()
+        Then("TestTags objects should reside in the api:navigation module's ui package") {
+            // The message below has always promised the `ui` package, but the check only tested
+            // for "api" anywhere in the path — so the package half went unenforced, and any
+            // directory containing "api" satisfied the module half.
+            val violators = Konsist.scopeFromProject()
                 .objects()
                 .filter { it.name.endsWith("TestTags") }
-
-            val violators = testTagObjects.filter { obj ->
-                !obj.resideInPath("..api..")
-            }
+                .filter { obj ->
+                    !obj.resideInPath("..api/navigation..") ||
+                        obj.packagee?.name?.endsWith(".api.ui") != true
+                }
 
             assert(violators.isEmpty()) {
-                val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
-                "TestTags objects must live in the feature api:navigation module (ui package), not in presentation:\n$names"
+                val names = violators.joinToString("\n") {
+                    "  ${it.name} (${it.packagee?.name ?: "no package"} — ${it.path})"
+                }
+                "TestTags objects must live in the feature api:navigation module, in its " +
+                    "`ui` package:\n$names"
             }
         }
     }

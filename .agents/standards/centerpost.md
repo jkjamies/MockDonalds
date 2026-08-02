@@ -289,13 +289,28 @@ val result = placeOrderInteractor(params)
     }
 ```
 
-### Never Catch CancellationException
+### Never Swallow CancellationException
 
-`centerPostRunCatching` handles this correctly. Manual `try/catch` blocks must rethrow it:
+The rule is that cancellation must keep propagating — not that the type may never be named.
+`centerPostRunCatching` handles this for you. Manual `try/catch` blocks must rethrow it:
 ```kotlin
 // WRONG: catch(e: Exception) { ... }  -- swallows cancellation
 // RIGHT: centerPostRunCatching { ... } -- rethrows CancellationException automatically
 ```
+
+**Exception — `Flow.catch` handlers.** `centerPostRunCatching` is `inline fun <R> (block: () -> R)`:
+it wraps a callable block. A `Flow.catch` handler receives an *already-thrown* `Throwable`, so
+there is no block to wrap and the helper cannot apply. Such a handler must test for cancellation
+and rethrow it explicitly before mapping anything else to an error state:
+```kotlin
+.catch { throwable ->
+    if (throwable is CancellationException) throw throwable
+    emit(CenterPostContentState.Error(throwable.asCenterPostException()))
+}
+```
+This is what `CenterPostSubjectInteractor` does. Dropping the check would be the actual
+violation: `Flow.catch` intercepts every upstream throwable, so without it a cancelled collector
+surfaces to the UI as an error state and structured concurrency breaks.
 
 ## CenterPostDispatchers and TestCenterPostDispatchers
 

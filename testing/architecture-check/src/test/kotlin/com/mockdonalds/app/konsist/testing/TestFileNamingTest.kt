@@ -117,8 +117,27 @@ class TestFileNamingTest : BehaviorSpec({
                             it.resideInPath("..core/test-fixtures..")
                         )
                 }
+                // Safe to match on text below: `testFiles` is commonTest + core/test-fixtures,
+                // so this rule's own file (testing/architecture-check/src/test) is out of scope
+                // and its prose mentions of the symbol cannot flag it. No exclusion needed — one
+                // added here would match nothing, which is the failure this suite exists to catch.
                 .filter { file ->
-                    file.imports.any { it.name == "kotlinx.coroutines.test.StandardTestDispatcher" }
+                    // Matching the exact import alone left two ways through. The wildcard ban in
+                    // CodeHygieneTest is scoped to `isProductionSourcePath`, so a *test* file may
+                    // legally write `import kotlinx.coroutines.test.*` and construct one; and a
+                    // fully-qualified call needs no import at all.
+                    val exactImport = file.imports.any {
+                        it.name == "kotlinx.coroutines.test.StandardTestDispatcher"
+                    }
+                    val wildcardImport = file.imports.any {
+                        it.isWildcard && it.name.startsWith("kotlinx.coroutines.test")
+                    }
+                    val constructsIt =
+                        Regex("""\bStandardTestDispatcher\s*\(""").containsMatchIn(file.text)
+                    val fullyQualified =
+                        file.text.contains("kotlinx.coroutines.test.StandardTestDispatcher(")
+
+                    exactImport || fullyQualified || (wildcardImport && constructsIt)
                 }
 
             assert(violators.isEmpty()) {
