@@ -35,7 +35,7 @@ The Nutrition screen embeds a third-party nutrition reference (Spoonacular) in a
 - **Sentinel URL hygiene in tests.** All tests use `https://example.test/nutrition` (RFC2606 reserved domain) to avoid hermetic-test network round-trips.
 
 ## Per-Market Configuration
-- Default `NUTRITION_URL=https://spoonacular.com/`.
+- Default `NUTRITION_URL=https://spoonacular.com`.
 - All markets inherit the default; no market currently overrides it.
 
 ## Testing

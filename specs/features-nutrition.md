@@ -32,7 +32,7 @@ This feature is also the first real consumer of the WebView primitive that lande
 - [ ] On iOS, the standard `NavigationStack` chevron / edge-swipe pops to More (per the WebView primitive's documented iOS asymmetry).
 - [ ] JavaScript is enabled inside the WebView (the calculator uses interactive controls).
 - [ ] Off-host links inside the page (e.g., social media, terms of service) open in Custom Tabs (Android) / system browser (iOS), not in-frame.
-- [ ] The build-config field `nutritionUrl` defaults to `https://spoonacular.com/`. All markets inherit the default; the per-market override mechanism remains available if a market-specific nutrition destination is ever configured.
+- [ ] The build-config field `nutritionUrl` defaults to `https://spoonacular.com`. All markets inherit the default; the per-market override mechanism remains available if a market-specific nutrition destination is ever configured.
 - [ ] Page-view tracking fires automatically via `AnalyticsNavigationListener` on `goTo(NutritionScreen)` — no per-feature analytics code.
 
 ---
@@ -279,7 +279,7 @@ n/a — nutrition is always on. Removing it requires a code change (delete `Nutr
 
 | Field | Default | Per-Market | Description |
 |-------|---------|------------|-------------|
-| `nutritionUrl` | `https://spoonacular.com/` | overridable, none set | Nutrition reference URL |
+| `nutritionUrl` | `https://spoonacular.com` | overridable, none set | Nutrition reference URL |
 
 ### Per-market values
 
@@ -293,7 +293,7 @@ n/a — nutrition is always on. Removing it requires a code change (delete `Nutr
 
 ### Files to change
 
-- `core/build-config/impl/Defaults.properties` — add `NUTRITION_URL=https://spoonacular.com/`
+- `core/build-config/impl/Defaults.properties` — add `NUTRITION_URL=https://spoonacular.com`
 - Per-market property files: no override needed — every market inherits the default.
 - `core/build-config/api/src/commonMain/.../AppBuildConfig.kt` — add `@DebugConfigField(Group.Urls) val nutritionUrl: String`
 - `core/build-config/impl/.../AppBuildConfigImpl.kt` — wire field from BuildKonfig
@@ -303,7 +303,7 @@ n/a — nutrition is always on. Removing it requires a code change (delete `Nutr
 The `/add-config-field` skill automates all of the above. Run it before `/add-feature`:
 
 ```
-/add-config-field nutritionUrl url --default "https://spoonacular.com/"
+/add-config-field nutritionUrl url --default "https://spoonacular.com"
 ```
 
 
