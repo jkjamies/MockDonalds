@@ -20,10 +20,25 @@ final class NutritionViewRobot {
         NutritionView(state: stateRobot.loadingState())
     }
 
+    func createLandscapeView() -> some View {
+        createDefaultView()
+            .environment(\.verticalSizeClass, .compact)
+    }
+
     // MARK: - Screen Assertions
 
     func assertDefaultScreen() throws {
         let view = createDefaultView()
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: tags.SCREEN)
+        try body.find(viewWithAccessibilityIdentifier: tags.WEBVIEW)
+    }
+
+    // NutritionView has no `isLandscape` branch, so this asserts the same identifiers as the
+    // default layout by design: it guards that the screen still renders every element under a
+    // compact vertical size class. Add branch-specific assertions if one is introduced.
+    func assertLandscapeScreen() throws {
+        let view = createLandscapeView()
         let body = try view.inspect()
         try body.find(viewWithAccessibilityIdentifier: tags.SCREEN)
         try body.find(viewWithAccessibilityIdentifier: tags.WEBVIEW)

@@ -86,7 +86,9 @@ Never read the generated `BuildConfig` object directly — the facade rule in `.
 
 ### CI
 
-Every PR runs the full matrix: markets × envs × build types. The market axis in the CI config is the authoritative list — when a new market is added, the `add-market` skill flags the CI axis as a required update. A market that builds locally but isn't in the CI axis is effectively unshipped; the team has no guarantee it stays green across commits.
+**Today**, `.github/workflows/smoke.yml` builds one combo per platform — `us`/`int`/`debug` (`:androidApp:assembleUsIntDebug` on Linux, the `US-Int-Debug` Xcode configuration on macOS) — plus Konsist, Harmonize, and the host unit tests. It is a smoke gate, not the matrix.
+
+**The target** is the full matrix: markets × envs × build types on every PR, with the market axis in the CI config as the authoritative list, so `add-market` can flag it as a required update. Until that exists, a market that builds locally has no guarantee of staying green across commits — the single-combo gate only proves that the shared code, the module graph, and both platform toolchains still work. Widening the axis is a matter of adding a `strategy.matrix` to the two jobs; the cost is macOS runner minutes, which is why it is not on by default.
 
 ### Future: localization
 

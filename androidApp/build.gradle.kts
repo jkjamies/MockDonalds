@@ -16,7 +16,9 @@ android {
         versionName = "1.0.0"
     }
 
-    // Symmetric with iOS xcconfigs: 5 markets × 3 envs × debug/release = 30 Build Variants.
+    // 5 markets × 3 envs × debug/release = 30 shippable Build Variants, symmetric with the
+    // 30 iOS xcconfigs. The `benchmark` build type below adds a third build type, so AGP
+    // actually emits 45 variants — the extra 15 are macrobenchmark-only and never ship.
     // Market flavor drives applicationId suffix; env flavor is config-only (values flow to
     // BuildKonfig via task-name parsing in core/build-config/impl/build.gradle.kts).
     flavorDimensions += listOf("market", "env")

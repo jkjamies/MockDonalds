@@ -1,6 +1,7 @@
 package com.mockdonalds.app.konsist.testing
 
 import com.lemonappdev.konsist.api.Konsist
+import com.mockdonalds.app.konsist.normalizedPath
 import io.kotest.core.spec.style.BehaviorSpec
 
 /**
@@ -75,7 +76,7 @@ class E2eConventionsTest : BehaviorSpec({
                         it.nameWithExtension.endsWith("Robot.kt")
                 }
 
-            val violators = robotFiles.filter { !it.path.contains("/robots/") }
+            val violators = robotFiles.filter { !normalizedPath(it.path).contains("/robots/") }
 
             assert(violators.isEmpty()) {
                 val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }

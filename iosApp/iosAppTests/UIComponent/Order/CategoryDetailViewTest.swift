@@ -14,6 +14,10 @@ import ComposeApp
         try robot.assertEmptyScreen()
     }
 
+    @Test func rendersLandscapeLayout() throws {
+        try robot.assertLandscapeScreen()
+    }
+
     @Test func backButtonEmitsEvent() {
         robot.simulateBackTap()
         robot.assertLastEvent(CategoryDetailEvent.BackPressed())

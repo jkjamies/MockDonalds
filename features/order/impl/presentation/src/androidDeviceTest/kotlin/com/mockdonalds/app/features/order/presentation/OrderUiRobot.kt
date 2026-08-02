@@ -19,10 +19,11 @@ class OrderUiRobot(private val rule: ComposeContentTestRule) {
     private val stateRobot = OrderStateRobot()
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-    private fun setContentWith(state: OrderUiState) {
+    private fun setContentWith(state: OrderUiState, landscape: Boolean = false) {
+        val size = if (landscape) DpSize(800.dp, 400.dp) else DpSize(400.dp, 800.dp)
         rule.setContent {
             CompositionLocalProvider(
-                LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(DpSize(400.dp, 800.dp)),
+                LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(size),
             ) {
                 MockDonaldsTheme { OrderUi(state = state) }
             }
@@ -37,11 +38,25 @@ class OrderUiRobot(private val rule: ComposeContentTestRule) {
         setContentWith(stateRobot.stateWithNoCart())
     }
 
+    fun setLandscapeContent() {
+        setContentWith(stateRobot.defaultState(), landscape = true)
+    }
+
     fun assertDefaultScreen() {
         assertCategoryPreviewDisplayed("burgers")
         assertCategoryPreviewDisplayed("drinks")
         assertCartBarDisplayed()
         assertCartItemCount(2)
+    }
+
+    // OrderUi has no orientation branch — there is no compact-height layout to distinguish
+    // from the default one. What this guards is that the screen survives a landscape window:
+    // a fixed height or a non-scrolling container would push the cart bar off-screen and fail
+    // here. If OrderUi ever grows an `isLandscape` branch, this must assert what differs.
+    fun assertLandscapeScreen() {
+        assertCategoryPreviewDisplayed("burgers")
+        assertCategoryPreviewDisplayed("drinks")
+        assertCartBarDisplayed()
     }
 
     fun assertScreenWithNoCart() {

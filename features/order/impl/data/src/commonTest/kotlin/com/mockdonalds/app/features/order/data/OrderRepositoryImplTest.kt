@@ -50,11 +50,23 @@ private class RepositoryHarness {
         }
     }
 
+    private val dispatchers = TestCenterPostDispatchers()
+
     val repository: OrderRepositoryImpl = OrderRepositoryImpl(
         remote = remote,
         local = local,
-        dispatchers = TestCenterPostDispatchers(),
+        dispatchers = dispatchers,
     )
+
+    /**
+     * Drains the test scheduler.
+     *
+     * `refreshIfStale` brackets its cache reads and writes in `withContext(dispatchers.io)`, so
+     * nothing in the refresh path runs until the queue is advanced. Call this before awaiting
+     * anything the refresh produces, and again before cancelling — a continuation left parked on
+     * the scheduler makes cancellation itself unable to complete.
+     */
+    fun advanceUntilIdle() = dispatchers.advanceUntilIdle()
 
     fun seedCache(categoryId: String, items: List<MenuItem>, cachedAt: Long) {
         entryFor(categoryId).value = items to cachedAt
@@ -87,7 +99,9 @@ class OrderRepositoryImplTest : BehaviorSpec({
         When("getMenuItemsByCategory is collected") {
             Then("it returns the cached item without calling remote") {
                 fixture.repository.getMenuItemsByCategory("burgers").test {
+                    fixture.advanceUntilIdle()
                     awaitItem() shouldContain menuItem(id = "1", title = "Cached Burger", categoryId = "burgers")
+                    fixture.advanceUntilIdle()
                     cancel()
                 }
                 fixture.callsByQuery shouldBe emptyList()
@@ -121,8 +135,11 @@ class OrderRepositoryImplTest : BehaviorSpec({
                 fixture.repository.getMenuItemsByCategory("burgers").test {
                     val initial = awaitItem()
                     initial.firstOrNull()?.title shouldBe "Old Cached Burger"
+                    // The refresh is queued on the test scheduler; nothing above ran it.
+                    fixture.advanceUntilIdle()
                     val refreshed = awaitItem()
                     refreshed.firstOrNull()?.title shouldBe "Fresh Burger"
+                    fixture.advanceUntilIdle()
                     cancel()
                 }
                 fixture.callsByQuery shouldContain "burger"
@@ -149,9 +166,11 @@ class OrderRepositoryImplTest : BehaviorSpec({
             Then("it emits empty initially then the freshly fetched items") {
                 fixture.repository.getMenuItemsByCategory("burgers").test {
                     awaitItem().shouldBeEmpty()
+                    fixture.advanceUntilIdle()
                     val populated = awaitItem()
                     populated shouldHaveSize 1
                     populated.first().title shouldBe "Big Mac"
+                    fixture.advanceUntilIdle()
                     cancel()
                 }
             }
@@ -166,6 +185,8 @@ class OrderRepositoryImplTest : BehaviorSpec({
             Then("it emits an empty list and does not propagate the error") {
                 fixture.repository.getMenuItemsByCategory("burgers").test {
                     awaitItem().shouldBeEmpty()
+                    // Lets the failing remote call run and be swallowed by runCatching.
+                    fixture.advanceUntilIdle()
                     cancel()
                 }
             }
@@ -192,7 +213,12 @@ class OrderRepositoryImplTest : BehaviorSpec({
                     val featured = previews.first { it.id == "featured" }
                     featured.itemCount shouldBe 0
                     featured.firstItemImageUrl shouldBe null
-                    cancel()
+                    // Draining the scheduler runs the refresh, which repopulates five of the six
+                    // categories and emits a fresh preview list. This test is about the state
+                    // *before* that, so discard the rest — plain `cancel()` would leave those
+                    // events unconsumed and Turbine fails the block on exit.
+                    fixture.advanceUntilIdle()
+                    cancelAndIgnoreRemainingEvents()
                 }
             }
 
@@ -201,7 +227,11 @@ class OrderRepositoryImplTest : BehaviorSpec({
                 // the other 5 categories have empty caches → stale → trigger a remote call each.
                 fixture.repository.getCategoryPreviews().test {
                     awaitItem()
-                    cancel()
+                    // The whole refresh loop is queued on the test scheduler — without this the
+                    // side effect never runs and every assertion below would see zero calls.
+                    // The refresh then re-emits previews nobody consumes, so ignore the rest.
+                    fixture.advanceUntilIdle()
+                    cancelAndIgnoreRemainingEvents()
                 }
                 fixture.callsByQuery shouldContain "popular"      // featured
                 fixture.callsByQuery shouldContain "chicken sandwich"

@@ -16,6 +16,10 @@ import ComposeApp
         try robot.assertScreenWithNoCart()
     }
 
+    @Test func rendersLandscapeLayout() throws {
+        try robot.assertLandscapeScreen()
+    }
+
     // MARK: - Events
 
     @Test func categoryTapEmitsEvent() {

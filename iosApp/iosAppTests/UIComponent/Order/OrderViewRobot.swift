@@ -20,10 +20,26 @@ final class OrderViewRobot {
         OrderView(state: stateRobot.stateWithNoCart())
     }
 
+    func createLandscapeView() -> some View {
+        createDefaultView()
+            .environment(\.verticalSizeClass, .compact)
+    }
+
     // MARK: - Screen Assertions
 
     func assertDefaultScreen() throws {
         let view = createDefaultView()
+        let body = try view.inspect()
+        try body.find(viewWithAccessibilityIdentifier: "\(tags.CATEGORY_PREVIEW_CARD)-burgers")
+        try body.find(viewWithAccessibilityIdentifier: "\(tags.CATEGORY_PREVIEW_CARD)-drinks")
+        try body.find(viewWithAccessibilityIdentifier: tags.CART_BAR)
+    }
+
+    // OrderView has no `isLandscape` branch, so this asserts the same identifiers as the
+    // default layout by design: it guards that the screen still renders every element under a
+    // compact vertical size class. Add branch-specific assertions if one is introduced.
+    func assertLandscapeScreen() throws {
+        let view = createLandscapeView()
         let body = try view.inspect()
         try body.find(viewWithAccessibilityIdentifier: "\(tags.CATEGORY_PREVIEW_CARD)-burgers")
         try body.find(viewWithAccessibilityIdentifier: "\(tags.CATEGORY_PREVIEW_CARD)-drinks")

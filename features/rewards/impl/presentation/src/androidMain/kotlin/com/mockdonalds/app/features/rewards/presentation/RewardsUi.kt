@@ -271,7 +271,7 @@ private fun VaultSpecials(state: RewardsUiState) {
 }
 
 @Composable
-fun FeaturedVaultCard(special: VaultSpecial, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun FeaturedVaultCard(special: VaultSpecial, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -335,7 +335,7 @@ fun FeaturedVaultCard(special: VaultSpecial, onClick: () -> Unit, modifier: Modi
 }
 
 @Composable
-fun VaultSpecialCard(special: VaultSpecial, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun VaultSpecialCard(special: VaultSpecial, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(MockDimens.RadiusMd))
@@ -374,7 +374,7 @@ fun VaultSpecialCard(special: VaultSpecial, onClick: () -> Unit, modifier: Modif
 }
 
 @Composable
-fun HistoryItem(entry: HistoryEntry, containerColor: Color) {
+private fun HistoryItem(entry: HistoryEntry, containerColor: Color) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

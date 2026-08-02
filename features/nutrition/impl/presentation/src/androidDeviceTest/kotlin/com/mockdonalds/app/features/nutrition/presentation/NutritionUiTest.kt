@@ -25,6 +25,12 @@ class NutritionUiTest {
     }
 
     @Test
+    fun rendersLandscapeLayout() {
+        robot.setLandscapeContent()
+        robot.assertLandscapeScreen()
+    }
+
+    @Test
     fun backButtonEmitsBackClickedEvent() {
         robot.setDefaultContent()
         robot.tapBackButton()

@@ -45,7 +45,7 @@ Scope of checks, by file type:
 
 ### 3. Check test coverage for changed production code
 
-Every changed production class should have matching test coverage at the right level. The canonical mapping lives in `.agents/standards/testing.md` → "Test level selection" and each per-level standard. Flag missing tests explicitly, naming the expected file path.
+Every changed production class should have matching test coverage at the right level. The canonical mapping lives in `.agents/standards/testing.md` → "Test Level Comparison" and each per-level standard. Flag missing tests explicitly, naming the expected file path.
 
 ### 4. Additional sanity checks (skill-specific)
 

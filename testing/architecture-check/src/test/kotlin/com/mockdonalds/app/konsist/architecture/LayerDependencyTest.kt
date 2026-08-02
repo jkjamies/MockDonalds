@@ -2,6 +2,9 @@ package com.mockdonalds.app.konsist.architecture
 
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.verify.assertTrue
+import com.mockdonalds.app.konsist.featurePackageSegment
+import com.mockdonalds.app.konsist.isCoreImplPath
+import com.mockdonalds.app.konsist.isProductionSourcePath
 import io.kotest.core.spec.style.BehaviorSpec
 
 /**
@@ -12,23 +15,29 @@ import io.kotest.core.spec.style.BehaviorSpec
  *            data → presentation, presentation → data
  *
  * Cross-feature imports must only reference another feature's api module.
+ *
+ * Scope: all production source sets (`commonMain`, `androidMain`, `iosMain`) — see
+ * `isProductionSourcePath`.
  */
 class LayerDependencyTest : BehaviorSpec({
 
+    val productionFiles = Konsist.scopeFromProject()
+        .files
+        .filter { isProductionSourcePath(it.path) }
+
     Given("api layer isolation") {
         Then("api modules should not import from sibling domain, data, or presentation modules") {
-            val violators = Konsist.scopeFromProject()
-                .files
-                .filter { it.resideInPath("..features..") && it.resideInPath("..api..") && it.resideInPath("..commonMain..") }
+            val violators = productionFiles
+                .filter { it.resideInPath("..features..") && it.resideInPath("..api..") }
                 .flatMap { file ->
-                    val featureName = file.path.substringAfter("features/").substringBefore("/")
+                    val pkg = featurePackageSegment(file.path)
                     file.imports.filter { import ->
                         val name = import.name
-                        (name.contains(".features.$featureName.domain.") ||
-                            name.contains(".features.$featureName.data.") ||
-                            name.contains(".features.$featureName.presentation.")) &&
-                            !name.contains(".features.$featureName.api.")
-                    }.map { "${file.name}: ${it.name}" }
+                        (name.contains(".features.$pkg.domain.") ||
+                            name.contains(".features.$pkg.data.") ||
+                            name.contains(".features.$pkg.presentation.")) &&
+                            !name.contains(".features.$pkg.api.")
+                    }.map { "  ${file.name}: ${it.name}" }
                 }
 
             assert(violators.isEmpty()) {
@@ -38,9 +47,11 @@ class LayerDependencyTest : BehaviorSpec({
     }
 
     Given("domain layer isolation") {
-        val domainFiles = Konsist.scopeFromProject()
-            .files
-            .filter { it.resideInPath("..features..") && it.resideInPath("..impl/domain..") && it.resideInPath("..commonMain..") && !it.resideInPath("..api..") }
+        val domainFiles = productionFiles.filter {
+            it.resideInPath("..features..") &&
+                it.resideInPath("..impl/domain..") &&
+                !it.resideInPath("..api..")
+        }
 
         Then("domain modules should not import from data packages") {
             domainFiles.assertTrue { file ->
@@ -61,9 +72,8 @@ class LayerDependencyTest : BehaviorSpec({
 
     Given("data layer isolation") {
         Then("data modules should not import from presentation packages") {
-            Konsist.scopeFromProject()
-                .files
-                .filter { it.resideInPath("..features..") && it.resideInPath("..impl/data..") && it.resideInPath("..commonMain..") }
+            productionFiles
+                .filter { it.resideInPath("..features..") && it.resideInPath("..impl/data..") }
                 .assertTrue { file ->
                     file.imports.none { import ->
                         import.name.contains(".presentation.")
@@ -74,9 +84,8 @@ class LayerDependencyTest : BehaviorSpec({
 
     Given("presentation layer isolation") {
         Then("presentation modules should not import from data packages") {
-            Konsist.scopeFromProject()
-                .files
-                .filter { it.resideInPath("..features..") && it.resideInPath("..impl/presentation..") && it.resideInPath("..commonMain..") }
+            productionFiles
+                .filter { it.resideInPath("..features..") && it.resideInPath("..impl/presentation..") }
                 .assertTrue { file ->
                     file.imports.none { import ->
                         import.name.contains(".data.")
@@ -87,13 +96,8 @@ class LayerDependencyTest : BehaviorSpec({
 
     Given("network module access restriction") {
         Then("only impl/data modules should import from core:network") {
-            val violators = Konsist.scopeFromProject()
-                .files
-                .filter {
-                    it.resideInPath("..features..") &&
-                        it.resideInPath("..commonMain..") &&
-                        !it.resideInPath("..impl/data..")
-                }
+            val violators = productionFiles
+                .filter { it.resideInPath("..features..") && !it.resideInPath("..impl/data..") }
                 .flatMap { file ->
                     file.imports
                         .filter { it.name.contains(".core.network.") }
@@ -109,20 +113,17 @@ class LayerDependencyTest : BehaviorSpec({
 
     Given("cross-feature isolation") {
         Then("feature modules should only import from other features via their api module") {
-            val featureFiles = Konsist.scopeFromProject()
-                .files
-                .filter { it.resideInPath("..features..") && it.resideInPath("..commonMain..") }
+            val featureFiles = productionFiles.filter { it.resideInPath("..features..") }
 
             val violators = featureFiles.flatMap { file ->
-                val featureName = file.path.substringAfter("features/").substringBefore("/")
+                val ownPackageSegment = featurePackageSegment(file.path)
                 file.imports.filter { import ->
                     val name = import.name
-                    // Check if importing from a different feature
                     val otherFeatureMatch = Regex("\\.features\\.(\\w+)\\.").find(name)
                     if (otherFeatureMatch != null) {
                         val otherFeature = otherFeatureMatch.groupValues[1]
-                        // It's a cross-feature import — only allow .api. packages
-                        otherFeature != featureName && !name.contains(".features.$otherFeature.api.")
+                        // Cross-feature import — only another feature's .api. packages are allowed
+                        otherFeature != ownPackageSegment && !name.contains(".features.$otherFeature.api.")
                     } else {
                         false
                     }
@@ -134,13 +135,29 @@ class LayerDependencyTest : BehaviorSpec({
             }
         }
 
-        Then("feature modules should not import from core impl packages") {
-            val violators = Konsist.scopeFromProject()
-                .files
-                .filter { it.resideInPath("..features..") && it.resideInPath("..commonMain..") }
+        Then("feature modules should not import from core impl modules") {
+            // The impl surface is derived from the module PATH, not from the package name.
+            // `core:analytics:impl`, `core:logger:impl` and `core:remote-config:impl` namespace
+            // their impl types under an `.impl` package, but `core:auth`, `core:build-config`,
+            // `core:network` and `core:persistence` share their api module's package. Matching
+            // on a ".impl." substring therefore passes silently on four of the seven split
+            // modules — a feature could import `InMemoryAuthManager` or `HttpClientFactoryImpl`
+            // directly and nothing would flag it.
+            val coreImplTypeNames = (
+                Konsist.scopeFromProject().classes().filter { isCoreImplPath(it.path) } +
+                    Konsist.scopeFromProject().interfaces().filter { isCoreImplPath(it.path) }
+                )
+                .map { it.name }
+                .toSet()
+
+            val violators = productionFiles
+                .filter { it.resideInPath("..features..") }
                 .flatMap { file ->
                     file.imports
-                        .filter { it.name.contains(".core.") && it.name.contains(".impl.") }
+                        .filter {
+                            it.name.contains(".core.") &&
+                                it.name.substringAfterLast('.') in coreImplTypeNames
+                        }
                         .map { "  ${file.name}: ${it.name}" }
                 }
 
@@ -150,9 +167,8 @@ class LayerDependencyTest : BehaviorSpec({
         }
 
         Then("core modules should not import from feature modules") {
-            val violators = Konsist.scopeFromProject()
-                .files
-                .filter { it.resideInPath("..core..") && it.resideInPath("..commonMain..") }
+            val violators = productionFiles
+                .filter { it.resideInPath("..core..") }
                 .flatMap { file ->
                     file.imports
                         .filter { it.name.contains(".features.") }

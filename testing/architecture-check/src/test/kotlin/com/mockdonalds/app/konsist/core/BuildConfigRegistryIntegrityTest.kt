@@ -1,6 +1,7 @@
 package com.mockdonalds.app.konsist.core
 
 import com.lemonappdev.konsist.api.Konsist
+import com.mockdonalds.app.konsist.normalizedPath
 import io.kotest.core.spec.style.BehaviorSpec
 
 /**
@@ -22,7 +23,7 @@ class BuildConfigRegistryIntegrityTest : BehaviorSpec({
 
         Then("@DebugConfigField is only used on properties of AppBuildConfig") {
             val violators = propertiesWithAnnotation.filterNot { prop ->
-                prop.containingFile.path.endsWith("/AppBuildConfig.kt")
+                normalizedPath(prop.containingFile.path).endsWith("/AppBuildConfig.kt")
             }
 
             assert(violators.isEmpty()) {
@@ -37,7 +38,10 @@ class BuildConfigRegistryIntegrityTest : BehaviorSpec({
         val scope = Konsist.scopeFromProject()
 
         val fieldsFile = scope.files
-            .firstOrNull { it.path.contains("/core/build-config/api/") && it.path.endsWith("/BuildConfigField.kt") }
+            .firstOrNull {
+                normalizedPath(it.path).contains("/core/build-config/api/") &&
+                    normalizedPath(it.path).endsWith("/BuildConfigField.kt")
+            }
 
         Then("BuildConfigField.kt exists") {
             assert(fieldsFile != null) { "BuildConfigField.kt not found under core/build-config/api" }
@@ -57,7 +61,7 @@ class BuildConfigRegistryIntegrityTest : BehaviorSpec({
 
         Then("no hand-written generatedFields function may shadow the KSP output") {
             val hand = scope.files.filter { file ->
-                val path = file.path
+                val path = normalizedPath(file.path)
                 val isGenerated = path.contains("/build/generated/")
                 !isGenerated &&
                     path.contains("/core/build-config/") &&
@@ -77,7 +81,7 @@ class BuildConfigRegistryIntegrityTest : BehaviorSpec({
 
         Then("no hand-written FakeAppBuildConfig may shadow the KSP output") {
             val hand = scope.classes().filter { cls ->
-                val path = cls.containingFile.path
+                val path = normalizedPath(cls.containingFile.path)
                 val isGenerated = path.contains("/build/generated/")
                 !isGenerated &&
                     cls.name == "FakeAppBuildConfig" &&

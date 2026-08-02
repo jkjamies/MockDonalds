@@ -20,10 +20,11 @@ class CategoryDetailUiRobot(private val rule: ComposeContentTestRule) {
     private val stateRobot = CategoryDetailStateRobot()
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-    private fun setContentWith(state: CategoryDetailUiState) {
+    private fun setContentWith(state: CategoryDetailUiState, landscape: Boolean = false) {
+        val size = if (landscape) DpSize(800.dp, 400.dp) else DpSize(400.dp, 800.dp)
         rule.setContent {
             CompositionLocalProvider(
-                LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(DpSize(400.dp, 800.dp)),
+                LocalWindowSizeClass provides WindowSizeClass.calculateFromSize(size),
             ) {
                 MockDonaldsTheme { CategoryDetailUi(state = state) }
             }
@@ -42,10 +43,24 @@ class CategoryDetailUiRobot(private val rule: ComposeContentTestRule) {
         setContentWith(stateRobot.stateWithNoCart())
     }
 
+    fun setLandscapeContent() {
+        setContentWith(stateRobot.defaultState(), landscape = true)
+    }
+
     fun assertDefaultScreen() {
         rule.onNodeWithTag(CategoryDetailTestTags.TOP_BAR).assertIsDisplayed()
         rule.onNodeWithTag(CategoryDetailTestTags.BACK_BUTTON).assertIsDisplayed()
         rule.onNodeWithText("Burgers").assertIsDisplayed()
+        rule.onNodeWithTag("${CategoryDetailTestTags.MENU_ITEM_CARD}-1").assertIsDisplayed()
+        rule.onNodeWithTag(CategoryDetailTestTags.CART_BAR).assertIsDisplayed()
+    }
+
+    // CategoryDetailUi has no orientation branch — this guards that the screen survives a
+    // landscape window rather than that a distinct compact layout renders. If one is added,
+    // this must assert what differs.
+    fun assertLandscapeScreen() {
+        rule.onNodeWithTag(CategoryDetailTestTags.TOP_BAR).assertIsDisplayed()
+        rule.onNodeWithTag(CategoryDetailTestTags.BACK_BUTTON).assertIsDisplayed()
         rule.onNodeWithTag("${CategoryDetailTestTags.MENU_ITEM_CARD}-1").assertIsDisplayed()
         rule.onNodeWithTag(CategoryDetailTestTags.CART_BAR).assertIsDisplayed()
     }

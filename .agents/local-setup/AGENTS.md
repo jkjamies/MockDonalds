@@ -37,7 +37,7 @@ The `config.template.json` shipped with each template has `TODO:`-prefixed value
 
 ## Auto-discovery
 
-Claude Code's skill auto-discovery scans `.agents/skills/*/SKILL.md` and `.claude/skills/*/SKILL.md`. This folder (`.agents/local-setup/`) is outside both — Claude Code will not load these as active skills. Other agents searching the repo will still see them; the bold "TEMPLATE — NOT AN ACTIVE SKILL" warning at the top of each `SKILL.md` is the safeguard.
+Claude Code's skill auto-discovery scans `.claude/skills/*/SKILL.md` — **not** `.agents/skills/`. Project skills reach Claude Code only through the local symlink described in the root `AGENTS.md` → "Agent Entry Points". This folder (`.agents/local-setup/`) is deliberately outside the symlinked tree, so Claude Code will not load these as active skills even after setup. Other agents searching the repo will still see them; the bold "TEMPLATE — NOT AN ACTIVE SKILL" warning at the top of each `SKILL.md` is the safeguard.
 
 If you ever need to run one of these against the repo without installing it personally (rare — usually a smell), you can pass the SKILL.md path explicitly to a one-shot invocation. But the standard path is install-then-invoke.
 

@@ -7,6 +7,15 @@ pluginManagement {
     }
 }
 
+// Resolves the JDK that `jvmToolchain(21)` asks for, downloading one if the daemon JVM
+// isn't a match. This is what replaces the machine-specific `org.gradle.java.home` that
+// used to live in gradle.properties — the build now works on any machine and in CI.
+// Version is a literal, not `libs.plugins.*`: settings `plugins {}` is evaluated before
+// `dependencyResolutionManagement`, so the version catalog isn't available yet.
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 dependencyResolutionManagement {
     repositories {
         google()

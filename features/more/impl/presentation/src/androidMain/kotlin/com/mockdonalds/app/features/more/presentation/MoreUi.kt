@@ -220,7 +220,7 @@ fun MoreUi(state: MoreUiState, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MenuItemRow(item: MoreMenuItem, isOdd: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun MenuItemRow(item: MoreMenuItem, isOdd: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()

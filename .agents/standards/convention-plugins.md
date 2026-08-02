@@ -50,6 +50,19 @@ kotlin {
 
 No `android {}` block, no library dependencies — just project dependencies.
 
+### Compose runtime vs Compose UI — which source set
+
+The plugin splits Compose deliberately, and modules must not re-declare them:
+
+| Source set | What the plugin adds | Why |
+|---|---|---|
+| `commonMain` | `compose.runtime` | Molecule runs presenter composables on iOS to produce state — the runtime is genuinely shared |
+| `androidMain` | `compose.foundation`, `compose.material3`, `compose.materialIconsExtended`, `compose.ui`, `coil-compose`, `core:strings` | Compose **UI** renders on Android only; iOS renders SwiftUI |
+
+Everything in `commonMain` is compiled for `iosX64`, `iosArm64` and `iosSimulatorArm64` on every build, so a Compose UI dependency there pulls the material3/foundation/ui stack into the iOS framework for code iOS can never reach. `ForbiddenPatternsTest` → "Compose runtime, not Compose UI, in shared code" fails the build on a Compose UI import in `commonMain` or `iosMain`.
+
+`core:theme` follows the same rule: its Kotlin sources live in `androidMain` because every consumer is an `androidMain`/`androidDeviceTest` file and iOS uses `iosApp/iosApp/Theme/MockDonaldsTheme.swift`. Only `composeResources/font/` stays in `commonMain`, where the generated `Res` accessor is emitted.
+
 ## mockdonalds.kmp.library
 
 Base KMP library plugin. Used by `api/domain`, `api/navigation`, and `core/*` modules.

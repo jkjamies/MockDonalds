@@ -2,8 +2,9 @@ package com.mockdonalds.app.konsist.testing
 
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.ext.list.withNameEndingWith
+import com.mockdonalds.app.konsist.normalizedPath
+import com.mockdonalds.app.konsist.projectRootFrom
 import io.kotest.core.spec.style.BehaviorSpec
-import java.io.File
 
 /**
  * Validates Android UI test conventions:
@@ -93,7 +94,7 @@ class UiTestConventionsTest : BehaviorSpec({
             val stateRobotFiles = Konsist.scopeFromProject()
                 .files
                 .filter { it.resideInPath("..androidDeviceTest..") }
-                .filter { it.name.endsWith("StateRobot.kt") }
+                .filter { it.nameWithExtension.endsWith("StateRobot.kt") }
 
             val violators = stateRobotFiles.filter { file ->
                 !file.imports.any { it.name == "com.mockdonalds.app.core.test.StateRobot" }
@@ -111,7 +112,7 @@ class UiTestConventionsTest : BehaviorSpec({
             val uiTestFiles = Konsist.scopeFromProject()
                 .files
                 .filter { it.resideInPath("..androidDeviceTest..") }
-                .filter { it.name.endsWith("UiTest.kt") }
+                .filter { it.nameWithExtension.endsWith("UiTest.kt") }
 
             val violators = uiTestFiles.filter { file ->
                 file.text.contains("StateRobot")
@@ -125,8 +126,16 @@ class UiTestConventionsTest : BehaviorSpec({
     }
 
     Given("test tags") {
-        Then("every *Ui.kt in androidMain should have a *TestTags object in the api module") {
-            val uiFileNames = Konsist.scopeFromProject()
+        // Pair every screen with the feature module that owns it. Screen name alone is not a
+        // usable key: WelcomeUi lives in :features:login and CategoryDetailUi in :features:order,
+        // so deriving the module from the name would look for :features:welcome and
+        // :features:categorydetail, neither of which exists. Comparing bare names also let a
+        // TestTags object in any module satisfy a Ui composable in a different one.
+        fun featureOf(path: String): String? =
+            Regex("""/features/([^/]+)/""").find(normalizedPath(path))?.groupValues?.get(1)
+
+        Then("every *Ui.kt in androidMain should have a *TestTags object in its own feature") {
+            val uiKeys = Konsist.scopeFromProject()
                 .functions()
                 .filter {
                     it.hasAnnotation { a -> a.name == "CircuitInject" } &&
@@ -134,35 +143,47 @@ class UiTestConventionsTest : BehaviorSpec({
                         it.resideInPath("..androidMain..")
                 }
                 .filter { it.name.endsWith("Ui") }
-                .map { it.name.removeSuffix("Ui") }
+                .mapNotNull { fn -> featureOf(fn.path)?.let { it to fn.name.removeSuffix("Ui") } }
                 .toSet()
 
-            val testTagObjects = Konsist.scopeFromProject()
+            val tagKeys = Konsist.scopeFromProject()
                 .objects()
-                .filter { it.resideInPath("..api..") }
+                .filter { it.resideInPath("..api/navigation..") }
                 .filter { it.name.endsWith("TestTags") }
-                .map { it.name.removeSuffix("TestTags") }
+                .mapNotNull { obj ->
+                    featureOf(obj.path)?.let { it to obj.name.removeSuffix("TestTags") }
+                }
                 .toSet()
 
-            val missing = uiFileNames.filter { it !in testTagObjects }
+            val missing = uiKeys.filterNot { it in tagKeys }
 
             assert(missing.isEmpty()) {
-                "UI composables missing TestTags object in api:navigation module:\n${missing.joinToString("\n") { "  ${it}Ui — expected ${it}TestTags in :features:${it.lowercase()}:api:navigation" }}"
+                val names = missing.joinToString("\n") { (feature, screen) ->
+                    "  ${screen}Ui — expected ${screen}TestTags in :features:$feature:api:navigation"
+                }
+                "UI composables missing a TestTags object in their own feature's " +
+                    "api:navigation module:\n$names"
             }
         }
 
-        Then("TestTags objects should reside in the api.ui package") {
-            val testTagObjects = Konsist.scopeFromProject()
+        Then("TestTags objects should reside in the api:navigation module's ui package") {
+            // The message below has always promised the `ui` package, but the check only tested
+            // for "api" anywhere in the path — so the package half went unenforced, and any
+            // directory containing "api" satisfied the module half.
+            val violators = Konsist.scopeFromProject()
                 .objects()
                 .filter { it.name.endsWith("TestTags") }
-
-            val violators = testTagObjects.filter { obj ->
-                !obj.resideInPath("..api..")
-            }
+                .filter { obj ->
+                    !obj.resideInPath("..api/navigation..") ||
+                        obj.packagee?.name?.endsWith(".api.ui") != true
+                }
 
             assert(violators.isEmpty()) {
-                val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
-                "TestTags objects must live in the feature api:navigation module (ui package), not in presentation:\n$names"
+                val names = violators.joinToString("\n") {
+                    "  ${it.name} (${it.packagee?.name ?: "no package"} — ${it.path})"
+                }
+                "TestTags objects must live in the feature api:navigation module, in its " +
+                    "`ui` package:\n$names"
             }
         }
     }
@@ -172,7 +193,7 @@ class UiTestConventionsTest : BehaviorSpec({
             val uiRobotFiles = Konsist.scopeFromProject()
                 .files
                 .filter { it.resideInPath("..androidDeviceTest..") }
-                .filter { it.name.endsWith("UiRobot.kt") }
+                .filter { it.nameWithExtension.endsWith("UiRobot.kt") }
 
             val violators = uiRobotFiles.filter { file ->
                 val text = file.text
@@ -191,7 +212,7 @@ class UiTestConventionsTest : BehaviorSpec({
             val uiRobotFiles = Konsist.scopeFromProject()
                 .files
                 .filter { it.resideInPath("..androidDeviceTest..") }
-                .filter { it.name.endsWith("UiRobot.kt") }
+                .filter { it.nameWithExtension.endsWith("UiRobot.kt") }
 
             val violators = uiRobotFiles.filter { file ->
                 !file.text.contains("setLandscapeContent")
@@ -207,7 +228,7 @@ class UiTestConventionsTest : BehaviorSpec({
             val uiRobotFiles = Konsist.scopeFromProject()
                 .files
                 .filter { it.resideInPath("..androidDeviceTest..") }
-                .filter { it.name.endsWith("UiRobot.kt") }
+                .filter { it.nameWithExtension.endsWith("UiRobot.kt") }
 
             val violators = uiRobotFiles.filter { file ->
                 !file.text.contains("assertLandscapeScreen")
@@ -223,7 +244,7 @@ class UiTestConventionsTest : BehaviorSpec({
             val uiTestFiles = Konsist.scopeFromProject()
                 .files
                 .filter { it.resideInPath("..androidDeviceTest..") }
-                .filter { it.name.endsWith("UiTest.kt") }
+                .filter { it.nameWithExtension.endsWith("UiTest.kt") }
 
             val violators = uiTestFiles.filter { file ->
                 !file.text.contains("rendersLandscapeLayout")
@@ -241,7 +262,7 @@ class UiTestConventionsTest : BehaviorSpec({
             val uiRobotFiles = Konsist.scopeFromProject()
                 .files
                 .filter { it.resideInPath("..androidDeviceTest..") }
-                .filter { it.name.endsWith("UiRobot.kt") }
+                .filter { it.nameWithExtension.endsWith("UiRobot.kt") }
 
             val violators = uiRobotFiles.filter { file ->
                 !file.text.contains("LocalWindowSizeClass")
@@ -256,22 +277,36 @@ class UiTestConventionsTest : BehaviorSpec({
 
     Given("androidDeviceTest manifest") {
         Then("every presentation module with UI tests should have an AndroidManifest.xml declaring ComponentActivity") {
-            val projectRoot = Konsist.scopeFromProject()
-                .files
-                .first()
-                .path
-                .substringBefore("/features/")
-                .let { if (it.contains("/core/")) it.substringBefore("/core/") else it }
+            val projectRoot = projectRootFrom(Konsist.scopeFromProject().files.first().path)
 
-            val featuresDir = File("$projectRoot/features")
-            val presentationModules = featuresDir.listFiles()
+            val featuresDir = projectRoot.resolve("features")
+            val features = featuresDir.listFiles()
                 ?.filter { it.isDirectory }
                 ?.map { it.name }
-                ?.filter { File("$projectRoot/features/$it/presentation/src/androidDeviceTest/kotlin").exists() }
-                ?: emptyList()
+                ?: error("Could not enumerate $featuresDir")
+
+            assert(features.isNotEmpty()) {
+                "No feature modules found under $featuresDir — this check must not pass by inspecting zero modules"
+            }
+
+            // Presentation modules are nested under impl/. This probed
+            // features/<name>/presentation/... — one segment short — so the filter matched nothing
+            // and every manifest went unexamined regardless of its contents.
+            val presentationModules = features.filter {
+                featuresDir.resolve("$it/impl/presentation/src/androidDeviceTest/kotlin").exists()
+            }
+
+            // Both empties are indistinguishable in the assert below, so rule out the broken one
+            // here. Every feature in this repo ships androidDeviceTest sources; if that ever stops
+            // being true, narrow this guard rather than dropping it.
+            assert(presentationModules.isNotEmpty()) {
+                "No presentation modules with androidDeviceTest sources found under $featuresDir — " +
+                    "the layout this check probes has moved"
+            }
 
             val missingManifest = presentationModules.filter { feature ->
-                val manifest = File("$projectRoot/features/$feature/presentation/src/androidDeviceTest/AndroidManifest.xml")
+                val manifest =
+                    featuresDir.resolve("$feature/impl/presentation/src/androidDeviceTest/AndroidManifest.xml")
                 !manifest.exists() || !manifest.readText().contains("ComponentActivity")
             }
 

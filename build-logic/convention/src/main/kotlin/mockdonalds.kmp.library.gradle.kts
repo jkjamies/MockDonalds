@@ -1,4 +1,8 @@
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+// Imported rather than written inline as `java.time.Duration`: inside a Gradle Kotlin DSL
+// script `java` resolves to the JavaPluginExtension accessor, not the package, so the
+// fully-qualified form fails to compile with "Unresolved reference 'time'".
+import java.time.Duration
 
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
@@ -105,6 +109,11 @@ kotlin.sourceSets.getByName("androidHostTest") {
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+    // A stuck test otherwise hangs until the CI job's own timeout kills it — one test task ran
+    // for 78 minutes and took the whole Android job down, reporting nothing useful. Kotest's
+    // project config sets no timeout, so enforce one here. Per-module host suites finish in
+    // seconds, so ten minutes only fires on something genuinely wrong — and names the task.
+    timeout.set(Duration.ofMinutes(10))
     systemProperty("kotest.framework.config.fqn", "io.kotest.provided.ProjectConfig")
     testLogging {
         events("passed", "skipped", "failed")

@@ -60,7 +60,7 @@ iOS configuration name is `{MARKET-uppercase}-{Env-titlecase}-{Debug|Release}` �
 
 ### Steps
 
-Run the steps listed in `.agents/standards/verification.md` → "Local (the `verify` skill)" section, in order. Stop and fix failures before proceeding.
+Run the steps listed in `.agents/standards/verification.md` → "Full Scope (the `verify full` pipeline)" section, in order. Stop and fix failures before proceeding.
 
 Summary (see the standard for exact commands):
 
@@ -90,7 +90,7 @@ Target runtime: ~5–10 min warm, longer cold.
 
 ### Steps
 
-Run the full pipeline from `.agents/standards/verification.md` → "Full Pipeline (CI)" section, in order. Stop and fix failures before proceeding.
+Run the full pipeline from `.agents/standards/verification.md` → "All Scope (the `verify all` pipeline)" section, in order. Stop and fix failures before proceeding.
 
 Summary (see the standard for exact commands):
 

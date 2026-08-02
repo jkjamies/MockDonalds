@@ -313,6 +313,67 @@ fun {Feature}Dto.toContent(): {Feature}Content = {Feature}Content(
 
 Create: `{Feature}Presenter.kt`, `{Feature}UiState.kt` (with sealed class `{Feature}Event`), `{Feature}Ui.kt` (in androidMain).
 
+The presenter collects via `collectContentAsState()`, not `collectAsState()` — the latter collapses loading, empty, and failed into a single `null` and lets stream exceptions reach composition. `{Feature}UiState` therefore carries `isLoading: Boolean = false` and `errorMessage: String? = null` alongside its content fields, and `{Feature}Ui.kt` renders all three states. Most existing screens predate this and still use `collectAsState()` — follow `features/order/` for structure, but use the shape below for state collection. See `.agents/standards/centerpost.md` → "Two collection surfaces".
+
+```kotlin
+val content by get{Feature}Content.collectContentAsState()
+
+return {Feature}UiState(
+    // content fields via content.dataOrNull?.…
+    isLoading = content.isLoading,
+    errorMessage = content.errorOrNull?.message,
+    eventSink = { event -> … },
+)
+```
+
+`{Feature}Ui.kt` must expose a composable named exactly after the file (`{Feature}Ui`) carrying `@CircuitInject({Feature}Screen::class, AppScope::class)`. Any helper composables in the same file must be `private` — `composeApp` consumes presentation via `api(project(...))`, so a public helper becomes app-wide API surface. Both are enforced by `UiCompositionConventionsTest`.
+
+### 2b. Create the iOS View — NOT OPTIONAL
+
+**A feature without a SwiftUI view is an Android-only feature.** The Kotlin side compiles, every Konsist rule passes, and iOS renders `Text("No UI for screen: …")` — `Circuit.swift` falls back rather than failing, so this is silent at runtime. `PlatformParityTest` fails the build if you skip this step.
+
+`iosApp/iosApp/Features/{Feature}/{Feature}View.swift`:
+
+```swift
+import SwiftUI
+import ComposeApp
+import CircuitMacros
+
+private let tags = {Feature}TestTags.shared
+
+@CircuitInject({Feature}Screen.self, {Feature}UiState.self)
+struct {Feature}View: View {
+    let state: {Feature}UiState
+
+    var body: some View {
+        // Render from `state`; send events via `state.eventSink(...)`.
+        // Tag every asserted element with `.accessibilityIdentifier(tags.SCREEN)` etc.
+    }
+}
+```
+
+Rules (all Harmonize-enforced by `ViewConventionsTest`):
+- The struct name must match the file name, conform to `View`, and hold a `state` property.
+- `import ComposeApp` is required; `import UIKit` is banned (pure SwiftUI).
+- No force unwrap / force cast / force try, no Combine or `DispatchQueue` (async/await only), no `print`, no TODO/FIXME/HACK.
+- Use `accessibilityIdentifier` with the shared `{Feature}TestTags` from KMP — never a hardcoded string.
+- `@CircuitInject` drives `CircuitFactoryRegistry` codegen, so `AppDelegate.swift` never needs editing.
+
+Also create the iOS UI component tests in `iosApp/iosAppTests/UIComponent/{Feature}/`: `{Feature}ViewTest.swift`, `{Feature}ViewRobot.swift`, `{Feature}StateRobot.swift`. See `add-screen` → "Files to Create" and `.agents/standards/testing-ui-component.md`.
+
+### 2c. Register the screen at runtime
+
+Module discovery is automatic (`settings.gradle.kts` walks `features/`), but **runtime registration is not**. Skip these and the feature builds, ships, and is unreachable:
+
+| If the feature… | Edit | Change |
+|---|---|---|
+| is a bottom-nav tab | `composeApp/.../navigation/DeepLinkParser.kt` | add the screen to `tabScreens` |
+| should be deep-linkable | same file, `createDeepLinkParser()` | add `"{path}" to { {Feature}Screen }` |
+| is a tab | `composeApp/src/androidMain/.../MockDonaldsBottomNavigation.kt` | add the nav item |
+| is reachable from More | `features/{name}/impl/presentation/` | contribute a `MoreTabExtension` via `@ContributesIntoSet` (see `features/debug-menu/.../DebugMenuTabExtension.kt`) |
+
+A `TabScreen` also needs `override val tag: String = "{name}"`, and the tag must match the deep-link path segment.
+
 **test/** — `src/commonMain/kotlin/com/mockdonalds/app/features/{name}/test/`
 
 `FakeGet{Feature}Content.kt`:
@@ -350,6 +411,7 @@ Follow `add-unit-tests` and `add-ui-tests` skills for templates:
 - `impl/data/src/commonTest/` — `{Feature}RepositoryImplTest.kt`
 - `impl/presentation/src/commonTest/` — `{Feature}PresenterTest.kt`
 - `impl/presentation/src/androidDeviceTest/` — `{Feature}UiTest.kt`, `{Feature}UiRobot.kt`, `{Feature}StateRobot.kt`, `AndroidManifest.xml`
+- `iosApp/iosAppTests/UIComponent/{Feature}/` — `{Feature}ViewTest.swift`, `{Feature}ViewRobot.swift`, `{Feature}StateRobot.swift`
 
 ### 4. Create Feature AGENTS.md
 
@@ -364,7 +426,16 @@ The feature should be auto-discovered by `settings.gradle.kts`. Verify:
 
 Should show all 6 submodules. If not, check that the directory name matches the feature loop in `settings.gradle.kts`.
 
-### 6. Post-Change Verification — MANDATORY
+The feature is also auto-exported to the iOS framework by `composeApp/build.gradle.kts` (`api:domain`, `api:navigation`, `impl:presentation`). Keep the public surface of those three modules to what SwiftUI actually names — every exported declaration is a dead-code-elimination root in a static framework, so anything public there is permanently in the iOS binary.
+
+### 6. Update the docs in the same change
+
+`AgentDocumentationDriftTest` fails if the feature is not named in the entry-point docs, because an agent routing off `AGENTS.md` will not find it:
+
+- root `AGENTS.md` → "Features:" list
+- `README.md` → "Features:" list and the feature table
+
+### 7. Post-Change Verification — MANDATORY
 
 **Work is NEVER complete until verification passes.** For new features, run `verify full` (not `verify diff`) since scaffolding touches many modules and requires a full build to validate wiring.
 

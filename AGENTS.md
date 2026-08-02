@@ -11,7 +11,7 @@ Kotlin Multiplatform reference app. Shared Kotlin business logic with native UI 
 | CenterPost | Business logic framework (coroutine-based interactors) |
 | Ktor | HTTP networking |
 | Kotest | Test framework (BehaviorSpec, property testing) |
-| Konsist | Kotlin architecture test enforcement (34 test classes in `testing/architecture-check/`) |
+| Konsist | Kotlin architecture test enforcement (38 test classes in `testing/architecture-check/`) |
 | Harmonize | iOS/Swift architecture test enforcement |
 | Compose Multiplatform | Android: Compose UI rendering. iOS: Compose runtime only (state via Molecule) — SwiftUI renders natively |
 | Molecule | Bridges `@Composable` presenter functions to `StateFlow` for iOS (Compose runtime, not UI) |
@@ -29,22 +29,30 @@ features/{name}/
   test/                — Fakes for testing
 
 core/
+  analytics/           — AnalyticsDispatcher + AnalyticsEvent (api/), LoggingAnalyticsDispatcher + TrackAnalyticsEvent interactor (impl/), fakes (test/)
   auth/                — AuthManager interface (api/) + InMemoryAuthManager (impl/)
   build-config/        — Compile-time market/env/buildType config, api/impl/test split (AppBuildConfig facade + `isDebug` extension in api/, BuildKonfig+validateAllMarkets in impl/, FakeAppBuildConfig in test/; variant selection delegated to build-logic/`BuildVariantResolver` — `-P` flags, AGP variant task names, or defaults)
   centerpost/          — CenterPostInteractor, CenterPostSubjectInteractor, CenterPostDispatchers
   circuit/             — TabScreen, ProtectedScreen, FlowScreen, Parcelize expect/actual, CircuitProviders
+  logger/              — Logger/Severity/LogWriter typealiases over Kermit (api/), KermitLoggerInitializer (impl/), NoOpLoggerInitializer (test/). Raw `co.touchlab.kermit` imports are Konsist-confined to this module.
   metro/               — AppGraph interface (shared DI contract)
   network/             — HttpClientFactory (api/) + impl with baked-in plugins (api/impl split)
   persistence/         — DatabaseDriverFactory (api/) + AndroidSqliteDriver/NativeSqliteDriver actuals (impl/) + FakeDatabaseDriverFactory (test/). The single `AppDatabase` is aggregated in `composeApp`; feature-owned `.sq` schemas live in `features/{name}/impl/data/src/commonMain/sqldelight/`.
+  presentation/        — Compose/SwiftUI-facing helpers: `rememberCenterPost`, `collectAsState`, `rememberFlag`/`rememberConfig`, and the Android WebView primitive (`androidMain`; iOS has its own SwiftUI `WebView.swift`)
+  remote-config/       — FeatureFlag/RemoteConfig contracts + RemoteConfigProvider (api/), Harness-backed provider (impl/), FakeRemoteConfigProvider (test/)
   strings/             — Android-only `R.string` resources populated by `pullTranslations` (Phrase). iOS reads its own `iosApp/iosApp/Resources/{locale}.lproj/` files.
-  theme/               — MockDonaldsTheme, colors, typography, dimens, AdaptiveLayout
+  theme/               — MockDonaldsTheme, colors, typography, dimens, AdaptiveLayout. Kotlin sources are `androidMain`-only (Compose UI); iOS uses `iosApp/iosApp/Theme/MockDonaldsTheme.swift`. Only `composeResources/font/` lives in `commonMain`.
   test-fixtures/       — TestCenterPostDispatchers, KotestProjectConfig, StateRobot base
 ```
 
+testing/architecture-check/   — Konsist architecture rules (38 test classes, host JVM)
 testing/navint-tests/         — Navigation + integration tests (real presenters, fake data, real Circuit)
-testing/e2e-tests/            — End-to-end journey tests + benchmarks (real everything, UI Automator)
+testing/e2e-tests/            — End-to-end journey tests (real everything, UI Automator)
+testing/benchmarks/           — Android Macrobenchmarks (startup/scroll, `benchmark` build type)
 
-Features: home, login, more, order, profile, rewards, scan
+Features: debug-menu, home, login, more, nutrition, order, profile, recents, rewards, scan
+
+`debug-menu` is compiled into every variant and filtered at runtime via `AppBuildConfig.isDebug` (see `MoreTabExtension.isDebugOnly`) rather than being stripped from the module graph.
 
 ## Architecture Rules
 
@@ -158,15 +166,28 @@ This repo assumes any AI tool with a subagent/spawning capability (Claude Code `
 
 Full trigger table, anti-patterns, and per-skill prompt templates: [`.agents/standards/ways-of-working.md`](.agents/standards/ways-of-working.md#when-to-spawn-subagents) and each affected skill's `SKILL.md` ("Pre-flight: Subagent dispatch" section).
 
+## Agent Entry Points
+
+This repo follows the vendor-neutral [AGENTS.md](https://agents.md) standard. `AGENTS.md` (root + per-module) and `.agents/` are the canonical, committed source of truth for every agent. Vendor-specific entry points are **deliberately not committed** — `.gitignore` excludes `CLAUDE.md`, `.claude/`, and `GEMINI.md` so the repo stays tool-agnostic.
+
+Claude Code discovers skills at `.claude/skills/*/SKILL.md` only. It does **not** scan `.agents/skills/`. The symlink is therefore a **required, per-developer setup step** — without it, `/verify`, `/add-feature`, and the other 30 skills are invisible to Claude Code:
+
+```bash
+ln -s AGENTS.md CLAUDE.md
+mkdir -p .claude && ln -s ../.agents/skills .claude/skills
+```
+
+**If you are an agent working in an environment where that symlink does not exist** (a fresh clone, CI, a cloud/web session), the skills are still fully usable — they are just not auto-loaded. Read `.agents/skills/{name}/SKILL.md` directly and follow it literally, including its "Pre-flight" gates and its **MANDATORY** Post-Change Verification section. Do not treat an unlisted skill as an unavailable one.
+
 ## Skills
 
-Available automation in `.agents/skills/` (30 skills total). All scaffolding and modification skills accept optional context via `@file` spec reference or inline description — see `.agents/templates/` for spec templates.
+Available automation in `.agents/skills/` (32 skills total). All scaffolding and modification skills accept optional context via `@file` spec reference or inline description — see `.agents/templates/` for spec templates.
 
 ### Verification & Quality
 
 | Skill | Description |
 |-------|-------------|
-| `verify` | Unified pipeline — `diff` (default, changed modules), `local` (full build), `ci` (all test levels + variants) |
+| `verify` | Unified pipeline — `diff` (default, changed modules), `full` (whole-project lint + unit + arch + one build per platform), `all` (every test level + every variant + full assemble) |
 | `run-unit-tests` | Kotest unit tests + iOS Swift Testing |
 | `run-ui-tests` | Android + iOS UI tests (requires device/simulator) |
 | `run-arch-tests` | Konsist + Harmonize architecture tests |
@@ -176,7 +197,8 @@ Available automation in `.agents/skills/` (30 skills total). All scaffolding and
 | `find-dead-code` | Surface unused declarations, orphaned TestTags/Screens/Fakes (optional module scope) |
 | `summarize` | Project/feature/module overview with android/ios platform scope |
 | `reverse-spec` | Reverse-engineer a spec from existing code — presumed AC, data flow, contracts |
-| `profile` | Perfetto/Macrobenchmark (Android) + Instruments (iOS) benchmarking and tracing |
+| `benchmark` | Perfetto/Macrobenchmark (Android) + Instruments (iOS) benchmarking and tracing |
+| `run-e2e-tests` | End-to-end journey tests (Android UI Automator + iOS XCUITest) |
 
 ### Test Generation
 
@@ -200,6 +222,7 @@ Available automation in `.agents/skills/` (30 skills total). All scaffolding and
 | `add-feature-flag` | Add feature flag definition + observation + gating |
 | `add-monitoring` | Add observability instrumentation (shell — core:monitoring planned) |
 | `add-config-field` | Add compile-time field to `core:build-config` |
+| `add-market` | Add a new market (build-config combo files, AGP flavor, iOS xcconfigs, store identity) |
 | `validate-all-markets` | Enforce build-config schema/format rules across all market properties |
 
 ### Modification
@@ -209,6 +232,13 @@ Available automation in `.agents/skills/` (30 skills total). All scaffolding and
 | `update` | Modify existing code across all affected layers |
 | `remove` | Clean teardown across layers with dependency analysis |
 | `migrate` | Cross-cutting migration (library swap, pattern change, API version upgrade) |
+
+### Spec Generation
+
+| Skill | Description |
+|-------|-------------|
+| `ac-to-spec` | Convert acceptance criteria, Jira tickets, Gherkin, or PRDs into a filled-in spec template |
+| `grill-me` | Interrogate a spec for unresolved markers, gaps, and unconfirmed presumptions before scaffolding |
 
 ### Spec Templates
 
@@ -236,6 +266,7 @@ Detailed reference documents in `.agents/standards/`:
 | [testing-navint.md](.agents/standards/testing-navint.md) | Navigation/integration tests: Android navint + iOS navint |
 | [testing-e2e.md](.agents/standards/testing-e2e.md) | E2E tests: journeys, AppRobot, Macrobenchmark |
 | [testing-architecture.md](.agents/standards/testing-architecture.md) | Architecture tests: Konsist + Harmonize rules and categories |
+| [testing-benchmarks.md](.agents/standards/testing-benchmarks.md) | Benchmarks: Android Macrobenchmark + iOS Instruments, `benchmark` build type |
 | [centerpost.md](.agents/standards/centerpost.md) | Interactor patterns, presenter integration, error handling |
 | [forbidden-patterns.md](.agents/standards/forbidden-patterns.md) | Every banned pattern with WHY and alternative |
 | [verification.md](.agents/standards/verification.md) | Pipeline steps, scoped verification, failure interpretation |

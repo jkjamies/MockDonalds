@@ -4,7 +4,42 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import com.mockdonalds.app.core.centerpost.CenterPostContentState
 import com.mockdonalds.app.core.centerpost.CenterPostSubjectInteractor
+
+/**
+ * Collects the interactor with loading and failure states made explicit.
+ *
+ * Prefer this over [collectAsState] in presenters. The `State<T?>` returned by that overload
+ * collapses "loading", "empty", and "failed" into a single `null`, so a screen cannot show a
+ * spinner or an error — and an exception from the underlying flow reaches composition.
+ *
+ * Flatten the result into primitive `UiState` fields rather than putting
+ * [CenterPostContentState] on the `UiState` itself — sealed interfaces do not bridge cleanly
+ * to Swift:
+ *
+ * ```kotlin
+ * val content by getOrderContent.collectContentAsState()
+ * return OrderUiState(
+ *     categoryPreviews = content.dataOrNull?.categoryPreviews.orEmpty(),
+ *     isLoading = content.isLoading,
+ *     errorMessage = content.errorOrNull?.message,
+ *     eventSink = { ... },
+ * )
+ * ```
+ */
+@Composable
+public fun <T> CenterPostSubjectInteractor<Unit, T>.collectContentAsState(): State<CenterPostContentState<T>> {
+    // Same seeding contract as collectAsState: invoke(Unit) once per interactor instance.
+    LaunchedEffect(this) {
+        invoke(Unit)
+    }
+    // Typed explicitly rather than passing `CenterPostContentState.Loading` inline: Compose's
+    // `Flow<T>.collectAsState(initial: R)` is generic in both T and R, and `Loading` is a
+    // `CenterPostContentState<Nothing>`, so pinning R here keeps inference off the critical path.
+    val initial: CenterPostContentState<T> = CenterPostContentState.Loading
+    return contentState.collectAsState(initial = initial)
+}
 
 @Composable
 public fun <T> CenterPostSubjectInteractor<Unit, T>.collectAsState(

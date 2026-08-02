@@ -331,7 +331,7 @@ fun HomeUi(state: HomeUiState, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun CravingCard(craving: Craving, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun CravingCard(craving: Craving, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .width(MockDimens.CardWidth)

@@ -1,6 +1,7 @@
 package com.mockdonalds.app.konsist.core
 
 import com.lemonappdev.konsist.api.Konsist
+import com.mockdonalds.app.konsist.normalizedPath
 import io.kotest.core.spec.style.BehaviorSpec
 
 /**
@@ -16,7 +17,7 @@ class BuildConfigImportTest : BehaviorSpec({
 
         Then("no file outside :core:build-config:impl imports the generated BuildConfig object") {
             val violators = files.filter { file ->
-                val isImplModule = file.path.contains("/core/build-config/impl/")
+                val isImplModule = normalizedPath(file.path).contains("/core/build-config/impl/")
                 !isImplModule && file.imports.any {
                     it.name == "com.mockdonalds.app.core.buildconfig.BuildConfig"
                 }
@@ -31,7 +32,7 @@ class BuildConfigImportTest : BehaviorSpec({
 
         Then("no file outside :core:build-config:impl imports AppBuildConfigImpl") {
             val violators = files.filter { file ->
-                val isImplModule = file.path.contains("/core/build-config/impl/")
+                val isImplModule = normalizedPath(file.path).contains("/core/build-config/impl/")
                 !isImplModule && file.imports.any {
                     it.name == "com.mockdonalds.app.core.buildconfig.AppBuildConfigImpl"
                 }

@@ -24,6 +24,12 @@ class OrderUiTest {
     }
 
     @Test
+    fun rendersLandscapeLayout() {
+        robot.setLandscapeContent()
+        robot.assertLandscapeScreen()
+    }
+
+    @Test
     fun categoryPreviewEmitsEvent() {
         robot.setDefaultContent()
         robot.tapCategoryPreview("drinks")

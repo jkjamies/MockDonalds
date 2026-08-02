@@ -1,6 +1,7 @@
 package com.mockdonalds.app.konsist.core
 
 import com.lemonappdev.konsist.api.Konsist
+import com.mockdonalds.app.konsist.normalizedPath
 import io.kotest.core.spec.style.BehaviorSpec
 
 /**
@@ -24,10 +25,11 @@ class PersistenceConventionsTest : BehaviorSpec({
     )
 
     fun isInFeatureDataModule(path: String): Boolean =
-        path.contains("/features/") && path.contains("/impl/data/")
+        normalizedPath(path).contains("/features/") && normalizedPath(path).contains("/impl/data/")
 
     fun isSqlDelightAllowedConsumer(path: String): Boolean =
-        sqldelightAllowedPathFragments.any { path.contains(it) } || isInFeatureDataModule(path)
+        sqldelightAllowedPathFragments.any { normalizedPath(path).contains(it) } ||
+            isInFeatureDataModule(path)
 
     Given("the SQLDelight import boundary") {
         val files = Konsist.scopeFromProject().files

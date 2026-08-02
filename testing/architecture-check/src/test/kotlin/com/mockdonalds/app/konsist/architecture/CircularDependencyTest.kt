@@ -1,6 +1,7 @@
 package com.mockdonalds.app.konsist.architecture
 
 import com.lemonappdev.konsist.api.Konsist
+import com.mockdonalds.app.konsist.featurePackageSegment
 import io.kotest.core.spec.style.BehaviorSpec
 
 /**
@@ -19,7 +20,14 @@ class CircularDependencyTest : BehaviorSpec({
             val dependencyGraph = mutableMapOf<String, MutableSet<String>>()
 
             featureFiles.forEach { file ->
-                val featureName = file.path.substringAfter("features/").substringBefore("/")
+                // Must be the package segment, not the directory name. `otherFeature` below is
+                // parsed out of an import with `\.features\.(\w+)\.`, and `\w` cannot match a
+                // hyphen — so for `debug-menu` the two sides could never agree: its own imports
+                // registered as cross-feature ("debug-menu" != "debugmenu"), while every other
+                // feature recorded it as "debugmenu", leaving the reciprocal lookup below unable
+                // to pair them. A genuine cycle involving the repo's one hyphenated feature was
+                // undetectable.
+                val featureName = featurePackageSegment(file.path)
                 file.imports.forEach { import ->
                     val match = Regex("\\.features\\.(\\w+)\\.").find(import.name)
                     if (match != null) {

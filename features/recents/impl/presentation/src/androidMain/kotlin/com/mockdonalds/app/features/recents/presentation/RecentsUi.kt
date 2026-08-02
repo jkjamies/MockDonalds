@@ -91,7 +91,7 @@ fun RecentsUi(state: RecentsUiState, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun RecentsEmptyUi(modifier: Modifier = Modifier) {
+private fun RecentsEmptyUi(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.testTag(RecentsTestTags.EMPTY),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -120,7 +120,7 @@ fun RecentsEmptyUi(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun RecentsSuccessUi(items: List<RecentItem>, eventSink: (RecentsEvent) -> Unit) {
+private fun RecentsSuccessUi(items: List<RecentItem>, eventSink: (RecentsEvent) -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -136,7 +136,7 @@ fun RecentsSuccessUi(items: List<RecentItem>, eventSink: (RecentsEvent) -> Unit)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecentItemCard(item: RecentItem, onClick: () -> Unit) {
+private fun RecentItemCard(item: RecentItem, onClick: () -> Unit) {
     Card(
         onClick = onClick,
         modifier = Modifier

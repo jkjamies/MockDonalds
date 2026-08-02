@@ -1,6 +1,7 @@
 package com.mockdonalds.app.konsist.architecture
 
 import com.lemonappdev.konsist.api.Konsist
+import com.mockdonalds.app.konsist.normalizedPath
 import io.kotest.core.spec.style.BehaviorSpec
 
 /**
@@ -46,7 +47,7 @@ class ComposeIsolationTest : BehaviorSpec({
                     }
                 }
                 .filterNot { file ->
-                    val path = file.path
+                    val path = normalizedPath(file.path)
                     allowedPathSubstrings.any { (first, second) ->
                         if (second == null) path.contains(first) else path.contains(first) && path.contains(second)
                     }

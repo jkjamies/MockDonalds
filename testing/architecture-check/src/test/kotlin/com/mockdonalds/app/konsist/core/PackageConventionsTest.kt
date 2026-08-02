@@ -1,6 +1,8 @@
 package com.mockdonalds.app.konsist.core
 
 import com.lemonappdev.konsist.api.Konsist
+import com.mockdonalds.app.konsist.featurePackageSegment
+import com.mockdonalds.app.konsist.isProductionSourcePath
 import com.lemonappdev.konsist.api.verify.assertTrue
 import io.kotest.core.spec.style.BehaviorSpec
 
@@ -13,7 +15,7 @@ class PackageConventionsTest : BehaviorSpec({
         Then("all feature commonMain source files should follow com.mockdonalds.app.features.* package convention") {
             Konsist.scopeFromProject()
                 .files
-                .filter { it.resideInPath("..features..") && it.resideInPath("..commonMain..") }
+                .filter { it.resideInPath("..features..") && isProductionSourcePath(it.path) }
                 .assertTrue {
                     it.packagee?.name?.startsWith("com.mockdonalds.app.features.") == true
                 }
@@ -24,7 +26,7 @@ class PackageConventionsTest : BehaviorSpec({
         Then("all core commonMain source files should follow com.mockdonalds.app.core.* package convention") {
             Konsist.scopeFromProject()
                 .files
-                .filter { it.resideInPath("..core..") && it.resideInPath("..commonMain..") }
+                .filter { it.resideInPath("..core..") && isProductionSourcePath(it.path) }
                 .assertTrue {
                     it.packagee?.name?.startsWith("com.mockdonalds.app.core.") == true
                 }
@@ -35,13 +37,11 @@ class PackageConventionsTest : BehaviorSpec({
         Then("feature files should have package segments matching their module path") {
             Konsist.scopeFromProject()
                 .files
-                .filter { it.resideInPath("..features..") && it.resideInPath("..commonMain..") }
+                .filter { it.resideInPath("..features..") && isProductionSourcePath(it.path) }
                 .assertTrue { file ->
-                    // Extract feature name from path: features/home/api -> "home". Hyphens in
-                    // directory names (e.g. "debug-menu") are stripped in Kotlin packages
-                    // (debugmenu) since `-` isn't a valid package-segment character.
-                    val featureName = file.path.substringAfter("features/").substringBefore("/")
-                    val packageSegment = featureName.replace("-", "")
+                    // features/home/api -> "home"; features/debug-menu/... -> "debugmenu".
+                    // Hyphens are stripped because `-` is not a valid package-segment character.
+                    val packageSegment = featurePackageSegment(file.path)
                     file.packagee?.name?.contains(".features.$packageSegment.") == true
                 }
         }

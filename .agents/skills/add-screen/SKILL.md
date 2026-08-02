@@ -45,7 +45,7 @@ Use existing screens in `features/order/` as the pattern reference.
 |------|----------|----------|
 | `{Screen}Screen.kt` | api/navigation/src/commonMain | Data object with @Parcelize |
 | `{Screen}TestTags.kt` | api/navigation/src/commonMain (ui package) | Object with const val tags |
-| `{Screen}Presenter.kt` | impl/presentation/src/commonMain | @CircuitInject + @Inject + @Composable |
+| `{Screen}Presenter.kt` | impl/presentation/src/commonMain | @CircuitInject + @Inject + @Composable. Collect with `collectContentAsState()` and map through `dataOrNull` / `isLoading` / `errorOrNull` — see `.agents/standards/centerpost.md` → "Two collection surfaces" |
 | `{Screen}UiState.kt` | impl/presentation/src/commonMain | Data class : CircuitUiState + sealed Event |
 | `{Screen}Ui.kt` | impl/presentation/src/androidMain | @CircuitInject Composable |
 | `{Screen}View.swift` | iosApp/iosApp/Features/{Feature}/ | SwiftUI View with `@CircuitInject({Screen}.self, {Screen}UiState.self)` (drives factory codegen — no AppDelegate edit) |
