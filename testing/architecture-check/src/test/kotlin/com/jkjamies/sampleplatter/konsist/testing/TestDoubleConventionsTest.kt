@@ -68,7 +68,7 @@ class TestDoubleConventionsTest : BehaviorSpec({
                 .classes()
                 .filter {
                     it.hasAbstractModifier &&
-                        it.hasParent { p -> p.name == "CenterPostSubjectInteractor" } &&
+                        it.hasParent { p -> p.name == "StrataSubjectInteractor" } &&
                         it.resideInPath("..api..") &&
                         it.resideInPath("..commonMain..")
                 }
@@ -96,7 +96,7 @@ class TestDoubleConventionsTest : BehaviorSpec({
                 .filter { it.resideInPath("..test..") || it.resideInPath("..test-fixtures..") }
                 .filter {
                     it.hasParent { p ->
-                        p.name == "CenterPostSubjectInteractor" ||
+                        p.name == "StrataSubjectInteractor" ||
                             p.name.endsWith("Repository") ||
                             p.name.endsWith("Dispatchers")
                     }

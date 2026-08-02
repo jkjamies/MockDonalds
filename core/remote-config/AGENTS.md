@@ -65,7 +65,7 @@ fun MyPresenter(
 }
 ```
 
-Why not a CenterPost interactor (like other core modules)? Reads are cheap, synchronous at the source, and routinely plural per screen. A `CenterPostSubjectInteractor` is shaped for "one param, one stream" and doesn't scale to N keys without N injections. The Composable extension gives one-line reads with per-key recomposition isolation. See `.agents/standards/centerpost.md` for the documented carve-out.
+Why not a Strata interactor (like other core modules)? Reads are cheap, synchronous at the source, and routinely plural per screen. A `StrataSubjectInteractor` is shaped for "one param, one stream" and doesn't scale to N keys without N injections. The Composable extension gives one-line reads with per-key recomposition isolation. See `.agents/standards/strata.md` for the documented carve-out.
 
 **Domain/data layers** inject `RemoteConfigProvider` directly for synchronous checks:
 

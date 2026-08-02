@@ -45,7 +45,7 @@ Reference: `features/order/impl/presentation/src/commonTest/.../OrderPresenterTe
 ```kotlin
 package com.jkjamies.sampleplatter.features.{name}.presentation
 
-import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.core.test.TestStrataDispatchers
 import com.jkjamies.sampleplatter.features.{name}.api.navigation.{Feature}Screen
 import com.jkjamies.sampleplatter.features.{name}.test.FakeGet{Feature}Content
 import com.slack.circuit.test.FakeNavigator
@@ -57,7 +57,7 @@ class {Feature}PresenterTest : BehaviorSpec({
 
     Given("a {name} presenter with content available") {
         val fakeContent = FakeGet{Feature}Content()
-        val dispatchers = TestCenterPostDispatchers()
+        val dispatchers = TestStrataDispatchers()
         val navigator = FakeNavigator({Feature}Screen)
 
         When("the presenter emits state") {
@@ -90,7 +90,7 @@ Reference: `features/order/impl/domain/src/commonTest/.../GetOrderContentImplTes
 ```kotlin
 package com.jkjamies.sampleplatter.features.{name}.domain
 
-import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.core.test.TestStrataDispatchers
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.flow.first

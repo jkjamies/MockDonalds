@@ -41,7 +41,7 @@ class DependencyInjectionTest : BehaviorSpec({
                 .classes()
                 .filter {
                     it.hasAbstractModifier &&
-                        it.hasParent { p -> p.name == "CenterPostSubjectInteractor" }
+                        it.hasParent { p -> p.name == "StrataSubjectInteractor" }
                 }
                 .map { it.name }
                 .toSet()

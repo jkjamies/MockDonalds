@@ -33,7 +33,7 @@ The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before produ
 - `FeatureFlag` definition: `core/remote-config/api/src/commonMain/.../FeatureFlag.kt`
 - `RemoteConfigProvider` interface: `core/remote-config/api/src/commonMain/.../RemoteConfigProvider.kt`
 - `rememberFlag` Composable extension: `core/presentation/src/commonMain/kotlin/com/jkjamies/sampleplatter/core/presentation/remoteconfig/RememberFlag.kt`
-- Carve-out rationale (why no CenterPost interactor for flags): `.agents/standards/centerpost.md` → "Carve-out: core:remote-config"
+- Carve-out rationale (why no Strata interactor for flags): `.agents/standards/strata.md` → "Carve-out: core:remote-config"
 
 ## Files to Create / Modify
 
@@ -85,10 +85,10 @@ Presenters inject `RemoteConfigProvider` and read each flag via the Composable e
 @Composable
 fun {Feature}Presenter(
     remoteConfig: RemoteConfigProvider,  // ← inject once, read N flags
-    dispatchers: CenterPostDispatchers,
+    dispatchers: StrataDispatchers,
     // ... other dependencies
 ): {Feature}UiState {
-    val centerPost = rememberCenterPost(dispatchers)
+    val strata = rememberStrata(dispatchers)
 
     // Reactive — UI updates when flag changes remotely. One line per flag.
     val isCarouselEnabled by remoteConfig.rememberFlag({Feature}Flags.{flagName})

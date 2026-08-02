@@ -1,7 +1,7 @@
 package com.jkjamies.sampleplatter.features.order.data
 
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostDispatchers
 import com.jkjamies.sampleplatter.core.logger.featureLogger
+import com.jkjamies.sampleplatter.core.strata.StrataDispatchers
 import com.jkjamies.sampleplatter.features.order.api.domain.CartSummary
 import com.jkjamies.sampleplatter.features.order.api.domain.CategoryPreview
 import com.jkjamies.sampleplatter.features.order.api.domain.MenuItem
@@ -25,7 +25,7 @@ import kotlin.time.Duration.Companion.hours
 class OrderRepositoryImpl(
     private val remote: MenuRemoteDataSource,
     private val local: MenuItemLocalDataSource,
-    private val dispatchers: CenterPostDispatchers,
+    private val dispatchers: StrataDispatchers,
 ) : OrderRepository {
 
     private val logger = featureLogger("OrderRepository")

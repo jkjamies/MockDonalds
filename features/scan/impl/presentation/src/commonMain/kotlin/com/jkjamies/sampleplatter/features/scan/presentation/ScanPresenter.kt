@@ -2,9 +2,9 @@ package com.jkjamies.sampleplatter.features.scan.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostDispatchers
-import com.jkjamies.sampleplatter.core.presentation.centerpost.collectAsState
-import com.jkjamies.sampleplatter.core.presentation.centerpost.rememberCenterPost
+import com.jkjamies.sampleplatter.core.presentation.strata.collectAsState
+import com.jkjamies.sampleplatter.core.presentation.strata.rememberStrata
+import com.jkjamies.sampleplatter.core.strata.StrataDispatchers
 import com.jkjamies.sampleplatter.features.scan.api.domain.GetScanContent
 import com.jkjamies.sampleplatter.features.scan.api.navigation.ScanScreen
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -18,9 +18,9 @@ import dev.zacsweers.metro.Inject
 fun ScanPresenter(
     navigator: Navigator,
     getScanContent: GetScanContent,
-    dispatchers: CenterPostDispatchers,
+    dispatchers: StrataDispatchers,
 ): ScanUiState {
-    val centerPost = rememberCenterPost(dispatchers)
+    val strata = rememberStrata(dispatchers)
     val content by getScanContent.collectAsState()
 
     return ScanUiState(
@@ -28,8 +28,8 @@ fun ScanPresenter(
         rewardsProgress = content?.rewardsProgress,
         eventSink = { event ->
             when (event) {
-                is ScanEvent.PayNowClicked -> centerPost { }
-                is ScanEvent.ViewOffersClicked -> centerPost { }
+                is ScanEvent.PayNowClicked -> strata { }
+                is ScanEvent.ViewOffersClicked -> strata { }
             }
         },
     )

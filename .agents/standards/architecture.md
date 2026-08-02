@@ -29,7 +29,7 @@ graph TB
     subgraph core["core/* (Shared Infrastructure)"]
         Analytics["analytics (api/impl/test)"]
         Auth["auth (api/impl)"]
-        CenterPost["centerpost"]
+        Strata["strata"]
         CircuitCore["circuit"]
         Presentation["presentation (Compose extensions)"]
         RemoteConfig["remote-config (api/impl/test)"]
@@ -92,7 +92,7 @@ SamplePlatter/
 │   ├── auth/
 │   │   ├── api/                        # AuthManager interface (public contract)
 │   │   └── impl/                       # InMemoryAuthManager (private implementation)
-│   ├── centerpost/                     # Business logic framework (interactors, result types)
+│   ├── strata/                     # Business logic framework (interactors, result types)
 │   ├── circuit/                        # Shared Circuit types (TabScreen, ProtectedScreen, CircuitProviders)
 │   ├── logger/
 │   │   ├── api/                        # Logger/Severity/LogWriter typealiases over Kermit, LoggerInitializer interface
@@ -103,7 +103,7 @@ SamplePlatter/
 │   │   ├── api/                        # HttpClientFactory, ClientConfig DSL, AuthMode, NetworkException
 │   │   └── impl/                       # HttpClientFactoryImpl (baked-in plugins), JsonProvider
 │   ├── strings/                        # Android R.string resources (Phrase-fed); iOS reads its own .lproj files in iosApp/
-│   ├── test-fixtures/                  # TestCenterPostDispatchers, KotestProjectConfig, StateRobot
+│   ├── test-fixtures/                  # TestStrataDispatchers, KotestProjectConfig, StateRobot
 │   └── theme/                          # Design system (Colors, Theme, Dimens, Typography)
 │
 ├── features/
@@ -167,7 +167,7 @@ Each feature under `features/{name}/` contains exactly 6 submodules, organized i
 graph TB
     subgraph feature["features/{name}/"]
         subgraph api["api/ — Public Contracts"]
-            ApiDomain["api/domain<br/>Models, Abstract Use Cases<br/>(CenterPostSubjectInteractor)"]
+            ApiDomain["api/domain<br/>Models, Abstract Use Cases<br/>(StrataSubjectInteractor)"]
             ApiNav["api/navigation<br/>Screen (@Parcelize)<br/>TestTags"]
         end
 
@@ -254,7 +254,7 @@ Key constraints:
 
 | Submodule | Responsibility | Plugin |
 |-----------|---------------|--------|
-| `api/domain` | Public models, abstract use cases (`CenterPostSubjectInteractor` subclasses) | `sampleplatter.kmp.library` |
+| `api/domain` | Public models, abstract use cases (`StrataSubjectInteractor` subclasses) | `sampleplatter.kmp.library` |
 | `api/navigation` | Screen objects (`@Parcelize data object`), TestTags | `sampleplatter.kmp.library` |
 | `impl/domain` | UseCaseImpl classes, Repository interfaces | `sampleplatter.kmp.domain` |
 | `impl/data` | RepositoryImpl classes, DataSource interfaces+impls (`remote/`, `local/`), DTOs (`@Serializable` data classes with `Dto` suffix in `remote/`), network via `core:network:api` | `sampleplatter.kmp.data` |
@@ -286,16 +286,16 @@ Core modules (`core/*`) must NEVER import from feature modules (`features/*`). T
 
 ## Core Module Consumption Patterns
 
-**Rule: Presenters always use CenterPost interactors. Domain/data always use the provider interface directly.** This is the default for all core modules with api/impl. One documented exception: `core:remote-config` (see below).
+**Rule: Presenters always use Strata interactors. Domain/data always use the provider interface directly.** This is the default for all core modules with api/impl. One documented exception: `core:remote-config` (see below).
 
 | Core Module | Presenter Layer | Domain/Data Layer |
 |-------------|----------------|-------------------|
 | `core:remote-config` | `RemoteConfigProvider.rememberFlag(flag)` / `rememberConfig(config)` (Composable extensions) | `RemoteConfigProvider` (interface) |
-| `core:analytics` | `TrackAnalyticsEvent` (CenterPostInteractor) | `AnalyticsDispatcher` (interface) |
+| `core:analytics` | `TrackAnalyticsEvent` (StrataInteractor) | `AnalyticsDispatcher` (interface) |
 
 For fire-and-forget interactors (analytics), the `inProgress` loading state goes uncollected — zero overhead. The value: structured execution, error handling, timeout protection, dispatcher correctness.
 
-**Remote-config carve-out:** flag and config reads are cheap, synchronous at the source, and routinely plural per screen (3–5 in one presenter is common). A `CenterPostSubjectInteractor` handles "one param, one stream" and would force N injections for N keys. Instead, presenters inject `RemoteConfigProvider` and call the Composable extensions `rememberFlag(flag)` / `rememberConfig(config)` per key — one DI param, one line per key, per-key recomposition isolation. Konsist forbids direct `.isEnabled(...)` / `.observe(...)` / `.getConfig(...)` / `.observeConfig(...)` calls in presentation to preserve the reactive Compose-state boundary. See `.agents/standards/centerpost.md` for the detailed rationale.
+**Remote-config carve-out:** flag and config reads are cheap, synchronous at the source, and routinely plural per screen (3–5 in one presenter is common). A `StrataSubjectInteractor` handles "one param, one stream" and would force N injections for N keys. Instead, presenters inject `RemoteConfigProvider` and call the Composable extensions `rememberFlag(flag)` / `rememberConfig(config)` per key — one DI param, one line per key, per-key recomposition isolation. Konsist forbids direct `.isEnabled(...)` / `.observe(...)` / `.getConfig(...)` / `.observeConfig(...)` calls in presentation to preserve the reactive Compose-state boundary. See `.agents/standards/strata.md` for the detailed rationale.
 
 Note: `core:auth` currently exposes only `AuthManager` (interface) with no interactor — auth is consumed by `AuthInterceptor` (infrastructure in composeApp), not by presenters directly. If presenters need auth state reactively in the future, an interactor should be added.
 

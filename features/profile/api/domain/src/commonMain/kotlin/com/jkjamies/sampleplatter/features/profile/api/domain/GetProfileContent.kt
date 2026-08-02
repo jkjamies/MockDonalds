@@ -1,5 +1,5 @@
 package com.jkjamies.sampleplatter.features.profile.api.domain
 
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostSubjectInteractor
+import com.jkjamies.sampleplatter.core.strata.StrataSubjectInteractor
 
-abstract class GetProfileContent : CenterPostSubjectInteractor<Unit, ProfileContent>()
+abstract class GetProfileContent : StrataSubjectInteractor<Unit, ProfileContent>()

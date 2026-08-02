@@ -38,7 +38,7 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":features:{name}:api:domain"))
             implementation(project(":features:{name}:api:navigation"))
-            implementation(project(":core:centerpost"))
+            implementation(project(":core:strata"))
             implementation(project(":core:theme"))
         }
         commonTest.dependencies {

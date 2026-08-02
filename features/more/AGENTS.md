@@ -12,7 +12,7 @@ The "More" tab serves as a settings and navigation hub, displaying the user's pr
 | UserProfile | api/domain | name, tier, points, avatarUrl |
 | MoreMenuItem | api/domain | id, icon, title |
 | MoreTabExtension | api/navigation | Extension point for other features to contribute menu entries via Metro multibinding (`@ContributesIntoSet(AppScope::class)`). Fields: `id`, `icon`, `title`, `isDebugOnly` (default `false`), `onClick(Navigator)`. Set `isDebugOnly = true` to have `MorePresenter` hide the entry in release builds (gated on `AppBuildConfig.isDebug`). |
-| GetMoreContent | api/domain -> impl/domain | Streaming use case via CenterPostSubjectInteractor<Unit, MoreContent> |
+| GetMoreContent | api/domain -> impl/domain | Streaming use case via StrataSubjectInteractor<Unit, MoreContent> |
 | MoreRepository | impl/domain -> impl/data | getUserProfile(): Flow<UserProfile>, getMenuItems(): Flow<List<MoreMenuItem>> |
 | MorePresenter | impl/presentation | Collects content, merges `Set<MoreTabExtension>` (filtered by `AppBuildConfig.isDebug` for debug-only entries), handles profile navigation and menu item clicks |
 | MoreUiState | impl/presentation | userProfile?, menuItems, eventSink |
@@ -21,7 +21,7 @@ The "More" tab serves as a settings and navigation hub, displaying the user's pr
 ## Cross-Feature Dependencies
 - Navigates to: ProfileScreen (from features:profile:api:navigation) on ProfileClicked
 - Imported by: composeApp (wired at app level)
-- Core deps: core:build-config:api (runtime `isDebug` gating for MoreTabExtension), core:centerpost, core:theme
+- Core deps: core:build-config:api (runtime `isDebug` gating for MoreTabExtension), core:strata, core:theme
 - Extension consumers: any feature contributing a `MoreTabExtension` (e.g. `features:debug-menu`) via `@ContributesIntoSet(AppScope::class)` — no direct dependency from More
 
 ## Feature-Specific Patterns

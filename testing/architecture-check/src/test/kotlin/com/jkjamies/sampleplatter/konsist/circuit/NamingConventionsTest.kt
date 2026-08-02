@@ -58,7 +58,7 @@ class NamingConventionsTest : BehaviorSpec({
         Then("all use case abstractions should end with a domain noun (not Impl)") {
             Konsist.scopeFromProject()
                 .classes()
-                .filter { it.hasAbstractModifier && it.hasParent { p -> p.name == "CenterPostSubjectInteractor" } }
+                .filter { it.hasAbstractModifier && it.hasParent { p -> p.name == "StrataSubjectInteractor" } }
                 .assertTrue { !it.name.endsWith("Impl") }
         }
 

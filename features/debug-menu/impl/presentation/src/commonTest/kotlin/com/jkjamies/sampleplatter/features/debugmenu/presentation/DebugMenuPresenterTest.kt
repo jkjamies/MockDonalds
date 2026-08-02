@@ -1,6 +1,6 @@
 package com.jkjamies.sampleplatter.features.debugmenu.presentation
 
-import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.core.test.TestStrataDispatchers
 import com.jkjamies.sampleplatter.features.debugmenu.api.navigation.BuildConfigDebugScreen
 import com.jkjamies.sampleplatter.features.debugmenu.api.navigation.DebugMenuScreen
 import com.jkjamies.sampleplatter.features.debugmenu.api.navigation.FeatureFlagsDebugScreen
@@ -12,7 +12,7 @@ import io.kotest.matchers.shouldBe
 class DebugMenuPresenterTest : BehaviorSpec({
 
     Given("a debug menu presenter") {
-        val dispatchers = TestCenterPostDispatchers()
+        val dispatchers = TestStrataDispatchers()
 
         When("the presenter emits state") {
             Then("it should expose the feature-flags and build-config entries") {

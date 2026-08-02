@@ -122,8 +122,8 @@
 
 | Name | Type | Params | Result | Description |
 |------|------|--------|--------|-------------|
-| `Get{Feature}Content` | `CenterPostSubjectInteractor` (streaming) | `Unit` | `{Feature}Content` | Observe feature data |
-| `Submit{Action}` | `CenterPostInteractor` (one-shot) | `{Params}` | `Result<Unit>` | Perform action |
+| `Get{Feature}Content` | `StrataSubjectInteractor` (streaming) | `Unit` | `{Feature}Content` | Observe feature data |
+| `Submit{Action}` | `StrataInteractor` (one-shot) | `{Params}` | `Result<Unit>` | Perform action |
 
 ### Data Flow
 

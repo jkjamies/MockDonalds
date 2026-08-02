@@ -9,7 +9,7 @@ and Kotest configuration. Auto-included in all test modules via convention plugi
 
 | Type | Description |
 |------|-------------|
-| `TestCenterPostDispatchers` | Implements `CenterPostDispatchers` routing all dispatchers (`default`, `io`, `main`) to a single `StandardTestDispatcher`. Accepts an optional custom `TestDispatcher`. |
+| `TestStrataDispatchers` | Implements `StrataDispatchers` routing all dispatchers (`default`, `io`, `main`) to a single `StandardTestDispatcher`. Accepts an optional custom `TestDispatcher`. |
 | `KotestProjectConfig` | Open class extending `AbstractProjectConfig`. Sets `specExecutionMode` to `LimitedConcurrency(4)` for parallel test execution. |
 | `StateRobot<State, Event>` | Abstract base class for Circuit presenter testing robots. Captures events via `createEventSink()`, exposes `capturedEvents`, `lastEvent`, and `clearEvents()`. Subclass implements `defaultState()`. |
 | `FakeAuthManager` | Test fake implementing `AuthManager`. Constructor accepts initial `isAuthenticated`, `tokens`, and `refreshResult`. Tracks `refreshCallCount`. |
@@ -18,11 +18,11 @@ and Kotest configuration. Auto-included in all test modules via convention plugi
 
 ## Usage
 
-### Testing a CenterPostInteractor
+### Testing a StrataInteractor
 
 ```kotlin
 class GetMenuInteractorTest : FunSpec({
-    val dispatchers = TestCenterPostDispatchers()
+    val dispatchers = TestStrataDispatchers()
 
     test("returns menu items") {
         val interactor = GetMenuInteractor(FakeMenuRepository())
@@ -55,7 +55,7 @@ class ProjectConfig : KotestProjectConfig()
 ## Rules
 
 - Core modules never import from features
-- All test modules must use `TestCenterPostDispatchers` -- never `DefaultCenterPostDispatchers`
+- All test modules must use `TestStrataDispatchers` -- never `DefaultStrataDispatchers`
 - All presenter tests should use `StateRobot` for event capture
 - Use `FakeAuthManager` / `FakeRefreshTokenSource` instead of mocking `AuthManager` / `RefreshTokenSource`
 - Do not add production code to this module -- test infrastructure only

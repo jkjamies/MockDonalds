@@ -7,7 +7,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            api(project(":core:centerpost"))
+            api(project(":core:strata"))
             api(libs.kotlinx.coroutines.core)
         }
     }

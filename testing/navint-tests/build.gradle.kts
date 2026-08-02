@@ -37,7 +37,7 @@ kotlin {
             api(project(":core:auth:api"))
             api(project(":core:build-config:test"))
             api(project(":core:logger:test"))
-            implementation(project(":core:centerpost"))
+            implementation(project(":core:strata"))
             implementation(project(":core:theme"))
             implementation(project(":core:test-fixtures"))
 

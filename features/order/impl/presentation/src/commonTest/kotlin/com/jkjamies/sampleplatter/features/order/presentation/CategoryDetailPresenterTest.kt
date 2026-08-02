@@ -1,6 +1,6 @@
 package com.jkjamies.sampleplatter.features.order.presentation
 
-import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.core.test.TestStrataDispatchers
 import com.jkjamies.sampleplatter.features.order.api.domain.CategoryDetailContent
 import com.jkjamies.sampleplatter.features.order.api.domain.MenuItem
 import com.jkjamies.sampleplatter.features.order.api.navigation.CategoryDetailScreen
@@ -32,7 +32,7 @@ class CategoryDetailPresenterTest : BehaviorSpec({
             ),
         )
         val getOrder = FakeGetOrderContent()
-        val dispatchers = TestCenterPostDispatchers()
+        val dispatchers = TestStrataDispatchers()
         val navigator = FakeNavigator(screen)
 
         When("the presenter emits state") {

@@ -109,7 +109,7 @@ class CodeHygieneTest : BehaviorSpec({
 
             assert(violators.isEmpty()) {
                 val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
-                "runBlocking is not allowed in production code — use suspend functions or CenterPost:\n$names"
+                "runBlocking is not allowed in production code — use suspend functions or Strata:\n$names"
             }
         }
     }

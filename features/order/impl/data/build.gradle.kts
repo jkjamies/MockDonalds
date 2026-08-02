@@ -13,7 +13,7 @@ kotlin {
             implementation(project(":features:order:impl:domain"))
             implementation(project(":core:network:api"))
             implementation(project(":core:build-config:api"))
-            implementation(project(":core:centerpost"))
+            implementation(project(":core:strata"))
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.json)

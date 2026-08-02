@@ -2,9 +2,9 @@ package com.jkjamies.sampleplatter.features.nutrition.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostDispatchers
-import com.jkjamies.sampleplatter.core.presentation.centerpost.collectAsState
-import com.jkjamies.sampleplatter.core.presentation.centerpost.rememberCenterPost
+import com.jkjamies.sampleplatter.core.presentation.strata.collectAsState
+import com.jkjamies.sampleplatter.core.presentation.strata.rememberStrata
+import com.jkjamies.sampleplatter.core.strata.StrataDispatchers
 import com.jkjamies.sampleplatter.features.nutrition.api.domain.GetNutritionContent
 import com.jkjamies.sampleplatter.features.nutrition.api.navigation.NutritionScreen
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -18,9 +18,9 @@ import dev.zacsweers.metro.Inject
 fun NutritionPresenter(
     navigator: Navigator,
     getNutritionContent: GetNutritionContent,
-    dispatchers: CenterPostDispatchers,
+    dispatchers: StrataDispatchers,
 ): NutritionUiState {
-    rememberCenterPost(dispatchers)
+    rememberStrata(dispatchers)
     getNutritionContent(Unit)
 
     val content by getNutritionContent.collectAsState()

@@ -13,7 +13,7 @@ Every rule check resolves to one of these documents. Read them before reviewing;
 
 - **Architecture & layer isolation**: `.agents/standards/architecture.md`
 - **Naming conventions**: `.agents/standards/naming-conventions.md`
-- **Dependency injection & Circuit/CenterPost contracts**: `.agents/standards/dependency-injection.md`
+- **Dependency injection & Circuit/Strata contracts**: `.agents/standards/dependency-injection.md`
 - **Forbidden patterns** (banned APIs, raw coroutines, mocks, etc.): `.agents/standards/forbidden-patterns.md`
 - **Testing overview + quality standards**: `.agents/standards/testing.md`
 - **Test level details**: `testing-unit.md`, `testing-ui-component.md`, `testing-navint.md`, `testing-e2e.md`, `testing-architecture.md`

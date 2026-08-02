@@ -134,7 +134,7 @@ kotlin {
             // an api-dependency of the source set, and this one is exported for
             // RemoteConfigBuildConfig — see the export block above.
             api(project(":core:remote-config:impl"))
-            implementation(project(":core:centerpost"))
+            implementation(project(":core:strata"))
             implementation(project(":core:theme"))
             implementation(project(":core:network:impl"))
             implementation(project(":core:build-config:impl"))

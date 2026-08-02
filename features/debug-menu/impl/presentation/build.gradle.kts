@@ -12,7 +12,7 @@ kotlin {
             implementation(project(":features:debug-menu:api:domain"))
             implementation(project(":features:debug-menu:api:navigation"))
             implementation(project(":features:more:api:navigation"))
-            implementation(project(":core:centerpost"))
+            implementation(project(":core:strata"))
             implementation(project(":core:theme"))
             api(project(":core:remote-config:api"))
             api(project(":core:build-config:api"))

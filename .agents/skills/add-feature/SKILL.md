@@ -57,7 +57,7 @@ See `.agents/standards/ways-of-working.md` → "When to Spawn Subagents". Skip o
 - Testing conventions: `.agents/standards/testing.md` (overview)
 - Unit tests: `.agents/standards/testing-unit.md`
 - UI component tests: `.agents/standards/testing-ui-component.md`
-- CenterPost interactors: `.agents/standards/centerpost.md`
+- Strata interactors: `.agents/standards/strata.md`
 - Design system & adaptive layout: `.agents/standards/design-system.md`
 - Convention plugins: `.agents/standards/convention-plugins.md`
 
@@ -160,9 +160,9 @@ data class {Feature}Content(
 ```kotlin
 package com.jkjamies.sampleplatter.features.{name}.api.domain
 
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostSubjectInteractor
+import com.jkjamies.sampleplatter.core.strata.StrataSubjectInteractor
 
-abstract class Get{Feature}Content : CenterPostSubjectInteractor<Unit, {Feature}Content>()
+abstract class Get{Feature}Content : StrataSubjectInteractor<Unit, {Feature}Content>()
 ```
 
 **api/navigation/** — `src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{name}/api/navigation/`
@@ -313,7 +313,7 @@ fun {Feature}Dto.toContent(): {Feature}Content = {Feature}Content(
 
 Create: `{Feature}Presenter.kt`, `{Feature}UiState.kt` (with sealed class `{Feature}Event`), `{Feature}Ui.kt` (in androidMain).
 
-The presenter collects via `collectContentAsState()`, not `collectAsState()` — the latter collapses loading, empty, and failed into a single `null` and lets stream exceptions reach composition. `{Feature}UiState` therefore carries `isLoading: Boolean = false` and `errorMessage: String? = null` alongside its content fields, and `{Feature}Ui.kt` renders all three states. Most existing screens predate this and still use `collectAsState()` — follow `features/order/` for structure, but use the shape below for state collection. See `.agents/standards/centerpost.md` → "Two collection surfaces".
+The presenter collects via `collectContentAsState()`, not `collectAsState()` — the latter collapses loading, empty, and failed into a single `null` and lets stream exceptions reach composition. `{Feature}UiState` therefore carries `isLoading: Boolean = false` and `errorMessage: String? = null` alongside its content fields, and `{Feature}Ui.kt` renders all three states. Most existing screens predate this and still use `collectAsState()` — follow `features/order/` for structure, but use the shape below for state collection. See `.agents/standards/strata.md` → "Two collection surfaces".
 
 ```kotlin
 val content by get{Feature}Content.collectContentAsState()

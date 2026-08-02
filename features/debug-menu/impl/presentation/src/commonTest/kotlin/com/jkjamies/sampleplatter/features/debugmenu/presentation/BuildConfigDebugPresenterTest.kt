@@ -1,7 +1,7 @@
 package com.jkjamies.sampleplatter.features.debugmenu.presentation
 
 import com.jkjamies.sampleplatter.core.buildconfig.test.FakeAppBuildConfig
-import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.core.test.TestStrataDispatchers
 import com.jkjamies.sampleplatter.features.debugmenu.api.navigation.BuildConfigDebugScreen
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.presenterTestOf
@@ -12,7 +12,7 @@ import io.kotest.matchers.shouldBe
 class BuildConfigDebugPresenterTest : BehaviorSpec({
 
     Given("a build config debug presenter") {
-        val dispatchers = TestCenterPostDispatchers()
+        val dispatchers = TestStrataDispatchers()
 
         When("the presenter emits state") {
             Then("it should expose every AppBuildConfig field") {

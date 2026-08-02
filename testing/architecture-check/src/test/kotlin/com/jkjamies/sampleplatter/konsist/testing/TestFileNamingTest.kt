@@ -78,7 +78,7 @@ class TestFileNamingTest : BehaviorSpec({
 
             assert(violators.isEmpty()) {
                 val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
-                "runTest is not needed — Kotest provides coroutine support natively, use TestCenterPostDispatchers:\n$names"
+                "runTest is not needed — Kotest provides coroutine support natively, use TestStrataDispatchers:\n$names"
             }
         }
 
@@ -90,11 +90,11 @@ class TestFileNamingTest : BehaviorSpec({
 
             assert(violators.isEmpty()) {
                 val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
-                "UnconfinedTestDispatcher is not allowed — it is not safe under concurrent spec execution (SpecExecutionMode.LimitedConcurrency). Use TestCenterPostDispatchers:\n$names"
+                "UnconfinedTestDispatcher is not allowed — it is not safe under concurrent spec execution (SpecExecutionMode.LimitedConcurrency). Use TestStrataDispatchers:\n$names"
             }
         }
 
-        Then("no raw StandardTestDispatcher outside TestCenterPostDispatchers") {
+        Then("no raw StandardTestDispatcher outside TestStrataDispatchers") {
             // StandardTestDispatcher is the project's chosen test dispatcher, but it queues onto
             // a TestCoroutineScheduler that only drains when something advances it — and
             // `runTest`, the usual thing that does, is banned above. Constructing one ad hoc in a
@@ -104,16 +104,16 @@ class TestFileNamingTest : BehaviorSpec({
             // continuation. `withTimeout` and Turbine's own timeout both fail to fire and the
             // Gradle test task hangs until something kills it from outside — which is what hung
             // `:features:order:impl:data:testAndroidHostTest` in CI until the task timeout.
-            // Going through TestCenterPostDispatchers keeps the scheduler reachable via
+            // Going through TestStrataDispatchers keeps the scheduler reachable via
             // `advanceUntilIdle()`.
             val violators = testFiles
                 // `nameWithExtension`, not `name`: Konsist's file `name` has no extension, so
-                // comparing it against "TestCenterPostDispatchers.kt" never matched and the
+                // comparing it against "TestStrataDispatchers.kt" never matched and the
                 // fixture reported itself. Pinned to the canonical path as well, so a module
                 // cannot opt out of this rule by naming a local file the same thing.
                 .filter {
                     !(
-                        it.nameWithExtension == "TestCenterPostDispatchers.kt" &&
+                        it.nameWithExtension == "TestStrataDispatchers.kt" &&
                             it.resideInPath("..core/test-fixtures..")
                         )
                 }
@@ -123,7 +123,7 @@ class TestFileNamingTest : BehaviorSpec({
 
             assert(violators.isEmpty()) {
                 val names = violators.joinToString("\n") { "  ${it.name} (${it.path})" }
-                "Construct StandardTestDispatcher through TestCenterPostDispatchers, not " +
+                "Construct StandardTestDispatcher through TestStrataDispatchers, not " +
                     "directly — a hand-rolled one hides its scheduler, and unadvanced queued " +
                     "work hangs the test unkillably:\n$names"
             }

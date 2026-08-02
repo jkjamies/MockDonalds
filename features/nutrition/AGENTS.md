@@ -10,7 +10,7 @@ The Nutrition screen embeds a third-party nutrition reference (Spoonacular) in a
 | NutritionScreen | api/navigation | `data object`, plain `Screen` (not Tab/Protected/Flow). |
 | NutritionTestTags | api/navigation (`api/ui` subpackage) | `SCREEN`, `WEBVIEW`, `BACK_BUTTON` constants. |
 | NutritionContent | api/domain | `url: String` — sole field. |
-| GetNutritionContent | api/domain → impl/domain | `CenterPostSubjectInteractor<Unit, NutritionContent>` (streaming). |
+| GetNutritionContent | api/domain → impl/domain | `StrataSubjectInteractor<Unit, NutritionContent>` (streaming). |
 | GetNutritionContentImpl | impl/domain | Forwards `NutritionRepository.getNutrition()` unchanged. |
 | NutritionRepository | impl/domain → impl/data | `getNutrition(): Flow<NutritionContent>`. |
 | NutritionRepositoryImpl | impl/data | Reads `AppBuildConfig.nutritionUrl`, emits a single `NutritionContent` via `flowOf(...)`. No network. |
@@ -23,7 +23,7 @@ The Nutrition screen embeds a third-party nutrition reference (Spoonacular) in a
 ## Cross-Feature Dependencies
 - Navigates to: none (back-only — `BackClicked → navigator.pop()`).
 - Imported by: `composeApp` (auto-discovered via `settings.gradle.kts` glob); `features:more:impl:presentation` imports `features:nutrition:api:navigation` to route `MoreEvent.MenuItemClicked(id = "3")` → `goTo(NutritionScreen)`.
-- Core deps: `core:centerpost`, `core:circuit`, `core:theme`, `core:build-config:api` (data layer reads `nutritionUrl`), `core:presentation` (WebView primitive auto-wired via `sampleplatter.kmp.presentation` plugin).
+- Core deps: `core:strata`, `core:circuit`, `core:theme`, `core:build-config:api` (data layer reads `nutritionUrl`), `core:presentation` (WebView primitive auto-wired via `sampleplatter.kmp.presentation` plugin).
 - Entry point: the existing hardcoded `MoreMenuItem(id = "3", icon = "🥗", title = "Nutrition")` in `MoreRepositoryImpl`; `MorePresenter` routes id "3" to `NutritionScreen`. **Not** contributed via `MoreTabExtension` — same pattern as Recents (id "1" → `RecentsScreen`).
 
 ## Feature-Specific Patterns

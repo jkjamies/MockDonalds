@@ -50,7 +50,7 @@ See `.agents/standards/ways-of-working.md` → "When to Spawn Subagents" for the
 - Testing conventions: `.agents/standards/testing.md`
 - Unit tests: `.agents/standards/testing-unit.md`
 - UI component tests: `.agents/standards/testing-ui-component.md`
-- CenterPost interactors: `.agents/standards/centerpost.md`
+- Strata interactors: `.agents/standards/strata.md`
 - Design system & adaptive layout: `.agents/standards/design-system.md`
 
 ## Steps
@@ -131,7 +131,7 @@ If the change affects the feature's key types, cross-feature dependencies, or do
 - **Preserve existing test coverage** — update existing tests on both platforms to cover changed behavior, add new tests for new behavior
 - **Don't expand scope** — only change what the spec/description asks for
 - **Events stay sealed class** — not sealed interface (iOS interop)
-- **Presenters use CenterPost interactors** — never call repositories directly
+- **Presenters use Strata interactors** — never call repositories directly
 
 ## Post-Change Verification — MANDATORY
 

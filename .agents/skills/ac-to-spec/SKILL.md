@@ -138,7 +138,7 @@ Populate every section where the input provides enough information. Follow these
 - **Acceptance criteria are unchecked** — AC items in the spec use `- [ ]` (unchecked), never `- [x]`. The spec describes work to be done, not work already completed
 - **Preserve Out of Scope** — if the AC defines out-of-scope items, carry them into the template's Out of Scope section verbatim. This prevents scope creep during implementation
 - **Preserve Constraints** — if the AC mentions constraints, technical considerations, or implementation guidance (e.g., "keep the data layer clean for future swap"), carry them into the Constraints & Considerations section
-- **Use project conventions** — when filling technical sections, follow the naming patterns and architecture documented in CLAUDE.md and `.agents/standards/`. For example, use `CenterPostSubjectInteractor` for streaming use cases, the `{Name}RemoteDataSource` / `{Name}RemoteDataSourceImpl` pattern for data sources. For TestTags, read an existing feature's TestTags file to match the actual naming convention used in the codebase (e.g., PascalCase vs snake_case)
+- **Use project conventions** — when filling technical sections, follow the naming patterns and architecture documented in CLAUDE.md and `.agents/standards/`. For example, use `StrataSubjectInteractor` for streaming use cases, the `{Name}RemoteDataSource` / `{Name}RemoteDataSourceImpl` pattern for data sources. For TestTags, read an existing feature's TestTags file to match the actual naming convention used in the codebase (e.g., PascalCase vs snake_case)
 - **Preserve AC language** — keep the PM's terminology in Business Context and Acceptance Criteria sections. Translate to technical terms in the implementation sections
 
 ### 7. Grill Until Clean
@@ -194,7 +194,7 @@ The user can save the output as a file (e.g., `specs/{name}-spec.md`) before fee
 - **Grill until clean — never punt TODOs forward** — the conversion is not done while gaps remain. Every unresolved decision must be answered (or explicitly deferred with a logged reason) before the spec is finalized. `<!-- TODO -->` markers are working state for step 6 only; they MUST NOT survive into final output
 - **Don't invent — grill instead** — when the AC doesn't ground a value, do not guess. Ask the user during step 7, with a recommended answer and the tradeoff
 - **Stay grounded** — every filled section should trace back to either the input or a grill answer. If you can't point to a source, it's invention
-- **Use project vocabulary** — this codebase has specific patterns (CenterPost, Circuit, Metro, etc.). Use them in technical sections so the spec reads natively
+- **Use project vocabulary** — this codebase has specific patterns (Strata, Circuit, Metro, etc.). Use them in technical sections so the spec reads natively
 - **Respect the template** — don't add sections that aren't in the template or skip sections that are. Delete-if-not-applicable instructions from the template headers still apply
 
 ## No Verification Needed

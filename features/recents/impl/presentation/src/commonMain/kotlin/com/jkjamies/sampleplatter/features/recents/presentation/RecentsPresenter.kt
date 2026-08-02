@@ -2,9 +2,9 @@ package com.jkjamies.sampleplatter.features.recents.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostDispatchers
-import com.jkjamies.sampleplatter.core.presentation.centerpost.collectAsState
-import com.jkjamies.sampleplatter.core.presentation.centerpost.rememberCenterPost
+import com.jkjamies.sampleplatter.core.presentation.strata.collectAsState
+import com.jkjamies.sampleplatter.core.presentation.strata.rememberStrata
+import com.jkjamies.sampleplatter.core.strata.StrataDispatchers
 import com.jkjamies.sampleplatter.features.recents.api.domain.GetRecentsContent
 import com.jkjamies.sampleplatter.features.recents.api.navigation.RecentsScreen
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -18,9 +18,9 @@ import dev.zacsweers.metro.Inject
 fun RecentsPresenter(
     navigator: Navigator,
     getRecentsContent: GetRecentsContent,
-    dispatchers: CenterPostDispatchers,
+    dispatchers: StrataDispatchers,
 ): RecentsUiState {
-    rememberCenterPost(dispatchers)
+    rememberStrata(dispatchers)
     getRecentsContent(Unit)
 
     val content by getRecentsContent.collectAsState()

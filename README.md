@@ -26,7 +26,7 @@ No credentials, keys, tokens, or real endpoints are committed. Everything secret
 | [Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/) | 1.10.3 | Shared Compose runtime, Android UI |
 | [Circuit](https://slackhq.github.io/circuit/) | 0.33.1 | Presenter/UI/Screen pattern, navigation |
 | [Metro](https://zacsweers.github.io/metro/) | 0.13.2 | Compile-time dependency injection (KMP) |
-| [CenterPost](core/centerpost/) | — | Business logic framework (coroutine interactors). Adapted from [Strata](https://github.com/jkjamies/MESA-Android) |
+| [Strata](core/strata/) | — | Business logic framework (coroutine interactors). Adapted from [Strata](https://github.com/jkjamies/MESA-Android) in MESA-Android |
 | [Molecule](https://github.com/cashapp/molecule) | 2.2.0 | Bridges `@Composable` presenters to `StateFlow` for iOS |
 | [KMP-NativeCoroutines](https://github.com/rickclephas/KMP-NativeCoroutines) | 1.0.2 | Bridges Kotlin `StateFlow` to Swift `AsyncSequence` |
 | [Coil](https://coil-kt.github.io/coil/) | 3.4.0 | Image loading (Compose) |
@@ -72,7 +72,7 @@ features/{name}/
   test/                — Fakes for testing
 ```
 
-Core modules: `analytics`, `auth`, `build-config`, `centerpost`, `circuit`, `logger`, `metro`, `network`, `persistence`, `presentation`, `remote-config`, `strings`, `test-fixtures`, `theme`
+Core modules: `analytics`, `auth`, `build-config`, `strata`, `circuit`, `logger`, `metro`, `network`, `persistence`, `presentation`, `remote-config`, `strings`, `test-fixtures`, `theme`
 
 ### Compile-Time Market & Environment Variants
 
@@ -165,7 +165,7 @@ All test dependencies are provided automatically by convention plugins — no pe
 
 ### Test Patterns
 
-- **Unit tests** (commonTest): Kotest BehaviorSpec + fakes + `TestCenterPostDispatchers`
+- **Unit tests** (commonTest): Kotest BehaviorSpec + fakes + `TestStrataDispatchers`
 - **Presenter tests**: `presenterTestOf` + `FakeNavigator` + fake use cases + Turbine
 - **UI component tests** (Android, `impl/presentation/androidDeviceTest/`): Robot pattern — `UiTest` → `UiRobot` → `StateRobot`
 - **UI component tests** (iOS, `iosAppTests/UIComponent/`): Swift Testing + ViewInspector — `ViewTest` → `ViewRobot` → `StateRobot`

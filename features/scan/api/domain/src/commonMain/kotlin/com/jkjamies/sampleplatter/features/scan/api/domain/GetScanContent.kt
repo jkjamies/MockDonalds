@@ -1,5 +1,5 @@
 package com.jkjamies.sampleplatter.features.scan.api.domain
 
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostSubjectInteractor
+import com.jkjamies.sampleplatter.core.strata.StrataSubjectInteractor
 
-abstract class GetScanContent : CenterPostSubjectInteractor<Unit, ScanContent>()
+abstract class GetScanContent : StrataSubjectInteractor<Unit, ScanContent>()

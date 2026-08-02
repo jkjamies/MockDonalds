@@ -22,7 +22,7 @@ Mode: `buildUponDefaultConfig = true` — only overrides rules that need tuning
 | LongParameterList | Function: 8, Constructor: 10 |
 | TooManyFunctions | File: 20, Class: 15 |
 | UnusedParameter | Excluded for `*Presenter.kt` (Circuit requires navigator param) |
-| TooGenericExceptionCaught | Excluded for `**/centerpost/**` (intentional error wrapping) |
+| TooGenericExceptionCaught | Excluded for `**/strata/**` (intentional error wrapping) |
 
 ### detekt-formatting (ktlint Rules)
 

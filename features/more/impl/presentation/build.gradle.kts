@@ -16,7 +16,7 @@ kotlin {
             implementation(project(":features:recents:api:navigation"))
             implementation(project(":features:nutrition:api:navigation"))
             implementation(project(":core:build-config:api"))
-            implementation(project(":core:centerpost"))
+            implementation(project(":core:strata"))
             implementation(project(":core:theme"))
         }
         commonTest.dependencies {

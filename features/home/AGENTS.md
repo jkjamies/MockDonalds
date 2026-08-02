@@ -13,22 +13,22 @@ The home screen is the primary landing tab for authenticated and unauthenticated
 | Craving | api/domain | id, title, subtitle, imageUrl |
 | ExploreItem | api/domain | id, icon, title, subtitle |
 | Promotion | api/domain | id, title, imageUrl (unused in content currently) |
-| GetHomeContent | api/domain -> impl/domain | Streaming use case via CenterPostSubjectInteractor<Unit, HomeContent> |
+| GetHomeContent | api/domain -> impl/domain | Streaming use case via StrataSubjectInteractor<Unit, HomeContent> |
 | GetHomeContentImpl | impl/domain | Combines 4 repository flows via `combine` |
 | HomeRepository | impl/domain -> impl/data | getUserName(), getHeroPromotion(), getRecentCravings(), getExploreItems() -- all Flow-based |
-| HomePresenter | impl/presentation | Collects content, maps to UiState, dispatches events via CenterPost |
+| HomePresenter | impl/presentation | Collects content, maps to UiState, dispatches events via Strata |
 | HomeUiState | impl/presentation | userName, heroPromotion?, recentCravings, exploreItems, eventSink |
 | HomeEvent | impl/presentation | HeroCtaClicked, CravingClicked(id), ExploreItemClicked(id) |
 
 ## Cross-Feature Dependencies
-- Navigates to: none (event handlers are currently no-ops via centerPost)
+- Navigates to: none (event handlers are currently no-ops via strata)
 - Imported by: composeApp (all feature navigation APIs are wired at app level)
-- Core deps: core:centerpost, core:theme
+- Core deps: core:strata, core:theme
 
 ## Feature-Specific Patterns
 - HomeScreen is a TabScreen with tag="home", making it one of the bottom navigation destinations.
-- The presenter uses `rememberCenterPost(dispatchers)` and `getHomeContent.collectAsState()` for reactive content streaming.
-- All event handlers currently delegate to no-op `centerPost { }` blocks -- placeholders for future navigation.
+- The presenter uses `rememberStrata(dispatchers)` and `getHomeContent.collectAsState()` for reactive content streaming.
+- All event handlers currently delegate to no-op `strata { }` blocks -- placeholders for future navigation.
 - GetHomeContentImpl combines 4 separate repository flows into a single HomeContent stream.
 
 ## Testing

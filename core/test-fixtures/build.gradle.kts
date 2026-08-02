@@ -10,7 +10,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":core:auth:api"))
-            api(project(":core:centerpost"))
+            api(project(":core:strata"))
             api(project(":core:network:api"))
             api(project(":core:logger:api"))
             api(libs.kotlinx.coroutines.test)

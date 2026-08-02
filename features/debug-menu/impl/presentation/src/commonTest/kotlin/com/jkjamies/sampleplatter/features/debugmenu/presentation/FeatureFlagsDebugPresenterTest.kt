@@ -4,7 +4,7 @@ import com.jkjamies.sampleplatter.core.remoteconfig.FeatureFlag
 import com.jkjamies.sampleplatter.core.remoteconfig.FeatureFlagDefinition
 import com.jkjamies.sampleplatter.core.remoteconfig.FlagLifecycle
 import com.jkjamies.sampleplatter.core.remoteconfig.test.FakeRemoteConfigProvider
-import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.core.test.TestStrataDispatchers
 import com.jkjamies.sampleplatter.features.debugmenu.api.navigation.FeatureFlagsDebugScreen
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.presenterTestOf
@@ -14,7 +14,7 @@ import io.kotest.matchers.shouldBe
 class FeatureFlagsDebugPresenterTest : BehaviorSpec({
 
     Given("a feature flags debug presenter") {
-        val dispatchers = TestCenterPostDispatchers()
+        val dispatchers = TestStrataDispatchers()
 
         When("no flags are registered") {
             Then("it should expose an empty row list") {

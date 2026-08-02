@@ -41,9 +41,9 @@ Enforced by: `TestModuleCoverageTest` -- every Impl, Presenter, and RepositoryIm
 
 Every `UseCaseImpl`, every `RepositoryImpl`, and every `Presenter` must have a corresponding test. No exceptions.
 
-## TestCenterPostDispatchers
+## TestStrataDispatchers
 
-Always use `TestCenterPostDispatchers()` (which wraps `StandardTestDispatcher`). It routes `default`, `io`, and `main` to a single test dispatcher for deterministic execution. Never use `DefaultCenterPostDispatchers` in tests, and never construct a `StandardTestDispatcher` by hand — going through the fixture is what keeps its scheduler reachable.
+Always use `TestStrataDispatchers()` (which wraps `StandardTestDispatcher`). It routes `default`, `io`, and `main` to a single test dispatcher for deterministic execution. Never use `DefaultStrataDispatchers` in tests, and never construct a `StandardTestDispatcher` by hand — going through the fixture is what keeps its scheduler reachable.
 
 ### Advance the scheduler when the subject dispatches
 
@@ -69,7 +69,7 @@ class OrderPresenterTest : BehaviorSpec({
 
     Given("an order presenter with content available") {
         val fakeGetOrderContent = FakeGetOrderContent()
-        val dispatchers = TestCenterPostDispatchers()
+        val dispatchers = TestStrataDispatchers()
         val navigator = FakeNavigator(OrderScreen)
 
         When("the presenter emits state") {

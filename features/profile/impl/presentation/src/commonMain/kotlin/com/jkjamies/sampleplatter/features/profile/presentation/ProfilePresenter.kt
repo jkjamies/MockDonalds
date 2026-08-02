@@ -3,9 +3,9 @@ package com.jkjamies.sampleplatter.features.profile.presentation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.jkjamies.sampleplatter.core.auth.AuthManager
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostDispatchers
-import com.jkjamies.sampleplatter.core.presentation.centerpost.collectAsState
-import com.jkjamies.sampleplatter.core.presentation.centerpost.rememberCenterPost
+import com.jkjamies.sampleplatter.core.presentation.strata.collectAsState
+import com.jkjamies.sampleplatter.core.presentation.strata.rememberStrata
+import com.jkjamies.sampleplatter.core.strata.StrataDispatchers
 import com.jkjamies.sampleplatter.features.profile.api.domain.GetProfileContent
 import com.jkjamies.sampleplatter.features.profile.api.navigation.ProfileScreen
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -20,9 +20,9 @@ fun ProfilePresenter(
     navigator: Navigator,
     authManager: AuthManager,
     getProfileContent: GetProfileContent,
-    dispatchers: CenterPostDispatchers,
+    dispatchers: StrataDispatchers,
 ): ProfileUiState {
-    rememberCenterPost(dispatchers)
+    rememberStrata(dispatchers)
     val content by getProfileContent.collectAsState()
 
     return ProfileUiState(

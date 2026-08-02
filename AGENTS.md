@@ -8,7 +8,7 @@ Kotlin Multiplatform reference app. Shared Kotlin business logic with native UI 
 |---------|------|
 | Circuit | Navigation, presenter/UI wiring, screen registry |
 | Metro | Dependency injection (Anvil-compatible, compile-time) |
-| CenterPost | Business logic framework (coroutine-based interactors) |
+| Strata | Business logic framework (coroutine-based interactors) |
 | Ktor | HTTP networking |
 | Kotest | Test framework (BehaviorSpec, property testing) |
 | Konsist | Kotlin architecture test enforcement (38 test classes in `testing/architecture-check/`) |
@@ -32,17 +32,17 @@ core/
   analytics/           — AnalyticsDispatcher + AnalyticsEvent (api/), LoggingAnalyticsDispatcher + TrackAnalyticsEvent interactor (impl/), fakes (test/)
   auth/                — AuthManager interface (api/) + InMemoryAuthManager (impl/)
   build-config/        — Compile-time market/env/buildType config, api/impl/test split (AppBuildConfig facade + `isDebug` extension in api/, BuildKonfig+validateAllMarkets in impl/, FakeAppBuildConfig in test/; variant selection delegated to build-logic/`BuildVariantResolver` — `-P` flags, AGP variant task names, or defaults)
-  centerpost/          — CenterPostInteractor, CenterPostSubjectInteractor, CenterPostDispatchers
+  strata/          — StrataInteractor, StrataSubjectInteractor, StrataDispatchers
   circuit/             — TabScreen, ProtectedScreen, FlowScreen, Parcelize expect/actual, CircuitProviders
   logger/              — Logger/Severity/LogWriter typealiases over Kermit (api/), KermitLoggerInitializer (impl/), NoOpLoggerInitializer (test/). Raw `co.touchlab.kermit` imports are Konsist-confined to this module.
   metro/               — AppGraph interface (shared DI contract)
   network/             — HttpClientFactory (api/) + impl with baked-in plugins (api/impl split)
   persistence/         — DatabaseDriverFactory (api/) + AndroidSqliteDriver/NativeSqliteDriver actuals (impl/) + FakeDatabaseDriverFactory (test/). The single `AppDatabase` is aggregated in `composeApp`; feature-owned `.sq` schemas live in `features/{name}/impl/data/src/commonMain/sqldelight/`.
-  presentation/        — Compose/SwiftUI-facing helpers: `rememberCenterPost`, `collectAsState`, `rememberFlag`/`rememberConfig`, and the Android WebView primitive (`androidMain`; iOS has its own SwiftUI `WebView.swift`)
+  presentation/        — Compose/SwiftUI-facing helpers: `rememberStrata`, `collectAsState`, `rememberFlag`/`rememberConfig`, and the Android WebView primitive (`androidMain`; iOS has its own SwiftUI `WebView.swift`)
   remote-config/       — FeatureFlag/RemoteConfig contracts + RemoteConfigProvider (api/), Harness-backed provider (impl/), FakeRemoteConfigProvider (test/)
   strings/             — Android-only `R.string` resources populated by `pullTranslations` (Phrase). iOS reads its own `iosApp/iosApp/Resources/{locale}.lproj/` files.
   theme/               — SamplePlatterTheme, colors, typography, dimens, AdaptiveLayout. Kotlin sources are `androidMain`-only (Compose UI); iOS uses `iosApp/iosApp/Theme/SamplePlatterTheme.swift`. Only `composeResources/font/` lives in `commonMain`.
-  test-fixtures/       — TestCenterPostDispatchers, KotestProjectConfig, StateRobot base
+  test-fixtures/       — TestStrataDispatchers, KotestProjectConfig, StateRobot base
 ```
 
 testing/architecture-check/   — Konsist architecture rules (38 test classes, host JVM)
@@ -63,7 +63,7 @@ api ← impl/domain ← impl/data
 api ← impl/presentation
 ```
 
-- Presenters access domain ONLY through CenterPost interactors — never repositories or impl classes
+- Presenters access domain ONLY through Strata interactors — never repositories or impl classes
 - Presentation NEVER imports from impl/data or impl/domain
 - Cross-feature imports: ONLY through other feature's `api/` modules
 - Core modules NEVER import from features
@@ -78,7 +78,7 @@ api ← impl/presentation
 | Presenter | `{Feature}Presenter` | impl/presentation | `@CircuitInject`, `@Inject`, `@Composable` |
 | UiState | `{Feature}UiState` | impl/presentation | data class : `CircuitUiState`, must have `eventSink` |
 | Event | `{Feature}Event` | impl/presentation | sealed class (NOT interface — iOS interop) |
-| Use case (abstract) | `Get{Feature}Content` | api/domain | extends `CenterPostSubjectInteractor` |
+| Use case (abstract) | `Get{Feature}Content` | api/domain | extends `StrataSubjectInteractor` |
 | Use case (impl) | `Get{Feature}ContentImpl` | impl/domain | `@ContributesBinding` |
 | Repository (interface) | `{Feature}Repository` | impl/domain | — |
 | Repository (impl) | `{Feature}RepositoryImpl` | impl/data | `@ContributesBinding` |
@@ -94,9 +94,9 @@ api ← impl/presentation
 
 - `@ContributesBinding(AppScope::class)` on ALL Impl classes (use cases + repositories)
 - `@CircuitInject({Screen}::class, AppScope::class)` + `@Inject` on presenters and Ui functions
-- Presenters talk to domain exclusively through CenterPost interactors ([details](.agents/standards/centerpost.md))
+- Presenters talk to domain exclusively through Strata interactors ([details](.agents/standards/strata.md))
 - Presenters must NOT depend on Repository interfaces — only interactors
-- Presenters must NOT use raw `CoroutineScope`/`launch`/`async` — use `rememberCenterPost()`
+- Presenters must NOT use raw `CoroutineScope`/`launch`/`async` — use `rememberStrata()`
 
 ## Forbidden Patterns
 
@@ -105,8 +105,8 @@ api ← impl/presentation
 - No wildcard imports | No `println` / `System.out` | No `Thread.sleep` / `runBlocking`
 - No `!!` operator | No `lateinit var` in shared code
 - No `ViewModel` / `AndroidViewModel` — use Circuit presenters
-- No raw `CoroutineScope` / `launch` / `async` — use CenterPost
-- No hardcoded `Dispatchers.*` — use `CenterPostDispatchers`
+- No raw `CoroutineScope` / `launch` / `async` — use Strata
+- No hardcoded `Dispatchers.*` — use `StrataDispatchers`
 - No `mockk` / `Mockito` — use fakes | No `runTest` / `UnconfinedTestDispatcher`
 
 ## Test Conventions
@@ -267,7 +267,7 @@ Detailed reference documents in `.agents/standards/`:
 | [testing-e2e.md](.agents/standards/testing-e2e.md) | E2E tests: journeys, AppRobot, Macrobenchmark |
 | [testing-architecture.md](.agents/standards/testing-architecture.md) | Architecture tests: Konsist + Harmonize rules and categories |
 | [testing-benchmarks.md](.agents/standards/testing-benchmarks.md) | Benchmarks: Android Macrobenchmark + iOS Instruments, `benchmark` build type |
-| [centerpost.md](.agents/standards/centerpost.md) | Interactor patterns, presenter integration, error handling |
+| [strata.md](.agents/standards/strata.md) | Interactor patterns, presenter integration, error handling |
 | [forbidden-patterns.md](.agents/standards/forbidden-patterns.md) | Every banned pattern with WHY and alternative |
 | [verification.md](.agents/standards/verification.md) | Pipeline steps, scoped verification, failure interpretation |
 | [ios-interop.md](.agents/standards/ios-interop.md) | Bridge patterns, sealed class vs interface, SwiftUI conventions |

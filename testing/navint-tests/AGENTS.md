@@ -43,9 +43,9 @@ navint-tests depends on:
   core/circuit                 — CircuitProviders, TabScreen, ProtectedScreen
   core/auth/api                — AuthManager interface
   core/analytics/test          — FakeAnalyticsDispatcher, FakeTrackAnalyticsEvent
-  core/centerpost              — CenterPost interactors
+  core/strata              — Strata interactors
   core/theme                   — SamplePlatterTheme, design tokens
-  core/test-fixtures           — FakeAuthManager, TestCenterPostDispatchers
+  core/test-fixtures           — FakeAuthManager, TestStrataDispatchers
 
 navint-tests does NOT depend on:
   features/*/impl/domain       — real use case implementations

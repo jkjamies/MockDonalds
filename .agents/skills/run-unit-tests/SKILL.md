@@ -45,13 +45,13 @@ Valid feature names: `home`, `login`, `more`, `order`, `profile`, `rewards`, `sc
 ./gradlew :core:{module}:testAndroidHostTest
 ```
 
-Valid core modules: `auth:api`, `auth:impl`, `centerpost`, `circuit`, `network`, `theme`, `test-fixtures`
+Valid core modules: `auth:api`, `auth:impl`, `strata`, `circuit`, `network`, `theme`, `test-fixtures`
 
 ## Interpreting Results
 
 - Tests use Kotest `BehaviorSpec` (Given/When/Then structure)
 - Test failures show the spec name and assertion that failed
-- All tests use `TestCenterPostDispatchers` for deterministic coroutine execution
+- All tests use `TestStrataDispatchers` for deterministic coroutine execution
 - Tests use fakes (not mocks) — check `features/{name}/test/` for fake implementations
 
 ## Out of Scope

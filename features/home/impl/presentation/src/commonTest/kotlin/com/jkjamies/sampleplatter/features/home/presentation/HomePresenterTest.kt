@@ -1,6 +1,6 @@
 package com.jkjamies.sampleplatter.features.home.presentation
 
-import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.core.test.TestStrataDispatchers
 import com.jkjamies.sampleplatter.features.home.api.navigation.HomeScreen
 import com.jkjamies.sampleplatter.features.home.test.FakeGetHomeContent
 import com.slack.circuit.test.FakeNavigator
@@ -12,7 +12,7 @@ class HomePresenterTest : BehaviorSpec({
 
     Given("a home presenter with content available") {
         val fakeGetHomeContent = FakeGetHomeContent()
-        val dispatchers = TestCenterPostDispatchers()
+        val dispatchers = TestStrataDispatchers()
         val navigator = FakeNavigator(HomeScreen)
 
         When("the presenter emits state") {

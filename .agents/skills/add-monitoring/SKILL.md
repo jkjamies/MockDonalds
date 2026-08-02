@@ -44,7 +44,7 @@ private fun logOperation(operation: String, metadata: Map<String, Any> = emptyMa
 
 Structure code so performance instrumentation is easy to add:
 
-- **Use CenterPost `inProgress` flows** — already provide loading state tracking
+- **Use Strata `inProgress` flows** — already provide loading state tracking
 - **Keep data transformations in measurable units** — separate mapping from fetching
 - **Use `kotlin.time.measureTimedValue`** where timing matters for future metrics
 
@@ -116,8 +116,8 @@ class {Feature}RepositoryImpl(
 
 ```kotlin
 // In presenters — track user flow timing
-val centerPost = rememberCenterPost(dispatchers)
-// Future: centerPost operations automatically traced via CenterPost + monitoring integration
+val strata = rememberStrata(dispatchers)
+// Future: strata operations automatically traced via Strata + monitoring integration
 ```
 
 ## Monitoring Naming Conventions
@@ -133,7 +133,7 @@ val centerPost = rememberCenterPost(dispatchers)
 - **Don't block on core:monitoring** — add structure now, SDK calls later
 - **Monitoring is NOT analytics** — analytics tracks user behavior, monitoring tracks system health
 - **Keep monitoring out of api/ modules** — it's an implementation concern
-- **Presenters don't monitor directly** — CenterPost will integrate with monitoring at the framework level
+- **Presenters don't monitor directly** — Strata will integrate with monitoring at the framework level
 - **Don't log PII** — same rules as analytics
 
 ## Post-Change Verification — MANDATORY

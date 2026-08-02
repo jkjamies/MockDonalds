@@ -6,10 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.jkjamies.sampleplatter.core.auth.AuthManager
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostDispatchers
 import com.jkjamies.sampleplatter.core.logger.featureLogger
-import com.jkjamies.sampleplatter.core.presentation.centerpost.collectAsState
-import com.jkjamies.sampleplatter.core.presentation.centerpost.rememberCenterPost
+import com.jkjamies.sampleplatter.core.presentation.strata.collectAsState
+import com.jkjamies.sampleplatter.core.presentation.strata.rememberStrata
+import com.jkjamies.sampleplatter.core.strata.StrataDispatchers
 import com.jkjamies.sampleplatter.features.login.api.domain.GetLoginContent
 import com.jkjamies.sampleplatter.features.login.api.navigation.LoginScreen
 import com.jkjamies.sampleplatter.features.login.api.navigation.WelcomeScreen
@@ -28,9 +28,9 @@ fun LoginPresenter(
     navigator: Navigator,
     authManager: AuthManager,
     getLoginContent: GetLoginContent,
-    dispatchers: CenterPostDispatchers,
+    dispatchers: StrataDispatchers,
 ): LoginUiState {
-    val centerPost = rememberCenterPost(dispatchers)
+    val strata = rememberStrata(dispatchers)
     val content by getLoginContent.collectAsState()
 
     var email by rememberSaveable { mutableStateOf("") }
@@ -48,11 +48,11 @@ fun LoginPresenter(
                 }
                 is LoginEvent.AppleSignInClicked -> {
                     log.d { "Apple sign-in tapped" }
-                    centerPost { }
+                    strata { }
                 }
                 is LoginEvent.GoogleSignInClicked -> {
                     log.d { "Google sign-in tapped" }
-                    centerPost { }
+                    strata { }
                 }
                 is LoginEvent.DismissClicked -> navigator.pop()
             }

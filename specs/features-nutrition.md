@@ -62,7 +62,7 @@ n/a — there are no endpoints. The URL is compile-time market config, not serve
 
 | Name | Type | Params | Result | Description |
 |------|------|--------|--------|-------------|
-| `GetNutritionContent` | `CenterPostSubjectInteractor` (streaming) | `Unit` | `NutritionContent` | Observe the per-market nutrition URL |
+| `GetNutritionContent` | `StrataSubjectInteractor` (streaming) | `Unit` | `NutritionContent` | Observe the per-market nutrition URL |
 
 ### Data Flow
 
@@ -313,7 +313,7 @@ The `/add-config-field` skill automates all of the above. Run it before `/add-fe
 
 **Imports from**:
 - `core:circuit` — `Screen`, `Navigator`, `@Parcelize`
-- `core:centerpost` — `CenterPostSubjectInteractor` (auto-wired via `sampleplatter.kmp.domain` plugin)
+- `core:strata` — `StrataSubjectInteractor` (auto-wired via `sampleplatter.kmp.domain` plugin)
 - `core:presentation` — `WebViewContent`, `WebViewState`, `rememberWebViewState` (auto-wired via `sampleplatter.kmp.presentation` plugin; Android-only deps)
 - `core:build-config:api` — `AppBuildConfig` (read in `NutritionRepositoryImpl`)
 - `core:theme` — Compose `MaterialTheme.colorScheme`, `PlatterDimens` (Android); `samplePlatterColors` env (iOS)
@@ -345,7 +345,7 @@ The `/add-config-field` skill automates all of the above. Run it before `/add-fe
 // features/nutrition/test/src/commonMain/.../FakeGetNutritionContent.kt
 class FakeGetNutritionContent(
     initial: NutritionContent = DEFAULT,
-) : GetNutritionContent, /* CenterPostSubjectInteractor base */ {
+) : GetNutritionContent, /* StrataSubjectInteractor base */ {
     fun emit(content: NutritionContent) { /* publish via internal flow */ }
     companion object {
         val DEFAULT = NutritionContent(url = "https://example.test/nutrition")

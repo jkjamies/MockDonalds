@@ -15,12 +15,12 @@ import io.kotest.core.spec.style.BehaviorSpec
 class DomainLayerTest : BehaviorSpec({
 
     Given("use case abstractions") {
-        Then("abstract use cases extending CenterPost base types should reside in api modules") {
+        Then("abstract use cases extending Strata base types should reside in api modules") {
             Konsist.scopeFromProject()
                 .classes()
                 .filter {
                     it.hasAbstractModifier && it.hasParent { p ->
-                        p.name == "CenterPostInteractor" || p.name == "CenterPostSubjectInteractor"
+                        p.name == "StrataInteractor" || p.name == "StrataSubjectInteractor"
                     }
                 }
                 .assertTrue { it.resideInPath("..api..") }
@@ -44,7 +44,7 @@ class DomainLayerTest : BehaviorSpec({
                     it.resideInPath("..api..") &&
                         it.resideInPath("..commonMain..") &&
                         it.hasAbstractModifier && it.hasParent { p ->
-                        p.name == "CenterPostInteractor" || p.name == "CenterPostSubjectInteractor"
+                        p.name == "StrataInteractor" || p.name == "StrataSubjectInteractor"
                     }
                 }
                 .map { it.name }

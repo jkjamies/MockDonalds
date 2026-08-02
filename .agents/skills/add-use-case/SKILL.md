@@ -7,7 +7,7 @@ description: Add a new use case interactor with abstraction, implementation, fak
 
 Create a new interactor with all four required files.
 
-**Parameters**: feature name, use case name, type (`CenterPostInteractor` for one-shot, `CenterPostSubjectInteractor` for streaming)
+**Parameters**: feature name, use case name, type (`StrataInteractor` for one-shot, `StrataSubjectInteractor` for streaming)
 
 ## Context (optional)
 
@@ -30,7 +30,7 @@ The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before produ
 ## Reference Standards
 
 - DI patterns: `.agents/standards/dependency-injection.md`
-- CenterPost interactors: `.agents/standards/centerpost.md`
+- Strata interactors: `.agents/standards/strata.md`
 
 ## Reference
 
@@ -48,14 +48,14 @@ The conversion skills (`/ac-to-spec`, `/reverse-spec`) grill inline before produ
 ```kotlin
 package com.jkjamies.sampleplatter.features.{feature}.api.domain
 
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostSubjectInteractor
+import com.jkjamies.sampleplatter.core.strata.StrataSubjectInteractor
 
-abstract class {Name} : CenterPostSubjectInteractor<Unit, {ResultType}>()
+abstract class {Name} : StrataSubjectInteractor<Unit, {ResultType}>()
 ```
 
-For one-shot use cases, use `CenterPostInteractor` instead:
+For one-shot use cases, use `StrataInteractor` instead:
 ```kotlin
-abstract class {Name} : CenterPostInteractor<{Params}, {ResultType}>()
+abstract class {Name} : StrataInteractor<{Params}, {ResultType}>()
 ```
 
 ### 2. Implementation — `impl/domain/`

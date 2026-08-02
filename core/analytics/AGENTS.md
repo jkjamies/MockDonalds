@@ -18,7 +18,7 @@ core/analytics/test  -> FakeAnalyticsDispatcher, FakeTrackAnalyticsEvent for con
 |------|--------|-------------|
 | `AnalyticsEvent` | api | Interface: `name: String`, `properties: Map<String, Any>` |
 | `AnalyticsDispatcher` | api | Interface: `track(event)`, `trackScreenView(screenName)` |
-| `TrackAnalyticsEvent` | api | Abstract `CenterPostInteractor<AnalyticsEvent, Unit>` for presenter consumption |
+| `TrackAnalyticsEvent` | api | Abstract `StrataInteractor<AnalyticsEvent, Unit>` for presenter consumption |
 | `FakeAnalyticsDispatcher` | test | Records events and screen views for test assertions |
 | `FakeTrackAnalyticsEvent` | test | Records tracked events for test assertions |
 
@@ -26,28 +26,28 @@ core/analytics/test  -> FakeAnalyticsDispatcher, FakeTrackAnalyticsEvent for con
 
 Same dual-access pattern as `core:remote-config`:
 
-**Presenters** use the `TrackAnalyticsEvent` CenterPost interactor:
+**Presenters** use the `TrackAnalyticsEvent` Strata interactor:
 
 ```kotlin
 @CircuitInject(MyScreen::class, AppScope::class)
 @Composable
 fun MyPresenter(
     trackAnalyticsEvent: TrackAnalyticsEvent,
-    dispatchers: CenterPostDispatchers,
+    dispatchers: StrataDispatchers,
 ): MyUiState {
-    val centerPost = rememberCenterPost(dispatchers)
+    val strata = rememberStrata(dispatchers)
     return MyUiState(
         eventSink = { event ->
             when (event) {
                 is MyEvent.ButtonClicked ->
-                    centerPost { trackAnalyticsEvent(MyAnalyticsEvent.ButtonTapped) }
+                    strata { trackAnalyticsEvent(MyAnalyticsEvent.ButtonTapped) }
             }
         },
     )
 }
 ```
 
-The `inProgress` loading state exists but is simply not collected — it's opt-in with zero overhead. The value of wrapping analytics in CenterPost: structured execution, error handling, timeout protection, dispatcher correctness.
+The `inProgress` loading state exists but is simply not collected — it's opt-in with zero overhead. The value of wrapping analytics in Strata: structured execution, error handling, timeout protection, dispatcher correctness.
 
 **Domain/data layers** inject `AnalyticsDispatcher` directly:
 

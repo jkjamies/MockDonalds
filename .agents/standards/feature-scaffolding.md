@@ -10,7 +10,7 @@ features/{name}/
 │   ├── domain/                 # Domain models, abstract use case
 │   │   └── src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{name}/api/domain/
 │   │       ├── {Feature}Models.kt       # Data classes
-│   │       └── Get{Feature}Content.kt   # abstract : CenterPostSubjectInteractor<Unit, T>()
+│   │       └── Get{Feature}Content.kt   # abstract : StrataSubjectInteractor<Unit, T>()
 │   └── navigation/             # Screen + TestTags
 │       └── src/commonMain/kotlin/com/jkjamies/sampleplatter/features/{name}/api/navigation/
 │           ├── {Feature}Screen.kt       # @Parcelize data object : Screen
@@ -64,7 +64,7 @@ data class {Feature}Content(
 )
 
 // Abstract use case
-abstract class Get{Feature}Content : CenterPostSubjectInteractor<Unit, {Feature}Content>()
+abstract class Get{Feature}Content : StrataSubjectInteractor<Unit, {Feature}Content>()
 ```
 
 ### 2. api/navigation -- Screen + TestTags
@@ -131,15 +131,15 @@ sealed class {Feature}Event {
 fun {Feature}Presenter(
     navigator: Navigator,
     get{Feature}Content: Get{Feature}Content,
-    dispatchers: CenterPostDispatchers,
+    dispatchers: StrataDispatchers,
 ): {Feature}UiState {
-    val centerPost = rememberCenterPost(dispatchers)
+    val strata = rememberStrata(dispatchers)
     val content by get{Feature}Content.collectAsState()
     return {Feature}UiState(
         items = content?.items ?: emptyList(),
         eventSink = { event ->
             when (event) {
-                is {Feature}Event.ItemClicked -> centerPost { navigator.goTo(DetailScreen(event.id)) }
+                is {Feature}Event.ItemClicked -> strata { navigator.goTo(DetailScreen(event.id)) }
             }
         },
     )

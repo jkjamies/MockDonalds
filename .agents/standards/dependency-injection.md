@@ -1,6 +1,6 @@
 # Dependency Injection Reference
 
-> Companion: [centerpost.md](centerpost.md) — covers how presenters consume the use cases that Metro injects (the consumer side of every binding documented here).
+> Companion: [strata.md](strata.md) — covers how presenters consume the use cases that Metro injects (the consumer side of every binding documented here).
 
 ## Metro DI Overview
 
@@ -84,7 +84,7 @@ Presenters and UI composables use Circuit's annotation-driven wiring:
 fun HomePresenter(
     navigator: Navigator,
     getHomeContent: GetHomeContent,
-    dispatchers: CenterPostDispatchers,
+    dispatchers: StrataDispatchers,
 ): HomeUiState { ... }
 ```
 
@@ -107,19 +107,19 @@ Everything else (use cases, dispatchers, services) must be provided via Metro DI
 
 ## The Presenter-to-Domain Contract
 
-This is the most critical DI boundary in the architecture. Presenters communicate with the domain layer exclusively through CenterPost interactors:
+This is the most critical DI boundary in the architecture. Presenters communicate with the domain layer exclusively through Strata interactors:
 
 **Allowed:**
 - Inject abstract use cases from `api/domain` (e.g., `GetHomeContent`)
 - Use `collectAsState()` to observe streaming data from interactors
-- Use `rememberCenterPost(dispatchers)` for launching one-shot operations
+- Use `rememberStrata(dispatchers)` for launching one-shot operations
 
 **Forbidden (enforced by Konsist `PresentationLayerTest` and `ForbiddenPatternsTest`):**
 - Inject Repository interfaces -- only interactors
 - Import from `impl/domain` or `impl/data`
 - Construct api domain models directly in the presenter
-- Use raw `CoroutineScope`, `launch`, `async` -- use `rememberCenterPost()` from `core:centerpost`
-- Use hardcoded `Dispatchers.*` -- use `CenterPostDispatchers` (injected)
+- Use raw `CoroutineScope`, `launch`, `async` -- use `rememberStrata()` from `core:strata`
+- Use hardcoded `Dispatchers.*` -- use `StrataDispatchers` (injected)
 
 ## AppGraph / DependencyGraph(AppScope)
 
@@ -189,7 +189,7 @@ sequenceDiagram
     Circuit->>Factory: match(HomeScreen)
     Factory->>Metro: resolve parameters
     Metro->>Impl: create (bound to GetHomeContent)
-    Metro-->>Factory: GetHomeContent, CenterPostDispatchers
+    Metro-->>Factory: GetHomeContent, StrataDispatchers
     Factory->>Presenter: HomePresenter(navigator, getHomeContent, dispatchers)
     Presenter-->>Circuit: HomeUiState stream
 ```
@@ -278,7 +278,7 @@ data object HomeScreen : TabScreen {
 }
 
 // 2. Abstract Use Case -- api/domain (public contract)
-abstract class GetHomeContent : CenterPostSubjectInteractor<Unit, HomeContent>()
+abstract class GetHomeContent : StrataSubjectInteractor<Unit, HomeContent>()
 
 // 3. Use Case Impl -- impl/domain (binds to abstract via DI)
 @ContributesBinding(AppScope::class)
@@ -320,9 +320,9 @@ class HomeRepositoryImpl : HomeRepository {
 fun HomePresenter(
     navigator: Navigator,              // Circuit-provided
     getHomeContent: GetHomeContent,    // Metro-injected (resolves to GetHomeContentImpl)
-    dispatchers: CenterPostDispatchers, // Metro-injected from core:centerpost
+    dispatchers: StrataDispatchers, // Metro-injected from core:strata
 ): HomeUiState {
-    val centerPost = rememberCenterPost(dispatchers)
+    val strata = rememberStrata(dispatchers)
     val content by getHomeContent.collectAsState()
     return HomeUiState(
         userName = content?.userName ?: "",

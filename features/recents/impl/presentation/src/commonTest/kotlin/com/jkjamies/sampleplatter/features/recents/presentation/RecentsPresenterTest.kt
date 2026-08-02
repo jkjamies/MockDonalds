@@ -1,6 +1,6 @@
 package com.jkjamies.sampleplatter.features.recents.presentation
 
-import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.core.test.TestStrataDispatchers
 import com.jkjamies.sampleplatter.features.recents.api.domain.RecentsContent
 import com.jkjamies.sampleplatter.features.recents.api.navigation.RecentsScreen
 import com.jkjamies.sampleplatter.features.recents.test.FakeGetRecentsContent
@@ -14,7 +14,7 @@ class RecentsPresenterTest : BehaviorSpec({
 
     Given("a recents presenter with content available") {
         val fakeContent = FakeGetRecentsContent()
-        val dispatchers = TestCenterPostDispatchers()
+        val dispatchers = TestStrataDispatchers()
         val navigator = FakeNavigator(RecentsScreen)
 
         When("the presenter emits state") {
@@ -79,7 +79,7 @@ class RecentsPresenterTest : BehaviorSpec({
 
     Given("a recents presenter with no content available") {
         val fakeContent = FakeGetRecentsContent(initial = RecentsContent(emptyList()))
-        val dispatchers = TestCenterPostDispatchers()
+        val dispatchers = TestStrataDispatchers()
         val navigator = FakeNavigator(RecentsScreen)
 
         When("the presenter emits state") {

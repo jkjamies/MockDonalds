@@ -1,7 +1,7 @@
 package com.jkjamies.sampleplatter.features.profile.presentation
 
 import com.jkjamies.sampleplatter.core.test.FakeAuthManager
-import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.core.test.TestStrataDispatchers
 import com.jkjamies.sampleplatter.features.profile.api.navigation.ProfileScreen
 import com.jkjamies.sampleplatter.features.profile.test.FakeGetProfileContent
 import com.slack.circuit.test.FakeNavigator
@@ -13,7 +13,7 @@ class ProfilePresenterTest : BehaviorSpec({
 
     Given("a profile presenter") {
         val fakeGetProfileContent = FakeGetProfileContent()
-        val dispatchers = TestCenterPostDispatchers()
+        val dispatchers = TestStrataDispatchers()
         val authManager = FakeAuthManager(isAuthenticated = true)
         val navigator = FakeNavigator(ProfileScreen)
 

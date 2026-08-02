@@ -1,5 +1,5 @@
 package com.jkjamies.sampleplatter.core.analytics
 
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostInteractor
+import com.jkjamies.sampleplatter.core.strata.StrataInteractor
 
-abstract class TrackAnalyticsEvent : CenterPostInteractor<AnalyticsEvent, Unit>()
+abstract class TrackAnalyticsEvent : StrataInteractor<AnalyticsEvent, Unit>()

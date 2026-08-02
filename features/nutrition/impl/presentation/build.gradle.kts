@@ -11,7 +11,7 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":features:nutrition:api:domain"))
             implementation(project(":features:nutrition:api:navigation"))
-            implementation(project(":core:centerpost"))
+            implementation(project(":core:strata"))
             implementation(project(":core:theme"))
         }
         androidMain.dependencies {

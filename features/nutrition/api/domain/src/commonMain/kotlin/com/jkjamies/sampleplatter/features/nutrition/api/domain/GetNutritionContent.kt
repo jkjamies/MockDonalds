@@ -1,5 +1,5 @@
 package com.jkjamies.sampleplatter.features.nutrition.api.domain
 
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostSubjectInteractor
+import com.jkjamies.sampleplatter.core.strata.StrataSubjectInteractor
 
-abstract class GetNutritionContent : CenterPostSubjectInteractor<Unit, NutritionContent>()
+abstract class GetNutritionContent : StrataSubjectInteractor<Unit, NutritionContent>()

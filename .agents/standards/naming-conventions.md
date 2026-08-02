@@ -8,7 +8,7 @@
 | Presenter | `{Feature}Presenter` | `impl/presentation` | `@CircuitInject({Screen}::class, AppScope::class)`, `@Inject`, `@Composable` | top-level function |
 | UiState | `{Feature}UiState` | `impl/presentation` | none | `data class : CircuitUiState` (must have `eventSink` property) |
 | Event | `{Feature}Event` | `impl/presentation` | none | `sealed class` (NOT sealed interface) |
-| Use case (abstract) | `Get{Feature}Content` | `api/domain` | none | `abstract class : CenterPostSubjectInteractor<P, T>()` |
+| Use case (abstract) | `Get{Feature}Content` | `api/domain` | none | `abstract class : StrataSubjectInteractor<P, T>()` |
 | Use case (impl) | `Get{Feature}ContentImpl` | `impl/domain` | `@ContributesBinding(AppScope::class)` | `class` with constructor injection |
 | Repository (interface) | `{Feature}Repository` | `impl/domain` | none | `interface` |
 | Repository (impl) | `{Feature}RepositoryImpl` | `impl/data` | `@ContributesBinding(AppScope::class)` | `class` with constructor injection |
@@ -54,7 +54,7 @@ Enforced by `VisibilityConventionsTest`:
 - Incorrect: `sealed interface HomeEvent { data object HeroCtaClicked : HomeEvent }` (breaks iOS Obj-C export)
 
 ### Use Case
-- Correct abstract: `abstract class GetHomeContent : CenterPostSubjectInteractor<Unit, HomeContent>()`
+- Correct abstract: `abstract class GetHomeContent : StrataSubjectInteractor<Unit, HomeContent>()`
 - Correct impl: `@ContributesBinding(AppScope::class) class GetHomeContentImpl(...) : GetHomeContent()`
 - Incorrect: `class GetHomeContent` (abstract missing), `GetHomeContentImplementation` (must use `Impl` suffix)
 

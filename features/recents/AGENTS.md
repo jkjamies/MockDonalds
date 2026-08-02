@@ -10,7 +10,7 @@ A dedicated screen to display the user's recent activity and orders, accessible 
 | RecentsScreen | api/navigation | Screen (data object) |
 | RecentsContent | api/domain | items |
 | RecentItem | api/domain | id, name, description, relativeTime, imageUrl |
-| GetRecentsContent | api/domain -> impl/domain | Streaming use case via CenterPostSubjectInteractor<Unit, RecentsContent> |
+| GetRecentsContent | api/domain -> impl/domain | Streaming use case via StrataSubjectInteractor<Unit, RecentsContent> |
 | GetRecentsContentImpl | impl/domain | Repository wrapper |
 | RecentsRepository | impl/domain -> impl/data | getRecentItems(): Flow<List<RecentItem>> |
 | RecentsPresenter | impl/presentation | Collects content, handles back navigation |
@@ -20,7 +20,7 @@ A dedicated screen to display the user's recent activity and orders, accessible 
 ## Cross-Feature Dependencies
 - Navigates to: none (OnItemTapped is a no-op for now)
 - Imported by: features:more:impl:presentation (navigates here on menu item click)
-- Core deps: core:centerpost, core:circuit, core:theme
+- Core deps: core:strata, core:circuit, core:theme
 
 ## Feature-Specific Patterns
 - Placeholder hardcoded data in RecentsRepositoryImpl for now.

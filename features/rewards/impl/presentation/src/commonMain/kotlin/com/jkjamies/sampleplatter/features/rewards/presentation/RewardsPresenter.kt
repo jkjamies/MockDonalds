@@ -2,9 +2,9 @@ package com.jkjamies.sampleplatter.features.rewards.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostDispatchers
-import com.jkjamies.sampleplatter.core.presentation.centerpost.collectAsState
-import com.jkjamies.sampleplatter.core.presentation.centerpost.rememberCenterPost
+import com.jkjamies.sampleplatter.core.presentation.strata.collectAsState
+import com.jkjamies.sampleplatter.core.presentation.strata.rememberStrata
+import com.jkjamies.sampleplatter.core.strata.StrataDispatchers
 import com.jkjamies.sampleplatter.features.rewards.api.domain.GetRewardsContent
 import com.jkjamies.sampleplatter.features.rewards.api.navigation.RewardsScreen
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -18,9 +18,9 @@ import dev.zacsweers.metro.Inject
 fun RewardsPresenter(
     navigator: Navigator,
     getRewardsContent: GetRewardsContent,
-    dispatchers: CenterPostDispatchers,
+    dispatchers: StrataDispatchers,
 ): RewardsUiState {
-    val centerPost = rememberCenterPost(dispatchers)
+    val strata = rememberStrata(dispatchers)
     val content by getRewardsContent.collectAsState()
 
     return RewardsUiState(
@@ -29,8 +29,8 @@ fun RewardsPresenter(
         history = content?.history ?: emptyList(),
         eventSink = { event ->
             when (event) {
-                is RewardsEvent.VaultSpecialClicked -> centerPost { }
-                is RewardsEvent.ViewAllClicked -> centerPost { }
+                is RewardsEvent.VaultSpecialClicked -> strata { }
+                is RewardsEvent.ViewAllClicked -> strata { }
             }
         },
     )

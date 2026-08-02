@@ -1,7 +1,7 @@
 package com.jkjamies.sampleplatter.features.more.presentation
 
 import com.jkjamies.sampleplatter.core.buildconfig.test.FakeAppBuildConfig
-import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.core.test.TestStrataDispatchers
 import com.jkjamies.sampleplatter.features.profile.api.navigation.ProfileScreen
 import com.jkjamies.sampleplatter.features.more.api.navigation.MoreScreen
 import com.jkjamies.sampleplatter.features.recents.api.navigation.RecentsScreen
@@ -15,7 +15,7 @@ class MorePresenterTest : BehaviorSpec({
 
     Given("a more presenter with content available") {
         val fakeGetMoreContent = FakeGetMoreContent()
-        val dispatchers = TestCenterPostDispatchers()
+        val dispatchers = TestStrataDispatchers()
         val navigator = FakeNavigator(MoreScreen)
         val buildConfig = FakeAppBuildConfig()
 
