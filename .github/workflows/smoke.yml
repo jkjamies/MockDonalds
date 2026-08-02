@@ -69,6 +69,17 @@ jobs:
       - name: Configure module graph
         run: ./gradlew projects
 
+      # Pre-flight, exactly as verification.md orders it: parse every markets/*.properties
+      # against Defaults.properties before anything builds against that config. Sub-second,
+      # and it is the only gate that sees all five markets x three envs — the per-combo build
+      # steps below cover us-int alone.
+      #
+      # Absent until now, which is how a trailing slash on NUTRITION_URL reached review with
+      # a green tick: the rule that rejects it lives in `validateAllMarkets`, and nothing in
+      # this workflow ran it.
+      - name: Validate market config (all combos)
+        run: ./gradlew :core:build-config:impl:validateAllMarkets
+
       # Lint before the expensive steps so style failures surface fast.
       # NOTE: this task analyses the commonMain metadata compilation only — it does
       # NOT cover androidMain (where every *Ui.kt lives) or iosMain. Widening detekt
@@ -176,6 +187,12 @@ jobs:
       # Pure-logic Swift tests (`iosAppTests/Unit/`). Kept separate from the build so a
       # simulator-availability problem cannot mask the build result. Shares DerivedData
       # with the step above, so this is mostly link + run.
+      # The `| tee` and the count assertion below are not ceremony. `xcodebuild test` exits 0
+      # and prints `** TEST SUCCEEDED **` for a run in which Swift Testing executed *nothing*
+      # — observed locally on an Xcode 27 seed, where every `@Suite @MainActor` type reported
+      # `Test run with 0 tests in 19 suites` while a plain non-isolated suite still ran. A
+      # vacuous pass is indistinguishable from a real one on the exit code alone, so assert on
+      # the reported count instead of trusting it.
       - name: Unit tests (Swift Testing, simulator)
         run: |
           set -o pipefail
@@ -187,7 +204,14 @@ jobs:
             -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16' \
             -derivedDataPath build/DerivedData \
             -skipMacroValidation \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO | tee /tmp/ios-unit-tests.log
+
+          if ! grep -qE 'Test run with [1-9][0-9]* test' /tmp/ios-unit-tests.log; then
+            echo "::error::xcodebuild reported success but ran 0 Swift Testing tests."
+            echo "Seen in the log:"
+            grep -E 'Test run with .* test|Executed .* test' /tmp/ios-unit-tests.log || true
+            exit 1
+          fi
 
       # Harmonize — the iOS half of the architecture suite. Host-only, no simulator,
       # and the counterpart to the Konsist run in the `android` job.
