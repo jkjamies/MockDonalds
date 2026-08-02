@@ -69,7 +69,6 @@ fun MockDonaldsBottomNavigation(
             .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             .glassEffect(
                 overlayColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
-                blurRadius = 24,
             )
             .windowInsetsPadding(WindowInsets.navigationBars)
     ) {
