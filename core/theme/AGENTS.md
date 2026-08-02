@@ -21,8 +21,8 @@ Used in ALL UI code and ALL UI test robots.
 | `adaptiveHeroHeight()` / `adaptiveQrCodeSize()` / `adaptiveBottomBarPadding()` / `adaptiveBottomNavHeight()` | `@Composable` functions returning responsive `Dp` values. |
 | `Modifier.glassEffect()` | Glass morphism modifier with translucent surface overlay. |
 | `Modifier.ambientGradient()` | Vertical gradient used in place of elevation borders. |
-| `SamplePlatterBrandGradient` | Horizontal `Brush` from `MockRed` to `MockYellow`. |
-| Brand colors | `MockRed`, `MockYellow`, `DeepObsidian`, plus full dark/light surface and status color tokens. |
+| `SamplePlatterBrandGradient` | Horizontal `Brush` from `PlatterRed` to `PlatterYellow`. |
+| Brand colors | `PlatterRed`, `PlatterYellow`, `DeepObsidian`, plus full dark/light surface and status color tokens. |
 
 ## Usage
 
