@@ -1,6 +1,7 @@
 package com.mockdonalds.app.konsist.core
 
 import com.lemonappdev.konsist.api.Konsist
+import com.mockdonalds.app.konsist.normalizedPath
 import io.kotest.core.spec.style.BehaviorSpec
 
 class BuildConfigCoverageTest : BehaviorSpec({
@@ -8,7 +9,7 @@ class BuildConfigCoverageTest : BehaviorSpec({
     Given("AppBuildConfig public facade") {
         val scope = Konsist.scopeFromProject()
 
-        val buildConfigFiles = scope.files.filter { it.path.contains("/core/build-config/") }
+        val buildConfigFiles = scope.files.filter { normalizedPath(it.path).contains("/core/build-config/") }
 
         val appBuildConfig = buildConfigFiles.firstOrNull { it.path.endsWith("AppBuildConfig.kt") }
         val testFile = buildConfigFiles.firstOrNull { it.path.endsWith("AppBuildConfigTest.kt") }

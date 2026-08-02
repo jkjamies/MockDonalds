@@ -1,6 +1,7 @@
 package com.mockdonalds.app.konsist.core
 
 import com.lemonappdev.konsist.api.Konsist
+import com.mockdonalds.app.konsist.normalizedPath
 import io.kotest.core.spec.style.BehaviorSpec
 import java.io.File
 import java.util.Properties
@@ -70,7 +71,10 @@ class BuildConfigSchemaParityTest : BehaviorSpec({
         Then("every AppBuildConfig property has a matching key in Defaults.properties") {
             val facade = Konsist.scopeFromProject()
                 .files
-                .firstOrNull { it.path.endsWith("/core/build-config/api/src/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/AppBuildConfig.kt") }
+                .firstOrNull {
+                    normalizedPath(it.path)
+                        .endsWith("/core/build-config/api/src/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/AppBuildConfig.kt")
+                }
             assert(facade != null) { "AppBuildConfig.kt not found in core:build-config:api" }
 
             val properties = facade!!.interfaces(includeNested = false)
@@ -98,7 +102,10 @@ class BuildConfigSchemaParityTest : BehaviorSpec({
         Then("every key in Defaults.properties has a matching AppBuildConfig property") {
             val facade = Konsist.scopeFromProject()
                 .files
-                .firstOrNull { it.path.endsWith("/core/build-config/api/src/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/AppBuildConfig.kt") }
+                .firstOrNull {
+                    normalizedPath(it.path)
+                        .endsWith("/core/build-config/api/src/commonMain/kotlin/com/mockdonalds/app/core/buildconfig/AppBuildConfig.kt")
+                }
             assert(facade != null) { "AppBuildConfig.kt not found in core:build-config:api" }
 
             val expectedKeys = facade!!.interfaces(includeNested = false)

@@ -2,6 +2,7 @@ package com.mockdonalds.app.konsist.testing
 
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.ext.list.withNameEndingWith
+import com.mockdonalds.app.konsist.normalizedPath
 import io.kotest.core.spec.style.BehaviorSpec
 import java.io.File
 
@@ -131,7 +132,7 @@ class UiTestConventionsTest : BehaviorSpec({
         // :features:categorydetail, neither of which exists. Comparing bare names also let a
         // TestTags object in any module satisfy a Ui composable in a different one.
         fun featureOf(path: String): String? =
-            Regex("""/features/([^/]+)/""").find(path)?.groupValues?.get(1)
+            Regex("""/features/([^/]+)/""").find(normalizedPath(path))?.groupValues?.get(1)
 
         Then("every *Ui.kt in androidMain should have a *TestTags object in its own feature") {
             val uiKeys = Konsist.scopeFromProject()

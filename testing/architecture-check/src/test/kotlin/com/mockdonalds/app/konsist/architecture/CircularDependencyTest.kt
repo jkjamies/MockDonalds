@@ -1,6 +1,7 @@
 package com.mockdonalds.app.konsist.architecture
 
 import com.lemonappdev.konsist.api.Konsist
+import com.mockdonalds.app.konsist.normalizedPath
 import io.kotest.core.spec.style.BehaviorSpec
 
 /**
@@ -19,7 +20,7 @@ class CircularDependencyTest : BehaviorSpec({
             val dependencyGraph = mutableMapOf<String, MutableSet<String>>()
 
             featureFiles.forEach { file ->
-                val featureName = file.path.substringAfter("features/").substringBefore("/")
+                val featureName = normalizedPath(file.path).substringAfter("features/").substringBefore("/")
                 file.imports.forEach { import ->
                     val match = Regex("\\.features\\.(\\w+)\\.").find(import.name)
                     if (match != null) {
