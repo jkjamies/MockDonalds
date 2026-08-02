@@ -50,3 +50,17 @@ fun featurePackageSegment(path: String): String =
 /** True for files inside any `core/{module}/impl/` source set. */
 fun isCoreImplPath(path: String): Boolean =
     Regex("(^|/)core/[^/]+/impl/").containsMatchIn(normalizedPath(path))
+
+/**
+ * The project root, derived from any source file's path by cutting at the first module directory.
+ *
+ * Rules that reach the filesystem (listing `features/` to find modules Konsist cannot see, such
+ * as ones with no Kotlin sources) need a root to anchor `File(...)` against. Deriving it from an
+ * unnormalized path is a silent failure on Windows: `substringBefore` returns the whole string
+ * when the delimiter is absent, so the root becomes the full file path, the directory lookup
+ * finds nothing, the module list is empty and the rule passes having checked no modules.
+ */
+fun projectRootFrom(path: String): String =
+    normalizedPath(path)
+        .substringBefore("/features/")
+        .let { if (it.contains("/core/")) it.substringBefore("/core/") else it }

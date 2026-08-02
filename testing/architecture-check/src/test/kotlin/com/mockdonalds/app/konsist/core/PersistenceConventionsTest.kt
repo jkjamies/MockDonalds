@@ -28,7 +28,8 @@ class PersistenceConventionsTest : BehaviorSpec({
         normalizedPath(path).contains("/features/") && normalizedPath(path).contains("/impl/data/")
 
     fun isSqlDelightAllowedConsumer(path: String): Boolean =
-        sqldelightAllowedPathFragments.any { path.contains(it) } || isInFeatureDataModule(path)
+        sqldelightAllowedPathFragments.any { normalizedPath(path).contains(it) } ||
+            isInFeatureDataModule(path)
 
     Given("the SQLDelight import boundary") {
         val files = Konsist.scopeFromProject().files

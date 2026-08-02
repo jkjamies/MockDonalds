@@ -3,6 +3,7 @@ package com.mockdonalds.app.konsist.testing
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.ext.list.withNameEndingWith
 import com.mockdonalds.app.konsist.normalizedPath
+import com.mockdonalds.app.konsist.projectRootFrom
 import io.kotest.core.spec.style.BehaviorSpec
 import java.io.File
 
@@ -277,12 +278,7 @@ class UiTestConventionsTest : BehaviorSpec({
 
     Given("androidDeviceTest manifest") {
         Then("every presentation module with UI tests should have an AndroidManifest.xml declaring ComponentActivity") {
-            val projectRoot = Konsist.scopeFromProject()
-                .files
-                .first()
-                .path
-                .substringBefore("/features/")
-                .let { if (it.contains("/core/")) it.substringBefore("/core/") else it }
+            val projectRoot = projectRootFrom(Konsist.scopeFromProject().files.first().path)
 
             val featuresDir = File("$projectRoot/features")
             val presentationModules = featuresDir.listFiles()
