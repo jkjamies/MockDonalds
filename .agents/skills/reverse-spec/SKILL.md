@@ -136,7 +136,7 @@ Output a filled-in spec using the `new-spec.md` template structure. Every sectio
 #### Use Cases
 - List every abstract use case with params and result types
 - Document the data flow (which repository methods are called, how flows are combined)
-- Note streaming (`CenterPostSubjectInteractor`) vs one-shot (`CenterPostInteractor`)
+- Note streaming (`StrataSubjectInteractor`) vs one-shot (`StrataInteractor`)
 
 #### Repository
 - Document interface methods and return types

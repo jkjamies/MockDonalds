@@ -1,0 +1,69 @@
+# core:strata
+
+## Purpose
+
+The coroutine execution framework for ALL feature business logic. Strata wraps
+coroutine launch/async with structured error handling, timeout management, and loading
+state tracking. Features must never use raw `CoroutineScope.launch` or `async`.
+
+## Public API
+
+| Type | Description |
+|------|-------------|
+| `StrataInteractor<P, R>` | Abstract class for one-shot suspend operations. Provides `inProgress: Flow<Boolean>` loading state, configurable timeout (default 5 min), and returns `StrataResult<R>`. Subclass implements `doWork(params)`. |
+| `StrataSubjectInteractor<P, T>` | Abstract class for streaming/observable operations. Emits via `flow: Flow<T>` using `flatMapLatest`. Subclass implements `createObservable(params)`. Composable `collectAsState()` extension lives in `:core:presentation`. |
+| `StrataResult<T>` | Sealed interface: `Success(data)` / `Failure(error)`. Provides `onSuccess`, `onFailure`, `map`, `flatMap`, `fold`, `getOrNull`, `getOrDefault`, `getOrElse`, `recover`. |
+| `StrataDispatchers` | Interface abstracting `default`, `io`, `main` dispatchers. `DefaultStrataDispatchers` bound via `@ContributesBinding`. |
+| `Strata` | Coroutine launcher built from a `CoroutineScope` + `StrataDispatchers`. Provides `invoke()` (fire-and-forget Job) and `withResult()` (Deferred of StrataResult). Construction is via the `:core:presentation` Composable factory `rememberStrata(dispatchers)`; this module stays Compose-free. |
+| `strataRunCatching()` | Like `runCatching` but rethrows `CancellationException` and wraps all other throwables in `StrataResult`. |
+| `StrataException` | Abstract base exception for all Strata errors. |
+| `StrataExecutionException` | Wraps unexpected throwables caught during execution. |
+| `StrataTimeoutException` | Thrown when an interactor exceeds its timeout duration. |
+| `StrataUserInitiatedParams` | Marker interface for params; controls loading debounce behavior via `isUserInitiated`. |
+
+## Usage
+
+### One-shot interactor in a presenter
+
+```kotlin
+class GetMenuInteractor @Inject constructor(
+    private val repo: MenuRepository,
+) : StrataInteractor<Unit, List<MenuItem>>() {
+    override suspend fun doWork(params: Unit) = repo.getMenu()
+}
+
+// In presenter:
+val result = getMenuInteractor(Unit)
+result.onSuccess { items -> state = state.copy(menu = items) }
+      .onFailure { error -> state = state.copy(error = error.message) }
+```
+
+### Streaming interactor
+
+```kotlin
+class ObserveCartInteractor @Inject constructor(
+    private val repo: CartRepository,
+) : StrataSubjectInteractor<Unit, Cart>() {
+    override fun createObservable(params: Unit) = repo.cartFlow()
+}
+```
+
+### Compose-scoped fire-and-forget
+
+```kotlin
+import com.jkjamies.sampleplatter.core.presentation.strata.rememberStrata
+
+val strata = rememberStrata(dispatchers)
+strata { repo.syncData() }
+```
+
+`rememberStrata` (and `StrataSubjectInteractor.collectAsState`) live in `:core:presentation` so this module stays Compose-free. Both are auto-wired into every feature `impl/presentation` module via the `sampleplatter.kmp.presentation` plugin.
+
+## Rules
+
+- Core modules never import from features
+- ALL feature business logic MUST use StrataInteractor or StrataSubjectInteractor — never raw `CoroutineScope.launch` or `async`
+- **Presenters talk to the domain layer exclusively through Strata interactors** — inject the abstract use case from `api/domain`, use `collectAsState()` for streaming data, use `rememberStrata(dispatchers)` for launching one-shot operations. Presenters NEVER call repositories or domain impls directly.
+- Never catch `CancellationException` — `strataRunCatching` handles this correctly
+- Custom domain exceptions must extend `StrataException`
+- Tests must use `TestStrataDispatchers` from `core:test-fixtures`

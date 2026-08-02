@@ -5,7 +5,7 @@ description: "Add analytics event tracking to a feature — event definitions, p
 
 # Add Analytics Events
 
-> **Infrastructure status**: `core:analytics` provides `AnalyticsEvent` interface, `TrackAnalyticsEvent` CenterPost interactor (for presenters), `AnalyticsDispatcher` (for domain/data), and automatic screen view tracking via `AnalyticsNavigationListener`. Current implementation logs to console via `LoggingAnalyticsDispatcher`. Production SDK integration (e.g., Firebase, Amplitude) is planned but not yet wired.
+> **Infrastructure status**: `core:analytics` provides `AnalyticsEvent` interface, `TrackAnalyticsEvent` Strata interactor (for presenters), `AnalyticsDispatcher` (for domain/data), and automatic screen view tracking via `AnalyticsNavigationListener`. Current implementation logs to console via `LoggingAnalyticsDispatcher`. Production SDK integration (e.g., Firebase, Amplitude) is planned but not yet wired.
 
 Add analytics event tracking to a feature.
 
@@ -65,7 +65,7 @@ sealed class {Feature}AnalyticsEvent(
 
 ### 2. Presenter Wiring — `impl/presentation/`
 
-Presenters use `TrackAnalyticsEvent` CenterPost interactor (**never** `AnalyticsDispatcher` directly — Konsist-enforced):
+Presenters use `TrackAnalyticsEvent` Strata interactor (**never** `AnalyticsDispatcher` directly — Konsist-enforced):
 
 ```kotlin
 @CircuitInject({Feature}Screen::class, AppScope::class)
@@ -73,16 +73,16 @@ Presenters use `TrackAnalyticsEvent` CenterPost interactor (**never** `Analytics
 @Composable
 fun {Feature}Presenter(
     trackAnalyticsEvent: TrackAnalyticsEvent,  // ← inject
-    dispatchers: CenterPostDispatchers,
+    dispatchers: StrataDispatchers,
     // ... other dependencies
 ): {Feature}UiState {
-    val centerPost = rememberCenterPost(dispatchers)
+    val strata = rememberStrata(dispatchers)
 
     return {Feature}UiState(
         eventSink = { event ->
             when (event) {
                 is {Feature}Event.OnItemTapped -> {
-                    centerPost { trackAnalyticsEvent({Feature}AnalyticsEvent.ItemTapped(event.id, event.position)) }
+                    strata { trackAnalyticsEvent({Feature}AnalyticsEvent.ItemTapped(event.id, event.position)) }
                     // ... other handling
                 }
             }
@@ -133,7 +133,7 @@ Screen views are tracked automatically by `AnalyticsNavigationListener` — no m
 
 - **Events are sealed classes** — not sealed interfaces (iOS interop)
 - **Events live in `api/domain/`** — they're part of the feature's public contract
-- **Presenters use `TrackAnalyticsEvent`** — CenterPost interactor, async dispatch
+- **Presenters use `TrackAnalyticsEvent`** — Strata interactor, async dispatch
 - **Domain/data use `AnalyticsDispatcher`** — direct injection, synchronous dispatch
 - **Screen views are automatic** — don't manually track unless custom properties needed
 - **Deep links track final destination only** — not intermediate navigation screens

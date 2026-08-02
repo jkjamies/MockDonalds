@@ -48,7 +48,7 @@ See `.agents/standards/ways-of-working.md` → "When to Spawn Subagents". The on
 - Architecture & module structure: `.agents/standards/architecture.md`
 - DI patterns: `.agents/standards/dependency-injection.md`
 - Convention plugins: `.agents/standards/convention-plugins.md`
-- CenterPost interactors: `.agents/standards/centerpost.md`
+- Strata interactors: `.agents/standards/strata.md`
 
 ## Steps
 

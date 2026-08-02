@@ -35,7 +35,7 @@ include(":androidApp")
 include(":composeApp")
 
 // Core modules
-include(":core:centerpost")
+include(":core:strata")
 include(":core:test-fixtures")
 include(":core:theme")
 include(":core:network:api")

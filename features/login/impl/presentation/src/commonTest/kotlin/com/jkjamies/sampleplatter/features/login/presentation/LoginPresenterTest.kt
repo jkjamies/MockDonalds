@@ -2,7 +2,7 @@ package com.jkjamies.sampleplatter.features.login.presentation
 
 import com.jkjamies.sampleplatter.core.circuit.Parcelize
 import com.jkjamies.sampleplatter.core.test.FakeAuthManager
-import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.core.test.TestStrataDispatchers
 import com.jkjamies.sampleplatter.features.login.api.navigation.LoginScreen
 import com.jkjamies.sampleplatter.features.login.api.navigation.WelcomeScreen
 import com.jkjamies.sampleplatter.features.login.test.FakeGetLoginContent
@@ -19,7 +19,7 @@ class LoginPresenterTest : BehaviorSpec({
 
     Given("a login presenter") {
         val fakeGetLoginContent = FakeGetLoginContent()
-        val dispatchers = TestCenterPostDispatchers()
+        val dispatchers = TestStrataDispatchers()
         val authManager = FakeAuthManager()
         val navigator = FakeNavigator(LoginScreen())
 

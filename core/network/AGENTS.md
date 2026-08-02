@@ -87,6 +87,6 @@ The factory holds one `HttpClient` as its base. Each `create()` call returns a d
 - Only `impl/data` modules should depend on `core:network:api` (plus `core:network:impl` itself)
 - `composeApp` depends on `core:network:impl` (DI graph wiring)
 - Presenter and UI modules must NEVER import or use `HttpClient` directly
-- All network calls must go through a repository → data source, consumed via `CenterPostInteractor` in the presenter layer
+- All network calls must go through a repository → data source, consumed via `StrataInteractor` in the presenter layer
 - Each feature creates its own client — no shared singleton `HttpClient`
 - Ktor engine is resolved automatically per platform (OkHttp on Android, Darwin on iOS)

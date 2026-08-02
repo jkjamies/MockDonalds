@@ -48,14 +48,14 @@ class ForbiddenPatternsTest : BehaviorSpec({
         }
     }
 
-    Given("CenterPost only — no raw coroutine scope or hardcoded dispatchers") {
+    Given("Strata only — no raw coroutine scope or hardcoded dispatchers") {
         val featureAndPresenterFiles = Konsist.scopeFromProject()
             .files
             .filter {
                 isProductionSourcePath(it.path) &&
                     (it.resideInPath("..features..") || it.resideInPath("..composeApp..")) &&
-                    // CenterPost is the one place allowed to own a CoroutineScope on Android.
-                    !it.resideInPath("..centerpost..") &&
+                    // Strata is the one place allowed to own a CoroutineScope on Android.
+                    !it.resideInPath("..strata..") &&
                     // CircuitPresenterKotlinBridge is its iOS counterpart: Molecule's
                     // `launchMolecule` requires a CoroutineScope to host the presenter
                     // composition, exactly as Compose's recomposer does on Android. Nothing
@@ -82,14 +82,14 @@ class ForbiddenPatternsTest : BehaviorSpec({
                 }
 
             assert(violators.isEmpty()) {
-                "Direct CoroutineScope usage is not allowed in features — use CenterPost (rememberCenterPost) instead:\n${violators.joinToString("\n")}"
+                "Direct CoroutineScope usage is not allowed in features — use Strata (rememberStrata) instead:\n${violators.joinToString("\n")}"
             }
         }
 
         Then("feature modules should not directly use launch or async") {
             // `*Ui.kt` is exempt: UI-local coroutines (scroll animation, snackbar dismissal)
             // are driven by Compose's own `rememberCoroutineScope()` and are not business
-            // logic, so routing them through CenterPost would be wrong. The exemption is
+            // logic, so routing them through Strata would be wrong. The exemption is
             // narrow — the CoroutineScope and Dispatchers rules above still apply to UI files.
             val violators = featureAndPresenterFiles
                 // `nameWithExtension`, not `name`: Konsist's file `name` carries no extension,
@@ -107,7 +107,7 @@ class ForbiddenPatternsTest : BehaviorSpec({
                 }
 
             assert(violators.isEmpty()) {
-                "Direct launch/async is not allowed in features — use CenterPost instead:\n${violators.joinToString("\n")}"
+                "Direct launch/async is not allowed in features — use Strata instead:\n${violators.joinToString("\n")}"
             }
         }
 
@@ -123,7 +123,7 @@ class ForbiddenPatternsTest : BehaviorSpec({
                 }
 
             assert(violators.isEmpty()) {
-                "Hardcoded Dispatchers are not allowed — use CenterPostDispatchers (injected) instead:\n${violators.joinToString("\n")}"
+                "Hardcoded Dispatchers are not allowed — use StrataDispatchers (injected) instead:\n${violators.joinToString("\n")}"
             }
         }
 

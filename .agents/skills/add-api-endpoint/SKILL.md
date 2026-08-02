@@ -168,7 +168,7 @@ If the endpoint requires a new base URL not already in `AppBuildConfig`, use `/a
 - **Data sources are interface + Impl** — Konsist enforces this pattern
 - **DTOs never leak to domain** — always map via extension functions
 - **Only `impl/data` depends on `core:network:api`** — Konsist enforces this
-- **Presenters never touch repositories** — only through CenterPost interactors
+- **Presenters never touch repositories** — only through Strata interactors
 
 ## Post-Change Verification — MANDATORY
 

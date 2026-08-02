@@ -84,7 +84,7 @@ If yes, explore and propose the answer instead of asking blind:
 |--------|-----------|
 | `**Base URL config field**` | Read `core/build-config/api/.../AppBuildConfig.kt` for existing fields |
 | TestTags naming convention | Read an existing feature's `{Feature}TestTags.kt` |
-| Use case naming | Grep for existing `CenterPostSubjectInteractor` / `CenterPostInteractor` subclasses |
+| Use case naming | Grep for existing `StrataSubjectInteractor` / `StrataInteractor` subclasses |
 | Cross-feature dependencies | Read the target feature's `api/domain` and `api/navigation` modules |
 | Screen type (Screen vs ProtectedScreen vs FlowScreen vs TabScreen) | Read existing screens with similar auth/flow patterns |
 | Repository return types | Read sibling features' repositories |

@@ -12,7 +12,7 @@ kotlin {
             implementation(project(":features:profile:api:domain"))
             implementation(project(":features:profile:api:navigation"))
             implementation(project(":core:auth:api"))
-            implementation(project(":core:centerpost"))
+            implementation(project(":core:strata"))
             implementation(project(":core:theme"))
         }
         commonTest.dependencies {

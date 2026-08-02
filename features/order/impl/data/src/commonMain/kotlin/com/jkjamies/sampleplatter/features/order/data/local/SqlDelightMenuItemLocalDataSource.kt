@@ -2,7 +2,7 @@ package com.jkjamies.sampleplatter.features.order.data.local
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostDispatchers
+import com.jkjamies.sampleplatter.core.strata.StrataDispatchers
 import com.jkjamies.sampleplatter.features.order.api.domain.MenuItem
 import com.jkjamies.sampleplatter.features.order.data.MenuItemQueries
 import dev.zacsweers.metro.AppScope
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 @ContributesBinding(AppScope::class)
 class SqlDelightMenuItemLocalDataSource(
     private val queries: MenuItemQueries,
-    private val dispatchers: CenterPostDispatchers,
+    private val dispatchers: StrataDispatchers,
 ) : MenuItemLocalDataSource {
 
     override fun observeByCategory(categoryId: String): Flow<List<MenuItem>> =

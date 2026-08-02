@@ -12,16 +12,16 @@ The rewards screen shows the user's loyalty program status, including points pro
 | RewardsProgress | api/domain | currentPoints, nextRewardName, pointsToNextReward, progressFraction |
 | VaultSpecial | api/domain | id, title, pointsCost, imageUrl, tag?, isFeatured |
 | HistoryEntry | api/domain | id, title, subtitle, points, isPositive, icon |
-| GetRewardsContent | api/domain -> impl/domain | Streaming use case via CenterPostSubjectInteractor<Unit, RewardsContent> |
+| GetRewardsContent | api/domain -> impl/domain | Streaming use case via StrataSubjectInteractor<Unit, RewardsContent> |
 | RewardsRepository | impl/domain -> impl/data | getRewardsProgress(), getVaultSpecials(), getHistory() -- all Flow-based |
 | RewardsPresenter | impl/presentation | Collects content, handles vault and history interactions |
 | RewardsUiState | impl/presentation | progress?, vaultSpecials, history, eventSink |
 | RewardsEvent | impl/presentation | VaultSpecialClicked(id), ViewAllClicked |
 
 ## Cross-Feature Dependencies
-- Navigates to: none (event handlers are currently no-op centerPost placeholders)
+- Navigates to: none (event handlers are currently no-op strata placeholders)
 - Imported by: composeApp (wired at app level)
-- Core deps: core:centerpost, core:theme
+- Core deps: core:strata, core:theme
 
 ## Feature-Specific Patterns
 - RewardsScreen is a TabScreen with tag="rewards", making it a bottom navigation destination.

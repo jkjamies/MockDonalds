@@ -1,5 +1,5 @@
 package com.jkjamies.sampleplatter.features.rewards.api.domain
 
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostSubjectInteractor
+import com.jkjamies.sampleplatter.core.strata.StrataSubjectInteractor
 
-abstract class GetRewardsContent : CenterPostSubjectInteractor<Unit, RewardsContent>()
+abstract class GetRewardsContent : StrataSubjectInteractor<Unit, RewardsContent>()

@@ -11,16 +11,16 @@ The scan screen presents the user's membership QR code for in-store scanning, al
 | ScanContent | api/domain | memberInfo, rewardsProgress |
 | MemberInfo | api/domain | memberStatus, qrCodeUrl |
 | ScanRewardsProgress | api/domain | currentPoints, pointsToNextReward, progressFraction, message |
-| GetScanContent | api/domain -> impl/domain | Streaming use case via CenterPostSubjectInteractor<Unit, ScanContent> |
+| GetScanContent | api/domain -> impl/domain | Streaming use case via StrataSubjectInteractor<Unit, ScanContent> |
 | ScanRepository | impl/domain -> impl/data | getMemberInfo(): Flow<MemberInfo>, getRewardsProgress(): Flow<ScanRewardsProgress> |
 | ScanPresenter | impl/presentation | Collects content, handles pay and offers interactions |
 | ScanUiState | impl/presentation | memberInfo?, rewardsProgress?, eventSink |
 | ScanEvent | impl/presentation | PayNowClicked, ViewOffersClicked |
 
 ## Cross-Feature Dependencies
-- Navigates to: none (event handlers are currently no-op centerPost placeholders)
+- Navigates to: none (event handlers are currently no-op strata placeholders)
 - Imported by: composeApp (wired at app level)
-- Core deps: core:centerpost, core:theme
+- Core deps: core:strata, core:theme
 
 ## Feature-Specific Patterns
 - ScanScreen is a TabScreen with tag="scan", making it a bottom navigation destination.

@@ -1,5 +1,5 @@
 package com.jkjamies.sampleplatter.features.login.api.domain
 
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostSubjectInteractor
+import com.jkjamies.sampleplatter.core.strata.StrataSubjectInteractor
 
-abstract class GetLoginContent : CenterPostSubjectInteractor<Unit, LoginContent>()
+abstract class GetLoginContent : StrataSubjectInteractor<Unit, LoginContent>()

@@ -32,7 +32,7 @@ Comprehensive testing conventions for the SamplePlatter KMP project. Testing is 
 | Kotest assertions | `shouldBe`, `shouldHaveSize`, `shouldBeNull`, etc. | Unit tests |
 | Turbine | Flow testing (`test { awaitItem() }`) | Presenter tests, interactor tests |
 | Circuit Test | `presenterTestOf()`, `FakeNavigator` | Presenter tests |
-| kotlinx-coroutines-test | `StandardTestDispatcher` (via `TestCenterPostDispatchers`) | All coroutine tests |
+| kotlinx-coroutines-test | `StandardTestDispatcher` (via `TestStrataDispatchers`) | All coroutine tests |
 | Compose UI Test | `createComposeRule()`, `onNodeWithTag()`, `performClick()` | UI component tests, navint-tests |
 | UI Automator | `By.desc(testTag)`, cross-process element access | e2e-tests |
 | Macrobenchmark | `MacrobenchmarkRule`, `StartupTimingMetric` | e2e benchmarks |
@@ -40,7 +40,7 @@ Comprehensive testing conventions for the SamplePlatter KMP project. Testing is 
 | ViewInspector | SwiftUI view hierarchy traversal | iOS UI component tests |
 | Konsist | Kotlin static analysis | Architecture tests |
 | Harmonize | Swift static analysis | iOS architecture tests |
-| core:test-fixtures | `TestCenterPostDispatchers`, `KotestProjectConfig`, `StateRobot` base, `FakeAuthManager` | Shared test infra |
+| core:test-fixtures | `TestStrataDispatchers`, `KotestProjectConfig`, `StateRobot` base, `FakeAuthManager` | Shared test infra |
 
 All libraries are auto-provisioned by convention plugins (`sampleplatter.kmp.library`, `sampleplatter.kmp.presentation`). No per-module configuration needed.
 
@@ -64,7 +64,7 @@ All libraries are auto-provisioned by convention plugins (`sampleplatter.kmp.lib
 
 ```
 core/test-fixtures/                    # Auto-added to all modules via convention plugin
-├── TestCenterPostDispatchers          # Routes all dispatchers to TestDispatcher
+├── TestStrataDispatchers          # Routes all dispatchers to TestDispatcher
 ├── KotestProjectConfig                # Base config for concurrent spec execution (4 specs)
 ├── StateRobot<State, Event>           # Base class for UI test state construction
 └── FakeAuthManager                    # Shared auth fake
@@ -79,7 +79,7 @@ Dependency flow for tests:
 ```
 impl/presentation/commonTest/
   ├── depends on: features/{feature}/test (fakes)
-  ├── depends on: core:test-fixtures (TestCenterPostDispatchers, KotestProjectConfig)
+  ├── depends on: core:test-fixtures (TestStrataDispatchers, KotestProjectConfig)
   └── depends on: circuit-test (presenterTestOf, FakeNavigator)
 
 impl/domain/commonTest/

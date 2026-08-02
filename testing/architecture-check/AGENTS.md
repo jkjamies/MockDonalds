@@ -11,7 +11,7 @@ All tests use Kotest BehaviorSpec (Given/Then style) and scan the project with `
 |----------|-------|-------------------|
 | architecture/ | LayerDependencyTest | Unidirectional dependency flow: api <- domain <- data, api <- presentation. Cross-feature imports only via api module. Core modules cannot import features. |
 | architecture/ | CircularDependencyTest | No circular api imports between feature modules (A -> B and B -> A). |
-| architecture/ | ForbiddenPatternsTest | No ViewModels (use Circuit presenters), no raw CoroutineScope/launch/async/Dispatchers in features (use CenterPost), no Android platform imports in commonMain, no app module imports from library modules. |
+| architecture/ | ForbiddenPatternsTest | No ViewModels (use Circuit presenters), no raw CoroutineScope/launch/async/Dispatchers in features (use Strata), no Android platform imports in commonMain, no app module imports from library modules. |
 | circuit/ | CircuitConventionsTest | Events must be sealed class (not interface) for iOS interop. Screen objects reside in api with @Parcelize. TabScreens have tag property. ProtectedScreens in api/navigation. |
 | circuit/ | NamingConventionsTest | Screens end with Screen, events with Event, @CircuitInject functions with Presenter or Ui, UiState classes with UiState, repository interfaces with Repository, implementations with Impl/RepositoryImpl. |
 | core/ | CodeHygieneTest | No wildcard imports, no println/System.out in production, no Thread.sleep or runBlocking, no force unwraps (!!), no lateinit var in shared code. |
@@ -26,7 +26,7 @@ All tests use Kotest BehaviorSpec (Given/Then style) and scan the project with `
 | core/ | AgentDocumentationTest | Every feature and core module has AGENTS.md. Root AGENTS.md exists. .agents/skills/ directory exists with SKILL.md per skill. .gemini/settings.json references AGENTS.md. |
 | layers/ | ApiLayerTest | Data classes in api are immutable (val only). @Serializable only in api/data/network. No MutableStateFlow in public APIs. api:domain has no Circuit dependency. DTOs only in data/network modules. |
 | layers/ | DataLayerTest | Repository interfaces in domain modules. RepositoryImpl classes in data modules with @ContributesBinding. Repository functions return Flow, not suspend. |
-| layers/ | DomainLayerTest | Abstract use cases (CenterPostInteractor/CenterPostSubjectInteractor) in api modules. Impl classes in domain modules with @ContributesBinding, extending their abstract parent. |
+| layers/ | DomainLayerTest | Abstract use cases (StrataInteractor/StrataSubjectInteractor) in api modules. Impl classes in domain modules with @ContributesBinding, extending their abstract parent. |
 | layers/ | PresentationLayerTest | Presenters have @CircuitInject. One public function per presenter file. Presenters do not depend on repositories directly. UiState implements CircuitUiState with eventSink property. |
 | testing/ | TestDoubleConventionsTest | Fakes live in dedicated test modules (not commonTest). Every abstract use case has a Fake. Test doubles prefixed with Fake or Test. No mockk in commonTest. |
 | testing/ | TestModuleDITest | All Fake classes in feature test modules have @ContributesBinding(AppScope::class). Fakes with @ContributesBinding must NOT also declare @Inject — Metro infers it. No @ContributesBinding in commonTest source sets. |

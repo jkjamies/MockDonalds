@@ -1,11 +1,11 @@
 package com.jkjamies.sampleplatter.features.debugmenu.presentation
 
 import androidx.compose.runtime.Composable
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostDispatchers
-import com.jkjamies.sampleplatter.core.presentation.centerpost.rememberCenterPost
 import com.jkjamies.sampleplatter.core.presentation.remoteconfig.rememberFlag
+import com.jkjamies.sampleplatter.core.presentation.strata.rememberStrata
 import com.jkjamies.sampleplatter.core.remoteconfig.FeatureFlagDefinition
 import com.jkjamies.sampleplatter.core.remoteconfig.RemoteConfigProvider
+import com.jkjamies.sampleplatter.core.strata.StrataDispatchers
 import com.jkjamies.sampleplatter.features.debugmenu.api.navigation.FeatureFlagsDebugScreen
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.Navigator
@@ -17,11 +17,11 @@ import dev.zacsweers.metro.Inject
 @Composable
 fun FeatureFlagsDebugPresenter(
     navigator: Navigator,
-    dispatchers: CenterPostDispatchers,
+    dispatchers: StrataDispatchers,
     definitions: Set<FeatureFlagDefinition>,
     remoteConfig: RemoteConfigProvider,
 ): FeatureFlagsDebugUiState {
-    rememberCenterPost(dispatchers)
+    rememberStrata(dispatchers)
 
     val rows = definitions
         .sortedWith(compareBy({ it.owner }, { it.flag.key }))

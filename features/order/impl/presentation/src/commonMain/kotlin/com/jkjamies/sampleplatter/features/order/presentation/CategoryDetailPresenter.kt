@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostDispatchers
-import com.jkjamies.sampleplatter.core.presentation.centerpost.collectAsState
-import com.jkjamies.sampleplatter.core.presentation.centerpost.rememberCenterPost
+import com.jkjamies.sampleplatter.core.presentation.strata.collectAsState
+import com.jkjamies.sampleplatter.core.presentation.strata.rememberStrata
+import com.jkjamies.sampleplatter.core.strata.StrataDispatchers
 import com.jkjamies.sampleplatter.features.order.api.domain.CategoryDetailContent
 import com.jkjamies.sampleplatter.features.order.api.domain.GetCategoryDetailContent
 import com.jkjamies.sampleplatter.features.order.api.domain.GetOrderContent
@@ -24,9 +24,9 @@ fun CategoryDetailPresenter(
     navigator: Navigator,
     getCategoryDetailContent: GetCategoryDetailContent,
     getOrderContent: GetOrderContent,
-    dispatchers: CenterPostDispatchers,
+    dispatchers: StrataDispatchers,
 ): CategoryDetailUiState {
-    val centerPost = rememberCenterPost(dispatchers)
+    val strata = rememberStrata(dispatchers)
     val detail: CategoryDetailContent? by getCategoryDetailContent.flow
         .collectAsState(initial = null)
     val orderContent by getOrderContent.collectAsState()
@@ -43,8 +43,8 @@ fun CategoryDetailPresenter(
         eventSink = { event ->
             when (event) {
                 is CategoryDetailEvent.BackPressed -> navigator.pop()
-                is CategoryDetailEvent.AddToOrder -> centerPost { }
-                is CategoryDetailEvent.CartClicked -> centerPost { }
+                is CategoryDetailEvent.AddToOrder -> strata { }
+                is CategoryDetailEvent.CartClicked -> strata { }
             }
         },
     )

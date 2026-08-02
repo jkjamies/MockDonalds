@@ -9,7 +9,7 @@ The profile screen displays the authenticated user's account details including n
 |------|----------|-------|
 | ProfileScreen | api/navigation | ProtectedScreen (data object), requires authentication |
 | ProfileContent | api/domain | name, email, tier, points, avatarUrl, memberSince |
-| GetProfileContent | api/domain -> impl/domain | Streaming use case via CenterPostSubjectInteractor<Unit, ProfileContent> |
+| GetProfileContent | api/domain -> impl/domain | Streaming use case via StrataSubjectInteractor<Unit, ProfileContent> |
 | ProfileRepository | impl/domain -> impl/data | getProfile(): Flow<ProfileContent> |
 | ProfilePresenter | impl/presentation | Collects profile content, handles logout via AuthManager |
 | ProfileUiState | impl/presentation | name, email, tier, points, avatarUrl, memberSince, eventSink |
@@ -18,7 +18,7 @@ The profile screen displays the authenticated user's account details including n
 ## Cross-Feature Dependencies
 - Navigates to: none (LogoutClicked calls authManager.logout() then navigator.pop())
 - Imported by: more (MorePresenter navigates to ProfileScreen on ProfileClicked); composeApp (wired at app level)
-- Core deps: core:auth:api (AuthManager), core:centerpost, core:theme
+- Core deps: core:auth:api (AuthManager), core:strata, core:theme
 
 ## Feature-Specific Patterns
 - ProfileScreen implements ProtectedScreen, which triggers auth-gating in the core:circuit layer. Unauthenticated users are redirected to LoginScreen(returnTo=ProfileScreen) before this screen renders.

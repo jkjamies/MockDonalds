@@ -1,0 +1,417 @@
+# Strata Consumer Guide
+
+How features USE the Strata framework. For API internals, see `core/strata/AGENTS.md`. For how interactors are bound into the Metro graph and injected into presenters, see [dependency-injection.md](dependency-injection.md).
+
+## Framework Philosophy
+
+Strata provides structured coroutines for ALL business logic. Features never use raw `CoroutineScope`, `launch`, `async`, or hardcoded `Dispatchers.*`. Strata wraps coroutine execution with error handling, timeout management, and loading state tracking.
+
+## Platform Data Flow
+
+Shows how data flows from repositories through Strata interactors to platform-native UI:
+
+```mermaid
+graph LR
+    subgraph shared["Shared KMP (commonMain)"]
+        Repo["Repository"] --> UseCase["UseCase<br/>(Strata Interactor)"]
+        UseCase --> Presenter["Presenter.present()"]
+    end
+
+    subgraph android["Android"]
+        Presenter -->|"Compose Runtime"| ComposeUI["Compose UI"]
+        Presenter -->|"navigator.goTo()"| BackStack["BackStack"]
+        BackStack --> NavContent["NavigableCircuitContent"]
+    end
+
+    subgraph ios["iOS"]
+        Presenter -->|"Molecule"| StateFlow["StateFlow"]
+        StateFlow -->|"KMP-NativeCoroutines"| AsyncSeq["AsyncSequence"]
+        AsyncSeq --> SwiftUI["SwiftUI View"]
+        Presenter -->|"BridgeNavigator"| NavFlow["Channel&lt;NavigationAction&gt;"]
+        NavFlow -->|"KMP-NativeCoroutines"| NavAsync["AsyncSequence"]
+        NavAsync --> NavStack["NavigationStack"]
+    end
+```
+
+```
+Android:
+  State: Repository ──► UseCase ──► Presenter.present() ──[Compose Runtime]──► Compose UI
+  Nav:   Presenter ──► navigator.goTo() ──► BackStack ──► NavigableCircuitContent
+
+iOS:
+  State: Repository ──► UseCase ──► Presenter.present() ──[Molecule]──► StateFlow
+                                                          ──[KMP-NativeCoroutines]──► AsyncSequence
+                                                          ──► SwiftUI View
+  Nav:   Presenter ──► BridgeNavigator ──► Channel<NavigationAction>
+                                          ──[KMP-NativeCoroutines]──► CircuitNavigator
+                                          ──► NavigationStack
+```
+
+## Type Decision Flowchart
+
+```mermaid
+flowchart TD
+    Start["Need async work in a feature?"] --> Q1{"One-shot or streaming?"}
+    Q1 -->|"One-shot<br/>(API call, write, computation)"| Interactor["StrataInteractor&lt;P, R&gt;"]
+    Q1 -->|"Streaming<br/>(DB observation, combined flows)"| Subject["StrataSubjectInteractor&lt;P, T&gt;"]
+    Q1 -->|"Fire-and-forget in presenter"| Q2{"Need the result?"}
+    Q2 -->|"No"| Launcher["strata { ... }"]
+    Q2 -->|"Yes"| WithResult["strata.withResult { ... }"]
+
+    Interactor --> Invoke["val result = interactor(params)<br/>Returns StrataResult&lt;R&gt;"]
+    Subject --> Collect["val content by interactor.collectContentAsState()<br/>Auto-invokes + collects contentState (Loading/Content/Error)"]
+    Launcher --> Job["Returns Job"]
+    WithResult --> Deferred["Returns Deferred&lt;StrataResult&lt;T&gt;&gt;"]
+```
+
+## StrataInteractor<P, R> -- One-Shot Operations
+
+For suspend operations that run once and return a result (API calls, writes, computations).
+
+```kotlin
+class PlaceOrderInteractor @Inject constructor(
+    private val repo: OrderRepository,
+) : StrataInteractor<OrderParams, OrderConfirmation>() {
+    override suspend fun doWork(params: OrderParams) = repo.placeOrder(params)
+}
+```
+
+Key properties:
+- `inProgress: Flow<Boolean>` -- loading state with debounce (5s for ambient, instant for user-initiated)
+- Default timeout: 5 minutes (configurable per call)
+- Returns `StrataResult<R>` (never throws, except `CancellationException`)
+
+Invocation:
+```kotlin
+val result = placeOrderInteractor(orderParams)                    // with params
+val result = placeOrderInteractor(orderParams, timeout = 30.seconds) // custom timeout
+val result = getMenuInteractor()                                  // Unit params shorthand
+```
+
+## StrataSubjectInteractor<P, T> -- Streaming Operations
+
+For observable data that changes over time (database queries, real-time updates, combined flows).
+
+```kotlin
+class GetHomeContent @Inject constructor() : StrataSubjectInteractor<Unit, HomeContent>() {
+    // Abstract -- impl in domain module
+    abstract override fun createObservable(params: Unit): Flow<HomeContent>
+}
+
+// Implementation in impl/domain:
+@ContributesBinding(AppScope::class)
+class GetHomeContentImpl(
+    private val repository: HomeRepository,
+) : GetHomeContent() {
+    override fun createObservable(params: Unit): Flow<HomeContent> {
+        return combine(
+            repository.getUserName(),
+            repository.getHeroPromotion(),
+            repository.getRecentCravings(),
+            repository.getExploreItems(),
+        ) { userName, hero, cravings, explore ->
+            HomeContent(userName = userName, heroPromotion = hero, recentCravings = cravings, exploreItems = explore)
+        }
+    }
+}
+```
+
+Internal behavior: params go through `distinctUntilChanged()` then `flatMapLatest { createObservable(it) }` then another `distinctUntilChanged()`. This means new params cancel the previous observable, and duplicate emissions are suppressed.
+
+### Two collection surfaces: `flow` vs `contentState`
+
+| Property | Type | Loading | Failure |
+|---|---|---|---|
+| `flow` | `Flow<T>` | none — no signal before the first value | **propagates to the collector** |
+| `contentState` | `Flow<StrataContentState<T>>` | `Loading` before the first value | `Error(StrataException)` |
+
+**Presenters should use `contentState`** (via `collectContentAsState()`). `flow` collapses "loading", "genuinely empty", and "failed" into a single `null` at the presenter — which is why an un-migrated screen renders a permanently blank list when its backend is down — and an exception thrown by `createObservable` reaches composition.
+
+`flow` remains for callers that compose it with other flows and handle failure themselves.
+
+```kotlin
+@CircuitInject(OrderScreen::class, AppScope::class)
+@Inject
+@Composable
+fun OrderPresenter(navigator: Navigator, getOrderContent: GetOrderContent): OrderUiState {
+    val content by getOrderContent.collectContentAsState()
+
+    return OrderUiState(
+        categoryPreviews = content.dataOrNull?.categoryPreviews.orEmpty(),
+        isLoading = content.isLoading,
+        errorMessage = content.errorOrNull?.message,
+        eventSink = { /* ... */ },
+    )
+}
+```
+
+**Flatten it — never put `StrataContentState` on a `UiState`.** It is a sealed *interface*, and sealed interfaces do not bridge cleanly to Swift (see [ios-interop.md](ios-interop.md)). `UiState` carries primitives: `isLoading: Boolean`, `errorMessage: String?`.
+
+**Retry with `retry()`, not `invoke()`.** `Error` is terminal for the current params, and `distinctUntilChanged()` on params means `invoke(sameParams)` is deduped — it does nothing. For a `StrataSubjectInteractor<Unit, T>` there are no other params to pass, so `invoke` can never be the retry path. `retry()` restarts the stream for whatever params are in flight:
+
+```kotlin
+eventSink = { event ->
+    when (event) {
+        is OrderEvent.Retry -> getOrderContent.retry()
+        // ...
+    }
+}
+```
+
+### Migrating an existing screen to `contentState`
+
+Screens still on `collectAsState()` show neither spinners nor errors. Migration is mechanical but crosses both platforms — a `UiState` field addition breaks every Swift `StateRobot`, because Kotlin default arguments do **not** cross the Obj-C bridge and Swift constructs `UiState` with all parameters explicitly. Per screen:
+
+1. `{Feature}Presenter.kt` — `collectAsState()` → `collectContentAsState()`, map through `dataOrNull` / `isLoading` / `errorOrNull`.
+2. `{Feature}UiState.kt` — add `isLoading: Boolean = false`, `errorMessage: String? = null`.
+3. `{Feature}Ui.kt` — render the spinner and error states.
+4. `{Feature}StateRobot.kt` (androidDeviceTest) — pass the new fields.
+5. `{Feature}PresenterTest.kt` — assert loading and error transitions, not just content.
+6. `{Feature}View.swift` — render the new states.
+7. `{Feature}StateRobot.swift` — **required**, pass the new fields or the iOS build breaks.
+
+Also stop the repository from swallowing the failure it is meant to report: `OrderRepositoryImpl.refreshIfStale` currently does `runCatching { … }.onFailure { logger.e(…) }`, so a Spoonacular outage never reaches `contentState` at all. The error path has to be un-swallowed for the state to be reachable.
+
+## When to Use Which
+
+| Use Case | Type | Examples |
+|----------|------|----------|
+| One-shot | `StrataInteractor` | API calls, place order, login, write operations |
+| Streaming | `StrataSubjectInteractor` | Database observation, combined content flows, real-time data |
+
+## StrataResult<T>
+
+Sealed interface: `Success(data)` / `Failure(error: StrataException)`.
+
+Full API:
+```kotlin
+result.onSuccess { data -> /* use data */ }          // chain: returns self
+result.onFailure { error -> /* handle error */ }     // chain: returns self
+result.map { data -> transform(data) }               // Success -> Success(transformed), Failure -> Failure
+result.flatMap { data -> anotherResult(data) }        // Success -> new result, Failure -> Failure
+result.fold(onSuccess = { ... }, onFailure = { ... }) // extract value from either branch
+result.getOrNull()                                    // T? -- null on failure
+result.getOrDefault(fallback)                         // T -- fallback on failure
+result.getOrElse { error -> computeFallback(error) }  // T -- compute on failure
+result.recover { error -> tryAlternative(error) }     // suspend: Failure -> try recovery
+```
+
+## Strata Launcher
+
+Compose-scoped coroutine launcher for fire-and-forget or deferred operations in presenters.
+
+```kotlin
+val strata = rememberStrata(dispatchers)
+
+// Fire-and-forget (returns Job):
+strata { repo.syncData() }
+
+// With result (returns Deferred<StrataResult<T>>):
+val deferred = strata.withResult { repo.fetchSomething() }
+```
+
+`rememberStrata()` scopes the `Strata` to the composition lifecycle. It uses `dispatchers.default` as the coroutine context.
+
+## strataRunCatching()
+
+Like `runCatching` but critically different:
+- **Rethrows `CancellationException`** -- structured concurrency requires cancellation to propagate
+- Wraps known `StrataException` as `Failure`
+- Wraps unexpected `Throwable` in `StrataExecutionException` then `Failure`
+
+Never use stdlib `runCatching` in Strata contexts -- it swallows cancellation.
+
+## Error Handling
+
+### Exception Hierarchy
+
+```mermaid
+classDiagram
+    class StrataException {
+        <<abstract>>
+        +message: String
+    }
+    class StrataExecutionException {
+        +cause: Throwable
+        Wraps unexpected exceptions
+    }
+    class StrataTimeoutException {
+        +duration: Duration
+        Interactor exceeded timeout
+    }
+    class CustomDomainException {
+        <<your domain errors>>
+        e.g. InsufficientFundsException
+        e.g. ItemOutOfStockException
+    }
+
+    StrataException <|-- StrataExecutionException
+    StrataException <|-- StrataTimeoutException
+    StrataException <|-- CustomDomainException
+```
+
+```
+StrataException (abstract)
+  +-- StrataExecutionException   -- wraps unexpected Throwable
+  +-- StrataTimeoutException     -- interactor exceeded timeout (carries Duration)
+  +-- (your custom domain exceptions)
+```
+
+### Exception Classification by strataRunCatching
+
+```mermaid
+flowchart TD
+    Try["strataRunCatching { block() }"] --> Catch{"Exception type?"}
+    Catch -->|"CancellationException"| Rethrow["RETHROWN ⚠️<br/>Structured concurrency preserved"]
+    Catch -->|"StrataException"| KnownFail["Failure(error)<br/>Known domain error"]
+    Catch -->|"Any other Throwable"| Wrap["Wrapped in StrataExecutionException<br/>then Failure(wrapped)"]
+    Try -->|"Success"| Success["Success(data)"]
+```
+
+### Custom Domain Exceptions
+
+Extend `StrataException` for domain-specific errors:
+```kotlin
+class InsufficientFundsException(
+    val balance: Double,
+) : StrataException("Insufficient funds: balance=$balance")
+```
+
+### Recovery Pattern
+
+```kotlin
+val result = placeOrderInteractor(params)
+    .recover { error ->
+        when (error) {
+            is StrataTimeoutException -> retryInteractor(params)
+            else -> StrataResult.Failure(error)
+        }
+    }
+```
+
+### Never Catch CancellationException
+
+`strataRunCatching` handles this correctly. Manual `try/catch` blocks must rethrow it:
+```kotlin
+// WRONG: catch(e: Exception) { ... }  -- swallows cancellation
+// RIGHT: strataRunCatching { ... } -- rethrows CancellationException automatically
+```
+
+## StrataDispatchers and TestStrataDispatchers
+
+```kotlin
+interface StrataDispatchers {
+    val default: CoroutineDispatcher
+    val io: CoroutineDispatcher
+    val main: CoroutineDispatcher
+}
+```
+
+- Production: `DefaultStrataDispatchers` (bound via `@ContributesBinding`) uses real `Dispatchers.*`
+- Tests: `TestStrataDispatchers()` routes all three to a single `StandardTestDispatcher` for deterministic execution. If the code under test dispatches (e.g. `withContext(dispatchers.io)`), the test must call `advanceUntilIdle()` — queued work does not run on its own, and anything left parked also blocks cancellation
+
+Presenters inject `StrataDispatchers` (the interface), making them testable.
+
+## Complete Presenter Integration Example
+
+Streaming content + one-shot event handling together:
+
+```kotlin
+@CircuitInject(HomeScreen::class, AppScope::class)
+@Inject
+@Composable
+fun HomePresenter(
+    navigator: Navigator,
+    getHomeContent: GetHomeContent,         // streaming interactor (abstract)
+    dispatchers: StrataDispatchers,
+): HomeUiState {
+    val strata = rememberStrata(dispatchers)
+    // `collectAsState()` — legacy shape, shown here because most screens still use it.
+    // New screens use `collectContentAsState()`; see "Two collection surfaces" above.
+    val content by getHomeContent.collectAsState()  // auto-invokes with Unit, collects flow
+
+    return HomeUiState(
+        userName = content?.userName ?: "",
+        heroPromotion = content?.heroPromotion,
+        recentCravings = content?.recentCravings ?: emptyList(),
+        exploreItems = content?.exploreItems ?: emptyList(),
+        eventSink = { event ->
+            when (event) {
+                is HomeEvent.HeroCtaClicked -> strata { /* one-shot via launcher */ }
+                is HomeEvent.CravingClicked -> strata { /* ... */ }
+                is HomeEvent.ExploreItemClicked -> strata { /* ... */ }
+            }
+        },
+    )
+}
+```
+
+## Core Module Interactor Guidance
+
+Core modules with api/impl expose Strata interactors for presenter consumption by default. Even fire-and-forget operations go through interactors from presenters — the value is structured error handling, timeout protection, dispatcher correctness, and consistency. One documented exception: `core:remote-config` (see carve-out below).
+
+**Choose the interactor type based on the operation:**
+
+| Operation Type | Interactor | Example |
+|---------------|-----------|---------|
+| Streaming / observable state | `StrataSubjectInteractor` | `GetHomeContent` — presenter reacts to combined repository flows |
+| One-shot async or fire-and-forget | `StrataInteractor` | `TrackAnalyticsEvent` — structured execution for event tracking |
+
+**Why even fire-and-forget?** The value isn't loading state (which goes uncollected — opt-in, zero overhead). It's:
+- Structured error handling — if the real SDK throws, `StrataResult.Failure` catches it
+- Timeout protection — a hung SDK call doesn't block forever
+- Dispatcher correctness — work runs on the right dispatcher
+- Consistency — presenters default to interactors; only documented carve-outs skip them
+
+**Domain and data layers always inject the provider interface directly** — never the interactor. Interactors are a presenter-layer concern. Domain/data use the synchronous provider API.
+
+```kotlin
+// FIRE-AND-FORGET: core:analytics
+// Presenter — uses StrataInteractor (ignores loading state)
+val strata = rememberStrata(dispatchers)
+strata { trackAnalyticsEvent(MyEvent.ButtonTapped) }
+
+// Repository — uses dispatcher directly
+analyticsDispatcher.track(MyEvent.DataFetched)
+```
+
+### Carve-out: `core:remote-config`
+
+Flag and typed-config reads are the one documented exception to "presenters always use Strata interactors." Instead, presenters inject `RemoteConfigProvider` and call the Composable extensions `rememberFlag(flag)` / `rememberConfig(config)`:
+
+```kotlin
+// core:remote-config
+// Presenter — uses Composable extensions (NOT Strata interactors)
+@CircuitInject(MyScreen::class, AppScope::class)
+@Inject
+@Composable
+fun MyPresenter(remoteConfig: RemoteConfigProvider): MyUiState {
+    val newApi      by remoteConfig.rememberFlag(MyFlags.NEW_API)
+    val rollout     by remoteConfig.rememberFlag(MyFlags.ROLLOUT)
+    val maxRetries  by remoteConfig.rememberConfig(MyConfigs.MAX_RETRIES)
+    // ...
+}
+
+// Repository — uses provider directly (same as before)
+val endpoint = if (remoteConfig.isEnabled(MyFlags.NEW_API)) "/v2" else "/v1"
+val retries  = remoteConfig.getConfig(MyConfigs.MAX_RETRIES)
+```
+
+**Why the carve-out?** The Strata rationale doesn't apply to remote-config reads:
+- No error surface — observation is an in-memory Flow that doesn't fail meaningfully
+- No timeout concern — reads are synchronous at the source
+- No dispatcher concern — presenter-side consumption is Compose state, not background work
+
+And the Strata shape actively hurts here: `StrataSubjectInteractor` is "one param, one stream" (uses `flatMapLatest`), so N keys require N injected interactor instances. Presenters commonly need 3–5 keys; the Composable extensions reduce that to 1 DI param plus one line per key with per-key recomposition isolation. Konsist forbids `.isEnabled(...)` / `.observe(...)` / `.getConfig(...)` / `.observeConfig(...)` in presentation so the reactive Compose-state boundary stays intact. New core modules default to the interactor rule; new carve-outs need explicit justification here.
+
+## Anti-Patterns
+
+| Banned | Why | Use Instead |
+|--------|-----|-------------|
+| `CoroutineScope.launch { }` | No structured error handling, no loading tracking | `rememberStrata(dispatchers) { }` |
+| `CoroutineScope.async { }` | Same as above | `strata.withResult { }` |
+| `Dispatchers.IO` / `Dispatchers.Default` | Hardcoded dispatchers are untestable | Inject `StrataDispatchers` |
+| `runBlocking { }` | Blocks the thread, defeats coroutines | Use `suspend` functions or Strata |
+| `runCatching { }` (stdlib) | Swallows `CancellationException` | `strataRunCatching { }` |
+| Catching `CancellationException` | Breaks structured concurrency | Let `strataRunCatching` handle it |
+| Calling repositories from presenters | Violates layer separation | Inject abstract interactors from `api/domain` |

@@ -1,6 +1,6 @@
 package com.jkjamies.sampleplatter.features.rewards.presentation
 
-import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.core.test.TestStrataDispatchers
 import com.jkjamies.sampleplatter.features.rewards.api.navigation.RewardsScreen
 import com.jkjamies.sampleplatter.features.rewards.test.FakeGetRewardsContent
 import com.slack.circuit.test.FakeNavigator
@@ -12,7 +12,7 @@ class RewardsPresenterTest : BehaviorSpec({
 
     Given("a rewards presenter with content available") {
         val fakeGetRewardsContent = FakeGetRewardsContent()
-        val dispatchers = TestCenterPostDispatchers()
+        val dispatchers = TestStrataDispatchers()
         val navigator = FakeNavigator(RewardsScreen)
 
         When("the presenter emits state") {

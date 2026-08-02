@@ -17,7 +17,7 @@ Scaffold a core module with api/impl split for shared infrastructure.
 - Architecture & module structure: `.agents/standards/architecture.md`
 - Naming conventions: `.agents/standards/naming-conventions.md`
 - DI patterns: `.agents/standards/dependency-injection.md`
-- CenterPost interactors: `.agents/standards/centerpost.md`
+- Strata interactors: `.agents/standards/strata.md`
 - Convention plugins: `.agents/standards/convention-plugins.md`
 
 ## Reference Implementation
@@ -43,7 +43,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            // Add api dependencies as needed (e.g., core:centerpost for interactors)
+            // Add api dependencies as needed (e.g., core:strata for interactors)
         }
     }
 }
@@ -107,20 +107,20 @@ include(":core:{name}:test")  // if hasTest
 Place public interfaces, abstract interactors, and data types here. Package: `com.jkjamies.sampleplatter.core.{name}`.
 
 - Interfaces define the contract — consumers depend only on these
-- Abstract interactors extend `CenterPostInteractor` or `CenterPostSubjectInteractor`
+- Abstract interactors extend `StrataInteractor` or `StrataSubjectInteractor`
 - Data classes use `@Serializable` if they cross module boundaries
 
-#### CenterPost Interactor Requirement
+#### Strata Interactor Requirement
 
-Core modules with api/impl expose CenterPost interactors for presenter consumption by default. Domain/data layers always inject the provider interface directly. One documented exception: `core:remote-config` uses Composable `rememberFlag(flag)` / `rememberConfig(config)` extensions instead of an interactor (see `.agents/standards/centerpost.md` for the rationale). New core modules follow the interactor rule unless the carve-out is re-justified and documented.
+Core modules with api/impl expose Strata interactors for presenter consumption by default. Domain/data layers always inject the provider interface directly. One documented exception: `core:remote-config` uses Composable `rememberFlag(flag)` / `rememberConfig(config)` extensions instead of an interactor (see `.agents/standards/strata.md` for the rationale). New core modules follow the interactor rule unless the carve-out is re-justified and documented.
 
 | Core Module Characteristic | Presenter Consumption | Domain/Data Consumption | Example |
 |---------------------------|----------------------|------------------------|---------|
-| Produces **observable state** (Flow/StateFlow) | `CenterPostSubjectInteractor` | Provider interface | `GetHomeContent` (feature-level subject interactor) |
-| Produces **one-shot result or fire-and-forget** | `CenterPostInteractor` | Provider interface | `core:analytics`: `TrackAnalyticsEvent` / `AnalyticsDispatcher` |
+| Produces **observable state** (Flow/StateFlow) | `StrataSubjectInteractor` | Provider interface | `GetHomeContent` (feature-level subject interactor) |
+| Produces **one-shot result or fire-and-forget** | `StrataInteractor` | Provider interface | `core:analytics`: `TrackAnalyticsEvent` / `AnalyticsDispatcher` |
 | **Ambient config read** (carve-out) | Composable extension on provider | Provider interface | `core:remote-config`: `RemoteConfigProvider.rememberFlag(flag)` / `rememberConfig(config)` over `RemoteConfigProvider` |
 
-For fire-and-forget interactors, the `inProgress` loading state simply goes uncollected — it's opt-in with zero overhead. The value of wrapping even void operations in CenterPost: structured execution, error handling, timeout protection, dispatcher correctness.
+For fire-and-forget interactors, the `inProgress` loading state simply goes uncollected — it's opt-in with zero overhead. The value of wrapping even void operations in Strata: structured execution, error handling, timeout protection, dispatcher correctness.
 
 **impl/** — `src/commonMain/kotlin/com/jkjamies/sampleplatter/core/{name}/impl/`
 
@@ -185,18 +185,18 @@ core/{name}/test  -> Fakes for consumer tests
 | Type | Module | Description |
 |------|--------|-------------|
 | `{Interface}` | api | Description |
-| `{Interactor}` | api | Abstract CenterPost interactor for ... |
+| `{Interactor}` | api | Abstract Strata interactor for ... |
 
 ## Consumption Pattern
 
 | Layer | What to inject | Why |
 |-------|---------------|-----|
-| Presenters | CenterPost interactor from api | Reactive, lifecycle-aware, structured execution |
+| Presenters | Strata interactor from api | Reactive, lifecycle-aware, structured execution |
 | Domain/Data | Provider interface from api | Direct, synchronous access |
 
 ## Usage
 
-**Presenters** use the CenterPost interactor:
+**Presenters** use the Strata interactor:
 
 \```kotlin
 @CircuitInject(MyScreen::class, AppScope::class)
@@ -223,8 +223,8 @@ class MyRepositoryImpl(
 
 - Core modules never import from features
 - Features MUST depend on `core:{name}:api` only, never `core:{name}:impl`
-- **Presenters** must use CenterPost interactors, never provider interfaces directly (Konsist-enforced)
-- **Domain/data** must use provider interfaces, never CenterPost interactors (Konsist-enforced)
+- **Presenters** must use Strata interactors, never provider interfaces directly (Konsist-enforced)
+- **Domain/data** must use provider interfaces, never Strata interactors (Konsist-enforced)
 - `impl` is wired exclusively through Metro `@ContributesBinding` in `AppScope`
 - Test code should use fakes from `core:{name}:test`
 ```

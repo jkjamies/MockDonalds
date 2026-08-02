@@ -2,7 +2,7 @@ package com.jkjamies.sampleplatter.core.analytics.impl
 
 import com.jkjamies.sampleplatter.core.analytics.AnalyticsDispatcher
 import com.jkjamies.sampleplatter.core.analytics.AnalyticsEvent
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostResult
+import com.jkjamies.sampleplatter.core.strata.StrataResult
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -35,7 +35,7 @@ class TrackAnalyticsEventImplTest : BehaviorSpec({
             }
 
             Then("it should return success") {
-                result.shouldBeInstanceOf<CenterPostResult.Success<Unit>>()
+                result.shouldBeInstanceOf<StrataResult.Success<Unit>>()
             }
         }
     }

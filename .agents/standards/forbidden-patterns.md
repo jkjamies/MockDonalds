@@ -29,7 +29,7 @@ Every banned pattern in the SamplePlatter codebase with rationale, alternative, 
 
 - **Banned:** `runBlocking { }` in production code
 - **Why:** Blocks the calling thread, can cause deadlocks on Main dispatcher, defeats the purpose of coroutines.
-- **Instead:** Use `suspend` functions, or `CenterPost` / `rememberCenterPost()` for presenter-scoped launching.
+- **Instead:** Use `suspend` functions, or `Strata` / `rememberStrata()` for presenter-scoped launching.
 - **Enforced by:** `CodeHygieneTest` -- "no runBlocking in production code"
 
 ### Non-null Assertion (!!)
@@ -58,15 +58,15 @@ Every banned pattern in the SamplePlatter codebase with rationale, alternative, 
 ### Raw CoroutineScope / launch / async
 
 - **Banned:** `CoroutineScope`, `MainScope`, `GlobalScope`, `launch`, `async` imports in feature/composeApp modules
-- **Why:** No structured error handling, no loading state tracking, no timeout management. CenterPost provides all of these.
-- **Instead:** Use `rememberCenterPost(dispatchers)` for fire-and-forget, `centerPost.withResult { }` for deferred results, or `CenterPostInteractor` / `CenterPostSubjectInteractor` for business logic.
+- **Why:** No structured error handling, no loading state tracking, no timeout management. Strata provides all of these.
+- **Instead:** Use `rememberStrata(dispatchers)` for fire-and-forget, `strata.withResult { }` for deferred results, or `StrataInteractor` / `StrataSubjectInteractor` for business logic.
 - **Enforced by:** `ForbiddenPatternsTest` -- "feature modules should not directly use CoroutineScope", "feature modules should not directly use launch or async"
 
 ### Hardcoded Dispatchers.*
 
 - **Banned:** `Dispatchers.Default`, `Dispatchers.IO`, `Dispatchers.Main` imports in feature modules
 - **Why:** Hardcoded dispatchers are untestable. Tests cannot control thread scheduling.
-- **Instead:** Inject `CenterPostDispatchers` interface. In tests, use `TestCenterPostDispatchers()`, which routes all dispatchers to a `StandardTestDispatcher` and exposes `advanceUntilIdle()` for draining it.
+- **Instead:** Inject `StrataDispatchers` interface. In tests, use `TestStrataDispatchers()`, which routes all dispatchers to a `StandardTestDispatcher` and exposes `advanceUntilIdle()` for draining it.
 - **Enforced by:** `ForbiddenPatternsTest` -- "feature modules should not hardcode Dispatchers"
 
 ### Android Platform Imports in commonMain
@@ -89,22 +89,22 @@ Every banned pattern in the SamplePlatter codebase with rationale, alternative, 
 
 - **Banned:** `kotlinx.coroutines.test.runTest` in test code
 - **Why:** Kotest provides native coroutine support. `runTest` is redundant and its virtual time control conflicts with Kotest's execution model.
-- **Instead:** Use Kotest `BehaviorSpec` (coroutine-native) + `TestCenterPostDispatchers()` for deterministic dispatching.
+- **Instead:** Use Kotest `BehaviorSpec` (coroutine-native) + `TestStrataDispatchers()` for deterministic dispatching.
 - **Enforced by:** `TestFileNamingTest` -- "no runTest in tests"
 
 ### UnconfinedTestDispatcher
 
 - **Banned:** `kotlinx.coroutines.test.UnconfinedTestDispatcher` in test code
 - **Why:** Not safe under concurrent spec execution (`SpecExecutionMode.LimitedConcurrency`). Unconfined dispatching causes non-deterministic test behavior when specs run in parallel.
-- **Instead:** Use `StandardTestDispatcher` via `TestCenterPostDispatchers()`, calling `advanceUntilIdle()` where the code under test dispatches.
+- **Instead:** Use `StandardTestDispatcher` via `TestStrataDispatchers()`, calling `advanceUntilIdle()` where the code under test dispatches.
 - **Enforced by:** `TestFileNamingTest` -- "no UnconfinedTestDispatcher in tests"
 
 ### Hand-rolled StandardTestDispatcher
 
 - **Banned:** constructing `kotlinx.coroutines.test.StandardTestDispatcher` directly in test code
 - **Why:** its `TestCoroutineScheduler` only drains when advanced, and `runTest` — the usual thing that advances it — is banned above. A hand-rolled dispatcher hides that scheduler, so there is no way to advance it. Code under test doing `withContext(dispatchers.io) { … }` then suspends forever, and the hang cannot be timed out: cancelling the stuck coroutine needs the same unadvanced scheduler to resume its continuation, so neither `withTimeout` nor Turbine's `awaitItem` timeout fires. The Gradle test task hangs until something kills it externally.
-- **Instead:** `TestCenterPostDispatchers()`, which owns the scheduler and exposes `advanceUntilIdle()`.
-- **Enforced by:** `TestFileNamingTest` -- "no raw StandardTestDispatcher outside TestCenterPostDispatchers"
+- **Instead:** `TestStrataDispatchers()`, which owns the scheduler and exposes `advanceUntilIdle()`.
+- **Enforced by:** `TestFileNamingTest` -- "no raw StandardTestDispatcher outside TestStrataDispatchers"
 
 ## iOS Interop
 

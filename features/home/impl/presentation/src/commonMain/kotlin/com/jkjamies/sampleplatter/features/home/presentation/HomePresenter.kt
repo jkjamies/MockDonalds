@@ -2,9 +2,9 @@ package com.jkjamies.sampleplatter.features.home.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostDispatchers
-import com.jkjamies.sampleplatter.core.presentation.centerpost.collectAsState
-import com.jkjamies.sampleplatter.core.presentation.centerpost.rememberCenterPost
+import com.jkjamies.sampleplatter.core.presentation.strata.collectAsState
+import com.jkjamies.sampleplatter.core.presentation.strata.rememberStrata
+import com.jkjamies.sampleplatter.core.strata.StrataDispatchers
 import com.jkjamies.sampleplatter.features.home.api.domain.GetHomeContent
 import com.jkjamies.sampleplatter.features.home.api.navigation.HomeScreen
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -18,9 +18,9 @@ import dev.zacsweers.metro.Inject
 fun HomePresenter(
     navigator: Navigator,
     getHomeContent: GetHomeContent,
-    dispatchers: CenterPostDispatchers,
+    dispatchers: StrataDispatchers,
 ): HomeUiState {
-    val centerPost = rememberCenterPost(dispatchers)
+    val strata = rememberStrata(dispatchers)
     val content by getHomeContent.collectAsState()
 
     return HomeUiState(
@@ -30,9 +30,9 @@ fun HomePresenter(
         exploreItems = content?.exploreItems ?: emptyList(),
         eventSink = { event ->
             when (event) {
-                is HomeEvent.HeroCtaClicked -> centerPost { }
-                is HomeEvent.CravingClicked -> centerPost { }
-                is HomeEvent.ExploreItemClicked -> centerPost { }
+                is HomeEvent.HeroCtaClicked -> strata { }
+                is HomeEvent.CravingClicked -> strata { }
+                is HomeEvent.ExploreItemClicked -> strata { }
             }
         },
     )

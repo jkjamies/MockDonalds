@@ -25,7 +25,7 @@ The Debug Menu is an engineer-facing surface that exposes inspection and overrid
 - Contributes into: `features:more` via `MoreTabExtension` (runtime `Set<MoreTabExtension>` multibinding)
 - Navigates to: its own sub-screens (`FeatureFlagsDebugScreen`, `BuildConfigDebugScreen`) — no outbound cross-feature navigation
 - Imported by: composeApp (wired at app level, scoped to debug builds via the extension's `isDebugOnly` flag)
-- Core deps: core:centerpost, core:theme, core:remote-config:api (flag registry + rememberFlag), core:build-config:api (AppBuildConfig + asFields)
+- Core deps: core:strata, core:theme, core:remote-config:api (flag registry + rememberFlag), core:build-config:api (AppBuildConfig + asFields)
 - Sibling api deps: `:features:more:api:navigation` (to implement `MoreTabExtension`)
 
 ## Feature-Specific Patterns

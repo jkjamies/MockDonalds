@@ -1,8 +1,8 @@
 package com.jkjamies.sampleplatter.features.debugmenu.presentation
 
 import androidx.compose.runtime.Composable
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostDispatchers
-import com.jkjamies.sampleplatter.core.presentation.centerpost.rememberCenterPost
+import com.jkjamies.sampleplatter.core.presentation.strata.rememberStrata
+import com.jkjamies.sampleplatter.core.strata.StrataDispatchers
 import com.jkjamies.sampleplatter.features.debugmenu.api.navigation.BuildConfigDebugScreen
 import com.jkjamies.sampleplatter.features.debugmenu.api.navigation.DebugMenuScreen
 import com.jkjamies.sampleplatter.features.debugmenu.api.navigation.FeatureFlagsDebugScreen
@@ -16,9 +16,9 @@ import dev.zacsweers.metro.Inject
 @Composable
 fun DebugMenuPresenter(
     navigator: Navigator,
-    dispatchers: CenterPostDispatchers,
+    dispatchers: StrataDispatchers,
 ): DebugMenuUiState {
-    rememberCenterPost(dispatchers)
+    rememberStrata(dispatchers)
 
     val entries = listOf(
         DebugMenuEntry(

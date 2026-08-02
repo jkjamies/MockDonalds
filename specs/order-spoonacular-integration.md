@@ -23,7 +23,7 @@ This is also the **first networked feature** and the **first SQLDelight consumer
 **What the user sees**:
 - Single `OrderUi` screen with horizontal category chips at the top (Burgers, Fries, Drinks, Desserts), a vertical list of two hardcoded "featured items" (Midnight Truffle, Saffron Fries), and a floating cart bar showing "2 ITEMS / $36.00".
 - Tapping a category chip toggles `selectedCategoryId` but does not change the displayed items — the chip selection is currently a visual no-op.
-- "ADD TO ORDER" button on each item card fires a no-op centerPost.
+- "ADD TO ORDER" button on each item card fires a no-op strata.
 
 **What the code does**:
 - `OrderRepositoryImpl` (`features/order/impl/data`) returns three hardcoded `flowOf(...)` flows for categories, featured items, and cart summary.
@@ -53,7 +53,7 @@ This is also the **first networked feature** and the **first SQLDelight consumer
 - Tap target → navigates to `CategoryDetailScreen(categoryId)`
 - Floating cart bar (unchanged — still shows the hardcoded "2 ITEMS / $36.00").
 
-*Category Detail (`CategoryDetailScreen`)* — top app bar with category name + back chevron; vertical list of up to 20 menu items, each showing image, title, restaurant chain, optional serving size, and an "ADD TO ORDER" button (no-op centerPost, matching today's pattern). Floating cart bar present here too.
+*Category Detail (`CategoryDetailScreen`)* — top app bar with category name + back chevron; vertical list of up to 20 menu items, each showing image, title, restaurant chain, optional serving size, and an "ADD TO ORDER" button (no-op strata, matching today's pattern). Floating cart bar present here too.
 
 *Failure modes*:
 - If SQLDelight cache has data and the network call fails or returns 402 (quota exhausted), show the cached data silently. Error is logged.
@@ -70,7 +70,7 @@ This is also the **first networked feature** and the **first SQLDelight consumer
    - `OrderRepository` gains `getMenuItemsByCategory(categoryId)` and `getCategoryPreviews()` (returns `List<CategoryPreview>` with first item per category).
 
 2. **Domain layer**:
-   - New use case `GetCategoryDetailContent(categoryId)` (streaming, `CenterPostSubjectInteractor<String, CategoryDetailContent>`).
+   - New use case `GetCategoryDetailContent(categoryId)` (streaming, `StrataSubjectInteractor<String, CategoryDetailContent>`).
    - Existing `GetOrderContent` updated to emit `OrderContent` with the new `categoryPreviews` shape (replaces flat `featuredItems`).
 
 3. **Presentation layer**:
@@ -109,7 +109,7 @@ This is also the **first networked feature** and the **first SQLDelight consumer
 - [x] **impl/presentation (androidMain)** — rewritten `OrderUi` (vertical category list); new `CategoryDetailUi`
 - [x] **impl/presentation (iosMain)** — KMP-NativeCoroutines exposes new presenter; `OrderView.swift` rewritten + new `CategoryDetailView.swift`
 - [x] **test/** — new `FakeGetCategoryDetailContent`; updated `FakeGetOrderContent`; new `FakeMenuRemoteDataSource`, `FakeMenuItemLocalDataSource`
-- [x] **core module(s)** — none modified (uses existing `core:network`, `core:persistence`, `core:build-config`, `core:circuit`, `core:centerpost`)
+- [x] **core module(s)** — none modified (uses existing `core:network`, `core:persistence`, `core:build-config`, `core:circuit`, `core:strata`)
 - [x] **build-config** — new `spoonacularApiKey` field via `/add-config-field` skill (with caveat: empty default, sourced from `local.properties`)
 - [x] **iosApp (SwiftUI)** — `OrderView.swift` rewritten; new `CategoryDetailView.swift`; bridge wiring
 - [x] **composeApp** — apply SQLDelight plugin (first time), depend on `:features:order:impl:data` for schema aggregation; Metro `HttpClient` provider
@@ -291,7 +291,7 @@ Cache-staleness rule: `oldestCachedAtByCategory < (now - 24h)` → refetch and r
 | Use Case | Change | Details |
 |----------|--------|---------|
 | `GetOrderContent` | Modified | Now combines `getCategoryPreviews()` flow + `getCartSummary()` flow only. Drops `getFeaturedItems()`. |
-| `GetCategoryDetailContent` | New | `CenterPostSubjectInteractor<String, CategoryDetailContent>` — streaming, takes categoryId param, emits items list + display name. |
+| `GetCategoryDetailContent` | New | `StrataSubjectInteractor<String, CategoryDetailContent>` — streaming, takes categoryId param, emits items list + display name. |
 
 ### Updated Data Flow — `GetOrderContent`
 
@@ -444,7 +444,7 @@ A code comment near the BuildKonfig wiring:
 - [ ] `GetOrderContentImplTest` (updated) — combines categoryPreviews + cartSummary, drops featuredItems references
 - [ ] `GetCategoryDetailContentImplTest` (new) — emits domain content for a given categoryId
 - [ ] `OrderPresenterTest` (updated) — exposes `categoryPreviews`; `CategoryTapped(id)` navigates to `CategoryDetailScreen(id)`
-- [ ] `CategoryDetailPresenterTest` (new) — emits items + name; `BackPressed` pops; `AddToOrder` no-ops centerPost; `CartClicked` no-ops
+- [ ] `CategoryDetailPresenterTest` (new) — emits items + name; `BackPressed` pops; `AddToOrder` no-ops strata; `CartClicked` no-ops
 
 **UI Component (Compose Robot pattern, Android device)**:
 - [ ] `OrderUiTest` (rewritten) — renders 6 category cards; tapping fires `CategoryTapped`; cart bar present
@@ -484,7 +484,7 @@ A code comment near the BuildKonfig wiring:
 - **Quota economics (150/day free tier)**: 6 categories × 1 call to warm = 6 calls per cache build. With 24h TTL, a developer running daily uses ~6/day. CI/E2E must use `FakeMenuRemoteDataSource` — never hit live Spoonacular in tests.
 - **API key safety**: never commit a real key. `local.properties` is gitignored. Empty default. `spoonacularApiKey` excluded from `@DebugConfigField` to keep it out of any debug menu.
 - **iOS parity**: The codebase has been kept symmetric — Compose UI ↔ SwiftUI bridge. Both `OrderView.swift` and the new `CategoryDetailView.swift` must ship in the same change.
-- **Cart summary stays hardcoded**: `CartSummary(itemCount=2, total="$36.00")` remains a static `flowOf`. `AddToOrder` events remain no-op centerPost. Real cart wiring is a separate spec.
+- **Cart summary stays hardcoded**: `CartSummary(itemCount=2, total="$36.00")` remains a static `flowOf`. `AddToOrder` events remain no-op strata. Real cart wiring is a separate spec.
 - **Performance**: SQLDelight reads on cold start should fit budget — these are small tables (max ~120 rows = 6 categories × 20 items). No pagination, no streaming.
 - **Logging**: Remote fetch failures are logged via `core:logger:api` (already auto-wired into `kmp.data` modules). Don't suppress.
 - **Image loading**: Existing Coil setup (already wired into `kmp.presentation`) handles `imageUrl`. No new dependency.
@@ -494,7 +494,7 @@ A code comment near the BuildKonfig wiring:
 
 ## Out of Scope
 
-- Real cart functionality (add-to-order persistence, cart contents screen, checkout). `CartSummary` remains hardcoded; `AddToOrder` events remain no-op centerPost.
+- Real cart functionality (add-to-order persistence, cart contents screen, checkout). `CartSummary` remains hardcoded; `AddToOrder` events remain no-op strata.
 - Item detail screen (calories, full nutrition, ingredients). Requires a second Spoonacular call to `/food/menuItems/{id}` — explicitly deferred for quota economics.
 - Pagination / infinite scroll. Capped at 20 items per category.
 - Pull-to-refresh on category detail.
@@ -547,7 +547,7 @@ Resolved during the grill phase. Each entry: question → answer → rationale.
     → **All four**: unit, UI component (Robot), navint, E2E. User explicitly opted in to E2E despite the recommendation that navint covered the flow.
 
 12. **Item-tap behavior on category detail** — Add to cart / nav to detail / read-only?
-    → **Add to cart no-op centerPost**, matching the existing pattern.
+    → **Add to cart no-op strata**, matching the existing pattern.
 
 13. **Cart summary** — Live, hardcoded, or remove?
     → **Keep hardcoded.** Cart wiring is a separate spec.

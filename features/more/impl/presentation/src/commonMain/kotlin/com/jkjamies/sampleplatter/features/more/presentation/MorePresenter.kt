@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.jkjamies.sampleplatter.core.buildconfig.AppBuildConfig
 import com.jkjamies.sampleplatter.core.buildconfig.isDebug
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostDispatchers
-import com.jkjamies.sampleplatter.core.presentation.centerpost.collectAsState
-import com.jkjamies.sampleplatter.core.presentation.centerpost.rememberCenterPost
+import com.jkjamies.sampleplatter.core.presentation.strata.collectAsState
+import com.jkjamies.sampleplatter.core.presentation.strata.rememberStrata
+import com.jkjamies.sampleplatter.core.strata.StrataDispatchers
 import com.jkjamies.sampleplatter.features.more.api.domain.GetMoreContent
 import com.jkjamies.sampleplatter.features.more.api.domain.MoreMenuItem
 import com.jkjamies.sampleplatter.features.more.api.navigation.MoreScreen
@@ -25,11 +25,11 @@ import dev.zacsweers.metro.Inject
 fun MorePresenter(
     navigator: Navigator,
     getMoreContent: GetMoreContent,
-    dispatchers: CenterPostDispatchers,
+    dispatchers: StrataDispatchers,
     tabExtensions: Set<MoreTabExtension>,
     buildConfig: AppBuildConfig,
 ): MoreUiState {
-    rememberCenterPost(dispatchers)
+    rememberStrata(dispatchers)
     val content by getMoreContent.collectAsState()
 
     val visibleExtensions = tabExtensions.filter { buildConfig.isDebug || !it.isDebugOnly }

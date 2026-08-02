@@ -13,7 +13,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            api(project(":core:centerpost"))
+            api(project(":core:strata"))
             api(project(":core:remote-config:api"))
             implementation(compose.runtime)
         }

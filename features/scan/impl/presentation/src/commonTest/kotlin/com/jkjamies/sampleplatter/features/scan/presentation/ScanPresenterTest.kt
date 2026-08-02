@@ -1,6 +1,6 @@
 package com.jkjamies.sampleplatter.features.scan.presentation
 
-import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.core.test.TestStrataDispatchers
 import com.jkjamies.sampleplatter.features.scan.api.navigation.ScanScreen
 import com.jkjamies.sampleplatter.features.scan.test.FakeGetScanContent
 import com.slack.circuit.test.FakeNavigator
@@ -12,7 +12,7 @@ class ScanPresenterTest : BehaviorSpec({
 
     Given("a scan presenter with content available") {
         val fakeGetScanContent = FakeGetScanContent()
-        val dispatchers = TestCenterPostDispatchers()
+        val dispatchers = TestStrataDispatchers()
         val navigator = FakeNavigator(ScanScreen)
 
         When("the presenter emits state") {

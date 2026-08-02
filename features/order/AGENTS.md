@@ -14,8 +14,8 @@ The order screen is the primary food ordering entry point. The landing screen sh
 | CategoryPreview | api/domain | id, name, firstItemImageUrl?, itemCount |
 | CategoryDetailContent | api/domain | categoryId, categoryName, items |
 | CartSummary | api/domain | itemCount, total |
-| GetOrderContent | api/domain → impl/domain | Streaming `CenterPostSubjectInteractor<Unit, OrderContent>` |
-| GetCategoryDetailContent | api/domain → impl/domain | Streaming `CenterPostSubjectInteractor<String, CategoryDetailContent>` (param = categoryId) |
+| GetOrderContent | api/domain → impl/domain | Streaming `StrataSubjectInteractor<Unit, OrderContent>` |
+| GetCategoryDetailContent | api/domain → impl/domain | Streaming `StrataSubjectInteractor<String, CategoryDetailContent>` (param = categoryId) |
 | OrderRepository | impl/domain → impl/data | getCategoryPreviews(), getMenuItemsByCategory(id), categoryName(id), getCartSummary() |
 | MenuRemoteDataSource | impl/data/remote/ | Interface; impl `KtorMenuRemoteDataSource` calls Spoonacular `/food/menuItems/search` |
 | MenuItemLocalDataSource | impl/data/local/ | Interface; impl `SqlDelightMenuItemLocalDataSource` wraps generated `MenuItemQueries` (cachedMenuItem table) |
@@ -28,9 +28,9 @@ The order screen is the primary food ordering entry point. The landing screen sh
 | CategoryDetailEvent | impl/presentation | BackPressed, AddToOrder(itemId), CartClicked |
 
 ## Cross-Feature Dependencies
-- **Navigates to**: `CategoryDetailScreen` (within the same feature, as a push destination from the order tab); `AddToOrder` and `CartClicked` are no-op `centerPost` placeholders.
+- **Navigates to**: `CategoryDetailScreen` (within the same feature, as a push destination from the order tab); `AddToOrder` and `CartClicked` are no-op `strata` placeholders.
 - **Imported by**: composeApp (wired at app level)
-- **Core deps**: core:centerpost, core:network:api (HTTP), core:build-config:api (Spoonacular API key), core:logger:api (auto-wired), core:theme, core:circuit
+- **Core deps**: core:strata, core:network:api (HTTP), core:build-config:api (Spoonacular API key), core:logger:api (auto-wired), core:theme, core:circuit
 - **Persistence**: `cachedMenuItem` table contributed via SQLDelight aggregator pattern. composeApp owns the merged `AppDatabase` and provides `MenuItemQueries` to this feature's data layer through Metro DI.
 
 ## Feature-Specific Patterns

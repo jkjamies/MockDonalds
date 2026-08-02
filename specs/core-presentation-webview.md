@@ -18,10 +18,10 @@ Add a reusable, embeddable WebView primitive to `core:presentation` so multiple 
 
 ## Current Behavior
 
-**What the user sees**: nothing — `core:presentation` today only contains Compose extension functions (`rememberFlag`, `rememberConfig`, `rememberCenterPost`, `collectAsState`). No UI primitives.
+**What the user sees**: nothing — `core:presentation` today only contains Compose extension functions (`rememberFlag`, `rememberConfig`, `rememberStrata`, `collectAsState`). No UI primitives.
 
 **What the code does**:
-- `core:presentation` ships `commonMain`-only Compose code: `@Composable` extension functions over Compose-free core APIs (`core:centerpost`, `core:remote-config:api`).
+- `core:presentation` ships `commonMain`-only Compose code: `@Composable` extension functions over Compose-free core APIs (`core:strata`, `core:remote-config:api`).
 - Build script pulls only `compose.runtime` — no `compose.foundation`, no `compose.material3`, no `compose.ui`. The module is "Compose-runtime-aware, UI-rendering-free."
 - Convention plugin `sampleplatter.kmp.presentation` auto-wires `core:presentation` into every feature `impl/presentation` `commonMain`. Feature consumers pick up extensions automatically.
 - `ComposeIsolationTest` allows Compose imports under `core:presentation` (any path).
@@ -31,7 +31,7 @@ Add a reusable, embeddable WebView primitive to `core:presentation` so multiple 
 **Relevant files**:
 - `core/presentation/build.gradle.kts`
 - `core/presentation/AGENTS.md`
-- `core/presentation/src/commonMain/kotlin/com/jkjamies/sampleplatter/core/presentation/{centerpost,remoteconfig}/`
+- `core/presentation/src/commonMain/kotlin/com/jkjamies/sampleplatter/core/presentation/{strata,remoteconfig}/`
 - `iosApp/iosApp/` (no `Presentation/` folder yet)
 - `testing/architecture-check/src/test/kotlin/.../ComposeIsolationTest.kt`
 
@@ -250,7 +250,7 @@ n/a — no config fields.
 ```kotlin
 sourceSets {
     commonMain.dependencies {
-        api(project(":core:centerpost"))
+        api(project(":core:strata"))
         api(project(":core:remote-config:api"))
         implementation(compose.runtime)
     }
@@ -340,7 +340,7 @@ with:
 ```
 core/presentation/
   src/commonMain/kotlin/.../core/presentation/
-    centerpost/    (existing)
+    strata/    (existing)
     remoteconfig/  (existing)
   src/androidMain/kotlin/.../core/presentation/
     webview/                                      NEW
@@ -459,7 +459,7 @@ Add a reusable WebView Compose primitive to the existing `core:presentation` mod
 so features (nutrition, legal/T&C/PP, help articles) can render web content inline.
 
 Scope:
-- Add webview/WebViewContent.kt to core:presentation, alongside existing centerpost/ 
+- Add webview/WebViewContent.kt to core:presentation, alongside existing strata/ 
   and remoteconfig/ subpackages.
 - Platform implementation via expect/actual — Android wraps WebView in AndroidView; 
   iOS wraps WKWebView in UIKitView (Compose Multiplatform iOS, no Swift bridge).

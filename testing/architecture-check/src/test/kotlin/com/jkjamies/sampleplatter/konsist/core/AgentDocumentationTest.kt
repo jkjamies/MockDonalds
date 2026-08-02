@@ -73,7 +73,7 @@ class AgentDocumentationTest : BehaviorSpec({
                 "testing-e2e.md",
                 "testing-architecture.md",
                 "testing-benchmarks.md",
-                "centerpost.md",
+                "strata.md",
                 "forbidden-patterns.md",
                 "verification.md",
                 "ios-interop.md",

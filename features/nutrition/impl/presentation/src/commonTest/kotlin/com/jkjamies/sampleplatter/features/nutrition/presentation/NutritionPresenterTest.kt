@@ -1,6 +1,6 @@
 package com.jkjamies.sampleplatter.features.nutrition.presentation
 
-import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.core.test.TestStrataDispatchers
 import com.jkjamies.sampleplatter.features.nutrition.api.domain.NutritionContent
 import com.jkjamies.sampleplatter.features.nutrition.api.navigation.NutritionScreen
 import com.jkjamies.sampleplatter.features.nutrition.test.FakeGetNutritionContent
@@ -14,7 +14,7 @@ class NutritionPresenterTest : BehaviorSpec({
     Given("a nutrition presenter with a configured URL") {
         val sentinelUrl = "https://example.test/nutrition"
         val fakeContent = FakeGetNutritionContent(NutritionContent(url = sentinelUrl))
-        val dispatchers = TestCenterPostDispatchers()
+        val dispatchers = TestStrataDispatchers()
         val navigator = FakeNavigator(NutritionScreen)
 
         When("the presenter emits state") {

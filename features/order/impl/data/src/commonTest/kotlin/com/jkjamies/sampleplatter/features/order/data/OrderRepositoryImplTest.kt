@@ -1,7 +1,7 @@
 package com.jkjamies.sampleplatter.features.order.data
 
 import app.cash.turbine.test
-import com.jkjamies.sampleplatter.core.test.TestCenterPostDispatchers
+import com.jkjamies.sampleplatter.core.test.TestStrataDispatchers
 import com.jkjamies.sampleplatter.features.order.api.domain.MenuItem
 import com.jkjamies.sampleplatter.features.order.data.local.MenuItemLocalDataSource
 import com.jkjamies.sampleplatter.features.order.data.remote.MenuRemoteDataSource
@@ -50,7 +50,7 @@ private class RepositoryHarness {
         }
     }
 
-    private val dispatchers = TestCenterPostDispatchers()
+    private val dispatchers = TestStrataDispatchers()
 
     val repository: OrderRepositoryImpl = OrderRepositoryImpl(
         remote = remote,

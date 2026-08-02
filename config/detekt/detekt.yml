@@ -53,8 +53,8 @@ style:
 
 exceptions:
   TooGenericExceptionCaught:
-    # CenterPost's runCatching intentionally catches all exceptions for error wrapping
-    excludes: ['**/centerpost/**']
+    # Strata's runCatching intentionally catches all exceptions for error wrapping
+    excludes: ['**/strata/**']
 
 # Exclude generated code from all checks
 build:

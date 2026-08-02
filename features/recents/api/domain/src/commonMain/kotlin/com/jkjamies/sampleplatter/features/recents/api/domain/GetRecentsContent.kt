@@ -1,5 +1,5 @@
 package com.jkjamies.sampleplatter.features.recents.api.domain
 
-import com.jkjamies.sampleplatter.core.centerpost.CenterPostSubjectInteractor
+import com.jkjamies.sampleplatter.core.strata.StrataSubjectInteractor
 
-abstract class GetRecentsContent : CenterPostSubjectInteractor<Unit, RecentsContent>()
+abstract class GetRecentsContent : StrataSubjectInteractor<Unit, RecentsContent>()
