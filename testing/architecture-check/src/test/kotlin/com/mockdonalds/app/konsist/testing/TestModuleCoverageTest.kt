@@ -4,7 +4,6 @@ import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.ext.list.withNameEndingWith
 import com.mockdonalds.app.konsist.projectRootFrom
 import io.kotest.core.spec.style.BehaviorSpec
-import java.io.File
 
 /**
  * Validates test coverage requirements:
@@ -19,14 +18,20 @@ class TestModuleCoverageTest : BehaviorSpec({
         Then("every feature should have a dedicated test module") {
             val projectRoot = projectRootFrom(Konsist.scopeFromProject().files.first().path)
 
-            val featuresDir = File("$projectRoot/features")
+            val featuresDir = projectRoot.resolve("features")
             val features = featuresDir.listFiles()
                 ?.filter { it.isDirectory }
                 ?.map { it.name }
-                ?: emptyList()
+                ?: error("Could not enumerate $featuresDir")
+
+            // A rule that reaches the filesystem passes for two reasons: every module has a test
+            // module, or the lookup found no modules at all. Only the first is enforcement.
+            assert(features.isNotEmpty()) {
+                "No feature modules found under $featuresDir — this check must not pass by inspecting zero modules"
+            }
 
             val missingTestModules = features.filter { feature ->
-                !File("$projectRoot/features/$feature/test").exists()
+                !featuresDir.resolve("$feature/test").exists()
             }
 
             assert(missingTestModules.isEmpty()) {

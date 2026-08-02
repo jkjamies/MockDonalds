@@ -5,7 +5,6 @@ import com.lemonappdev.konsist.api.ext.list.withNameEndingWith
 import com.mockdonalds.app.konsist.normalizedPath
 import com.mockdonalds.app.konsist.projectRootFrom
 import io.kotest.core.spec.style.BehaviorSpec
-import java.io.File
 
 /**
  * Validates Android UI test conventions:
@@ -280,15 +279,34 @@ class UiTestConventionsTest : BehaviorSpec({
         Then("every presentation module with UI tests should have an AndroidManifest.xml declaring ComponentActivity") {
             val projectRoot = projectRootFrom(Konsist.scopeFromProject().files.first().path)
 
-            val featuresDir = File("$projectRoot/features")
-            val presentationModules = featuresDir.listFiles()
+            val featuresDir = projectRoot.resolve("features")
+            val features = featuresDir.listFiles()
                 ?.filter { it.isDirectory }
                 ?.map { it.name }
-                ?.filter { File("$projectRoot/features/$it/presentation/src/androidDeviceTest/kotlin").exists() }
-                ?: emptyList()
+                ?: error("Could not enumerate $featuresDir")
+
+            assert(features.isNotEmpty()) {
+                "No feature modules found under $featuresDir — this check must not pass by inspecting zero modules"
+            }
+
+            // Presentation modules are nested under impl/. This probed
+            // features/<name>/presentation/... — one segment short — so the filter matched nothing
+            // and every manifest went unexamined regardless of its contents.
+            val presentationModules = features.filter {
+                featuresDir.resolve("$it/impl/presentation/src/androidDeviceTest/kotlin").exists()
+            }
+
+            // Both empties are indistinguishable in the assert below, so rule out the broken one
+            // here. Every feature in this repo ships androidDeviceTest sources; if that ever stops
+            // being true, narrow this guard rather than dropping it.
+            assert(presentationModules.isNotEmpty()) {
+                "No presentation modules with androidDeviceTest sources found under $featuresDir — " +
+                    "the layout this check probes has moved"
+            }
 
             val missingManifest = presentationModules.filter { feature ->
-                val manifest = File("$projectRoot/features/$feature/presentation/src/androidDeviceTest/AndroidManifest.xml")
+                val manifest =
+                    featuresDir.resolve("$feature/impl/presentation/src/androidDeviceTest/AndroidManifest.xml")
                 !manifest.exists() || !manifest.readText().contains("ComponentActivity")
             }
 

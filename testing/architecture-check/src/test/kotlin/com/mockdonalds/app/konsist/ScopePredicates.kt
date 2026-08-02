@@ -1,5 +1,7 @@
 package com.mockdonalds.app.konsist
 
+import java.io.File
+
 /**
  * Path predicates shared by the architecture rules.
  *
@@ -52,15 +54,34 @@ fun isCoreImplPath(path: String): Boolean =
     Regex("(^|/)core/[^/]+/impl/").containsMatchIn(normalizedPath(path))
 
 /**
- * The project root, derived from any source file's path by cutting at the first module directory.
+ * The project root: the nearest ancestor of [path] holding both `settings.gradle.kts` and
+ * `features/`.
  *
  * Rules that reach the filesystem (listing `features/` to find modules Konsist cannot see, such
- * as ones with no Kotlin sources) need a root to anchor `File(...)` against. Deriving it from an
- * unnormalized path is a silent failure on Windows: `substringBefore` returns the whole string
- * when the delimiter is absent, so the root becomes the full file path, the directory lookup
- * finds nothing, the module list is empty and the rule passes having checked no modules.
+ * as ones with no Kotlin sources) need a root to anchor `File(...)` against. Deriving one by
+ * cutting the path at `/features/` looks equivalent and is not. Callers pass
+ * `scopeFromProject().files.first().path` — whatever file the scan happens to enumerate first,
+ * routinely under `androidApp/` or `build-logic/`. Neither contains the delimiter, and
+ * `substringBefore` returns the whole string when the delimiter is absent, so the "root" becomes
+ * a full file path, `File("$root/features").listFiles()` returns null, the module list is empty
+ * and the rule passes having checked nothing.
+ *
+ * Both markers are required because `build-logic` is an included build with its own
+ * `settings.gradle.kts`: matching on that file alone stops one directory too early and lands on a
+ * root with no `features/`, which is the same vacuum by another route.
+ *
+ * Failing loudly is the point — a root this function cannot resolve must not degrade into an
+ * empty module list. [path] is passed to `File` unnormalized on purpose: it resolves the host
+ * separator itself, so this is correct on Windows without string surgery.
  */
-fun projectRootFrom(path: String): String =
-    normalizedPath(path)
-        .substringBefore("/features/")
-        .let { if (it.contains("/core/")) it.substringBefore("/core/") else it }
+fun projectRootFrom(path: String): File {
+    var dir = File(path).parentFile
+    while (dir != null &&
+        !(dir.resolve("settings.gradle.kts").isFile && dir.resolve("features").isDirectory)
+    ) {
+        dir = dir.parentFile
+    }
+    return dir ?: error(
+        "Could not find the project root (a directory holding settings.gradle.kts and features/) from '$path'",
+    )
+}
